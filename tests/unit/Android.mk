@@ -12,6 +12,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     mockito-target \
     tv-test-common \
 
+LOCAL_JAVA_LIBRARIES := android.test.mock.sdk legacy-android-test
+
 LOCAL_PACKAGE_NAME := TVUnitTests
 
 LOCAL_INSTRUMENTATION_FOR := LiveTv
