@@ -62,6 +62,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 
 
 
+LOCAL_JAVA_LIBRARIES := junit
+
 LOCAL_JAVACFLAGS := -Xlint:deprecation -Xlint:unchecked
 
 LOCAL_AAPT_FLAGS := --auto-add-overlay \
