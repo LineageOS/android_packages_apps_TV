@@ -12,7 +12,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     mockito-target \
     tv-test-common \
 
-LOCAL_JAVA_LIBRARIES := android.test.mock.sdk legacy-android-test
+
+LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/../common/res
 
 LOCAL_PACKAGE_NAME := TVUnitTests
 
@@ -22,3 +23,4 @@ LOCAL_SDK_VERSION := system_current
 LOCAL_MIN_SDK_VERSION := 23  # M
 
 include $(BUILD_PACKAGE)
+
