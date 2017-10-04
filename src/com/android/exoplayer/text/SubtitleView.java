@@ -39,14 +39,12 @@ import java.util.ArrayList;
 
 /**
  * Since this class does not exist in recent version of ExoPlayer and used by
- * {@link com.google.android.tv.tuner.cc.CaptionWindowLayout}, this class is copied from
+ * {@link com.android.tv.tuner.cc.CaptionWindowLayout}, this class is copied from
  * older version of ExoPlayer.
  * A view for rendering a single caption.
  */
 @Deprecated
 public class SubtitleView extends View {
-    // TODO: Change usage of this class to up-to-date class of ExoPlayer.
-
     /**
      * Ratio of inner padding to font size.
      */
@@ -252,11 +250,8 @@ public class SubtitleView extends View {
 
         mHasMeasurements = true;
         mLastMeasuredWidth = maxWidth;
-        mLayout = StaticLayout.Builder.obtain(mText, 0, mText.length(), mTextPaint, maxWidth)
-                .setAlignment(mAlignment)
-                .setLineSpacing(mSpacingAdd, mSpacingMult)
-                .setUseLineSpacingFromFallbacks(true)
-                .build();
+        mLayout = new StaticLayout(mText, mTextPaint, maxWidth, mAlignment,
+                mSpacingMult, mSpacingAdd, true);
         return true;
     }
 
