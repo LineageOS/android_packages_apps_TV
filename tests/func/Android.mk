@@ -14,8 +14,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     tv-test-common \
     ub-uiautomator \
 
-LOCAL_JAVA_LIBRARIES := legacy-android-test
-
 LOCAL_INSTRUMENTATION_FOR := LiveTv
 
 LOCAL_SDK_VERSION := current
