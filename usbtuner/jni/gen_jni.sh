@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
 javah -jni -classpath ../../bin/classes:../../../../../../prebuilts/sdk/current/android.jar -o tunertvinput_jni.h com.android.usbtuner.TunerHal
