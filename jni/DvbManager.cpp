@@ -46,6 +46,7 @@ DvbManager::DvbManager(JNIEnv *env, jobject)
           mDeliverySystemType(-1),
           mFeHasLock(false),
           mHasPendingTune(false) {
+    (void) mDemuxFd; // suppress unused warning
     jclass clazz = env->FindClass(
         "com/android/tv/tuner/TunerHal");
     mOpenDvbFrontEndMethodID = env->GetMethodID(

@@ -149,7 +149,7 @@ Java_com_android_tv_tuner_TunerHal_nativeWriteInBuffer
  */
 JNIEXPORT void JNICALL
 Java_com_android_tv_tuner_TunerHal_nativeSetHasPendingTune
-(JNIEnv *env, jobject thiz, jlong deviceId, jboolean hasPendingTune) {
+(JNIEnv *, jobject, jlong deviceId, jboolean hasPendingTune) {
     std::map<jlong, DvbManager *>::iterator it = sDvbManagers.find(deviceId);
     if (it != sDvbManagers.end()) {
         it->second->setHasPendingTune(hasPendingTune);
