@@ -59,6 +59,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     android-support-compat \
     android-support-core-ui \
+    android-support-tv-provider \
     android-support-v7-palette \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
@@ -66,7 +67,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     lib-exoplayer \
     lib-exoplayer-v2 \
     lib-exoplayer-v2-ext-ffmpeg \
-    prebuilt-support-tv-provider \
     tv-common \
 
 
@@ -121,7 +121,6 @@ LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
     lib-exoplayer:libs/exoplayer.jar \
     lib-exoplayer-v2:libs/exoplayer_v2.jar \
     lib-exoplayer-v2-ext-ffmpeg:libs/exoplayer_v2_ext_ffmpeg.jar \
-    prebuilt-support-tv-provider:../../../prebuilts/sdk/current/support/tv-provider/android-support-tv-provider.jar \
 
 
 include $(BUILD_MULTI_PREBUILT)
