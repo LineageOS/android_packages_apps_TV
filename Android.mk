@@ -36,26 +36,23 @@ LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_SDK_VERSION := system_current
 LOCAL_MIN_SDK_VERSION := 23  # M
+
+LOCAL_USE_AAPT2 := true
+
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
-    $(LOCAL_PATH)/usbtuner-res \
-    $(LOCAL_PATH)/common/res
+    $(LOCAL_PATH)/usbtuner-res
 
-ifdef TARGET_BUILD_APPS
-LOCAL_RESOURCE_DIR += \
-    $(TOP)/prebuilts/sdk/current/support/compat/res \
-    $(TOP)/prebuilts/sdk/current/support/v17/leanback/res \
-    $(TOP)/prebuilts/sdk/current/support/v7/recyclerview/res
-else # !TARGET_BUILD_APPS
-LOCAL_RESOURCE_DIR += \
-    $(TOP)/frameworks/support/compat/res \
-    $(TOP)/frameworks/support/v17/leanback/res \
-    $(TOP)/frameworks/support/v7/recyclerview/res
-endif
 LOCAL_SRC_FILES += \
     src/com/android/tv/tuner/exoplayer/ffmpeg/IFfmpegDecoder.aidl
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
+    icu4j-usbtuner \
+    lib-exoplayer \
+    lib-exoplayer-v2 \
+    lib-exoplayer-v2-ext-ffmpeg
+
+LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-annotations \
     android-support-compat \
     android-support-core-ui \
@@ -63,23 +60,11 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-v7-palette \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
-    icu4j-usbtuner \
-    lib-exoplayer \
-    lib-exoplayer-v2 \
-    lib-exoplayer-v2-ext-ffmpeg \
-    tv-common \
-
-
-
-
+    tv-common
 
 LOCAL_JAVACFLAGS := -Xlint:deprecation -Xlint:unchecked
 
-LOCAL_AAPT_FLAGS += --auto-add-overlay \
-    --extra-packages android.support.compat \
-    --extra-packages android.support.v7.recyclerview \
-    --extra-packages android.support.v17.leanback \
-    --extra-packages com.android.tv.common \
+LOCAL_AAPT_FLAGS += \
     --version-name "$(version_name_package)" \
     --version-code $(version_code_package) \
 
@@ -127,3 +112,4 @@ include $(BUILD_MULTI_PREBUILT)
 
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
+
