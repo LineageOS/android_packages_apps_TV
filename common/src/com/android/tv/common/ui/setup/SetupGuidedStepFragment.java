@@ -45,9 +45,11 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
             Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         Bundle arguments = getArguments();
-        view.findViewById(R.id.action_fragment_root).setPadding(0, 0, 0, 0);
+        view.findViewById(android.support.v17.leanback.R.id.action_fragment_root)
+                .setPadding(0, 0, 0, 0);
         LinearLayout.LayoutParams guidanceLayoutParams = (LinearLayout.LayoutParams)
-                view.findViewById(R.id.content_fragment).getLayoutParams();
+                view.findViewById(android.support.v17.leanback.R.id.content_fragment)
+                .getLayoutParams();
         guidanceLayoutParams.weight = 0;
         if (arguments != null && arguments.getBoolean(KEY_THREE_PANE, false)) {
             // Content fragment.
@@ -56,7 +58,7 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
             int doneButtonWidth = getResources().getDimensionPixelOffset(
                     R.dimen.setup_done_button_container_width);
             // Guided actions list
-            View list = view.findViewById(R.id.guidedactions_list);
+            View list = view.findViewById(android.support.v17.leanback.R.id.guidedactions_list);
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) list.getLayoutParams();
             // Use content view to check layout direction while view is being created.
             if (getResources().getConfiguration().getLayoutDirection()
@@ -77,10 +79,12 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
         gridView.setWindowAlignmentOffset(offset);
         gridView.setWindowAlignmentOffsetPercent(0);
         gridView.setItemAlignmentOffsetPercent(0);
-        ((ViewGroup) view.findViewById(R.id.guidedactions_list)).setTransitionGroup(false);
+        ((ViewGroup) view.findViewById(android.support.v17.leanback.R.id.guidedactions_list))
+                .setTransitionGroup(false);
         // Needed for the shared element transition.
         // content_frame is defined in leanback.
-        ViewGroup group = (ViewGroup) view.findViewById(R.id.content_frame);
+        ViewGroup group = (ViewGroup) view.findViewById(
+                android.support.v17.leanback.R.id.content_frame);
         group.setClipChildren(false);
         group.setClipToPadding(false);
         return view;
