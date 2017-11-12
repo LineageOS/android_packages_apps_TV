@@ -50,10 +50,10 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     icu4j-usbtuner \
     lib-exoplayer \
     lib-exoplayer-v2 \
-    lib-exoplayer-v2-ext-ffmpeg
+    lib-exoplayer-v2-ext-ffmpeg \
+    android-support-annotations
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
-    android-support-annotations \
     android-support-compat \
     android-support-core-ui \
     android-support-tv-provider \
