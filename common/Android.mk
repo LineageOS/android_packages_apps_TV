@@ -13,8 +13,10 @@ LOCAL_USE_AAPT2 := true
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
+LOCAL_JAVA_LIBRARIES := \
+    android-support-annotations
+
 LOCAL_SHARED_ANDROID_LIBRARIES := \
-    android-support-annotations \
     android-support-compat \
     android-support-core-ui \
     android-support-v7-recyclerview \
