@@ -60,7 +60,7 @@ public class PreviewDataManager {
      * Invalid preview channel ID.
      */
     public static final long INVALID_PREVIEW_CHANNEL_ID = -1;
-    @IntDef({TYPE_DEFAULT_PREVIEW_CHANNEL, TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL})
+    @IntDef({(int)TYPE_DEFAULT_PREVIEW_CHANNEL, (int)TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PreviewChannelType{}
 
