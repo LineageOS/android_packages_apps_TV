@@ -12,7 +12,11 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     mockito-target \
     tv-test-common \
 
-LOCAL_JAVA_LIBRARIES := android.test.runner.stubs
+LOCAL_JAVA_LIBRARIES := \
+    android.test.runner.stubs \
+    android.test.base.stubs \
+    android.test.mock.stubs \
+
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/../common/res
 
