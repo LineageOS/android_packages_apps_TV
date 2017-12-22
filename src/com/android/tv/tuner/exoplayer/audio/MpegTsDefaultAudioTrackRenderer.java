@@ -21,7 +21,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
-
+import com.android.tv.tuner.exoplayer.ffmpeg.FfmpegDecoderClient;
+import com.android.tv.tuner.tvinput.TunerDebug;
 import com.google.android.exoplayer.CodecCounters;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaClock;
@@ -34,9 +35,6 @@ import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.audio.AudioTrack;
 import com.google.android.exoplayer.util.Assertions;
 import com.google.android.exoplayer.util.MimeTypes;
-import com.android.tv.tuner.exoplayer.ffmpeg.FfmpegDecoderClient;
-import com.android.tv.tuner.tvinput.TunerDebug;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -65,21 +63,21 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
     public static final long INITIAL_AUDIO_BUFFERING_TIME_US =
             BUFFERED_SAMPLES_IN_AUDIOTRACK * AC3_SAMPLE_DURATION_US;
 
-
     private static final String TAG = "MpegTsDefaultAudioTrac";
     private static final boolean DEBUG = false;
 
     /**
-     * Interface definition for a callback to be notified of
-     * {@link com.google.android.exoplayer.audio.AudioTrack} error.
+     * Interface definition for a callback to be notified of {@link
+     * com.google.android.exoplayer.audio.AudioTrack} error.
      */
     public interface EventListener {
         void onAudioTrackInitializationError(AudioTrack.InitializationException e);
+
         void onAudioTrackWriteError(AudioTrack.WriteException e);
     }
 
     private static final int DEFAULT_INPUT_BUFFER_SIZE = 16384 * 2;
-    private static final int DEFAULT_OUTPUT_BUFFER_SIZE = 1024*1024;
+    private static final int DEFAULT_OUTPUT_BUFFER_SIZE = 1024 * 1024;
     private static final int MONITOR_DURATION_MS = 1000;
     private static final int AC3_HEADER_BITRATE_OFFSET = 4;
     private static final int MP2_HEADER_BITRATE_OFFSET = 2;
@@ -374,8 +372,8 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
     }
 
     private void readFormat() throws IOException, ExoPlaybackException {
-        int result = mSource.readData(mTrackIndex, mCurrentPositionUs,
-                mFormatHolder, mSampleHolder);
+        int result =
+                mSource.readData(mTrackIndex, mCurrentPositionUs, mFormatHolder, mSampleHolder);
         if (result == SampleSource.FORMAT_READ) {
             onInputFormatChanged(mFormatHolder);
         }
@@ -394,8 +392,7 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
                 format.language);
     }
 
-    private void onInputFormatChanged(MediaFormatHolder formatHolder)
-            throws ExoPlaybackException {
+    private void onInputFormatChanged(MediaFormatHolder formatHolder) throws ExoPlaybackException {
         String mimeType = formatHolder.format.mimeType;
         mUseFrameworkDecoder = MediaCodecAudioDecoder.supportMimeType(mSelector, mimeType);
         if (mUseFrameworkDecoder) {
@@ -470,64 +467,68 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
         int result =
                 mSource.readData(mTrackIndex, mPresentationTimeUs, mFormatHolder, mSampleHolder);
         switch (result) {
-            case SampleSource.NOTHING_READ: {
-                return false;
-            }
-            case SampleSource.FORMAT_READ: {
-                Log.i(TAG, "Format was read again");
-                onInputFormatChanged(mFormatHolder);
-                return true;
-            }
-            case SampleSource.END_OF_STREAM: {
-                Log.i(TAG, "End of stream from SampleSource");
-                mInputStreamEnded = true;
-                return false;
-            }
-            default: {
-                if (mSampleHolder.size != mSampleSize
-                        && mFormatConfigured
-                        && !mUseFrameworkDecoder) {
-                    onSampleSizeChanged(mSampleHolder.size);
+            case SampleSource.NOTHING_READ:
+                {
+                    return false;
                 }
-                mSampleHolder.data.flip();
-                if (!mUseFrameworkDecoder) {
-                    if (MimeTypes.AUDIO_MPEG_L2.equalsIgnoreCase(mDecodingMime)) {
-                        mMonitor.addPts(
-                            mSampleHolder.timeUs,
-                            mOutputBuffer.position(),
-                            mSampleHolder.data.get(MP2_HEADER_BITRATE_OFFSET)
-                                & MP2_HEADER_BITRATE_MASK);
+            case SampleSource.FORMAT_READ:
+                {
+                    Log.i(TAG, "Format was read again");
+                    onInputFormatChanged(mFormatHolder);
+                    return true;
+                }
+            case SampleSource.END_OF_STREAM:
+                {
+                    Log.i(TAG, "End of stream from SampleSource");
+                    mInputStreamEnded = true;
+                    return false;
+                }
+            default:
+                {
+                    if (mSampleHolder.size != mSampleSize
+                            && mFormatConfigured
+                            && !mUseFrameworkDecoder) {
+                        onSampleSizeChanged(mSampleHolder.size);
+                    }
+                    mSampleHolder.data.flip();
+                    if (!mUseFrameworkDecoder) {
+                        if (MimeTypes.AUDIO_MPEG_L2.equalsIgnoreCase(mDecodingMime)) {
+                            mMonitor.addPts(
+                                    mSampleHolder.timeUs,
+                                    mOutputBuffer.position(),
+                                    mSampleHolder.data.get(MP2_HEADER_BITRATE_OFFSET)
+                                            & MP2_HEADER_BITRATE_MASK);
+                        } else {
+                            mMonitor.addPts(
+                                    mSampleHolder.timeUs,
+                                    mOutputBuffer.position(),
+                                    mSampleHolder.data.get(AC3_HEADER_BITRATE_OFFSET) & 0xff);
+                        }
+                    }
+                    if (mAudioDecoder != null) {
+                        mAudioDecoder.decode(mSampleHolder);
+                        if (mUseFrameworkDecoder) {
+                            int outputIndex =
+                                    ((MediaCodecAudioDecoder) mAudioDecoder).getOutputIndex();
+                            if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                                onOutputFormatChanged(mAudioDecoder.getOutputFormat());
+                                return true;
+                            } else if (outputIndex < 0) {
+                                return true;
+                            }
+                            if (((MediaCodecAudioDecoder) mAudioDecoder).maybeDecodeOnlyIndex()) {
+                                AUDIO_TRACK.handleDiscontinuity();
+                                return true;
+                            }
+                        }
+                        ByteBuffer outputBuffer = mAudioDecoder.getDecodedSample();
+                        long presentationTimeUs = mAudioDecoder.getDecodedTimeUs();
+                        decodeDone(outputBuffer, presentationTimeUs);
                     } else {
-                        mMonitor.addPts(
-                            mSampleHolder.timeUs,
-                            mOutputBuffer.position(),
-                            mSampleHolder.data.get(AC3_HEADER_BITRATE_OFFSET) & 0xff);
+                        decodeDone(mSampleHolder.data, mSampleHolder.timeUs);
                     }
+                    return true;
                 }
-                if (mAudioDecoder != null) {
-                    mAudioDecoder.decode(mSampleHolder);
-                    if (mUseFrameworkDecoder) {
-                        int outputIndex =
-                                ((MediaCodecAudioDecoder) mAudioDecoder).getOutputIndex();
-                        if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                            onOutputFormatChanged(mAudioDecoder.getOutputFormat());
-                            return true;
-                        } else if (outputIndex < 0) {
-                            return true;
-                        }
-                        if (((MediaCodecAudioDecoder) mAudioDecoder).maybeDecodeOnlyIndex()) {
-                            AUDIO_TRACK.handleDiscontinuity();
-                            return true;
-                        }
-                    }
-                    ByteBuffer outputBuffer = mAudioDecoder.getDecodedSample();
-                    long presentationTimeUs = mAudioDecoder.getDecodedTimeUs();
-                    decodeDone(outputBuffer, presentationTimeUs);
-                } else {
-                    decodeDone(mSampleHolder.data, mSampleHolder.timeUs);
-                }
-                return true;
-            }
         }
     }
 
@@ -549,11 +550,11 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
         try {
             // To reduce discontinuity, interpolate presentation time.
             if (MimeTypes.AUDIO_MPEG_L2.equalsIgnoreCase(mDecodingMime)) {
-                mInterpolatedTimeUs = mPresentationTimeUs
-                    + mPresentationCount * MP2_SAMPLE_DURATION_US;
+                mInterpolatedTimeUs =
+                        mPresentationTimeUs + mPresentationCount * MP2_SAMPLE_DURATION_US;
             } else if (!mUseFrameworkDecoder) {
-                mInterpolatedTimeUs = mPresentationTimeUs
-                    + mPresentationCount * AC3_SAMPLE_DURATION_US;
+                mInterpolatedTimeUs =
+                        mPresentationTimeUs + mPresentationCount * AC3_SAMPLE_DURATION_US;
             } else {
                 mInterpolatedTimeUs = mPresentationTimeUs;
             }
@@ -588,7 +589,8 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
     protected long getBufferedPositionUs() {
         long pos = mSource.getBufferedPositionUs();
         return pos == UNKNOWN_TIME_US || pos == END_OF_TRACK_US
-                ? pos : Math.max(pos, getPositionUs());
+                ? pos
+                : Math.max(pos, getPositionUs());
     }
 
     @Override
@@ -607,15 +609,19 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
             if (DEBUG) {
                 long oldPositionUs = Math.max(mCurrentPositionUs, 0);
                 long currentPositionUs = Math.max(mPresentationTimeUs, mCurrentPositionUs);
-                Log.d(TAG, "Audio position is not set, diff in us: "
-                        + String.valueOf(currentPositionUs - oldPositionUs));
+                Log.d(
+                        TAG,
+                        "Audio position is not set, diff in us: "
+                                + String.valueOf(currentPositionUs - oldPositionUs));
             }
             mCurrentPositionUs = Math.max(mPresentationTimeUs, mCurrentPositionUs);
         } else {
             if (mPreviousPositionUs
                     > audioTrackCurrentPositionUs + BACKWARD_AUDIO_TRACK_MOVE_THRESHOLD_US) {
-                Log.e(TAG, "audio_position BACK JUMP: "
-                        + (mPreviousPositionUs - audioTrackCurrentPositionUs));
+                Log.e(
+                        TAG,
+                        "audio_position BACK JUMP: "
+                                + (mPreviousPositionUs - audioTrackCurrentPositionUs));
                 mCurrentPositionUs = audioTrackCurrentPositionUs;
             } else {
                 mCurrentPositionUs = Math.max(mCurrentPositionUs, audioTrackCurrentPositionUs);
@@ -660,24 +666,26 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
         if (mEventHandler == null || mEventListener == null) {
             return;
         }
-        mEventHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mEventListener.onAudioTrackInitializationError(e);
-            }
-        });
+        mEventHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mEventListener.onAudioTrackInitializationError(e);
+                    }
+                });
     }
 
     private void notifyAudioTrackWriteError(final AudioTrack.WriteException e) {
         if (mEventHandler == null || mEventListener == null) {
             return;
         }
-        mEventHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mEventListener.onAudioTrackWriteError(e);
-            }
-        });
+        mEventHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mEventListener.onAudioTrackWriteError(e);
+                    }
+                });
     }
 
     @Override

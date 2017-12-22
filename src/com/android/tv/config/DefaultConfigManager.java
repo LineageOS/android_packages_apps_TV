@@ -18,11 +18,10 @@ package com.android.tv.config;
 
 import android.content.Context;
 
-/**
- * Stub Remote Config.
- */
+/** Stub Remote Config. */
 public class DefaultConfigManager {
     public static final long DEFAULT_LONG_VALUE = 0;
+
     public static DefaultConfigManager createInstance(Context context) {
         return new DefaultConfigManager();
     }
@@ -35,9 +34,7 @@ public class DefaultConfigManager {
 
     private static class StubRemoteConfig implements RemoteConfig {
         @Override
-        public void fetch(OnRemoteConfigUpdatedListener listener) {
-
-        }
+        public void fetch(OnRemoteConfigUpdatedListener listener) {}
 
         @Override
         public String getString(String key) {
@@ -55,7 +52,3 @@ public class DefaultConfigManager {
         }
     }
 }
-
-
-
-

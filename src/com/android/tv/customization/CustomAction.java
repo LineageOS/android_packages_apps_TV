@@ -20,10 +20,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 
-/**
- * Describes a custom option defined in customization package.
- * This will be added to main menu.
- */
+/** Describes a custom option defined in customization package. This will be added to main menu. */
 public class CustomAction implements Comparable<CustomAction> {
     private static final int POSITION_THRESHOLD = 100;
 
@@ -40,9 +37,9 @@ public class CustomAction implements Comparable<CustomAction> {
     }
 
     /**
-     * Returns if this option comes before the existing items.
-     * Note that custom options can only be placed at the front or back.
-     * (i.e. cannot be added in the middle of existing options.)
+     * Returns if this option comes before the existing items. Note that custom options can only be
+     * placed at the front or back. (i.e. cannot be added in the middle of existing options.)
+     *
      * @return {@code true} if it goes to the beginning. {@code false} if it goes to the end.
      */
     public boolean isFront() {
@@ -54,23 +51,17 @@ public class CustomAction implements Comparable<CustomAction> {
         return mPositionPriority - another.mPositionPriority;
     }
 
-    /**
-     * Returns title.
-     */
+    /** Returns title. */
     public String getTitle() {
         return mTitle;
     }
 
-    /**
-     * Returns icon drawable.
-     */
+    /** Returns icon drawable. */
     public Drawable getIconDrawable() {
         return mIconDrawable;
     }
 
-    /**
-     * Returns intent to launch when this option is clicked.
-     */
+    /** Returns intent to launch when this option is clicked. */
     public Intent getIntent() {
         return mIntent;
     }

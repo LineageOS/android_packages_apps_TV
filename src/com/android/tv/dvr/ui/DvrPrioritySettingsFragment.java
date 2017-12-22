@@ -26,23 +26,18 @@ import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.data.SeriesRecording;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /** Fragment for DVR series recording settings. */
 public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
-    /**
-     * Name of series recording id starting the fragment.
-     * Type: Long
-     */
+    /** Name of series recording id starting the fragment. Type: Long */
     public static final String COME_FROM_SERIES_RECORDING_ID = "series_recording_id";
 
     private static final int ONE_TIME_RECORDING_ID = 0;
@@ -61,14 +56,14 @@ public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mSeriesRecordings.clear();
-        mSeriesRecordings.add(new SeriesRecording.Builder()
-                .setTitle(getString(R.string.dvr_priority_action_one_time_recording))
-                .setPriority(Long.MAX_VALUE)
-                .setId(ONE_TIME_RECORDING_ID)
-                .build());
+        mSeriesRecordings.add(
+                new SeriesRecording.Builder()
+                        .setTitle(getString(R.string.dvr_priority_action_one_time_recording))
+                        .setPriority(Long.MAX_VALUE)
+                        .setId(ONE_TIME_RECORDING_ID)
+                        .build());
         DvrDataManager dvrDataManager = TvApplication.getSingletons(context).getDvrDataManager();
-        long comeFromSeriesRecordingId =
-                getArguments().getLong(COME_FROM_SERIES_RECORDING_ID, -1);
+        long comeFromSeriesRecordingId = getArguments().getLong(COME_FROM_SERIES_RECORDING_ID, -1);
         for (SeriesRecording series : dvrDataManager.getSeriesRecordings()) {
             if (series.getState() == SeriesRecording.STATE_SERIES_NORMAL
                     || series.getId() == comeFromSeriesRecordingId) {
@@ -86,38 +81,46 @@ public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
     @Override
     public void onResume() {
         super.onResume();
-        setSelectedActionPosition(mComeFromSeriesRecording == null ? 1
-                : mSeriesRecordings.indexOf(mComeFromSeriesRecording));
+        setSelectedActionPosition(
+                mComeFromSeriesRecording == null
+                        ? 1
+                        : mSeriesRecordings.indexOf(mComeFromSeriesRecording));
     }
 
     @Override
     public Guidance onCreateGuidance(Bundle savedInstanceState) {
-        String breadcrumb = mComeFromSeriesRecording == null ? null
-                : mComeFromSeriesRecording.getTitle();
-        return new Guidance(getString(R.string.dvr_priority_title),
-                getString(R.string.dvr_priority_description), breadcrumb, null);
+        String breadcrumb =
+                mComeFromSeriesRecording == null ? null : mComeFromSeriesRecording.getTitle();
+        return new Guidance(
+                getString(R.string.dvr_priority_title),
+                getString(R.string.dvr_priority_description),
+                breadcrumb,
+                null);
     }
 
     @Override
     public void onCreateActions(List<GuidedAction> actions, Bundle savedInstanceState) {
         int position = 0;
         for (SeriesRecording seriesRecording : mSeriesRecordings) {
-            actions.add(new GuidedAction.Builder(getActivity())
-                    .id(position++)
-                    .title(seriesRecording.getTitle())
-                    .build());
+            actions.add(
+                    new GuidedAction.Builder(getActivity())
+                            .id(position++)
+                            .title(seriesRecording.getTitle())
+                            .build());
         }
     }
 
     @Override
     public void onCreateButtonActions(List<GuidedAction> actions, Bundle savedInstanceState) {
-        actions.add(new GuidedAction.Builder(getActivity())
-                .id(ACTION_ID_SAVE)
-                .title(getString(R.string.dvr_priority_button_action_save))
-                .build());
-        actions.add(new GuidedAction.Builder(getActivity())
-                .clickAction(GuidedAction.ACTION_ID_CANCEL)
-                .build());
+        actions.add(
+                new GuidedAction.Builder(getActivity())
+                        .id(ACTION_ID_SAVE)
+                        .title(getString(R.string.dvr_priority_button_action_save))
+                        .build());
+        actions.add(
+                new GuidedAction.Builder(getActivity())
+                        .clickAction(GuidedAction.ACTION_ID_CANCEL)
+                        .build());
     }
 
     @Override
@@ -130,8 +133,10 @@ public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
                 long priority = DvrScheduleManager.suggestSeriesPriority(size - i);
                 SeriesRecording seriesRecording = mSeriesRecordings.get(i);
                 if (seriesRecording.getPriority() != priority) {
-                    dvrManager.updateSeriesRecording(SeriesRecording.buildFrom(seriesRecording)
-                            .setPriority(priority).build());
+                    dvrManager.updateSeriesRecording(
+                            SeriesRecording.buildFrom(seriesRecording)
+                                    .setPriority(priority)
+                                    .build());
                 }
             }
             FragmentManager fragmentManager = getFragmentManager();
@@ -222,8 +227,9 @@ public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
     private void updateItem(View itemView, int position) {
         GuidedAction action = getActions().get(position);
         action.setTitle(mSeriesRecordings.get(position).getTitle());
-        boolean selected = mSelectedRecording != null
-                && mSeriesRecordings.indexOf(mSelectedRecording) == position;
+        boolean selected =
+                mSelectedRecording != null
+                        && mSeriesRecordings.indexOf(mSelectedRecording) == position;
         TextView titleView = (TextView) itemView.findViewById(R.id.guidedactions_item_title);
         ImageView imageView = (ImageView) itemView.findViewById(R.id.guidedactions_item_tail_image);
         if (position == 0) {

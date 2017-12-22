@@ -19,9 +19,7 @@ package com.android.tv.tuner.tvinput;
 import android.os.SystemClock;
 import android.util.Log;
 
-/**
- * A class to maintain various debugging information.
- */
+/** A class to maintain various debugging information. */
 public class TunerDebug {
     private static final String TAG = "TunerDebug";
     public static final boolean ENABLED = false;
@@ -117,14 +115,13 @@ public class TunerDebug {
         long duration = currentTime - sTunerDebug.mLastCheckTimestampMs;
         if (duration != 0) {
             sTunerDebug.mAudioPositionUsRate =
-                    (sTunerDebug.mAudioPositionUs - sTunerDebug.mLastAudioPositionUs) * 1000
-                    / duration;
+                    (sTunerDebug.mAudioPositionUs - sTunerDebug.mLastAudioPositionUs)
+                            * 1000
+                            / duration;
             sTunerDebug.mAudioPtsUsRate =
-                    (sTunerDebug.mAudioPtsUs - sTunerDebug.mLastAudioPtsUs) * 1000
-                    / duration;
+                    (sTunerDebug.mAudioPtsUs - sTunerDebug.mLastAudioPtsUs) * 1000 / duration;
             sTunerDebug.mVideoPtsUsRate =
-                    (sTunerDebug.mVideoPtsUs - sTunerDebug.mLastVideoPtsUs) * 1000
-                    / duration;
+                    (sTunerDebug.mVideoPtsUs - sTunerDebug.mLastVideoPtsUs) * 1000 / duration;
         }
 
         sTunerDebug.mLastAudioPositionUs = sTunerDebug.mAudioPositionUs;

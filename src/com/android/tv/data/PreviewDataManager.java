@@ -35,10 +35,8 @@ import android.support.media.tv.ChannelLogoUtils;
 import android.support.media.tv.PreviewProgram;
 import android.util.Log;
 import android.util.Pair;
-
 import com.android.tv.R;
 import com.android.tv.util.PermissionUtils;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
@@ -46,9 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-/**
- * Class to manage the preview data.
- */
+/** Class to manage the preview data. */
 @TargetApi(Build.VERSION_CODES.O)
 @MainThread
 public class PreviewDataManager {
@@ -56,21 +52,16 @@ public class PreviewDataManager {
     // STOPSHIP: set it to false.
     private static final boolean DEBUG = true;
 
-    /**
-     * Invalid preview channel ID.
-     */
+    /** Invalid preview channel ID. */
     public static final long INVALID_PREVIEW_CHANNEL_ID = -1;
-    @IntDef({(int)TYPE_DEFAULT_PREVIEW_CHANNEL, (int)TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PreviewChannelType{}
 
-    /**
-     * Type of default preview channel
-     */
+    @IntDef({(int) TYPE_DEFAULT_PREVIEW_CHANNEL, (int) TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PreviewChannelType {}
+
+    /** Type of default preview channel */
     public static final long TYPE_DEFAULT_PREVIEW_CHANNEL = 1;
-    /**
-     * Type of recorded program channel
-     */
+    /** Type of recorded program channel */
     public static final long TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL = 2;
 
     private final Context mContext;
@@ -80,8 +71,7 @@ public class PreviewDataManager {
     private final Set<PreviewDataListener> mPreviewDataListeners = new CopyOnWriteArraySet<>();
 
     private QueryPreviewDataTask mQueryPreviewTask;
-    private final Map<Long, CreatePreviewChannelTask> mCreatePreviewChannelTasks =
-            new HashMap<>();
+    private final Map<Long, CreatePreviewChannelTask> mCreatePreviewChannelTasks = new HashMap<>();
     private final Map<Long, UpdatePreviewProgramTask> mUpdatePreviewProgramTasks = new HashMap<>();
 
     private final int mPreviewChannelLogoWidth;
@@ -90,15 +80,13 @@ public class PreviewDataManager {
     public PreviewDataManager(Context context) {
         mContext = context.getApplicationContext();
         mContentResolver = context.getContentResolver();
-        mPreviewChannelLogoWidth = mContext.getResources().getDimensionPixelSize(
-                R.dimen.preview_channel_logo_width);
-        mPreviewChannelLogoHeight = mContext.getResources().getDimensionPixelSize(
-                R.dimen.preview_channel_logo_height);
+        mPreviewChannelLogoWidth =
+                mContext.getResources().getDimensionPixelSize(R.dimen.preview_channel_logo_width);
+        mPreviewChannelLogoHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.preview_channel_logo_height);
     }
 
-    /**
-     * Starts the preview data manager.
-     */
+    /** Starts the preview data manager. */
     public void start() {
         if (mQueryPreviewTask == null) {
             mQueryPreviewTask = new QueryPreviewDataTask();
@@ -106,19 +94,17 @@ public class PreviewDataManager {
         }
     }
 
-    /**
-     * Stops the preview data manager.
-     */
+    /** Stops the preview data manager. */
     public void stop() {
         if (mQueryPreviewTask != null) {
             mQueryPreviewTask.cancel(true);
         }
-        for (CreatePreviewChannelTask createPreviewChannelTask
-                : mCreatePreviewChannelTasks.values()) {
+        for (CreatePreviewChannelTask createPreviewChannelTask :
+                mCreatePreviewChannelTasks.values()) {
             createPreviewChannelTask.cancel(true);
         }
-        for (UpdatePreviewProgramTask updatePreviewProgramTask
-                : mUpdatePreviewProgramTasks.values()) {
+        for (UpdatePreviewProgramTask updatePreviewProgramTask :
+                mUpdatePreviewProgramTasks.values()) {
             updatePreviewProgramTask.cancel(true);
         }
 
@@ -127,31 +113,26 @@ public class PreviewDataManager {
         mUpdatePreviewProgramTasks.clear();
     }
 
-    /**
-     * Gets preview channel ID from the preview channel type.
-     */
+    /** Gets preview channel ID from the preview channel type. */
     public @PreviewChannelType long getPreviewChannelId(long previewChannelType) {
         return mPreviewData.getPreviewChannelId(previewChannelType);
     }
 
-    /**
-     * Creates default preview channel.
-     */
+    /** Creates default preview channel. */
     public void createDefaultPreviewChannel(
             OnPreviewChannelCreationResultListener onPreviewChannelCreationResultListener) {
         createPreviewChannel(TYPE_DEFAULT_PREVIEW_CHANNEL, onPreviewChannelCreationResultListener);
     }
 
-    /**
-     * Creates a preview channel for specific channel type.
-     */
-    public void createPreviewChannel(@PreviewChannelType long previewChannelType,
+    /** Creates a preview channel for specific channel type. */
+    public void createPreviewChannel(
+            @PreviewChannelType long previewChannelType,
             OnPreviewChannelCreationResultListener onPreviewChannelCreationResultListener) {
         CreatePreviewChannelTask currentRunningCreateTask =
                 mCreatePreviewChannelTasks.get(previewChannelType);
         if (currentRunningCreateTask == null) {
-            CreatePreviewChannelTask createPreviewChannelTask = new CreatePreviewChannelTask(
-                    previewChannelType);
+            CreatePreviewChannelTask createPreviewChannelTask =
+                    new CreatePreviewChannelTask(previewChannelType);
             createPreviewChannelTask.addOnPreviewChannelCreationResultListener(
                     onPreviewChannelCreationResultListener);
             createPreviewChannelTask.execute();
@@ -162,32 +143,26 @@ public class PreviewDataManager {
         }
     }
 
-    /**
-     * Returns {@code true} if the preview data is loaded.
-     */
+    /** Returns {@code true} if the preview data is loaded. */
     public boolean isLoadFinished() {
         return mLoadFinished;
     }
 
-    /**
-     * Adds listener.
-     */
+    /** Adds listener. */
     public void addListener(PreviewDataListener previewDataListener) {
         mPreviewDataListeners.add(previewDataListener);
     }
 
-    /**
-     * Removes listener.
-     */
+    /** Removes listener. */
     public void removeListener(PreviewDataListener previewDataListener) {
         mPreviewDataListeners.remove(previewDataListener);
     }
 
-    /**
-     * Updates the preview programs table for a specific preview channel.
-     */
-    public void updatePreviewProgramsForChannel(long previewChannelId,
-            Set<PreviewProgramContent> programs, PreviewDataListener previewDataListener) {
+    /** Updates the preview programs table for a specific preview channel. */
+    public void updatePreviewProgramsForChannel(
+            long previewChannelId,
+            Set<PreviewProgramContent> programs,
+            PreviewDataListener previewDataListener) {
         UpdatePreviewProgramTask currentRunningUpdateTask =
                 mUpdatePreviewProgramTasks.get(previewChannelId);
         if (currentRunningUpdateTask != null
@@ -215,22 +190,19 @@ public class PreviewDataManager {
     }
 
     public interface PreviewDataListener {
-        /**
-         * Called when the preview data is loaded.
-         */
+        /** Called when the preview data is loaded. */
         void onPreviewDataLoadFinished();
 
-        /**
-         * Called when the preview data is updated.
-         */
+        /** Called when the preview data is updated. */
         void onPreviewDataUpdateFinished();
     }
 
     public interface OnPreviewChannelCreationResultListener {
         /**
          * Called when the creation of preview channel is finished.
-         * @param createdPreviewChannelId The preview channel ID if created successfully,
-         *        otherwise it's {@value #INVALID_PREVIEW_CHANNEL_ID}.
+         *
+         * @param createdPreviewChannelId The preview channel ID if created successfully, otherwise
+         *     it's {@value #INVALID_PREVIEW_CHANNEL_ID}.
          */
         void onPreviewChannelCreationResult(long createdPreviewChannelId);
     }
@@ -352,9 +324,11 @@ public class PreviewDataManager {
             if (DEBUG) Log.d(TAG, "CreatePreviewChannelTask.doInBackground");
             long previewChannelId;
             try {
-                Uri channelUri = mContentResolver.insert(TvContract.Channels.CONTENT_URI,
-                        PreviewDataUtils.createPreviewChannel(mContext, mPreviewChannelType)
-                                .toContentValues());
+                Uri channelUri =
+                        mContentResolver.insert(
+                                TvContract.Channels.CONTENT_URI,
+                                PreviewDataUtils.createPreviewChannel(mContext, mPreviewChannelType)
+                                        .toContentValues());
                 if (channelUri != null) {
                     previewChannelId = ContentUris.parseId(channelUri);
                 } else {
@@ -367,9 +341,14 @@ public class PreviewDataManager {
             }
             Drawable appIcon = mContext.getApplicationInfo().loadIcon(mContext.getPackageManager());
             if (appIcon != null && appIcon instanceof BitmapDrawable) {
-                ChannelLogoUtils.storeChannelLogo(mContext, previewChannelId,
-                        Bitmap.createScaledBitmap(((BitmapDrawable) appIcon).getBitmap(),
-                                mPreviewChannelLogoWidth, mPreviewChannelLogoHeight, false));
+                ChannelLogoUtils.storeChannelLogo(
+                        mContext,
+                        previewChannelId,
+                        Bitmap.createScaledBitmap(
+                                ((BitmapDrawable) appIcon).getBitmap(),
+                                mPreviewChannelLogoWidth,
+                                mPreviewChannelLogoHeight,
+                                false));
             }
             return previewChannelId;
         }
@@ -380,8 +359,8 @@ public class PreviewDataManager {
             if (result != INVALID_PREVIEW_CHANNEL_ID) {
                 mPreviewData.addPreviewChannelId(mPreviewChannelType, result);
             }
-            for (OnPreviewChannelCreationResultListener onPreviewChannelCreationResultListener
-                    : mOnPreviewChannelCreationResultListeners) {
+            for (OnPreviewChannelCreationResultListener onPreviewChannelCreationResultListener :
+                    mOnPreviewChannelCreationResultListeners) {
                 onPreviewChannelCreationResultListener.onPreviewChannelCreationResult(result);
             }
             mCreatePreviewChannelTasks.remove(mPreviewChannelType);
@@ -389,8 +368,8 @@ public class PreviewDataManager {
     }
 
     /**
-     * Updates the whole data which belongs to the package in preview programs table for a
-     * specific preview channel with a set of {@link PreviewProgramContent}.
+     * Updates the whole data which belongs to the package in preview programs table for a specific
+     * preview channel with a set of {@link PreviewProgramContent}.
      */
     private final class UpdatePreviewProgramTask extends AsyncTask<Void, Void, Void> {
         private long mPreviewChannelId;
@@ -398,15 +377,15 @@ public class PreviewDataManager {
         private Map<Long, Long> mCurrentProgramId2PreviewProgramId;
         private Set<PreviewDataListener> mPreviewDataListeners = new CopyOnWriteArraySet<>();
 
-        public UpdatePreviewProgramTask(long previewChannelId,
-                Set<PreviewProgramContent> programs) {
+        public UpdatePreviewProgramTask(
+                long previewChannelId, Set<PreviewProgramContent> programs) {
             mPreviewChannelId = previewChannelId;
             mPrograms = programs;
             if (mPreviewData.getPreviewProgramIds(previewChannelId) == null) {
                 mCurrentProgramId2PreviewProgramId = new HashMap<>();
             } else {
-                mCurrentProgramId2PreviewProgramId = new HashMap<>(
-                        mPreviewData.getPreviewProgramIds(previewChannelId));
+                mCurrentProgramId2PreviewProgramId =
+                        new HashMap<>(mPreviewData.getPreviewProgramIds(previewChannelId));
             }
         }
 
@@ -440,14 +419,22 @@ public class PreviewDataManager {
                 }
                 Long existingPreviewProgramId = uncheckedPrograms.remove(program.getId());
                 if (existingPreviewProgramId != null) {
-                    if (DEBUG) Log.d(TAG, "Preview program " + existingPreviewProgramId + " " +
-                            "already exists for program " + program.getId());
+                    if (DEBUG)
+                        Log.d(
+                                TAG,
+                                "Preview program "
+                                        + existingPreviewProgramId
+                                        + " "
+                                        + "already exists for program "
+                                        + program.getId());
                     continue;
                 }
                 try {
-                    Uri programUri = mContentResolver.insert(TvContract.PreviewPrograms.CONTENT_URI,
-                            PreviewDataUtils.createPreviewProgramFromContent(program)
-                                    .toContentValues());
+                    Uri programUri =
+                            mContentResolver.insert(
+                                    TvContract.PreviewPrograms.CONTENT_URI,
+                                    PreviewDataUtils.createPreviewProgramFromContent(program)
+                                            .toContentValues());
                     if (programUri != null) {
                         long previewProgramId = ContentUris.parseId(programUri);
                         mCurrentProgramId2PreviewProgramId.put(program.getId(), previewProgramId);
@@ -466,8 +453,10 @@ public class PreviewDataManager {
                 }
                 try {
                     if (DEBUG) Log.d(TAG, "Remove preview program " + uncheckedPrograms.get(key));
-                    mContentResolver.delete(TvContract.buildPreviewProgramUri(
-                            uncheckedPrograms.get(key)), null, null);
+                    mContentResolver.delete(
+                            TvContract.buildPreviewProgramUri(uncheckedPrograms.get(key)),
+                            null,
+                            null);
                     mCurrentProgramId2PreviewProgramId.remove(key);
                 } catch (Exception e) {
                     Log.e(TAG, "Fail to remove preview program " + uncheckedPrograms.get(key));
@@ -493,9 +482,7 @@ public class PreviewDataManager {
         }
     }
 
-    /**
-     * Class to store the query result of preview data.
-     */
+    /** Class to store the query result of preview data. */
     private static final class PreviewData {
         private Map<Long, Long> mPreviewChannelType2Id = new HashMap<>();
         private Map<Long, Map<Long, Long>> mProgramId2PreviewProgramId = new HashMap<>();
@@ -565,13 +552,9 @@ public class PreviewDataManager {
         }
     }
 
-    /**
-     * A utils class for preview data.
-     */
-    public final static class PreviewDataUtils {
-        /**
-         * Creates a preview channel.
-         */
+    /** A utils class for preview data. */
+    public static final class PreviewDataUtils {
+        /** Creates a preview channel. */
         public static android.support.media.tv.Channel createPreviewChannel(
                 Context context, @PreviewChannelType long previewChannelType) {
             if (previewChannelType == TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL) {
@@ -590,7 +573,7 @@ public class PreviewDataManager {
                     context.getApplicationInfo().loadDescription(context.getPackageManager());
             builder.setType(TvContract.Channels.TYPE_PREVIEW)
                     .setDisplayName(appLabel == null ? null : appLabel.toString())
-                    .setDescription(appDescription == null ?  null : appDescription.toString())
+                    .setDescription(appDescription == null ? null : appDescription.toString())
                     .setAppLinkIntentUri(TvContract.Channels.CONTENT_URI)
                     .setInternalProviderFlag1(previewChannelType);
             return builder.build();
@@ -601,16 +584,15 @@ public class PreviewDataManager {
             android.support.media.tv.Channel.Builder builder =
                     new android.support.media.tv.Channel.Builder();
             builder.setType(TvContract.Channels.TYPE_PREVIEW)
-                    .setDisplayName(context.getResources().getString(
-                            R.string.recorded_programs_preview_channel))
+                    .setDisplayName(
+                            context.getResources()
+                                    .getString(R.string.recorded_programs_preview_channel))
                     .setAppLinkIntentUri(TvContract.Channels.CONTENT_URI)
                     .setInternalProviderFlag1(previewChannelType);
             return builder.build();
         }
 
-        /**
-         * Creates a preview program.
-         */
+        /** Creates a preview program. */
         public static PreviewProgram createPreviewProgramFromContent(
                 PreviewProgramContent program) {
             PreviewProgram.Builder builder = new PreviewProgram.Builder();
@@ -626,9 +608,7 @@ public class PreviewDataManager {
             return builder.build();
         }
 
-        /**
-         * Appends query parameters to a Uri.
-         */
+        /** Appends query parameters to a Uri. */
         public static Uri addQueryParamToUri(Uri uri, Pair<String, String> param) {
             return uri.buildUpon().appendQueryParameter(param.first, param.second).build();
         }

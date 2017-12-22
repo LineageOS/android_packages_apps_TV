@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-
 import com.android.tv.Features;
 import com.android.tv.TvActivity;
 import com.android.tv.TvApplication;
@@ -38,11 +37,12 @@ import com.android.tv.util.SetupUtils;
  * Boot completed receiver for TV app.
  *
  * <p>It's used to
+ *
  * <ul>
- *     <li>start the {@link NotificationService} for recommendation</li>
- *     <li>grant permission to the TIS's </li>
- *     <li>enable {@link TvActivity} if necessary</li>
- *     <li>start the {@link DvrRecordingService} </li>
+ *   <li>start the {@link NotificationService} for recommendation
+ *   <li>grant permission to the TIS's
+ *   <li>enable {@link TvActivity} if necessary
+ *   <li>start the {@link DvrRecordingService}
  * </ul>
  */
 public class BootCompletedReceiver extends BroadcastReceiver {
@@ -77,8 +77,8 @@ public class BootCompletedReceiver extends BroadcastReceiver {
                 ComponentName name = new ComponentName(context, TvActivity.class);
                 if (pm.getComponentEnabledSetting(name)
                         != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
-                    pm.setComponentEnabledSetting(name,
-                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0);
+                    pm.setComponentEnabledSetting(
+                            name, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0);
                 }
                 OnboardingUtils.setFirstBootCompleted(context);
             }

@@ -24,16 +24,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.util.LocationUtils;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * A utility class to update, get, and set the last known postal or zip code.
- */
+/** A utility class to update, get, and set the last known postal or zip code. */
 public class PostalCodeUtils {
     private static final String TAG = "PostalCodeUtils";
 
@@ -100,8 +97,12 @@ public class PostalCodeUtils {
     private static String getPostalCode(Context context) throws IOException, SecurityException {
         Address address = LocationUtils.getCurrentAddress(context);
         if (address != null) {
-            Log.i(TAG, "Current country and postal code is " + address.getCountryName() + ", "
-                    + address.getPostalCode());
+            Log.i(
+                    TAG,
+                    "Current country and postal code is "
+                            + address.getCountryName()
+                            + ", "
+                            + address.getPostalCode());
             return address.getPostalCode();
         }
         return null;
@@ -109,8 +110,7 @@ public class PostalCodeUtils {
 
     /** An {@link java.lang.Exception} class to notify no valid postal or zip code is available. */
     public static class NoPostalCodeException extends Exception {
-        public NoPostalCodeException() {
-        }
+        public NoPostalCodeException() {}
     }
 
     /**

@@ -20,14 +20,13 @@ import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertWaitForCondi
 
 import android.support.test.filters.LargeTest;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
 
 /**
  * Test timeout events like the menu despairing after no input.
- * <p>
- * <b>WARNING</b> some of these timeouts are 60 seconds. These tests will take a long time
+ *
+ * <p><b>WARNING</b> some of these timeouts are 60 seconds. These tests will take a long time
  * complete.
  */
 @LargeTest
@@ -38,16 +37,19 @@ public class TimeoutTest extends LiveChannelsTestCase {
         mDevice.pressMenu();
 
         assertWaitForCondition(mDevice, Until.hasObject(Constants.MENU));
-        assertWaitForCondition(mDevice, Until.gone(Constants.MENU),
+        assertWaitForCondition(
+                mDevice,
+                Until.gone(Constants.MENU),
                 mTargetResources.getInteger(R.integer.menu_show_duration));
     }
 
     public void testProgramGuide() {
         mLiveChannelsHelper.assertAppStarted();
         mMenuHelper.assertPressProgramGuide();
-        assertWaitForCondition(mDevice,
-                Until.hasObject(Constants.PROGRAM_GUIDE));
-        assertWaitForCondition(mDevice, Until.gone(Constants.PROGRAM_GUIDE),
+        assertWaitForCondition(mDevice, Until.hasObject(Constants.PROGRAM_GUIDE));
+        assertWaitForCondition(
+                mDevice,
+                Until.gone(Constants.PROGRAM_GUIDE),
                 mTargetResources.getInteger(R.integer.program_guide_show_duration));
         assertHas(mDevice, Constants.MENU, false);
     }

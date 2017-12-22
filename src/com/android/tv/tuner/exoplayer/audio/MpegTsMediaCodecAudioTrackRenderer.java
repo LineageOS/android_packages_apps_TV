@@ -17,7 +17,6 @@
 package com.android.tv.tuner.exoplayer.audio;
 
 import android.os.Handler;
-
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecSelector;
@@ -36,8 +35,8 @@ public class MpegTsMediaCodecAudioTrackRenderer extends MediaCodecAudioTrackRend
 
     public interface Ac3EventListener extends EventListener {
         /**
-         * Invoked when a {@link android.media.PlaybackParams} set to an
-         * {@link android.media.AudioTrack} is not valid.
+         * Invoked when a {@link android.media.PlaybackParams} set to an {@link
+         * android.media.AudioTrack} is not valid.
          *
          * @param e The corresponding exception.
          */
@@ -70,16 +69,17 @@ public class MpegTsMediaCodecAudioTrackRenderer extends MediaCodecAudioTrackRend
 
     private void notifyAudioTrackSetPlaybackParamsError(final IllegalArgumentException e) {
         if (eventHandler != null && mListener != null) {
-            eventHandler.post(new Runnable()  {
-                @Override
-                public void run() {
-                    mListener.onAudioTrackSetPlaybackParamsError(e);
-                }
-            });
+            eventHandler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mListener.onAudioTrackSetPlaybackParamsError(e);
+                        }
+                    });
         }
     }
 
-    static private boolean isAudioTrackSetPlaybackParamsError(IllegalArgumentException e) {
+    private static boolean isAudioTrackSetPlaybackParamsError(IllegalArgumentException e) {
         if (e.getStackTrace() == null || e.getStackTrace().length < 1) {
             return false;
         }

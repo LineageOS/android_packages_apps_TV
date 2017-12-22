@@ -23,16 +23,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Static utilities for collections
- */
+/** Static utilities for collections */
 public class CollectionUtils {
 
     /**
      * Returns an array with the arrays concatenated together.
      *
-     * @see <a href="http://stackoverflow.com/a/784842/1122089">Stackoverflow answer</a> by
-     *      <a href="http://stackoverflow.com/users/40342/joachim-sauer">Joachim Sauer</a>
+     * @see <a href="http://stackoverflow.com/a/784842/1122089">Stackoverflow answer</a> by <a
+     *     href="http://stackoverflow.com/users/40342/joachim-sauer">Joachim Sauer</a>
      */
     public static <T> T[] concatAll(T[] first, T[]... rest) {
         int totalLength = first.length;
@@ -50,12 +48,12 @@ public class CollectionUtils {
 
     /**
      * Unions the two collections and returns the unified list.
-     * <p>
-     * The elements is not compared with hashcode() or equals(). Comparator is used for the equality
-     * check.
+     *
+     * <p>The elements is not compared with hashcode() or equals(). Comparator is used for the
+     * equality check.
      */
-    public static <T> List<T> union(Collection<T> originals, Collection<T> toAdds,
-            Comparator<T> comparator) {
+    public static <T> List<T> union(
+            Collection<T> originals, Collection<T> toAdds, Comparator<T> comparator) {
         List<T> result = new ArrayList<>(originals);
         Collections.sort(result, comparator);
         List<T> resultToAdd = new ArrayList<>();
@@ -68,11 +66,9 @@ public class CollectionUtils {
         return result;
     }
 
-    /**
-     * Subtracts the elements from the original collection.
-     */
-    public static <T> List<T> subtract(Collection<T> originals, T[] toSubtracts,
-            Comparator<T> comparator) {
+    /** Subtracts the elements from the original collection. */
+    public static <T> List<T> subtract(
+            Collection<T> originals, T[] toSubtracts, Comparator<T> comparator) {
         List<T> result = new ArrayList<>(originals);
         Collections.sort(result, comparator);
         for (T toSubtract : toSubtracts) {
@@ -84,11 +80,9 @@ public class CollectionUtils {
         return result;
     }
 
-    /**
-     * Returns {@code true} if the two specified collections have common elements.
-     */
-    public static <T> boolean containsAny(Collection<T> c1, Collection<T> c2,
-            Comparator<T> comparator) {
+    /** Returns {@code true} if the two specified collections have common elements. */
+    public static <T> boolean containsAny(
+            Collection<T> c1, Collection<T> c2, Comparator<T> comparator) {
         List<T> contains = new ArrayList<>(c1);
         Collections.sort(contains, comparator);
         for (T iterate : c2) {

@@ -26,22 +26,17 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
-
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.tvinput.TunerTvInputService;
 
-/**
- * Utility class for providing tuner input info.
- */
+/** Utility class for providing tuner input info. */
 public class TunerInputInfoUtils {
     private static final String TAG = "TunerInputInfoUtils";
     private static final boolean DEBUG = false;
 
-    /**
-     * Builds tuner input's info.
-     */
+    /** Builds tuner input's info. */
     @Nullable
     @TargetApi(Build.VERSION_CODES.N)
     public static TvInputInfo buildTunerInputInfo(Context context) {
@@ -62,8 +57,9 @@ public class TunerInputInfoUtils {
                 break;
         }
         try {
-            TvInputInfo.Builder builder = new TvInputInfo.Builder(context,
-                    new ComponentName(context, TunerTvInputService.class));
+            TvInputInfo.Builder builder =
+                    new TvInputInfo.Builder(
+                            context, new ComponentName(context, TunerTvInputService.class));
             return builder.setLabel(inputLabelId)
                     .setCanRecord(CommonFeatures.DVR.isEnabled(context))
                     .setTunerCount(tunerTypeAndCount.second)

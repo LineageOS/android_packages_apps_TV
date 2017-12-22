@@ -23,83 +23,159 @@ import android.hardware.hdmi.HdmiDeviceInfo;
 import android.media.tv.TvInputInfo;
 import android.os.Build;
 import android.os.Bundle;
-
 import java.lang.reflect.Constructor;
 
-/**
- * A class that includes convenience methods for testing.
- */
+/** A class that includes convenience methods for testing. */
 public class TestUtils {
-    /**
-     * Creates a {@link TvInputInfo}.
-     */
-    public static TvInputInfo createTvInputInfo(ResolveInfo service, String id, String parentId,
-            int type, boolean isHardwareInput) throws Exception {
+    /** Creates a {@link TvInputInfo}. */
+    public static TvInputInfo createTvInputInfo(
+            ResolveInfo service, String id, String parentId, int type, boolean isHardwareInput)
+            throws Exception {
         return createTvInputInfo(service, id, parentId, type, isHardwareInput, false, 0);
     }
 
     /**
      * Creates a {@link TvInputInfo}.
-     * <p>
-     * If this is called on MNC, {@code canRecord} and {@code tunerCount} are ignored.
+     *
+     * <p>If this is called on MNC, {@code canRecord} and {@code tunerCount} are ignored.
      */
-    public static TvInputInfo createTvInputInfo(ResolveInfo service, String id, String parentId,
-            int type, boolean isHardwareInput, boolean canRecord, int tunerCount) throws Exception {
+    public static TvInputInfo createTvInputInfo(
+            ResolveInfo service,
+            String id,
+            String parentId,
+            int type,
+            boolean isHardwareInput,
+            boolean canRecord,
+            int tunerCount)
+            throws Exception {
         // Create a mock TvInputInfo by using private constructor
         // Note that mockito doesn't support mock/spy on final object.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return createTvInputInfoForO(service, id, parentId, type, isHardwareInput, canRecord,
-                    tunerCount);
+            return createTvInputInfoForO(
+                    service, id, parentId, type, isHardwareInput, canRecord, tunerCount);
 
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return createTvInputInfoForNyc(service, id, parentId, type, isHardwareInput, canRecord,
-                    tunerCount);
+            return createTvInputInfoForNyc(
+                    service, id, parentId, type, isHardwareInput, canRecord, tunerCount);
         }
         return createTvInputInfoForMnc(service, id, parentId, type, isHardwareInput);
     }
 
     /**
      * private TvInputInfo(ResolveInfo service, String id, int type, boolean isHardwareInput,
-     *      CharSequence label, int labelResId, Icon icon, Icon iconStandby, Icon iconDisconnected,
-     *      String setupActivity, boolean canRecord, int tunerCount, HdmiDeviceInfo hdmiDeviceInfo,
-     *      boolean isConnectedToHdmiSwitch, String parentId, Bundle extras) {
+     * CharSequence label, int labelResId, Icon icon, Icon iconStandby, Icon iconDisconnected,
+     * String setupActivity, boolean canRecord, int tunerCount, HdmiDeviceInfo hdmiDeviceInfo,
+     * boolean isConnectedToHdmiSwitch, String parentId, Bundle extras) {
      */
-    private static TvInputInfo createTvInputInfoForO(ResolveInfo service, String id,
-            String parentId, int type, boolean isHardwareInput, boolean canRecord, int tunerCount)
+    private static TvInputInfo createTvInputInfoForO(
+            ResolveInfo service,
+            String id,
+            String parentId,
+            int type,
+            boolean isHardwareInput,
+            boolean canRecord,
+            int tunerCount)
             throws Exception {
-        Constructor<TvInputInfo> constructor = TvInputInfo.class.getDeclaredConstructor(
-                ResolveInfo.class, String.class, int.class, boolean.class, CharSequence.class,
-                int.class, Icon.class, Icon.class, Icon.class, String.class, boolean.class,
-                int.class, HdmiDeviceInfo.class, boolean.class, String.class, Bundle.class);
+        Constructor<TvInputInfo> constructor =
+                TvInputInfo.class.getDeclaredConstructor(
+                        ResolveInfo.class,
+                        String.class,
+                        int.class,
+                        boolean.class,
+                        CharSequence.class,
+                        int.class,
+                        Icon.class,
+                        Icon.class,
+                        Icon.class,
+                        String.class,
+                        boolean.class,
+                        int.class,
+                        HdmiDeviceInfo.class,
+                        boolean.class,
+                        String.class,
+                        Bundle.class);
         constructor.setAccessible(true);
-        return constructor.newInstance(service, id, type, isHardwareInput, null, 0, null, null,
-                null, null, canRecord, tunerCount, null, false, parentId, null);
+        return constructor.newInstance(
+                service,
+                id,
+                type,
+                isHardwareInput,
+                null,
+                0,
+                null,
+                null,
+                null,
+                null,
+                canRecord,
+                tunerCount,
+                null,
+                false,
+                parentId,
+                null);
     }
 
     /**
      * private TvInputInfo(ResolveInfo service, String id, int type, boolean isHardwareInput,
-     *      CharSequence label, int labelResId, Icon icon, Icon iconStandby, Icon iconDisconnected,
-     *      String setupActivity, String settingsActivity, boolean canRecord, int tunerCount,
-     *      HdmiDeviceInfo hdmiDeviceInfo, boolean isConnectedToHdmiSwitch, String parentId,
-     *      Bundle extras) {
+     * CharSequence label, int labelResId, Icon icon, Icon iconStandby, Icon iconDisconnected,
+     * String setupActivity, String settingsActivity, boolean canRecord, int tunerCount,
+     * HdmiDeviceInfo hdmiDeviceInfo, boolean isConnectedToHdmiSwitch, String parentId, Bundle
+     * extras) {
      */
-    private static TvInputInfo createTvInputInfoForNyc(ResolveInfo service, String id,
-            String parentId, int type, boolean isHardwareInput, boolean canRecord, int tunerCount)
+    private static TvInputInfo createTvInputInfoForNyc(
+            ResolveInfo service,
+            String id,
+            String parentId,
+            int type,
+            boolean isHardwareInput,
+            boolean canRecord,
+            int tunerCount)
             throws Exception {
-        Constructor<TvInputInfo> constructor = TvInputInfo.class.getDeclaredConstructor(
-                ResolveInfo.class, String.class, int.class, boolean.class, CharSequence.class,
-                int.class, Icon.class, Icon.class, Icon.class, String.class, String.class,
-                boolean.class, int.class, HdmiDeviceInfo.class, boolean.class, String.class,
-                Bundle.class);
+        Constructor<TvInputInfo> constructor =
+                TvInputInfo.class.getDeclaredConstructor(
+                        ResolveInfo.class,
+                        String.class,
+                        int.class,
+                        boolean.class,
+                        CharSequence.class,
+                        int.class,
+                        Icon.class,
+                        Icon.class,
+                        Icon.class,
+                        String.class,
+                        String.class,
+                        boolean.class,
+                        int.class,
+                        HdmiDeviceInfo.class,
+                        boolean.class,
+                        String.class,
+                        Bundle.class);
         constructor.setAccessible(true);
-        return constructor.newInstance(service, id, type, isHardwareInput, null, 0, null, null,
-                null, null, null, canRecord, tunerCount, null, false, parentId, null);
+        return constructor.newInstance(
+                service,
+                id,
+                type,
+                isHardwareInput,
+                null,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                canRecord,
+                tunerCount,
+                null,
+                false,
+                parentId,
+                null);
     }
 
-    private static TvInputInfo createTvInputInfoForMnc(ResolveInfo service, String id,
-            String parentId, int type, boolean isHardwareInput) throws Exception {
-        Constructor<TvInputInfo> constructor = TvInputInfo.class.getDeclaredConstructor(
-                ResolveInfo.class, String.class, String.class, int.class, boolean.class);
+    private static TvInputInfo createTvInputInfoForMnc(
+            ResolveInfo service, String id, String parentId, int type, boolean isHardwareInput)
+            throws Exception {
+        Constructor<TvInputInfo> constructor =
+                TvInputInfo.class.getDeclaredConstructor(
+                        ResolveInfo.class, String.class, String.class, int.class, boolean.class);
         constructor.setAccessible(true);
         return constructor.newInstance(service, id, parentId, type, isHardwareInput);
     }

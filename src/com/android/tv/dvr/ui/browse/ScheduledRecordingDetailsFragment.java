@@ -21,16 +21,12 @@ import android.os.Bundle;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
-import android.text.TextUtils;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.ui.DvrUiHelper;
 
-/**
- * {@link RecordingDetailsFragment} for scheduled recording in DVR.
- */
+/** {@link RecordingDetailsFragment} for scheduled recording in DVR. */
 public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment {
     private static final int ACTION_VIEW_SCHEDULE = 1;
     private static final int ACTION_CANCEL = 2;
@@ -60,14 +56,21 @@ public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment 
                 new SparseArrayObjectAdapter(new ActionPresenterSelector());
         Resources res = getResources();
         if (!mHideViewSchedule) {
-            mScheduleAction = new Action(ACTION_VIEW_SCHEDULE,
-                    res.getString(R.string.dvr_detail_view_schedule), null,
-                    res.getDrawable(getScheduleIconId()));
+            mScheduleAction =
+                    new Action(
+                            ACTION_VIEW_SCHEDULE,
+                            res.getString(R.string.dvr_detail_view_schedule),
+                            null,
+                            res.getDrawable(getScheduleIconId()));
             adapter.set(ACTION_VIEW_SCHEDULE, mScheduleAction);
         }
-        adapter.set(ACTION_CANCEL, new Action(ACTION_CANCEL,
-                res.getString(R.string.dvr_detail_cancel_recording), null,
-                res.getDrawable(R.drawable.ic_dvr_cancel_32dp)));
+        adapter.set(
+                ACTION_CANCEL,
+                new Action(
+                        ACTION_CANCEL,
+                        res.getString(R.string.dvr_detail_cancel_recording),
+                        null,
+                        res.getDrawable(R.drawable.ic_dvr_cancel_32dp)));
         return adapter;
     }
 

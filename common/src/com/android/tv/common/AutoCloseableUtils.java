@@ -18,13 +18,11 @@ package com.android.tv.common;
 
 import android.util.Log;
 
-/**
- * Static utilities for AutoCloseable.
- */
+/** Static utilities for AutoCloseable. */
 public class AutoCloseableUtils {
     private static final String TAG = "AutoCloseableUtils";
 
-    private AutoCloseableUtils() { }
+    private AutoCloseableUtils() {}
 
     public static void closeQuietly(AutoCloseable closeable) {
         try {

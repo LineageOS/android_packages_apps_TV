@@ -24,7 +24,6 @@ import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.util.LongSparseArray;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.data.Channel;
@@ -37,16 +36,13 @@ import com.android.tv.dvr.data.SeasonEpisodeNumber;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.data.SeriesRecording.ChannelOption;
 import com.android.tv.dvr.recorder.SeriesRecordingScheduler;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Fragment for DVR series recording settings.
- */
+/** Fragment for DVR series recording settings. */
 public class DvrSeriesSettingsFragment extends GuidedStepFragment
         implements DvrDataManager.SeriesRecordingListener {
     private static final String TAG = "SeriesSettingsFragment";
@@ -92,12 +88,13 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
             getActivity().finish();
             return;
         }
-        mShowViewScheduleOptionInDialog = getArguments().getBoolean(
-                DvrSeriesSettingsActivity.SHOW_VIEW_SCHEDULE_OPTION_IN_DIALOG);
+        mShowViewScheduleOptionInDialog =
+                getArguments()
+                        .getBoolean(DvrSeriesSettingsActivity.SHOW_VIEW_SCHEDULE_OPTION_IN_DIALOG);
         mCurrentProgram = getArguments().getParcelable(DvrSeriesSettingsActivity.CURRENT_PROGRAM);
         mDvrDataManager.addSeriesRecordingListener(this);
-        mPrograms = (List<Program>) BigArguments.getArgument(
-                DvrSeriesSettingsActivity.PROGRAM_LIST);
+        mPrograms =
+                (List<Program>) BigArguments.getArgument(DvrSeriesSettingsActivity.PROGRAM_LIST);
         BigArguments.reset();
         if (mPrograms == null) {
             getActivity().finish();
@@ -150,8 +147,9 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
 
     @Override
     public void onDestroy() {
-        if (getFragmentManager().getBackStackEntryCount() == mBackStackCount && getArguments()
-                .getBoolean(DvrSeriesSettingsActivity.REMOVE_EMPTY_SERIES_RECORDING)) {
+        if (getFragmentManager().getBackStackEntryCount() == mBackStackCount
+                && getArguments()
+                        .getBoolean(DvrSeriesSettingsActivity.REMOVE_EMPTY_SERIES_RECORDING)) {
             mDvrDataManager.checkAndRemoveEmptySeriesRecording(mSeriesRecordingId);
         }
         super.onDestroy();
@@ -166,29 +164,33 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
 
     @Override
     public void onCreateActions(List<GuidedAction> actions, Bundle savedInstanceState) {
-        mPriorityGuidedAction = new GuidedAction.Builder(getActivity())
-                .id(ACTION_ID_PRIORITY)
-                .title(mProrityActionTitle)
-                .build();
+        mPriorityGuidedAction =
+                new GuidedAction.Builder(getActivity())
+                        .id(ACTION_ID_PRIORITY)
+                        .title(mProrityActionTitle)
+                        .build();
         actions.add(mPriorityGuidedAction);
 
-        mChannelsGuidedAction = new GuidedAction.Builder(getActivity())
-                .id(ACTION_ID_CHANNEL)
-                .title(mChannelsActionTitle)
-                .subActions(buildChannelSubAction())
-                .build();
+        mChannelsGuidedAction =
+                new GuidedAction.Builder(getActivity())
+                        .id(ACTION_ID_CHANNEL)
+                        .title(mChannelsActionTitle)
+                        .subActions(buildChannelSubAction())
+                        .build();
         actions.add(mChannelsGuidedAction);
         updateChannelsGuidedAction(false);
     }
 
     @Override
     public void onCreateButtonActions(List<GuidedAction> actions, Bundle savedInstanceState) {
-        actions.add(new GuidedAction.Builder(getActivity())
-                .clickAction(GuidedAction.ACTION_ID_OK)
-                .build());
-        actions.add(new GuidedAction.Builder(getActivity())
-                .clickAction(GuidedAction.ACTION_ID_CANCEL)
-                .build());
+        actions.add(
+                new GuidedAction.Builder(getActivity())
+                        .clickAction(GuidedAction.ACTION_ID_OK)
+                        .build());
+        actions.add(
+                new GuidedAction.Builder(getActivity())
+                        .clickAction(GuidedAction.ACTION_ID_CANCEL)
+                        .build());
     }
 
     @Override
@@ -199,16 +201,18 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
                     || mSeriesRecording.isStopped()
                     || (mChannelOption == SeriesRecording.OPTION_CHANNEL_ONE
                             && mSeriesRecording.getChannelId() != mSelectedChannelId)) {
-                SeriesRecording.Builder builder = SeriesRecording.buildFrom(mSeriesRecording)
-                        .setChannelOption(mChannelOption)
-                        .setState(SeriesRecording.STATE_SERIES_NORMAL);
+                SeriesRecording.Builder builder =
+                        SeriesRecording.buildFrom(mSeriesRecording)
+                                .setChannelOption(mChannelOption)
+                                .setState(SeriesRecording.STATE_SERIES_NORMAL);
                 if (mSelectedChannelId != Channel.INVALID_ID) {
                     builder.setChannelId(mSelectedChannelId);
                 }
                 DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
-                        dvrManager.updateSeriesRecording(builder.build());
-                if (mCurrentProgram != null && (mChannelOption == SeriesRecording.OPTION_CHANNEL_ALL
-                        || mSelectedChannelId == mCurrentProgram.getChannelId())) {
+                dvrManager.updateSeriesRecording(builder.build());
+                if (mCurrentProgram != null
+                        && (mChannelOption == SeriesRecording.OPTION_CHANNEL_ALL
+                                || mSelectedChannelId == mCurrentProgram.getChannelId())) {
                     dvrManager.addSchedule(mCurrentProgram);
                 }
                 updateSchedulesToSeries();
@@ -222,7 +226,8 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
             FragmentManager fragmentManager = getFragmentManager();
             DvrPrioritySettingsFragment fragment = new DvrPrioritySettingsFragment();
             Bundle args = new Bundle();
-            args.putLong(DvrPrioritySettingsFragment.COME_FROM_SERIES_RECORDING_ID,
+            args.putLong(
+                    DvrPrioritySettingsFragment.COME_FROM_SERIES_RECORDING_ID,
                     mSeriesRecording.getId());
             fragment.setArguments(args);
             GuidedStepFragment.add(fragmentManager, fragment, R.id.dvr_settings_view_frame);
@@ -254,9 +259,9 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
     private void updateChannelsGuidedAction(boolean notifyActionChanged) {
         if (mChannelOption == SeriesRecording.OPTION_CHANNEL_ALL) {
             mChannelsGuidedAction.setDescription(mChannelsActionAllText);
-        } else if (mId2Channel.get(mSelectedChannelId) != null){
-            mChannelsGuidedAction.setDescription(mId2Channel.get(mSelectedChannelId)
-                    .getDisplayText());
+        } else if (mId2Channel.get(mSelectedChannelId) != null) {
+            mChannelsGuidedAction.setDescription(
+                    mId2Channel.get(mSelectedChannelId).getDisplayText());
         }
         if (notifyActionChanged) {
             notifyActionChanged(findActionPositionById(ACTION_ID_CHANNEL));
@@ -282,8 +287,8 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
         } else if (priorityOrder >= totalSeriesCount - 1) {
             mPriorityGuidedAction.setDescription(mProrityActionLowestText);
         } else {
-            mPriorityGuidedAction.setDescription(getString(
-                    R.string.dvr_series_settings_priority_rank, priorityOrder + 1));
+            mPriorityGuidedAction.setDescription(
+                    getString(R.string.dvr_series_settings_priority_rank, priorityOrder + 1));
         }
         notifyActionChanged(findActionPositionById(ACTION_ID_PRIORITY));
     }
@@ -294,54 +299,66 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
         for (ScheduledRecording r : mDvrDataManager.getScheduledRecordings(mSeriesRecordingId)) {
             if (r.getState() != ScheduledRecording.STATE_RECORDING_FAILED
                     && r.getState() != ScheduledRecording.STATE_RECORDING_CLIPPED) {
-                scheduledEpisodes.add(new SeasonEpisodeNumber(
-                        r.getSeriesRecordingId(), r.getSeasonNumber(), r.getEpisodeNumber()));
+                scheduledEpisodes.add(
+                        new SeasonEpisodeNumber(
+                                r.getSeriesRecordingId(),
+                                r.getSeasonNumber(),
+                                r.getEpisodeNumber()));
             }
         }
         for (Program program : mPrograms) {
             // Removes current programs and scheduled episodes out, matches the channel option.
             if (program.getStartTimeUtcMillis() >= System.currentTimeMillis()
                     && mSeriesRecording.matchProgram(program)
-                    && !scheduledEpisodes.contains(new SeasonEpisodeNumber(
-                    mSeriesRecordingId, program.getSeasonNumber(), program.getEpisodeNumber()))) {
+                    && !scheduledEpisodes.contains(
+                            new SeasonEpisodeNumber(
+                                    mSeriesRecordingId,
+                                    program.getSeasonNumber(),
+                                    program.getEpisodeNumber()))) {
                 recordingCandidates.add(program);
             }
         }
         if (recordingCandidates.isEmpty()) {
             return;
         }
-        List<Program> programsToSchedule = SeriesRecordingScheduler.pickOneProgramPerEpisode(
-                mDvrDataManager, Collections.singletonList(mSeriesRecording), recordingCandidates)
-                .get(mSeriesRecordingId);
+        List<Program> programsToSchedule =
+                SeriesRecordingScheduler.pickOneProgramPerEpisode(
+                                mDvrDataManager,
+                                Collections.singletonList(mSeriesRecording),
+                                recordingCandidates)
+                        .get(mSeriesRecordingId);
         if (!programsToSchedule.isEmpty()) {
-            TvApplication.getSingletons(getContext()).getDvrManager()
+            TvApplication.getSingletons(getContext())
+                    .getDvrManager()
                     .addScheduleToSeriesRecording(mSeriesRecording, programsToSchedule);
         }
     }
 
     private List<GuidedAction> buildChannelSubAction() {
         List<GuidedAction> channelSubActions = new ArrayList<>();
-        channelSubActions.add(new GuidedAction.Builder(getActivity())
-                .id(SUB_ACTION_ID_CHANNEL_ALL)
-                .title(mChannelsActionAllText)
-                .build());
+        channelSubActions.add(
+                new GuidedAction.Builder(getActivity())
+                        .id(SUB_ACTION_ID_CHANNEL_ALL)
+                        .title(mChannelsActionAllText)
+                        .build());
         for (Channel channel : mChannels) {
-            channelSubActions.add(new GuidedAction.Builder(getActivity())
-                    .id(SUB_ACTION_ID_CHANNEL_ONE_BASE + channel.getId())
-                    .title(channel.getDisplayText())
-                    .build());
+            channelSubActions.add(
+                    new GuidedAction.Builder(getActivity())
+                            .id(SUB_ACTION_ID_CHANNEL_ONE_BASE + channel.getId())
+                            .title(channel.getDisplayText())
+                            .build());
         }
         return channelSubActions;
     }
 
     private void showConfirmDialog() {
-        DvrUiHelper.StartSeriesScheduledDialogActivity(getContext(), mSeriesRecording,
-                mShowViewScheduleOptionInDialog, mPrograms);
+        DvrUiHelper.StartSeriesScheduledDialogActivity(
+                getContext(), mSeriesRecording, mShowViewScheduleOptionInDialog, mPrograms);
         finishGuidedStepFragments();
     }
 
     @Override
-    public void onSeriesRecordingAdded(SeriesRecording... seriesRecordings) { }
+    public void onSeriesRecordingAdded(SeriesRecording... seriesRecordings) {}
 
     @Override
     public void onSeriesRecordingRemoved(SeriesRecording... seriesRecordings) {

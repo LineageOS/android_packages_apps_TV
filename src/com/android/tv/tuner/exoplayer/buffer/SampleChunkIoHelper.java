@@ -24,13 +24,11 @@ import android.os.Message;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.Pair;
-
+import com.android.tv.common.SoftPreconditions;
+import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer.BufferReason;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.util.MimeTypes;
-import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer.BufferReason;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +36,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Handles all {@link SampleChunk} I/O operations.
- * An I/O dedicated thread handles all I/O operations for synchronization.
+ * Handles all {@link SampleChunk} I/O operations. An I/O dedicated thread handles all I/O
+ * operations for synchronization.
  */
 public class SampleChunkIoHelper implements Handler.Callback {
     private static final String TAG = "SampleChunkIoHelper";
@@ -77,22 +75,14 @@ public class SampleChunkIoHelper implements Handler.Callback {
     private boolean mErrorNotified;
     private boolean mFinished;
 
-    /**
-     * A Callback for I/O events.
-     */
-    public static abstract class IoCallback {
+    /** A Callback for I/O events. */
+    public abstract static class IoCallback {
 
-        /**
-         * Called when there is no sample to read.
-         */
-        public void onIoReachedEos() {
-        }
+        /** Called when there is no sample to read. */
+        public void onIoReachedEos() {}
 
-        /**
-         * Called when there is an irrecoverable error during I/O.
-         */
-        public void onIoError() {
-        }
+        /** Called when there is an irrecoverable error during I/O. */
+        public void onIoError() {}
     }
 
     private class IoParams {
@@ -102,7 +92,10 @@ public class SampleChunkIoHelper implements Handler.Callback {
         private final ConditionVariable conditionVariable;
         private final ConcurrentLinkedQueue<SampleHolder> readSampleBuffer;
 
-        private IoParams(int index, long positionUs, SampleHolder sample,
+        private IoParams(
+                int index,
+                long positionUs,
+                SampleHolder sample,
                 ConditionVariable conditionVariable,
                 ConcurrentLinkedQueue<SampleHolder> readSampleBuffer) {
             this.index = index;
@@ -123,8 +116,12 @@ public class SampleChunkIoHelper implements Handler.Callback {
      * @param samplePool allocator for a sample
      * @param ioCallback listeners for I/O events
      */
-    public SampleChunkIoHelper(List<String> ids, List<MediaFormat> mediaFormats,
-            @BufferReason int bufferReason, BufferManager bufferManager, SamplePool samplePool,
+    public SampleChunkIoHelper(
+            List<String> ids,
+            List<MediaFormat> mediaFormats,
+            @BufferReason int bufferReason,
+            BufferManager bufferManager,
+            SamplePool samplePool,
             IoCallback ioCallback) {
         mTrackCount = ids.size();
         mIds = ids;
@@ -144,9 +141,9 @@ public class SampleChunkIoHelper implements Handler.Callback {
         // Small chunk duration for live playback will give more fine grained storage usage
         // and eviction handling for trickplay.
         mSampleChunkDurationUs =
-                bufferReason == RecordingSampleBuffer.BUFFER_REASON_LIVE_PLAYBACK ?
-                        RecordingSampleBuffer.MIN_SEEK_DURATION_US :
-                        RecordingSampleBuffer.RECORDING_CHUNK_DURATION_US;
+                bufferReason == RecordingSampleBuffer.BUFFER_REASON_LIVE_PLAYBACK
+                        ? RecordingSampleBuffer.MIN_SEEK_DURATION_US
+                        : RecordingSampleBuffer.RECORDING_CHUNK_DURATION_US;
         for (int i = 0; i < mTrackCount; ++i) {
             mWriteIndexEndPositionUs[i] = RecordingSampleBuffer.MIN_SEEK_DURATION_US;
             mWriteChunkEndPositionUs[i] = mSampleChunkDurationUs;
@@ -196,8 +193,8 @@ public class SampleChunkIoHelper implements Handler.Callback {
      * @param conditionVariable which will be wait until the write is finished
      * @throws IOException
      */
-    public void writeSample(int index, SampleHolder sample,
-            ConditionVariable conditionVariable) throws IOException {
+    public void writeSample(int index, SampleHolder sample, ConditionVariable conditionVariable)
+            throws IOException {
         if (mErrorNotified) {
             throw new IOException("Storage I/O error happened");
         }
@@ -228,15 +225,14 @@ public class SampleChunkIoHelper implements Handler.Callback {
         mIoHandler.sendMessage(mIoHandler.obtainMessage(MSG_CLOSE_READ, index));
     }
 
-    /**
-     * Notifies writes are finished.
-     */
+    /** Notifies writes are finished. */
     public void closeWrite() {
         mIoHandler.sendEmptyMessage(MSG_CLOSE_WRITE);
     }
 
     /**
      * Finishes I/O operations and releases all the resources.
+     *
      * @throws IOException
      */
     public void release() throws IOException {
@@ -320,8 +316,8 @@ public class SampleChunkIoHelper implements Handler.Callback {
         Pair<SampleChunk, Integer> readPosition =
                 mBufferManager.getReadFile(mIds.get(index), params.positionUs);
         if (readPosition == null) {
-            String errorMessage = "Chunk ID:" + mIds.get(index) + " pos:" + params.positionUs
-                    + "is not found";
+            String errorMessage =
+                    "Chunk ID:" + mIds.get(index) + " pos:" + params.positionUs + "is not found";
             SoftPreconditions.checkNotNull(readPosition, TAG, errorMessage);
             throw new IOException(errorMessage);
         }
@@ -338,8 +334,8 @@ public class SampleChunkIoHelper implements Handler.Callback {
     }
 
     private void doOpenWrite(int index) throws IOException {
-        SampleChunk chunk = mBufferManager.createNewWriteFileIfNeeded(mIds.get(index), 0,
-                mSamplePool, null, 0);
+        SampleChunk chunk =
+                mBufferManager.createNewWriteFileIfNeeded(mIds.get(index), 0, mSamplePool, null, 0);
         mWriteIoStates[index].openWrite(chunk);
     }
 
@@ -378,8 +374,7 @@ public class SampleChunkIoHelper implements Handler.Callback {
                 // Read reached write but write is not finished yet --- wait a few moments to
                 // see if another sample is written.
                 mIoHandler.sendMessageDelayed(
-                        mIoHandler.obtainMessage(MSG_READ, index),
-                        READ_RESCHEDULING_DELAY_MS);
+                        mIoHandler.obtainMessage(MSG_READ, index), READ_RESCHEDULING_DELAY_MS);
             }
         }
     }
@@ -398,15 +393,21 @@ public class SampleChunkIoHelper implements Handler.Callback {
                     mBufferDurationUs = sample.timeUs;
                 }
                 if (sample.timeUs >= mWriteIndexEndPositionUs[index]) {
-                    SampleChunk currentChunk = sample.timeUs >= mWriteChunkEndPositionUs[index] ?
-                            null : mWriteIoStates[params.index].getChunk();
+                    SampleChunk currentChunk =
+                            sample.timeUs >= mWriteChunkEndPositionUs[index]
+                                    ? null
+                                    : mWriteIoStates[params.index].getChunk();
                     int currentOffset = (int) mWriteIoStates[params.index].getOffset();
-                    nextChunk = mBufferManager.createNewWriteFileIfNeeded(
-                            mIds.get(index), mWriteIndexEndPositionUs[index], mSamplePool,
-                            currentChunk, currentOffset);
+                    nextChunk =
+                            mBufferManager.createNewWriteFileIfNeeded(
+                                    mIds.get(index),
+                                    mWriteIndexEndPositionUs[index],
+                                    mSamplePool,
+                                    currentChunk,
+                                    currentOffset);
                     mWriteIndexEndPositionUs[index] =
-                            ((sample.timeUs / RecordingSampleBuffer.MIN_SEEK_DURATION_US) + 1) *
-                                    RecordingSampleBuffer.MIN_SEEK_DURATION_US;
+                            ((sample.timeUs / RecordingSampleBuffer.MIN_SEEK_DURATION_US) + 1)
+                                    * RecordingSampleBuffer.MIN_SEEK_DURATION_US;
                     if (nextChunk != null) {
                         mWriteChunkEndPositionUs[index] =
                                 ((sample.timeUs / mSampleChunkDurationUs) + 1)
@@ -449,12 +450,14 @@ public class SampleChunkIoHelper implements Handler.Callback {
         }
         long currentStartPositionUs = Long.MAX_VALUE;
         for (int trackIndex : mSelectedTracks) {
-            currentStartPositionUs = Math.min(currentStartPositionUs,
-                    mReadIoStates[trackIndex].getStartPositionUs());
+            currentStartPositionUs =
+                    Math.min(
+                            currentStartPositionUs, mReadIoStates[trackIndex].getStartPositionUs());
         }
         for (int i = 0; i < mTrackCount; ++i) {
-            long evictEndPositionUs = Math.min(mBufferManager.getStartPositionUs(mIds.get(i)),
-                    currentStartPositionUs);
+            long evictEndPositionUs =
+                    Math.min(
+                            mBufferManager.getStartPositionUs(mIds.get(i)), currentStartPositionUs);
             mBufferManager.evictChunks(mIds.get(i), evictEndPositionUs);
         }
     }

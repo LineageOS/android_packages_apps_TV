@@ -23,9 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v17.leanback.app.BackgroundManager;
 
-/**
- * The Background Helper.
- */
+/** The Background Helper. */
 class DetailsViewBackgroundHelper {
     // Background delay serves to avoid kicking off expensive bitmap loading
     // in case multiple backgrounds are set in quick succession.
@@ -61,9 +59,7 @@ class DetailsViewBackgroundHelper {
         mBackgroundManager.attach(activity.getWindow());
     }
 
-    /**
-     * Sets the given image to background.
-     */
+    /** Sets the given image to background. */
     public void setBackground(Drawable background) {
         if (mRunnable != null) {
             mHandler.removeCallbacks(mRunnable);
@@ -72,18 +68,14 @@ class DetailsViewBackgroundHelper {
         mHandler.postDelayed(mRunnable, SET_BACKGROUND_DELAY_MS);
     }
 
-    /**
-     * Sets the background color.
-     */
+    /** Sets the background color. */
     public void setBackgroundColor(int color) {
         if (mBackgroundManager.isAttached()) {
             mBackgroundManager.setColor(color);
         }
     }
 
-    /**
-     * Sets the background scrim.
-     */
+    /** Sets the background scrim. */
     public void setScrim(int color) {
         if (mBackgroundManager.isAttached()) {
             mBackgroundManager.setDimLayer(new ColorDrawable(color));

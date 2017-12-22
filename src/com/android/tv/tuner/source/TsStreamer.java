@@ -20,8 +20,8 @@ import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.data.TunerChannel;
 
 /**
- * Interface definition for a stream generator. The interface will provide streams
- * for scanning channels and/or playback.
+ * Interface definition for a stream generator. The interface will provide streams for scanning
+ * channels and/or playback.
  */
 public interface TsStreamer {
     /**
@@ -40,15 +40,12 @@ public interface TsStreamer {
      */
     boolean startStream(TunerChannel channel);
 
-    /**
-     * Stops streaming the data.
-     */
+    /** Stops streaming the data. */
     void stopStream();
 
     /**
-     * Creates {@link TsDataSource} which will provide MPEG-2 TS stream for
-     * {@link android.media.MediaExtractor}. The source will start from the position
-     * where it is created.
+     * Creates {@link TsDataSource} which will provide MPEG-2 TS stream for {@link
+     * android.media.MediaExtractor}. The source will start from the position where it is created.
      *
      * @return {@link TsDataSource}
      */

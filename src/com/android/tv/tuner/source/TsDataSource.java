@@ -18,9 +18,7 @@ package com.android.tv.tuner.source;
 
 import com.google.android.exoplayer.upstream.DataSource;
 
-/**
- * {@link DataSource} for MPEG-TS stream, which will be used by {@link TsExtractor}.
- */
+/** {@link DataSource} for MPEG-TS stream, which will be used by {@link TsExtractor}. */
 public abstract class TsDataSource implements DataSource {
 
     /**
@@ -42,9 +40,10 @@ public abstract class TsDataSource implements DataSource {
     }
 
     /**
-     * Shifts start position by the specified offset.
-     * Do not call this method when the class already provided MPEG-TS stream to the extractor.
+     * Shifts start position by the specified offset. Do not call this method when the class already
+     * provided MPEG-TS stream to the extractor.
+     *
      * @param offset 0 <= offset <= buffered position
      */
-    public void shiftStartPosition(long offset) { }
+    public void shiftStartPosition(long offset) {}
 }

@@ -35,25 +35,20 @@ import android.test.mock.MockContentResolver;
 import android.test.mock.MockCursor;
 import android.util.Log;
 import android.util.SparseArray;
-
 import com.android.tv.testing.Constants;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.testing.ProgramInfo;
 import com.android.tv.util.Utils;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Test for {@link com.android.tv.data.ProgramDataManager}
- */
+/** Test for {@link com.android.tv.data.ProgramDataManager} */
 @SmallTest
 public class ProgramDataManagerTest {
     private static final boolean DEBUG = false;
@@ -85,8 +80,8 @@ public class ProgramDataManagerTest {
         mContentResolver.addProvider(TvContract.AUTHORITY, mContentProvider);
         mHandlerThread = new HandlerThread(TAG);
         mHandlerThread.start();
-        mProgramDataManager = new ProgramDataManager(
-                mContentResolver, mClock, mHandlerThread.getLooper());
+        mProgramDataManager =
+                new ProgramDataManager(mContentResolver, mClock, mHandlerThread.getLooper());
         mProgramDataManager.setPrefetchEnabled(true);
         mProgramDataManager.addListener(mListener);
     }
@@ -102,9 +97,7 @@ public class ProgramDataManagerTest {
         assertTrue(mListener.programUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
     }
 
-    /**
-     * Test for {@link ProgramInfo#getIndex} and {@link ProgramInfo#getStartTimeMs}.
-     */
+    /** Test for {@link ProgramInfo#getIndex} and {@link ProgramInfo#getStartTimeMs}. */
     @Test
     public void testProgramUtils() {
         ProgramInfo stub = ProgramInfo.create();
@@ -120,11 +113,9 @@ public class ProgramDataManagerTest {
     /**
      * Test for following methods.
      *
-     * <p>
-     * {@link ProgramDataManager#getCurrentProgram(long)},
-     * {@link ProgramDataManager#getPrograms(long, long)},
-     * {@link ProgramDataManager#setPrefetchTimeRange(long)}.
-     * </p>
+     * <p>{@link ProgramDataManager#getCurrentProgram(long)}, {@link
+     * ProgramDataManager#getPrograms(long, long)}, {@link
+     * ProgramDataManager#setPrefetchTimeRange(long)}.
      */
     @Test
     public void testGetPrograms() throws InterruptedException {
@@ -139,8 +130,9 @@ public class ProgramDataManagerTest {
         for (long channelId = 1; channelId <= Constants.UNIT_TEST_CHANNEL_COUNT; channelId++) {
             Program currentProgram = mProgramDataManager.getCurrentProgram(channelId);
             // Test {@link ProgramDataManager#getCurrentProgram(long)}.
-            assertTrue(currentProgram.getStartTimeUtcMillis() <= mClock.currentTimeMillis()
-                    && mClock.currentTimeMillis() <= currentProgram.getEndTimeUtcMillis());
+            assertTrue(
+                    currentProgram.getStartTimeUtcMillis() <= mClock.currentTimeMillis()
+                            && mClock.currentTimeMillis() <= currentProgram.getEndTimeUtcMillis());
 
             // Test {@link ProgramDataManager#getPrograms(long)}.
             // Case #1: Normal case
@@ -160,8 +152,9 @@ public class ProgramDataManagerTest {
             assertEquals(startTimeMs, programs.get(0).getStartTimeUtcMillis());
 
             // Test {@link ProgramDataManager#setPrefetchTimeRange(long)}.
-            programs = mProgramDataManager.getPrograms(channelId,
-                    prefetchTimeRangeStartMs - TimeUnit.HOURS.toMillis(1));
+            programs =
+                    mProgramDataManager.getPrograms(
+                            channelId, prefetchTimeRangeStartMs - TimeUnit.HOURS.toMillis(1));
             for (Program program : programs) {
                 assertTrue(program.getEndTimeUtcMillis() >= prefetchTimeRangeStartMs);
             }
@@ -171,10 +164,8 @@ public class ProgramDataManagerTest {
     /**
      * Test for following methods.
      *
-     * <p>
-     * {@link ProgramDataManager#addOnCurrentProgramUpdatedListener},
-     * {@link ProgramDataManager#removeOnCurrentProgramUpdatedListener}.
-     * </p>
+     * <p>{@link ProgramDataManager#addOnCurrentProgramUpdatedListener}, {@link
+     * ProgramDataManager#removeOnCurrentProgramUpdatedListener}.
      */
     @Test
     public void testCurrentProgramListener() throws InterruptedException {
@@ -203,9 +194,7 @@ public class ProgramDataManagerTest {
         assertEquals(listener.updatedProgram, currentProgram);
     }
 
-    /**
-     * Test if program data is refreshed after the program insertion.
-     */
+    /** Test if program data is refreshed after the program insertion. */
     @Test
     public void testContentProviderUpdate() throws InterruptedException {
         final long testChannelId = 1;
@@ -225,9 +214,7 @@ public class ProgramDataManagerTest {
                 lastProgramEndTime < programList.get(programList.size() - 1).getEndTimeUtcMillis());
     }
 
-    /**
-     * Test for {@link ProgramDataManager#setPauseProgramUpdate(boolean)}.
-     */
+    /** Test for {@link ProgramDataManager#setPauseProgramUpdate(boolean)}. */
     @Test
     public void testSetPauseProgramUpdate() throws InterruptedException {
         final long testChannelId = 1;
@@ -237,17 +224,19 @@ public class ProgramDataManagerTest {
         mListener.reset();
         mProgramDataManager.setPauseProgramUpdate(true);
         mContentProvider.simulateAppend(testChannelId);
-        assertFalse(mListener.programUpdatedLatch.await(FAILURE_TIME_OUT_MS,
-                TimeUnit.MILLISECONDS));
+        assertFalse(
+                mListener.programUpdatedLatch.await(FAILURE_TIME_OUT_MS, TimeUnit.MILLISECONDS));
     }
 
-    public static void assertProgramEquals(long expectedStartTime, ProgramInfo expectedInfo,
-            Program actualProgram) {
+    public static void assertProgramEquals(
+            long expectedStartTime, ProgramInfo expectedInfo, Program actualProgram) {
         assertEquals("title", expectedInfo.title, actualProgram.getTitle());
         assertEquals("episode", expectedInfo.episode, actualProgram.getEpisodeTitle());
         assertEquals("description", expectedInfo.description, actualProgram.getDescription());
         assertEquals("startTime", expectedStartTime, actualProgram.getStartTimeUtcMillis());
-        assertEquals("endTime", expectedStartTime + expectedInfo.durationMs,
+        assertEquals(
+                "endTime",
+                expectedStartTime + expectedInfo.durationMs,
                 actualProgram.getEndTimeUtcMillis());
     }
 
@@ -285,16 +274,17 @@ public class ProgramDataManagerTest {
 
         /**
          * Constructor for FakeContentProvider
-         * <p>
-         * This initializes program info assuming that
-         * channel IDs are 1, 2, 3, ... {@link Constants#UNIT_TEST_CHANNEL_COUNT}.
-         * </p>
+         *
+         * <p>This initializes program info assuming that channel IDs are 1, 2, 3, ... {@link
+         * Constants#UNIT_TEST_CHANNEL_COUNT}.
          */
         public FakeContentProvider(Context context) {
             super(context);
-            long startTimeMs = Utils.floorTime(
-                    mClock.currentTimeMillis() - ProgramDataManager.PROGRAM_GUIDE_SNAP_TIME_MS,
-                    ProgramDataManager.PROGRAM_GUIDE_SNAP_TIME_MS);
+            long startTimeMs =
+                    Utils.floorTime(
+                            mClock.currentTimeMillis()
+                                    - ProgramDataManager.PROGRAM_GUIDE_SNAP_TIME_MS,
+                            ProgramDataManager.PROGRAM_GUIDE_SNAP_TIME_MS);
             long endTimeMs = startTimeMs + (ProgramDataManager.PROGRAM_GUIDE_MAX_TIME_RANGE / 2);
             for (int i = 1; i <= Constants.UNIT_TEST_CHANNEL_COUNT; i++) {
                 List<ProgramInfoWrapper> programInfoList = new ArrayList<>();
@@ -313,8 +303,12 @@ public class ProgramDataManagerTest {
         }
 
         @Override
-        public Cursor query(Uri uri, String[] projection, String selection,
-                String[] selectionArgs, String sortOrder) {
+        public Cursor query(
+                Uri uri,
+                String[] projection,
+                String selection,
+                String[] selectionArgs,
+                String sortOrder) {
             if (DEBUG) {
                 Log.d(TAG, "dump query");
                 Log.d(TAG, "  uri=" + uri);
@@ -337,10 +331,10 @@ public class ProgramDataManagerTest {
         }
 
         /**
-         * Simulate program data appends at the end of the existing programs.
-         * This appends programs until the maximum program query range
-         * ({@link ProgramDataManager#PROGRAM_GUIDE_MAX_TIME_RANGE})
-         * where we started with the inserting half of it.
+         * Simulate program data appends at the end of the existing programs. This appends programs
+         * until the maximum program query range ({@link
+         * ProgramDataManager#PROGRAM_GUIDE_MAX_TIME_RANGE}) where we started with the inserting
+         * half of it.
          */
         public void simulateAppend(long channelId) {
             long endTimeMs =
@@ -352,10 +346,13 @@ public class ProgramDataManagerTest {
             ProgramInfo stub = ProgramInfo.create();
             ProgramInfoWrapper last = programList.get(programList.size() - 1);
             while (last.startTimeMs < endTimeMs) {
-                ProgramInfo nextProgramInfo = stub.build(InstrumentationRegistry.getContext(),
-                        last.index + 1);
-                ProgramInfoWrapper next = new ProgramInfoWrapper(last.index + 1,
-                        last.startTimeMs + last.programInfo.durationMs, nextProgramInfo);
+                ProgramInfo nextProgramInfo =
+                        stub.build(InstrumentationRegistry.getContext(), last.index + 1);
+                ProgramInfoWrapper next =
+                        new ProgramInfoWrapper(
+                                last.index + 1,
+                                last.startTimeMs + last.programInfo.durationMs,
+                                nextProgramInfo);
                 programList.add(next);
                 last = next;
             }
@@ -363,7 +360,8 @@ public class ProgramDataManagerTest {
         }
 
         private void assertProgramUri(Uri uri) {
-            assertTrue("Uri(" + uri + ") isn't channel uri",
+            assertTrue(
+                    "Uri(" + uri + ") isn't channel uri",
                     uri.toString().startsWith(TvContract.Programs.CONTENT_URI.toString()));
         }
 
@@ -377,13 +375,14 @@ public class ProgramDataManagerTest {
     }
 
     private class FakeCursor extends MockCursor {
-        private final String[] ALL_COLUMNS =  {
-                TvContract.Programs.COLUMN_CHANNEL_ID,
-                TvContract.Programs.COLUMN_TITLE,
-                TvContract.Programs.COLUMN_SHORT_DESCRIPTION,
-                TvContract.Programs.COLUMN_EPISODE_TITLE,
-                TvContract.Programs.COLUMN_START_TIME_UTC_MILLIS,
-                TvContract.Programs.COLUMN_END_TIME_UTC_MILLIS};
+        private final String[] ALL_COLUMNS = {
+            TvContract.Programs.COLUMN_CHANNEL_ID,
+            TvContract.Programs.COLUMN_TITLE,
+            TvContract.Programs.COLUMN_SHORT_DESCRIPTION,
+            TvContract.Programs.COLUMN_EPISODE_TITLE,
+            TvContract.Programs.COLUMN_START_TIME_UTC_MILLIS,
+            TvContract.Programs.COLUMN_END_TIME_UTC_MILLIS
+        };
         private final String[] mColumns;
         private final boolean mIsQueryForSingleChannel;
         private final long mStartTimeMs;
@@ -395,10 +394,11 @@ public class ProgramDataManagerTest {
 
         /**
          * Constructor
-         * @param columns the same as projection passed from {@link FakeContentProvider#query}.
-         *                Can be null for query all.
-         * @param channelId channel ID to query programs belongs to the specified channel.
-         *                  Can be negative to indicate all channels.
+         *
+         * @param columns the same as projection passed from {@link FakeContentProvider#query}. Can
+         *     be null for query all.
+         * @param channelId channel ID to query programs belongs to the specified channel. Can be
+         *     negative to indicate all channels.
          * @param startTimeMs start of the time range to query programs.
          * @param endTimeMs end of the time range to query programs.
          */
@@ -418,9 +418,18 @@ public class ProgramDataManagerTest {
             mChannelId = channelId;
             mProgramPosition = -1;
             if (DEBUG) {
-                Log.d(TAG, "FakeCursor(columns=" + Arrays.toString(columns)
-                        + ", channelId=" + channelId + ", startTimeMs=" + startTimeMs
-                        + ", endTimeMs=" + endTimeMs + ") has mCount=" + mCount);
+                Log.d(
+                        TAG,
+                        "FakeCursor(columns="
+                                + Arrays.toString(columns)
+                                + ", channelId="
+                                + channelId
+                                + ", startTimeMs="
+                                + startTimeMs
+                                + ", endTimeMs="
+                                + endTimeMs
+                                + ") has mCount="
+                                + mCount);
             }
         }
 
@@ -526,8 +535,8 @@ public class ProgramDataManagerTest {
         }
     }
 
-    private class TestProgramDataManagerOnCurrentProgramUpdatedListener implements
-            OnCurrentProgramUpdatedListener {
+    private class TestProgramDataManagerOnCurrentProgramUpdatedListener
+            implements OnCurrentProgramUpdatedListener {
         public final CountDownLatch currentProgramUpdatedLatch = new CountDownLatch(1);
         public long updatedChannelId = -1;
         public Program updatedProgram = null;

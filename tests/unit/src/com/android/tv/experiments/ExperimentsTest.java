@@ -19,22 +19,11 @@ package com.android.tv.experiments;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.common.BuildConfig;
-
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Tests for {@link Experiments}.
- */
+/** Tests for {@link Experiments}. */
 @SmallTest
 public class ExperimentsTest {
     @Before
@@ -42,12 +31,11 @@ public class ExperimentsTest {
         ExperimentFlag.initForTest();
     }
 
-
     @Test
     public void testEngOnlyDefault() {
-        assertEquals("ENABLE_DEVELOPER_FEATURES", Boolean.valueOf(BuildConfig.ENG),
+        assertEquals(
+                "ENABLE_DEVELOPER_FEATURES",
+                Boolean.valueOf(BuildConfig.ENG),
                 Experiments.ENABLE_DEVELOPER_FEATURES.get());
     }
-
-
 }

@@ -24,7 +24,6 @@ import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.Range;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
@@ -34,89 +33,75 @@ import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.provider.DvrContract.Schedules;
 import com.android.tv.util.CompositeComparator;
 import com.android.tv.util.Utils;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 
-/**
- * A data class for one recording contents.
- */
+/** A data class for one recording contents. */
 public final class ScheduledRecording implements Parcelable {
     private static final String TAG = "ScheduledRecording";
 
-    /**
-     * Indicates that the ID is not assigned yet.
-     */
+    /** Indicates that the ID is not assigned yet. */
     public static final long ID_NOT_SET = 0;
 
-    /**
-     * The default priority of the recording.
-     */
+    /** The default priority of the recording. */
     public static final long DEFAULT_PRIORITY = Long.MAX_VALUE >> 1;
 
-    /**
-     * Compares the start time in ascending order.
-     */
-    public static final Comparator<ScheduledRecording> START_TIME_COMPARATOR
-            = new Comparator<ScheduledRecording>() {
-        @Override
-        public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-            return Long.compare(lhs.mStartTimeMs, rhs.mStartTimeMs);
-        }
-    };
+    /** Compares the start time in ascending order. */
+    public static final Comparator<ScheduledRecording> START_TIME_COMPARATOR =
+            new Comparator<ScheduledRecording>() {
+                @Override
+                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
+                    return Long.compare(lhs.mStartTimeMs, rhs.mStartTimeMs);
+                }
+            };
 
-    /**
-     * Compares the end time in ascending order.
-     */
-    public static final Comparator<ScheduledRecording> END_TIME_COMPARATOR
-            = new Comparator<ScheduledRecording>() {
-        @Override
-        public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-            return Long.compare(lhs.mEndTimeMs, rhs.mEndTimeMs);
-        }
-    };
+    /** Compares the end time in ascending order. */
+    public static final Comparator<ScheduledRecording> END_TIME_COMPARATOR =
+            new Comparator<ScheduledRecording>() {
+                @Override
+                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
+                    return Long.compare(lhs.mEndTimeMs, rhs.mEndTimeMs);
+                }
+            };
 
-    /**
-     * Compares ID in ascending order. The schedule with the larger ID was created later.
-     */
-    public static final Comparator<ScheduledRecording> ID_COMPARATOR
-            = new Comparator<ScheduledRecording>() {
-        @Override
-        public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-            return Long.compare(lhs.mId, rhs.mId);
-        }
-    };
+    /** Compares ID in ascending order. The schedule with the larger ID was created later. */
+    public static final Comparator<ScheduledRecording> ID_COMPARATOR =
+            new Comparator<ScheduledRecording>() {
+                @Override
+                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
+                    return Long.compare(lhs.mId, rhs.mId);
+                }
+            };
 
-    /**
-     * Compares the priority in ascending order.
-     */
-    public static final Comparator<ScheduledRecording> PRIORITY_COMPARATOR
-            = new Comparator<ScheduledRecording>() {
-        @Override
-        public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-            return Long.compare(lhs.mPriority, rhs.mPriority);
-        }
-    };
+    /** Compares the priority in ascending order. */
+    public static final Comparator<ScheduledRecording> PRIORITY_COMPARATOR =
+            new Comparator<ScheduledRecording>() {
+                @Override
+                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
+                    return Long.compare(lhs.mPriority, rhs.mPriority);
+                }
+            };
 
     /**
      * Compares start time in ascending order and then priority in descending order and then ID in
      * descending order.
      */
-    public static final Comparator<ScheduledRecording> START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
-            = new CompositeComparator<>(START_TIME_COMPARATOR, PRIORITY_COMPARATOR.reversed(),
-            ID_COMPARATOR.reversed());
+    public static final Comparator<ScheduledRecording> START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR =
+            new CompositeComparator<>(
+                    START_TIME_COMPARATOR,
+                    PRIORITY_COMPARATOR.reversed(),
+                    ID_COMPARATOR.reversed());
 
-    /**
-     * Builds scheduled recordings from programs.
-     */
+    /** Builds scheduled recordings from programs. */
     public static Builder builder(String inputId, Program p) {
         return new Builder()
                 .setInputId(inputId)
                 .setChannelId(p.getChannelId())
-                .setStartTimeMs(p.getStartTimeUtcMillis()).setEndTimeMs(p.getEndTimeUtcMillis())
+                .setStartTimeMs(p.getStartTimeUtcMillis())
+                .setEndTimeMs(p.getEndTimeUtcMillis())
                 .setProgramId(p.getId())
                 .setProgramTitle(p.getTitle())
                 .setSeasonNumber(p.getSeasonNumber())
@@ -138,9 +123,7 @@ public final class ScheduledRecording implements Parcelable {
                 .setType(TYPE_TIMED);
     }
 
-    /**
-     * Creates a new Builder with the values set from the {@link RecordedProgram}.
-     */
+    /** Creates a new Builder with the values set from the {@link RecordedProgram}. */
     public static Builder builder(RecordedProgram p) {
         boolean isProgramRecording = !TextUtils.isEmpty(p.getTitle());
         return new Builder()
@@ -180,7 +163,7 @@ public final class ScheduledRecording implements Parcelable {
         private @RecordingState int mState;
         private long mSeriesRecordingId = ID_NOT_SET;
 
-        private Builder() { }
+        private Builder() {}
 
         public Builder setId(long id) {
             mId = id;
@@ -273,16 +256,29 @@ public final class ScheduledRecording implements Parcelable {
         }
 
         public ScheduledRecording build() {
-            return new ScheduledRecording(mId, mPriority, mInputId, mChannelId, mProgramId,
-                    mProgramTitle, mType, mStartTimeMs, mEndTimeMs, mSeasonNumber, mEpisodeNumber,
-                    mEpisodeTitle, mProgramDescription, mProgramLongDescription,
-                    mProgramPosterArtUri, mProgramThumbnailUri, mState, mSeriesRecordingId);
+            return new ScheduledRecording(
+                    mId,
+                    mPriority,
+                    mInputId,
+                    mChannelId,
+                    mProgramId,
+                    mProgramTitle,
+                    mType,
+                    mStartTimeMs,
+                    mEndTimeMs,
+                    mSeasonNumber,
+                    mEpisodeNumber,
+                    mEpisodeTitle,
+                    mProgramDescription,
+                    mProgramLongDescription,
+                    mProgramPosterArtUri,
+                    mProgramThumbnailUri,
+                    mState,
+                    mSeriesRecordingId);
         }
     }
 
-    /**
-     * Creates {@link Builder} object from the given original {@code Recording}.
-     */
+    /** Creates {@link Builder} object from the given original {@code Recording}. */
     public static Builder buildFrom(ScheduledRecording orig) {
         return new Builder()
                 .setId(orig.mId)
@@ -301,14 +297,22 @@ public final class ScheduledRecording implements Parcelable {
                 .setProgramLongDescription(orig.getProgramLongDescription())
                 .setProgramPosterArtUri(orig.getProgramPosterArtUri())
                 .setProgramThumbnailUri(orig.getProgramThumbnailUri())
-                .setState(orig.mState).setType(orig.mType);
+                .setState(orig.mState)
+                .setType(orig.mType);
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({STATE_RECORDING_NOT_STARTED, STATE_RECORDING_IN_PROGRESS, STATE_RECORDING_FINISHED,
-            STATE_RECORDING_FAILED, STATE_RECORDING_CLIPPED, STATE_RECORDING_DELETED,
-            STATE_RECORDING_CANCELED})
+    @IntDef({
+        STATE_RECORDING_NOT_STARTED,
+        STATE_RECORDING_IN_PROGRESS,
+        STATE_RECORDING_FINISHED,
+        STATE_RECORDING_FAILED,
+        STATE_RECORDING_CLIPPED,
+        STATE_RECORDING_DELETED,
+        STATE_RECORDING_CANCELED
+    })
     public @interface RecordingState {}
+
     public static final int STATE_RECORDING_NOT_STARTED = 0;
     public static final int STATE_RECORDING_IN_PROGRESS = 1;
     public static final int STATE_RECORDING_FINISHED = 2;
@@ -320,45 +324,40 @@ public final class ScheduledRecording implements Parcelable {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TYPE_TIMED, TYPE_PROGRAM})
     public @interface RecordingType {}
-    /**
-     * Record with given time range.
-     */
+    /** Record with given time range. */
     public static final int TYPE_TIMED = 1;
-    /**
-     * Record with a given program.
-     */
+    /** Record with a given program. */
     public static final int TYPE_PROGRAM = 2;
 
     @RecordingType private final int mType;
 
     /**
-     * Use this projection if you want to create {@link ScheduledRecording} object using
-     * {@link #fromCursor}.
+     * Use this projection if you want to create {@link ScheduledRecording} object using {@link
+     * #fromCursor}.
      */
     public static final String[] PROJECTION = {
-            // Columns must match what is read in #fromCursor
-            Schedules._ID,
-            Schedules.COLUMN_PRIORITY,
-            Schedules.COLUMN_TYPE,
-            Schedules.COLUMN_INPUT_ID,
-            Schedules.COLUMN_CHANNEL_ID,
-            Schedules.COLUMN_PROGRAM_ID,
-            Schedules.COLUMN_PROGRAM_TITLE,
-            Schedules.COLUMN_START_TIME_UTC_MILLIS,
-            Schedules.COLUMN_END_TIME_UTC_MILLIS,
-            Schedules.COLUMN_SEASON_NUMBER,
-            Schedules.COLUMN_EPISODE_NUMBER,
-            Schedules.COLUMN_EPISODE_TITLE,
-            Schedules.COLUMN_PROGRAM_DESCRIPTION,
-            Schedules.COLUMN_PROGRAM_LONG_DESCRIPTION,
-            Schedules.COLUMN_PROGRAM_POST_ART_URI,
-            Schedules.COLUMN_PROGRAM_THUMBNAIL_URI,
-            Schedules.COLUMN_STATE,
-            Schedules.COLUMN_SERIES_RECORDING_ID};
+        // Columns must match what is read in #fromCursor
+        Schedules._ID,
+        Schedules.COLUMN_PRIORITY,
+        Schedules.COLUMN_TYPE,
+        Schedules.COLUMN_INPUT_ID,
+        Schedules.COLUMN_CHANNEL_ID,
+        Schedules.COLUMN_PROGRAM_ID,
+        Schedules.COLUMN_PROGRAM_TITLE,
+        Schedules.COLUMN_START_TIME_UTC_MILLIS,
+        Schedules.COLUMN_END_TIME_UTC_MILLIS,
+        Schedules.COLUMN_SEASON_NUMBER,
+        Schedules.COLUMN_EPISODE_NUMBER,
+        Schedules.COLUMN_EPISODE_TITLE,
+        Schedules.COLUMN_PROGRAM_DESCRIPTION,
+        Schedules.COLUMN_PROGRAM_LONG_DESCRIPTION,
+        Schedules.COLUMN_PROGRAM_POST_ART_URI,
+        Schedules.COLUMN_PROGRAM_THUMBNAIL_URI,
+        Schedules.COLUMN_STATE,
+        Schedules.COLUMN_SERIES_RECORDING_ID
+    };
 
-    /**
-     * Creates {@link ScheduledRecording} object from the given {@link Cursor}.
-     */
+    /** Creates {@link ScheduledRecording} object from the given {@link Cursor}. */
     public static ScheduledRecording fromCursor(Cursor c) {
         int index = -1;
         return new Builder()
@@ -437,36 +436,33 @@ public final class ScheduledRecording implements Parcelable {
 
     public static final Parcelable.Creator<ScheduledRecording> CREATOR =
             new Parcelable.Creator<ScheduledRecording>() {
-        @Override
-        public ScheduledRecording createFromParcel(Parcel in) {
-          return ScheduledRecording.fromParcel(in);
-        }
+                @Override
+                public ScheduledRecording createFromParcel(Parcel in) {
+                    return ScheduledRecording.fromParcel(in);
+                }
 
-        @Override
-        public ScheduledRecording[] newArray(int size) {
-          return new ScheduledRecording[size];
-        }
-    };
+                @Override
+                public ScheduledRecording[] newArray(int size) {
+                    return new ScheduledRecording[size];
+                }
+            };
 
-    /**
-     * The ID internal to Live TV
-     */
+    /** The ID internal to Live TV */
     private long mId;
 
     /**
      * The priority of this recording.
      *
-     * <p> The highest number is recorded first. If there is a tie in priority then the higher id
+     * <p>The highest number is recorded first. If there is a tie in priority then the higher id
      * wins.
      */
     private final long mPriority;
 
     private final String mInputId;
     private final long mChannelId;
-    /**
-     * Optional id of the associated program.
-     */
+    /** Optional id of the associated program. */
     private final long mProgramId;
+
     private final String mProgramTitle;
 
     private final long mStartTimeMs;
@@ -481,11 +477,25 @@ public final class ScheduledRecording implements Parcelable {
     @RecordingState private final int mState;
     private final long mSeriesRecordingId;
 
-    private ScheduledRecording(long id, long priority, String inputId, long channelId, long programId,
-            String programTitle, @RecordingType int type, long startTime, long endTime,
-            String seasonNumber, String episodeNumber, String episodeTitle,
-            String programDescription, String programLongDescription, String programPosterArtUri,
-            String programThumbnailUri, @RecordingState int state, long seriesRecordingId) {
+    private ScheduledRecording(
+            long id,
+            long priority,
+            String inputId,
+            long channelId,
+            long programId,
+            String programTitle,
+            @RecordingType int type,
+            long startTime,
+            long endTime,
+            String seasonNumber,
+            String episodeNumber,
+            String episodeTitle,
+            String programDescription,
+            String programLongDescription,
+            String programPosterArtUri,
+            String programThumbnailUri,
+            @RecordingState int state,
+            long seriesRecordingId) {
         mId = id;
         mPriority = priority;
         mInputId = inputId;
@@ -507,125 +517,96 @@ public final class ScheduledRecording implements Parcelable {
     }
 
     /**
-     * Returns recording schedule type. The possible types are {@link #TYPE_PROGRAM} and
-     * {@link #TYPE_TIMED}.
+     * Returns recording schedule type. The possible types are {@link #TYPE_PROGRAM} and {@link
+     * #TYPE_TIMED}.
      */
     @RecordingType
     public int getType() {
         return mType;
     }
 
-    /**
-     * Returns schedules' input id.
-     */
+    /** Returns schedules' input id. */
     public String getInputId() {
         return mInputId;
     }
 
-    /**
-     * Returns recorded {@link Channel}.
-     */
+    /** Returns recorded {@link Channel}. */
     public long getChannelId() {
         return mChannelId;
     }
 
-    /**
-     * Return the optional program id
-     */
+    /** Return the optional program id */
     public long getProgramId() {
         return mProgramId;
     }
 
-    /**
-     * Return the optional program Title
-     */
+    /** Return the optional program Title */
     public String getProgramTitle() {
         return mProgramTitle;
     }
 
-    /**
-     * Returns started time.
-     */
+    /** Returns started time. */
     public long getStartTimeMs() {
         return mStartTimeMs;
     }
 
-    /**
-     * Returns ended time.
-     */
+    /** Returns ended time. */
     public long getEndTimeMs() {
         return mEndTimeMs;
     }
 
-    /**
-     * Returns the season number.
-     */
+    /** Returns the season number. */
     public String getSeasonNumber() {
         return mSeasonNumber;
     }
 
-    /**
-     * Returns the episode number.
-     */
+    /** Returns the episode number. */
     public String getEpisodeNumber() {
         return mEpisodeNumber;
     }
 
-    /**
-     * Returns the episode title.
-     */
+    /** Returns the episode title. */
     public String getEpisodeTitle() {
         return mEpisodeTitle;
     }
 
-    /**
-     * Returns the description of program.
-     */
+    /** Returns the description of program. */
     public String getProgramDescription() {
         return mProgramDescription;
     }
 
-    /**
-     * Returns the long description of program.
-     */
+    /** Returns the long description of program. */
     public String getProgramLongDescription() {
         return mProgramLongDescription;
     }
 
-    /**
-     * Returns the poster uri of program.
-     */
+    /** Returns the poster uri of program. */
     public String getProgramPosterArtUri() {
         return mProgramPosterArtUri;
     }
 
-    /**
-     * Returns the thumb nail uri of program.
-     */
+    /** Returns the thumb nail uri of program. */
     public String getProgramThumbnailUri() {
         return mProgramThumbnailUri;
     }
 
-    /**
-     * Returns duration.
-     */
+    /** Returns duration. */
     public long getDuration() {
         return mEndTimeMs - mStartTimeMs;
     }
 
     /**
-     * Returns the state. The possible states are {@link #STATE_RECORDING_NOT_STARTED},
-     * {@link #STATE_RECORDING_IN_PROGRESS}, {@link #STATE_RECORDING_FINISHED},
-     * {@link #STATE_RECORDING_FAILED}, {@link #STATE_RECORDING_CLIPPED} and
-     * {@link #STATE_RECORDING_DELETED}.
+     * Returns the state. The possible states are {@link #STATE_RECORDING_NOT_STARTED}, {@link
+     * #STATE_RECORDING_IN_PROGRESS}, {@link #STATE_RECORDING_FINISHED}, {@link
+     * #STATE_RECORDING_FAILED}, {@link #STATE_RECORDING_CLIPPED} and {@link
+     * #STATE_RECORDING_DELETED}.
      */
-    @RecordingState public int getState() {
+    @RecordingState
+    public int getState() {
         return mState;
     }
 
-    /**
-     * Returns the ID of the {@link SeriesRecording} including this schedule.
-     */
+    /** Returns the ID of the {@link SeriesRecording} including this schedule. */
     public long getSeriesRecordingId() {
         return mSeriesRecordingId;
     }
@@ -634,9 +615,7 @@ public final class ScheduledRecording implements Parcelable {
         return mId;
     }
 
-    /**
-     * Sets the ID;
-     */
+    /** Sets the ID; */
     public void setId(long id) {
         mId = id;
     }
@@ -645,21 +624,23 @@ public final class ScheduledRecording implements Parcelable {
         return mPriority;
     }
 
-    /**
-     * Returns season number, episode number and episode title for display.
-     */
+    /** Returns season number, episode number and episode title for display. */
     public String getEpisodeDisplayTitle(Context context) {
         if (!TextUtils.isEmpty(mEpisodeNumber)) {
             String episodeTitle = mEpisodeTitle == null ? "" : mEpisodeTitle;
             if (TextUtils.equals(mSeasonNumber, "0")) {
                 // Do not show "S0: ".
-                return String.format(context.getResources().getString(
-                        R.string.display_episode_title_format_no_season_number),
-                        mEpisodeNumber, episodeTitle);
+                return String.format(
+                        context.getResources()
+                                .getString(R.string.display_episode_title_format_no_season_number),
+                        mEpisodeNumber,
+                        episodeTitle);
             } else {
-                return String.format(context.getResources().getString(
-                        R.string.display_episode_title_format),
-                        mSeasonNumber, mEpisodeNumber, episodeTitle);
+                return String.format(
+                        context.getResources().getString(R.string.display_episode_title_format),
+                        mSeasonNumber,
+                        mEpisodeNumber,
+                        episodeTitle);
             }
         }
         return mEpisodeTitle;
@@ -673,15 +654,14 @@ public final class ScheduledRecording implements Parcelable {
         if (!TextUtils.isEmpty(mProgramTitle)) {
             return mProgramTitle;
         }
-        Channel channel = TvApplication.getSingletons(context).getChannelDataManager()
-                .getChannel(mChannelId);
-        return channel != null ? channel.getDisplayName()
+        Channel channel =
+                TvApplication.getSingletons(context).getChannelDataManager().getChannel(mChannelId);
+        return channel != null
+                ? channel.getDisplayName()
                 : context.getString(R.string.no_program_information);
     }
 
-    /**
-     * Converts a string to a @RecordingType int, defaulting to {@link #TYPE_TIMED}.
-     */
+    /** Converts a string to a @RecordingType int, defaulting to {@link #TYPE_TIMED}. */
     private static @RecordingType int recordingType(String type) {
         switch (type) {
             case Schedules.TYPE_TIMED:
@@ -694,9 +674,7 @@ public final class ScheduledRecording implements Parcelable {
         }
     }
 
-    /**
-     * Converts a @RecordingType int to a string, defaulting to {@link Schedules#TYPE_TIMED}.
-     */
+    /** Converts a @RecordingType int to a string, defaulting to {@link Schedules#TYPE_TIMED}. */
     private static String recordingType(@RecordingType int type) {
         switch (type) {
             case TYPE_TIMED:
@@ -710,8 +688,8 @@ public final class ScheduledRecording implements Parcelable {
     }
 
     /**
-     * Converts a string to a @RecordingState int, defaulting to
-     * {@link #STATE_RECORDING_NOT_STARTED}.
+     * Converts a string to a @RecordingState int, defaulting to {@link
+     * #STATE_RECORDING_NOT_STARTED}.
      */
     private static @RecordingState int recordingState(String state) {
         switch (state) {
@@ -736,8 +714,8 @@ public final class ScheduledRecording implements Parcelable {
     }
 
     /**
-     * Converts a @RecordingState int to string, defaulting to
-     * {@link Schedules#STATE_RECORDING_NOT_STARTED}.
+     * Converts a @RecordingState int to string, defaulting to {@link
+     * Schedules#STATE_RECORDING_NOT_STARTED}.
      */
     private static String recordingState(@RecordingState int state) {
         switch (state) {
@@ -761,41 +739,61 @@ public final class ScheduledRecording implements Parcelable {
         }
     }
 
-    /**
-     * Checks if the {@code period} overlaps with the recording time.
-     */
+    /** Checks if the {@code period} overlaps with the recording time. */
     public boolean isOverLapping(Range<Long> period) {
         return mStartTimeMs < period.getUpper() && mEndTimeMs > period.getLower();
     }
 
-    /**
-     * Checks if the {@code schedule} overlaps with this schedule.
-     */
+    /** Checks if the {@code schedule} overlaps with this schedule. */
     public boolean isOverLapping(ScheduledRecording schedule) {
         return mStartTimeMs < schedule.getEndTimeMs() && mEndTimeMs > schedule.getStartTimeMs();
     }
 
     @Override
     public String toString() {
-        return "ScheduledRecording[" + mId
+        return "ScheduledRecording["
+                + mId
                 + "]"
-                + "(inputId=" + mInputId
-                + ",channelId=" + mChannelId
-                + ",programId=" + mProgramId
-                + ",programTitle=" + mProgramTitle
-                + ",type=" + mType
-                + ",startTime=" + Utils.toIsoDateTimeString(mStartTimeMs) + "(" + mStartTimeMs + ")"
-                + ",endTime=" + Utils.toIsoDateTimeString(mEndTimeMs) + "(" + mEndTimeMs + ")"
-                + ",seasonNumber=" + mSeasonNumber
-                + ",episodeNumber=" + mEpisodeNumber
-                + ",episodeTitle=" + mEpisodeTitle
-                + ",programDescription=" + mProgramDescription
-                + ",programLongDescription=" + mProgramLongDescription
-                + ",programPosterArtUri=" + mProgramPosterArtUri
-                + ",programThumbnailUri=" + mProgramThumbnailUri
-                + ",state=" + mState
-                + ",priority=" + mPriority
-                + ",seriesRecordingId=" + mSeriesRecordingId
+                + "(inputId="
+                + mInputId
+                + ",channelId="
+                + mChannelId
+                + ",programId="
+                + mProgramId
+                + ",programTitle="
+                + mProgramTitle
+                + ",type="
+                + mType
+                + ",startTime="
+                + Utils.toIsoDateTimeString(mStartTimeMs)
+                + "("
+                + mStartTimeMs
+                + ")"
+                + ",endTime="
+                + Utils.toIsoDateTimeString(mEndTimeMs)
+                + "("
+                + mEndTimeMs
+                + ")"
+                + ",seasonNumber="
+                + mSeasonNumber
+                + ",episodeNumber="
+                + mEpisodeNumber
+                + ",episodeTitle="
+                + mEpisodeTitle
+                + ",programDescription="
+                + mProgramDescription
+                + ",programLongDescription="
+                + mProgramLongDescription
+                + ",programPosterArtUri="
+                + mProgramPosterArtUri
+                + ",programThumbnailUri="
+                + mProgramThumbnailUri
+                + ",state="
+                + mState
+                + ",priority="
+                + mPriority
+                + ",seriesRecordingId="
+                + mSeriesRecordingId
                 + ")";
     }
 
@@ -826,16 +824,12 @@ public final class ScheduledRecording implements Parcelable {
         out.writeLong(mSeriesRecordingId);
     }
 
-    /**
-     * Returns {@code true} if the recording is not started yet, otherwise @{code false}.
-     */
+    /** Returns {@code true} if the recording is not started yet, otherwise @{code false}. */
     public boolean isNotStarted() {
         return mState == STATE_RECORDING_NOT_STARTED;
     }
 
-    /**
-     * Returns {@code true} if the recording is in progress, otherwise @{code false}.
-     */
+    /** Returns {@code true} if the recording is in progress, otherwise @{code false}. */
     public boolean isInProgress() {
         return mState == STATE_RECORDING_IN_PROGRESS;
     }
@@ -867,15 +861,27 @@ public final class ScheduledRecording implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mPriority, mChannelId, mProgramId, mProgramTitle, mType,
-                mStartTimeMs, mEndTimeMs, mSeasonNumber, mEpisodeNumber, mEpisodeTitle,
-                mProgramDescription, mProgramLongDescription, mProgramPosterArtUri,
-                mProgramThumbnailUri, mState, mSeriesRecordingId);
+        return Objects.hash(
+                mId,
+                mPriority,
+                mChannelId,
+                mProgramId,
+                mProgramTitle,
+                mType,
+                mStartTimeMs,
+                mEndTimeMs,
+                mSeasonNumber,
+                mEpisodeNumber,
+                mEpisodeTitle,
+                mProgramDescription,
+                mProgramLongDescription,
+                mProgramPosterArtUri,
+                mProgramThumbnailUri,
+                mState,
+                mSeriesRecordingId);
     }
 
-    /**
-     * Returns an array containing all of the elements in the list.
-     */
+    /** Returns an array containing all of the elements in the list. */
     public static ScheduledRecording[] toArray(Collection<ScheduledRecording> schedules) {
         return schedules.toArray(new ScheduledRecording[schedules.size()]);
     }

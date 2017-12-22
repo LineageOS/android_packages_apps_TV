@@ -19,16 +19,14 @@ package com.android.tv.tuner.util;
 import android.content.Context;
 import android.provider.Settings;
 
-/**
- * Utility class that get information of global settings.
- */
+/** Utility class that get information of global settings. */
 public class GlobalSettingsUtils {
     // Since global surround setting is hided, add the related variable here for checking surround
     // sound setting when the audio is unavailable. Remove this workaround after b/31254857 fixed.
     private static final String ENCODED_SURROUND_OUTPUT = "encoded_surround_output";
     public static final int ENCODED_SURROUND_OUTPUT_NEVER = 1;
 
-    private GlobalSettingsUtils () { }
+    private GlobalSettingsUtils() {}
 
     public static int getEncodedSurroundOutputSettings(Context context) {
         return Settings.Global.getInt(context.getContentResolver(), ENCODED_SURROUND_OUTPUT, 0);

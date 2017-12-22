@@ -4,7 +4,7 @@ import android.content.Context;
 import android.media.MediaCodec;
 import android.os.Handler;
 import android.util.Log;
-
+import com.android.tv.common.feature.CommonFeatures;
 import com.google.android.exoplayer.DecoderInfo;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaCodecSelector;
@@ -13,13 +13,9 @@ import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.MediaFormatHolder;
 import com.google.android.exoplayer.MediaSoftwareCodecUtil;
 import com.google.android.exoplayer.SampleSource;
-import com.android.tv.common.feature.CommonFeatures;
-
 import java.lang.reflect.Field;
 
-/**
- * MPEG-2 TS video track renderer
- */
+/** MPEG-2 TS video track renderer */
 public class MpegTsVideoTrackRenderer extends MediaCodecVideoTrackRenderer {
     private static final String TAG = "MpegTsVideoTrackRender";
 
@@ -37,42 +33,54 @@ public class MpegTsVideoTrackRenderer extends MediaCodecVideoTrackRenderer {
     static {
         // Remove the reflection below once b/31223646 is resolved.
         try {
-            sRenderedFirstFrameField = MediaCodecVideoTrackRenderer.class.getDeclaredField(
-                    "renderedFirstFrame");
+            sRenderedFirstFrameField =
+                    MediaCodecVideoTrackRenderer.class.getDeclaredField("renderedFirstFrame");
             sRenderedFirstFrameField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             // Null-checking for {@code sRenderedFirstFrameField} will do the error handling.
         }
     }
 
-    public MpegTsVideoTrackRenderer(Context context, SampleSource source, Handler handler,
+    public MpegTsVideoTrackRenderer(
+            Context context,
+            SampleSource source,
+            Handler handler,
             MediaCodecVideoTrackRenderer.EventListener listener) {
-        super(context, source, MediaCodecSelector.DEFAULT,
-                MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, VIDEO_PLAYBACK_DEADLINE_IN_MS, handler,
-                listener, DROPPED_FRAMES_NOTIFICATION_THRESHOLD);
+        super(
+                context,
+                source,
+                MediaCodecSelector.DEFAULT,
+                MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT,
+                VIDEO_PLAYBACK_DEADLINE_IN_MS,
+                handler,
+                listener,
+                DROPPED_FRAMES_NOTIFICATION_THRESHOLD);
         mIsSwCodecEnabled = CommonFeatures.USE_SW_CODEC_FOR_SD.isEnabled(context);
     }
 
     @Override
-    protected DecoderInfo getDecoderInfo(MediaCodecSelector codecSelector, String mimeType,
-            boolean requiresSecureDecoder) throws MediaCodecUtil.DecoderQueryException {
+    protected DecoderInfo getDecoderInfo(
+            MediaCodecSelector codecSelector, String mimeType, boolean requiresSecureDecoder)
+            throws MediaCodecUtil.DecoderQueryException {
         try {
             if (mIsSwCodecEnabled && mCodecIsSwPreferred) {
-                DecoderInfo swCodec = MediaSoftwareCodecUtil.getSoftwareDecoderInfo(
-                        mimeType, requiresSecureDecoder);
+                DecoderInfo swCodec =
+                        MediaSoftwareCodecUtil.getSoftwareDecoderInfo(
+                                mimeType, requiresSecureDecoder);
                 if (swCodec != null) {
                     return swCodec;
                 }
             }
         } catch (MediaSoftwareCodecUtil.DecoderQueryException e) {
         }
-        return super.getDecoderInfo(codecSelector, mimeType,requiresSecureDecoder);
+        return super.getDecoderInfo(codecSelector, mimeType, requiresSecureDecoder);
     }
 
     @Override
     protected void onInputFormatChanged(MediaFormatHolder holder) throws ExoPlaybackException {
-        mCodecIsSwPreferred = MIMETYPE_MPEG2.equalsIgnoreCase(holder.format.mimeType)
-                && holder.format.height < MIN_HD_HEIGHT;
+        mCodecIsSwPreferred =
+                MIMETYPE_MPEG2.equalsIgnoreCase(holder.format.mimeType)
+                        && holder.format.height < MIN_HD_HEIGHT;
         super.onInputFormatChanged(holder);
     }
 
@@ -93,8 +101,10 @@ public class MpegTsVideoTrackRenderer extends MediaCodecVideoTrackRenderer {
             try {
                 sRenderedFirstFrameField.setBoolean(this, renderedFirstFrame);
             } catch (IllegalAccessException e) {
-                Log.w(TAG, "renderedFirstFrame is not accessible. Playback may start with a frozen"
-                        +" picture.");
+                Log.w(
+                        TAG,
+                        "renderedFirstFrame is not accessible. Playback may start with a frozen"
+                                + " picture.");
             }
         }
     }

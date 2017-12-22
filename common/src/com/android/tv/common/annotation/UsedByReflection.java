@@ -25,5 +25,4 @@ import java.lang.annotation.Retention;
  * directly.
  */
 @Retention(SOURCE)
-public @interface UsedByReflection {
-}
+public @interface UsedByReflection {}

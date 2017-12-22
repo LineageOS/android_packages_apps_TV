@@ -23,7 +23,16 @@ import android.media.PlaybackParams;
 import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.view.Surface;
-
+import com.android.tv.common.SoftPreconditions;
+import com.android.tv.tuner.data.Cea708Data;
+import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
+import com.android.tv.tuner.data.TunerChannel;
+import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
+import com.android.tv.tuner.exoplayer.audio.MpegTsMediaCodecAudioTrackRenderer;
+import com.android.tv.tuner.source.TsDataSource;
+import com.android.tv.tuner.source.TsDataSourceManager;
+import com.android.tv.tuner.tvinput.EventDetector;
+import com.android.tv.tuner.tvinput.TunerDebug;
 import com.google.android.exoplayer.DummyTrackRenderer;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
@@ -35,17 +44,6 @@ import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioTrack;
 import com.google.android.exoplayer.upstream.DataSource;
-import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.data.Cea708Data;
-import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
-import com.android.tv.tuner.data.TunerChannel;
-import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
-import com.android.tv.tuner.exoplayer.audio.MpegTsMediaCodecAudioTrackRenderer;
-import com.android.tv.tuner.source.TsDataSource;
-import com.android.tv.tuner.source.TsDataSourceManager;
-import com.android.tv.tuner.tvinput.EventDetector;
-import com.android.tv.tuner.tvinput.TunerDebug;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -57,52 +55,46 @@ public class MpegTsPlayer
                 MpegTsMediaCodecAudioTrackRenderer.Ac3EventListener {
     private int mCaptionServiceNumber = Cea708Data.EMPTY_SERVICE_NUMBER;
 
-    /**
-     * Interface definition for building specific track renderers.
-     */
+    /** Interface definition for building specific track renderers. */
     public interface RendererBuilder {
-        void buildRenderers(MpegTsPlayer mpegTsPlayer, DataSource dataSource,
-                boolean hasSoftwareAudioDecoder, RendererBuilderCallback callback);
+        void buildRenderers(
+                MpegTsPlayer mpegTsPlayer,
+                DataSource dataSource,
+                boolean hasSoftwareAudioDecoder,
+                RendererBuilderCallback callback);
     }
 
-    /**
-     * Interface definition for {@link RendererBuilder#buildRenderers} to notify the result.
-     */
+    /** Interface definition for {@link RendererBuilder#buildRenderers} to notify the result. */
     public interface RendererBuilderCallback {
         void onRenderers(String[][] trackNames, TrackRenderer[] renderers);
+
         void onRenderersError(Exception e);
     }
 
-    /**
-     * Interface definition for a callback to be notified of changes in player state.
-     */
+    /** Interface definition for a callback to be notified of changes in player state. */
     public interface Listener {
         void onStateChanged(boolean playWhenReady, int playbackState);
+
         void onError(Exception e);
-        void onVideoSizeChanged(int width, int height,
-                float pixelWidthHeightRatio);
+
+        void onVideoSizeChanged(int width, int height, float pixelWidthHeightRatio);
+
         void onDrawnToSurface(MpegTsPlayer player, Surface surface);
+
         void onAudioUnplayable();
+
         void onSmoothTrickplayForceStopped();
     }
 
-    /**
-     * Interface definition for a callback to be notified of changes on video display.
-     */
+    /** Interface definition for a callback to be notified of changes on video display. */
     public interface VideoEventListener {
-        /**
-         * Notifies the caption event.
-         */
+        /** Notifies the caption event. */
         void onEmitCaptionEvent(CaptionEvent event);
 
-        /**
-         * Notifies clearing up whole closed caption event.
-         */
+        /** Notifies clearing up whole closed caption event. */
         void onClearCaptionEvent();
 
-        /**
-         * Notifies the discovered caption service number.
-         */
+        /** Notifies the discovered caption service number. */
         void onDiscoverCaptionServiceNumber(int serviceNumber);
     }
 
@@ -113,14 +105,19 @@ public class MpegTsPlayer
     @IntDef({TRACK_TYPE_VIDEO, TRACK_TYPE_AUDIO, TRACK_TYPE_TEXT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TrackType {}
+
     public static final int TRACK_TYPE_VIDEO = 0;
     public static final int TRACK_TYPE_AUDIO = 1;
     public static final int TRACK_TYPE_TEXT = 2;
 
-    @IntDef({RENDERER_BUILDING_STATE_IDLE, RENDERER_BUILDING_STATE_BUILDING,
-        RENDERER_BUILDING_STATE_BUILT})
+    @IntDef({
+        RENDERER_BUILDING_STATE_IDLE,
+        RENDERER_BUILDING_STATE_BUILDING,
+        RENDERER_BUILDING_STATE_BUILT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RendererBuildingState {}
+
     private static final int RENDERER_BUILDING_STATE_IDLE = 1;
     private static final int RENDERER_BUILDING_STATE_BUILDING = 2;
     private static final int RENDERER_BUILDING_STATE_BUILT = 3;
@@ -157,8 +154,11 @@ public class MpegTsPlayer
      * @param capabilities the {@link AudioCapabilities} of the current device
      * @param listener the listener for playback state changes
      */
-    public MpegTsPlayer(RendererBuilder rendererBuilder, Handler handler,
-            TsDataSourceManager sourceManager, AudioCapabilities capabilities,
+    public MpegTsPlayer(
+            RendererBuilder rendererBuilder,
+            Handler handler,
+            TsDataSourceManager sourceManager,
+            AudioCapabilities capabilities,
             Listener listener) {
         mRendererBuilder = rendererBuilder;
         mPlayer = ExoPlayer.Factory.newInstance(RENDERER_COUNT, MIN_BUFFER_MS, MIN_REBUFFER_MS);
@@ -188,8 +188,10 @@ public class MpegTsPlayer
     public void setCaptionServiceNumber(int captionServiceNumber) {
         mCaptionServiceNumber = captionServiceNumber;
         if (mTextRenderer != null) {
-            mPlayer.sendMessage(mTextRenderer,
-                    Cea708TextTrackRenderer.MSG_SERVICE_NUMBER, mCaptionServiceNumber);
+            mPlayer.sendMessage(
+                    mTextRenderer,
+                    Cea708TextTrackRenderer.MSG_SERVICE_NUMBER,
+                    mCaptionServiceNumber);
         }
     }
 
@@ -203,16 +205,12 @@ public class MpegTsPlayer
         pushSurface(false);
     }
 
-    /**
-     * Returns the current surface of the player.
-     */
+    /** Returns the current surface of the player. */
     public Surface getSurface() {
         return mSurface;
     }
 
-    /**
-     * Clears the surface and waits until the surface is being cleaned.
-     */
+    /** Clears the surface and waits until the surface is being cleaned. */
     public void blockingClearSurface() {
         mSurface = null;
         pushSurface(true);
@@ -220,13 +218,17 @@ public class MpegTsPlayer
 
     /**
      * Creates renderers and {@link DataSource} and initializes player.
+     *
      * @param context a {@link Context} instance
      * @param channel to play
      * @param hasSoftwareAudioDecoder {@code true} if there is connected software decoder
      * @param eventListener for program information which will be scanned from MPEG2-TS stream
      * @return true when everything is created and initialized well, false otherwise
      */
-    public boolean prepare(Context context, TunerChannel channel, boolean hasSoftwareAudioDecoder,
+    public boolean prepare(
+            Context context,
+            TunerChannel channel,
+            boolean hasSoftwareAudioDecoder,
             EventDetector.EventListener eventListener) {
         TsDataSource source = null;
         if (channel != null) {
@@ -248,9 +250,7 @@ public class MpegTsPlayer
         return true;
     }
 
-    /**
-     * Returns {@link TsDataSource} which provides MPEG2-TS stream.
-     */
+    /** Returns {@link TsDataSource} which provides MPEG2-TS stream. */
     public TsDataSource getDataSource() {
         return mDataSource;
     }
@@ -288,18 +288,15 @@ public class MpegTsPlayer
     /**
      * Sets the player state to pause or play.
      *
-     * @param playWhenReady sets the player state to being ready to play when {@code true},
-     *                      sets the player state to being paused when {@code false}
-     *
+     * @param playWhenReady sets the player state to being ready to play when {@code true}, sets the
+     *     player state to being paused when {@code false}
      */
     public void setPlayWhenReady(boolean playWhenReady) {
         mPlayer.setPlayWhenReady(playWhenReady);
         stopSmoothTrickplay(false);
     }
 
-    /**
-     * Returns true, if trickplay is supported.
-     */
+    /** Returns true, if trickplay is supported. */
     public boolean supportSmoothTrickPlay(float playbackSpeed) {
         return playbackSpeed > MIN_SMOOTH_TRICKPLAY_SPEED
                 && playbackSpeed < MAX_SMOOTH_TRICKPLAY_SPEED;
@@ -318,7 +315,8 @@ public class MpegTsPlayer
                     MpegTsDefaultAudioTrackRenderer.MSG_SET_PLAYBACK_SPEED,
                     playbackParams.getSpeed());
         } else {
-            mPlayer.sendMessage(mAudioRenderer,
+            mPlayer.sendMessage(
+                    mAudioRenderer,
                     MediaCodecAudioTrackRenderer.MSG_SET_PLAYBACK_PARAMS,
                     playbackParams);
         }
@@ -329,10 +327,12 @@ public class MpegTsPlayer
             mTrickplayRunning = false;
             if (mAudioRenderer instanceof MpegTsDefaultAudioTrackRenderer) {
                 mPlayer.sendMessage(
-                        mAudioRenderer, MpegTsDefaultAudioTrackRenderer.MSG_SET_PLAYBACK_SPEED,
+                        mAudioRenderer,
+                        MpegTsDefaultAudioTrackRenderer.MSG_SET_PLAYBACK_SPEED,
                         1.0f);
             } else {
-                mPlayer.sendMessage(mAudioRenderer,
+                mPlayer.sendMessage(
+                        mAudioRenderer,
                         MediaCodecAudioTrackRenderer.MSG_SET_PLAYBACK_PARAMS,
                         new PlaybackParams().setSpeed(1.0f));
             }
@@ -352,9 +352,7 @@ public class MpegTsPlayer
         stopSmoothTrickplay(true);
     }
 
-    /**
-     * Releases the player.
-     */
+    /** Releases the player. */
     public void release() {
         if (mDataSource != null) {
             mSourceManager.releaseDataSource(mDataSource);
@@ -370,57 +368,45 @@ public class MpegTsPlayer
         mPlayer.release();
     }
 
-    /**
-     * Returns the current status of the player.
-     */
-     public int getPlaybackState() {
+    /** Returns the current status of the player. */
+    public int getPlaybackState() {
         if (mRendererBuildingState == RENDERER_BUILDING_STATE_BUILDING) {
             return ExoPlayer.STATE_PREPARING;
         }
         return mPlayer.getPlaybackState();
     }
 
-    /**
-     * Returns {@code true} when the player is prepared to play, {@code false} otherwise.
-     */
-    public boolean isPrepared()  {
+    /** Returns {@code true} when the player is prepared to play, {@code false} otherwise. */
+    public boolean isPrepared() {
         int state = getPlaybackState();
         return state == ExoPlayer.STATE_READY || state == ExoPlayer.STATE_BUFFERING;
     }
 
-    /**
-     * Returns {@code true} when the player is being ready to play, {@code false} otherwise.
-     */
+    /** Returns {@code true} when the player is being ready to play, {@code false} otherwise. */
     public boolean isPlaying() {
         int state = getPlaybackState();
         return (state == ExoPlayer.STATE_READY || state == ExoPlayer.STATE_BUFFERING)
                 && mPlayer.getPlayWhenReady();
     }
 
-    /**
-     * Returns {@code true} when the player is buffering, {@code false} otherwise.
-     */
+    /** Returns {@code true} when the player is buffering, {@code false} otherwise. */
     public boolean isBuffering() {
         return getPlaybackState() == ExoPlayer.STATE_BUFFERING;
     }
 
-    /**
-     * Returns the current position of the playback in milli seconds.
-     */
+    /** Returns the current position of the playback in milli seconds. */
     public long getCurrentPosition() {
         return mPlayer.getCurrentPosition();
     }
 
-    /**
-     * Returns the total duration of the playback.
-     */
+    /** Returns the total duration of the playback. */
     public long getDuration() {
         return mPlayer.getDuration();
     }
 
     /**
-     * Returns {@code true} when the player is being ready to play,
-     * {@code false} when the player is paused.
+     * Returns {@code true} when the player is being ready to play, {@code false} when the player is
+     * paused.
      */
     public boolean getPlayWhenReady() {
         return mPlayer.getPlayWhenReady();
@@ -434,11 +420,11 @@ public class MpegTsPlayer
     public void setVolume(float volume) {
         mVolume = volume;
         if (mAudioRenderer instanceof MpegTsDefaultAudioTrackRenderer) {
-            mPlayer.sendMessage(mAudioRenderer, MpegTsDefaultAudioTrackRenderer.MSG_SET_VOLUME,
-                    volume);
+            mPlayer.sendMessage(
+                    mAudioRenderer, MpegTsDefaultAudioTrackRenderer.MSG_SET_VOLUME, volume);
         } else {
-            mPlayer.sendMessage(mAudioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME,
-                    volume);
+            mPlayer.sendMessage(
+                    mAudioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, volume);
         }
     }
 
@@ -449,57 +435,49 @@ public class MpegTsPlayer
      */
     public void setAudioTrackAndClosedCaption(boolean enable) {
         if (mAudioRenderer instanceof MpegTsDefaultAudioTrackRenderer) {
-            mPlayer.sendMessage(mAudioRenderer, MpegTsDefaultAudioTrackRenderer.MSG_SET_AUDIO_TRACK,
+            mPlayer.sendMessage(
+                    mAudioRenderer,
+                    MpegTsDefaultAudioTrackRenderer.MSG_SET_AUDIO_TRACK,
                     enable ? 1 : 0);
         } else {
-            mPlayer.sendMessage(mAudioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME,
+            mPlayer.sendMessage(
+                    mAudioRenderer,
+                    MediaCodecAudioTrackRenderer.MSG_SET_VOLUME,
                     enable ? mVolume : 0.0f);
         }
-        mPlayer.sendMessage(mTextRenderer, Cea708TextTrackRenderer.MSG_ENABLE_CLOSED_CAPTION,
-            enable);
+        mPlayer.sendMessage(
+                mTextRenderer, Cea708TextTrackRenderer.MSG_ENABLE_CLOSED_CAPTION, enable);
     }
 
-    /**
-     * Returns {@code true} when AC3 audio can be played, {@code false} otherwise.
-     */
+    /** Returns {@code true} when AC3 audio can be played, {@code false} otherwise. */
     public boolean isAc3Playable() {
         return mAudioCapabilities != null
                 && mAudioCapabilities.supportsEncoding(AudioFormat.ENCODING_AC3);
     }
 
-    /**
-     * Notifies when the audio cannot be played by the current device.
-     */
+    /** Notifies when the audio cannot be played by the current device. */
     public void onAudioUnplayable() {
         if (mListener != null) {
             mListener.onAudioUnplayable();
         }
     }
 
-    /**
-     * Returns {@code true} if the player has any video track, {@code false} otherwise.
-     */
+    /** Returns {@code true} if the player has any video track, {@code false} otherwise. */
     public boolean hasVideo() {
         return mPlayer.getTrackCount(TRACK_TYPE_VIDEO) > 0;
     }
 
-    /**
-     * Returns {@code true} if the player has any audio trock, {@code false} otherwise.
-     */
+    /** Returns {@code true} if the player has any audio trock, {@code false} otherwise. */
     public boolean hasAudio() {
         return mPlayer.getTrackCount(TRACK_TYPE_AUDIO) > 0;
     }
 
-    /**
-     * Returns the number of tracks exposed by the specified renderer.
-     */
+    /** Returns the number of tracks exposed by the specified renderer. */
     public int getTrackCount(int rendererIndex) {
         return mPlayer.getTrackCount(rendererIndex);
     }
 
-    /**
-     * Selects a track for the specified renderer.
-     */
+    /** Selects a track for the specified renderer. */
     public void setSelectedTrack(int rendererIndex, int trackIndex) {
         if (trackIndex >= getTrackCount(rendererIndex)) {
             return;
@@ -511,8 +489,8 @@ public class MpegTsPlayer
      * Returns the index of the currently selected track for the specified renderer.
      *
      * @param rendererIndex The index of the renderer.
-     * @return The selected track. A negative value or a value greater than or equal to the renderer's
-     *     track count indicates that the renderer is disabled.
+     * @return The selected track. A negative value or a value greater than or equal to the
+     *     renderer's track count indicates that the renderer is disabled.
      */
     public int getSelectedTrack(int rendererIndex) {
         return mPlayer.getSelectedTrack(rendererIndex);
@@ -529,9 +507,7 @@ public class MpegTsPlayer
         return mPlayer.getTrackFormat(rendererIndex, trackIndex);
     }
 
-    /**
-     * Gets the main handler of the player.
-     */
+    /** Gets the main handler of the player. */
     /* package */ Handler getMainHandler() {
         return mMainHandler;
     }
@@ -542,11 +518,11 @@ public class MpegTsPlayer
             return;
         }
         mListener.onStateChanged(playWhenReady, state);
-        if (state == ExoPlayer.STATE_READY && mPlayer.getTrackCount(TRACK_TYPE_VIDEO) > 0
+        if (state == ExoPlayer.STATE_READY
+                && mPlayer.getTrackCount(TRACK_TYPE_VIDEO) > 0
                 && playWhenReady) {
             MediaFormat format = mPlayer.getTrackFormat(TRACK_TYPE_VIDEO, 0);
-            mListener.onVideoSizeChanged(format.width,
-                    format.height, format.pixelWidthHeightRatio);
+            mListener.onVideoSizeChanged(format.width, format.height, format.pixelWidthHeightRatio);
         }
     }
 
@@ -559,16 +535,16 @@ public class MpegTsPlayer
     }
 
     @Override
-    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
-            float pixelWidthHeightRatio) {
+    public void onVideoSizeChanged(
+            int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
         if (mListener != null) {
             mListener.onVideoSizeChanged(width, height, pixelWidthHeightRatio);
         }
     }
 
     @Override
-    public void onDecoderInitialized(String decoderName, long elapsedRealtimeMs,
-            long initializationDurationMs) {
+    public void onDecoderInitialized(
+            String decoderName, long elapsedRealtimeMs, long initializationDurationMs) {
         // Do nothing.
     }
 
@@ -590,8 +566,8 @@ public class MpegTsPlayer
     }
 
     @Override
-    public void onAudioTrackUnderrun(int bufferSize, long bufferSizeMs,
-            long elapsedSinceLastFeedMs) {
+    public void onAudioTrackUnderrun(
+            int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
         // Do nothing.
     }
 

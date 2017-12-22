@@ -19,12 +19,9 @@ package com.android.tv;
 import static org.junit.Assert.assertFalse;
 
 import android.support.test.filters.SmallTest;
-
 import org.junit.Test;
 
-/**
- * Test for features.
- */
+/** Test for features. */
 @SmallTest
 public class FeaturesTest {
     @Test

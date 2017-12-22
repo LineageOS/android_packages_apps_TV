@@ -17,13 +17,10 @@
 package com.android.tv.config;
 
 import android.content.Context;
-
 import com.android.tv.TvApplication;
 import com.android.tv.common.feature.Feature;
 
-/**
- * A {@link Feature} controlled by a {@link RemoteConfig} boolean.
- */
+/** A {@link Feature} controlled by a {@link RemoteConfig} boolean. */
 public class RemoteConfigFeature implements Feature {
     private final String mKey;
 

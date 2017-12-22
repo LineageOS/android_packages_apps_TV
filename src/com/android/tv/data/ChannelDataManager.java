@@ -38,7 +38,6 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.MutableInt;
-
 import com.android.tv.common.SharedPreferencesUtils;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.WeakHandler;
@@ -46,7 +45,6 @@ import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,11 +56,10 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * The class to manage channel data.
- * Basic features: reading channel list and each channel's current program, and updating
- * the values of {@link Channels#COLUMN_BROWSABLE}, {@link Channels#COLUMN_LOCKED}.
- * This class is not thread-safe and under an assumption that its public methods are called in
- * only the main thread.
+ * The class to manage channel data. Basic features: reading channel list and each channel's current
+ * program, and updating the values of {@link Channels#COLUMN_BROWSABLE}, {@link
+ * Channels#COLUMN_LOCKED}. This class is not thread-safe and under an assumption that its public
+ * methods are called in only the main thread.
  */
 @AnyThread
 public class ChannelDataManager {
@@ -81,7 +78,7 @@ public class ChannelDataManager {
     private final Set<Listener> mListeners = new CopyOnWriteArraySet<>();
     // Use container class to support multi-thread safety. This value can be set only on the main
     // thread.
-    volatile private UnmodifiableChannelData mData = new UnmodifiableChannelData();
+    private volatile UnmodifiableChannelData mData = new UnmodifiableChannelData();
     private final Channel.DefaultComparator mChannelComparator;
 
     private final Handler mHandler;
@@ -93,53 +90,54 @@ public class ChannelDataManager {
     private final boolean mStoreBrowsableInSharedPreferences;
     private final SharedPreferences mBrowsableSharedPreferences;
 
-    private final TvInputCallback mTvInputCallback = new TvInputCallback() {
-        @Override
-        public void onInputAdded(String inputId) {
-            boolean channelAdded = false;
-            ChannelData data = new ChannelData(mData);
-            for (ChannelWrapper channel : mData.channelWrapperMap.values()) {
-                if (channel.mChannel.getInputId().equals(inputId)) {
-                    channel.mInputRemoved = false;
-                    addChannel(data, channel.mChannel);
-                    channelAdded = true;
-                }
-            }
-            if (channelAdded) {
-                Collections.sort(data.channels, mChannelComparator);
-                mData = new UnmodifiableChannelData(data);
-                notifyChannelListUpdated();
-            }
-        }
-
-        @Override
-        public void onInputRemoved(String inputId) {
-            boolean channelRemoved = false;
-            ArrayList<ChannelWrapper> removedChannels = new ArrayList<>();
-            for (ChannelWrapper channel : mData.channelWrapperMap.values()) {
-                if (channel.mChannel.getInputId().equals(inputId)) {
-                    channel.mInputRemoved = true;
-                    channelRemoved = true;
-                    removedChannels.add(channel);
-                }
-            }
-            if (channelRemoved) {
-                ChannelData data = new ChannelData();
-                data.channelWrapperMap.putAll(mData.channelWrapperMap);
-                for (ChannelWrapper channelWrapper : data.channelWrapperMap.values()) {
-                    if (!channelWrapper.mInputRemoved) {
-                        addChannel(data, channelWrapper.mChannel);
+    private final TvInputCallback mTvInputCallback =
+            new TvInputCallback() {
+                @Override
+                public void onInputAdded(String inputId) {
+                    boolean channelAdded = false;
+                    ChannelData data = new ChannelData(mData);
+                    for (ChannelWrapper channel : mData.channelWrapperMap.values()) {
+                        if (channel.mChannel.getInputId().equals(inputId)) {
+                            channel.mInputRemoved = false;
+                            addChannel(data, channel.mChannel);
+                            channelAdded = true;
+                        }
+                    }
+                    if (channelAdded) {
+                        Collections.sort(data.channels, mChannelComparator);
+                        mData = new UnmodifiableChannelData(data);
+                        notifyChannelListUpdated();
                     }
                 }
-                Collections.sort(data.channels, mChannelComparator);
-                mData = new UnmodifiableChannelData(data);
-                notifyChannelListUpdated();
-                for (ChannelWrapper channel : removedChannels) {
-                    channel.notifyChannelRemoved();
+
+                @Override
+                public void onInputRemoved(String inputId) {
+                    boolean channelRemoved = false;
+                    ArrayList<ChannelWrapper> removedChannels = new ArrayList<>();
+                    for (ChannelWrapper channel : mData.channelWrapperMap.values()) {
+                        if (channel.mChannel.getInputId().equals(inputId)) {
+                            channel.mInputRemoved = true;
+                            channelRemoved = true;
+                            removedChannels.add(channel);
+                        }
+                    }
+                    if (channelRemoved) {
+                        ChannelData data = new ChannelData();
+                        data.channelWrapperMap.putAll(mData.channelWrapperMap);
+                        for (ChannelWrapper channelWrapper : data.channelWrapperMap.values()) {
+                            if (!channelWrapper.mInputRemoved) {
+                                addChannel(data, channelWrapper.mChannel);
+                            }
+                        }
+                        Collections.sort(data.channels, mChannelComparator);
+                        mData = new UnmodifiableChannelData(data);
+                        notifyChannelListUpdated();
+                        for (ChannelWrapper channel : removedChannels) {
+                            channel.notifyChannelRemoved();
+                        }
+                    }
                 }
-            }
-        }
-    };
+            };
 
     @MainThread
     public ChannelDataManager(Context context, TvInputManagerHelper inputManager) {
@@ -148,8 +146,8 @@ public class ChannelDataManager {
 
     @MainThread
     @VisibleForTesting
-    ChannelDataManager(Context context, TvInputManagerHelper inputManager,
-            ContentResolver contentResolver) {
+    ChannelDataManager(
+            Context context, TvInputManagerHelper inputManager, ContentResolver contentResolver) {
         mContext = context;
         mInputManager = inputManager;
         mContentResolver = contentResolver;
@@ -157,17 +155,19 @@ public class ChannelDataManager {
         // Detect duplicate channels while sorting.
         mChannelComparator.setDetectDuplicatesEnabled(true);
         mHandler = new ChannelDataManagerHandler(this);
-        mChannelObserver = new ContentObserver(mHandler) {
-            @Override
-            public void onChange(boolean selfChange) {
-                if (!mHandler.hasMessages(MSG_UPDATE_CHANNELS)) {
-                    mHandler.sendEmptyMessage(MSG_UPDATE_CHANNELS);
-                }
-            }
-        };
+        mChannelObserver =
+                new ContentObserver(mHandler) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        if (!mHandler.hasMessages(MSG_UPDATE_CHANNELS)) {
+                            mHandler.sendEmptyMessage(MSG_UPDATE_CHANNELS);
+                        }
+                    }
+                };
         mStoreBrowsableInSharedPreferences = !PermissionUtils.hasAccessAllEpg(mContext);
-        mBrowsableSharedPreferences = context.getSharedPreferences(
-                SharedPreferencesUtils.SHARED_PREF_BROWSABLE, Context.MODE_PRIVATE);
+        mBrowsableSharedPreferences =
+                context.getSharedPreferences(
+                        SharedPreferencesUtils.SHARED_PREF_BROWSABLE, Context.MODE_PRIVATE);
     }
 
     @VisibleForTesting
@@ -175,9 +175,7 @@ public class ChannelDataManager {
         return mChannelObserver;
     }
 
-    /**
-     * Starts the manager. If data is ready, {@link Listener#onLoadFinished()} will be called.
-     */
+    /** Starts the manager. If data is ready, {@link Listener#onLoadFinished()} will be called. */
     @MainThread
     public void start() {
         if (mStarted) {
@@ -187,8 +185,8 @@ public class ChannelDataManager {
         // Should be called directly instead of posting MSG_UPDATE_CHANNELS message to the handler.
         // If not, other DB tasks can be executed before channel loading.
         handleUpdateChannels();
-        mContentResolver.registerContentObserver(TvContract.Channels.CONTENT_URI, true,
-                mChannelObserver);
+        mContentResolver.registerContentObserver(
+                TvContract.Channels.CONTENT_URI, true, mChannelObserver);
         mInputManager.addCallback(mTvInputCallback);
     }
 
@@ -218,9 +216,7 @@ public class ChannelDataManager {
         applyUpdatedValuesToDb();
     }
 
-    /**
-     * Adds a {@link Listener}.
-     */
+    /** Adds a {@link Listener}. */
     public void addListener(Listener listener) {
         if (DEBUG) Log.d(TAG, "addListener " + listener);
         SoftPreconditions.checkNotNull(listener);
@@ -229,9 +225,7 @@ public class ChannelDataManager {
         }
     }
 
-    /**
-     * Removes a {@link Listener}.
-     */
+    /** Removes a {@link Listener}. */
     public void removeListener(Listener listener) {
         if (DEBUG) Log.d(TAG, "removeListener " + listener);
         SoftPreconditions.checkNotNull(listener);
@@ -252,8 +246,8 @@ public class ChannelDataManager {
     }
 
     /**
-     * Removes a {@link ChannelListener} for a specific channel with the channel ID
-     * {@code channelId}.
+     * Removes a {@link ChannelListener} for a specific channel with the channel ID {@code
+     * channelId}.
      */
     public void removeChannelListener(Long channelId, ChannelListener listener) {
         ChannelWrapper channelWrapper = mData.channelWrapperMap.get(channelId);
@@ -263,30 +257,22 @@ public class ChannelDataManager {
         channelWrapper.removeListener(listener);
     }
 
-    /**
-     * Checks whether data is ready.
-     */
+    /** Checks whether data is ready. */
     public boolean isDbLoadFinished() {
         return mDbLoadFinished;
     }
 
-    /**
-     * Returns the number of channels.
-     */
+    /** Returns the number of channels. */
     public int getChannelCount() {
         return mData.channels.size();
     }
 
-    /**
-     * Returns a list of channels.
-     */
+    /** Returns a list of channels. */
     public List<Channel> getChannelList() {
         return new ArrayList<>(mData.channels);
     }
 
-    /**
-     * Returns a list of browsable channels.
-     */
+    /** Returns a list of browsable channels. */
     public List<Channel> getBrowsableChannelList() {
         List<Channel> channels = new ArrayList<>();
         for (Channel channel : mData.channels) {
@@ -329,9 +315,7 @@ public class ChannelDataManager {
         return true;
     }
 
-    /**
-     * Gets the channel with the channel ID {@code channelId}.
-     */
+    /** Gets the channel with the channel ID {@code channelId}. */
     public Channel getChannel(Long channelId) {
         ChannelWrapper channelWrapper = mData.channelWrapperMap.get(channelId);
         if (channelWrapper == null || channelWrapper.mInputRemoved) {
@@ -340,9 +324,7 @@ public class ChannelDataManager {
         return channelWrapper.mChannel;
     }
 
-    /**
-     * The value change will be applied to DB when applyPendingDbOperation is called.
-     */
+    /** The value change will be applied to DB when applyPendingDbOperation is called. */
     public void updateBrowsable(Long channelId, boolean browsable) {
         updateBrowsable(channelId, browsable, false);
     }
@@ -351,12 +333,12 @@ public class ChannelDataManager {
      * The value change will be applied to DB when applyPendingDbOperation is called.
      *
      * @param skipNotifyChannelBrowsableChanged If it's true, {@link Listener
-     *        #onChannelBrowsableChanged()} is not called, when this method is called.
-     *        {@link #notifyChannelBrowsableChanged} should be directly called, once browsable
-     *        update is completed.
+     *     #onChannelBrowsableChanged()} is not called, when this method is called. {@link
+     *     #notifyChannelBrowsableChanged} should be directly called, once browsable update is
+     *     completed.
      */
-    public void updateBrowsable(Long channelId, boolean browsable,
-            boolean skipNotifyChannelBrowsableChanged) {
+    public void updateBrowsable(
+            Long channelId, boolean browsable, boolean skipNotifyChannelBrowsableChanged) {
         ChannelWrapper channelWrapper = mData.channelWrapperMap.get(channelId);
         if (channelWrapper == null) {
             return;
@@ -396,10 +378,7 @@ public class ChannelDataManager {
         }
     }
 
-    /**
-     * Updates channels from DB. Once the update is done, {@code postRunnable} will
-     * be called.
-     */
+    /** Updates channels from DB. Once the update is done, {@code postRunnable} will be called. */
     public void updateChannels(Runnable postRunnable) {
         if (mChannelsUpdateTask != null) {
             mChannelsUpdateTask.cancel(true);
@@ -411,9 +390,7 @@ public class ChannelDataManager {
         }
     }
 
-    /**
-     * The value change will be applied to DB when applyPendingDbOperation is called.
-     */
+    /** The value change will be applied to DB when applyPendingDbOperation is called. */
     public void updateLocked(Long channelId, boolean locked) {
         ChannelWrapper channelWrapper = mData.channelWrapperMap.get(channelId);
         if (channelWrapper == null) {
@@ -430,10 +407,7 @@ public class ChannelDataManager {
         }
     }
 
-    /**
-     * Applies the changed values by {@link #updateBrowsable} and {@link #updateLocked}
-     * to DB.
-     */
+    /** Applies the changed values by {@link #updateBrowsable} and {@link #updateLocked} to DB. */
     public void applyUpdatedValuesToDb() {
         ChannelData data = mData;
         ArrayList<Long> browsableIds = new ArrayList<>();
@@ -493,11 +467,17 @@ public class ChannelDataManager {
         }
         mLockedUpdateChannelIds.clear();
         if (DEBUG) {
-            Log.d(TAG, "applyUpdatedValuesToDb"
-                    + "\n browsableIds size:" + browsableIds.size()
-                    + "\n unbrowsableIds size:" + unbrowsableIds.size()
-                    + "\n lockedIds size:" + lockedIds.size()
-                    + "\n unlockedIds size:" + unlockedIds.size());
+            Log.d(
+                    TAG,
+                    "applyUpdatedValuesToDb"
+                            + "\n browsableIds size:"
+                            + browsableIds.size()
+                            + "\n unbrowsableIds size:"
+                            + unbrowsableIds.size()
+                            + "\n lockedIds size:"
+                            + lockedIds.size()
+                            + "\n unlockedIds size:"
+                            + unlockedIds.size());
         }
     }
 
@@ -527,48 +507,34 @@ public class ChannelDataManager {
         mChannelsUpdateTask.executeOnDbThread();
     }
 
-    /**
-     * Reloads channel data.
-     */
+    /** Reloads channel data. */
     public void reload() {
         if (mDbLoadFinished && !mHandler.hasMessages(MSG_UPDATE_CHANNELS)) {
             mHandler.sendEmptyMessage(MSG_UPDATE_CHANNELS);
         }
     }
 
-    /**
-     * A listener for ChannelDataManager. The callbacks are called on the main thread.
-     */
+    /** A listener for ChannelDataManager. The callbacks are called on the main thread. */
     public interface Listener {
-        /**
-         * Called when data load is finished.
-         */
+        /** Called when data load is finished. */
         void onLoadFinished();
 
         /**
-         * Called when channels are added, deleted, or updated. But, when browsable is changed,
-         * it won't be called. Instead, {@link #onChannelBrowsableChanged} will be called.
+         * Called when channels are added, deleted, or updated. But, when browsable is changed, it
+         * won't be called. Instead, {@link #onChannelBrowsableChanged} will be called.
          */
         void onChannelListUpdated();
 
-        /**
-         * Called when browsable of channels are changed.
-         */
+        /** Called when browsable of channels are changed. */
         void onChannelBrowsableChanged();
     }
 
-    /**
-     * A listener for individual channel change. The callbacks are called on the main thread.
-     */
+    /** A listener for individual channel change. The callbacks are called on the main thread. */
     public interface ChannelListener {
-        /**
-         * Called when the channel has been removed in DB.
-         */
+        /** Called when the channel has been removed in DB. */
         void onChannelRemoved(Channel channel);
 
-        /**
-         * Called when values of the channel has been changed.
-         */
+        /** Called when values of the channel has been changed. */
         void onChannelUpdated(Channel channel);
     }
 
@@ -616,8 +582,10 @@ public class ChannelDataManager {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            try (AssetFileDescriptor f = mContext.getContentResolver().openAssetFileDescriptor(
-                        TvContract.buildChannelLogoUri(mChannel.getId()), "r")) {
+            try (AssetFileDescriptor f =
+                    mContext.getContentResolver()
+                            .openAssetFileDescriptor(
+                                    TvContract.buildChannelLogoUri(mChannel.getId()), "r")) {
                 return true;
             } catch (SQLiteException | IOException | NullPointerException e) {
                 // File not found or asset file not found.
@@ -663,8 +631,8 @@ public class ChannelDataManager {
             for (Channel channel : channels) {
                 if (mStoreBrowsableInSharedPreferences) {
                     String browsableKey = getBrowsableKey(channel);
-                    channel.setBrowsable(mBrowsableSharedPreferences.getBoolean(browsableKey,
-                            false));
+                    channel.setBrowsable(
+                            mBrowsableSharedPreferences.getBoolean(browsableKey, false));
                     deletedBrowsableMap.remove(browsableKey);
                 }
                 long channelId = channel.getId();
@@ -698,7 +666,8 @@ public class ChannelDataManager {
                     }
                 }
             }
-            if (mStoreBrowsableInSharedPreferences && !deletedBrowsableMap.isEmpty()
+            if (mStoreBrowsableInSharedPreferences
+                    && !deletedBrowsableMap.isEmpty()
                     && PermissionUtils.hasReadTvListings(mContext)) {
                 // If hasReadTvListings(mContext) is false, the given channel list would
                 // empty. In this case, we skip the browsable data clean up process.
@@ -745,24 +714,26 @@ public class ChannelDataManager {
     }
 
     /**
-     * Updates a column {@code columnName} of DB table {@code uri} with the value
-     * {@code columnValue}. The selective rows in the ID list {@code ids} will be updated.
-     * The DB operations will run on {@link AsyncDbTask#getExecutor()}.
+     * Updates a column {@code columnName} of DB table {@code uri} with the value {@code
+     * columnValue}. The selective rows in the ID list {@code ids} will be updated. The DB
+     * operations will run on {@link AsyncDbTask#getExecutor()}.
      */
     private void updateOneColumnValue(
             final String columnName, final int columnValue, final List<Long> ids) {
         if (!PermissionUtils.hasAccessAllEpg(mContext)) {
             return;
         }
-        AsyncDbTask.executeOnDbThread(new Runnable() {
-            @Override
-            public void run() {
-                String selection = Utils.buildSelectionForIds(Channels._ID, ids);
-                ContentValues values = new ContentValues();
-                values.put(columnName, columnValue);
-                mContentResolver.update(TvContract.Channels.CONTENT_URI, values, selection, null);
-            }
-        });
+        AsyncDbTask.executeOnDbThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        String selection = Utils.buildSelectionForIds(Channels._ID, ids);
+                        ContentValues values = new ContentValues();
+                        values.put(columnName, columnValue);
+                        mContentResolver.update(
+                                TvContract.Channels.CONTENT_URI, values, selection, null);
+                    }
+                });
     }
 
     private String getBrowsableKey(Channel channel) {
@@ -784,9 +755,8 @@ public class ChannelDataManager {
     }
 
     /**
-     * Container class which includes channel data that needs to be synced. This class is
-     * modifiable and used for changing channel data.
-     * e.g. TvInputCallback, or AsyncDbTask.onPostExecute.
+     * Container class which includes channel data that needs to be synced. This class is modifiable
+     * and used for changing channel data. e.g. TvInputCallback, or AsyncDbTask.onPostExecute.
      */
     @MainThread
     private static class ChannelData {
@@ -806,8 +776,10 @@ public class ChannelDataManager {
             channels = new ArrayList<>(data.channels);
         }
 
-        ChannelData(Map<Long, ChannelWrapper> channelWrapperMap,
-                Map<String, MutableInt> channelCountMap, List<Channel> channels) {
+        ChannelData(
+                Map<Long, ChannelWrapper> channelWrapperMap,
+                Map<String, MutableInt> channelCountMap,
+                List<Channel> channels) {
             this.channelWrapperMap = channelWrapperMap;
             this.channelCountMap = channelCountMap;
             this.channels = channels;
@@ -818,13 +790,15 @@ public class ChannelDataManager {
     @MainThread
     private static class UnmodifiableChannelData extends ChannelData {
         UnmodifiableChannelData() {
-            super(Collections.unmodifiableMap(new HashMap<>()),
+            super(
+                    Collections.unmodifiableMap(new HashMap<>()),
                     Collections.unmodifiableMap(new HashMap<>()),
                     Collections.unmodifiableList(new ArrayList<>()));
         }
 
         UnmodifiableChannelData(ChannelData data) {
-            super(Collections.unmodifiableMap(data.channelWrapperMap),
+            super(
+                    Collections.unmodifiableMap(data.channelWrapperMap),
                     Collections.unmodifiableMap(data.channelCountMap),
                     Collections.unmodifiableList(data.channels));
         }

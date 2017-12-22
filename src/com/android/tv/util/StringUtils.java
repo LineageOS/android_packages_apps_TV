@@ -16,16 +16,12 @@
 
 package com.android.tv.util;
 
-/**
- * Utility class for handling {@link String}.
- */
+/** Utility class for handling {@link String}. */
 public final class StringUtils {
 
-    private StringUtils() { }
+    private StringUtils() {}
 
-    /**
-     * Returns compares two strings lexicographically and handles null values quietly.
-     */
+    /** Returns compares two strings lexicographically and handles null values quietly. */
     public static int compare(String a, String b) {
         if (a == null) {
             return b == null ? 0 : -1;

@@ -22,18 +22,13 @@ import static org.junit.Assert.assertTrue;
 import android.support.test.filters.MediumTest;
 import android.view.View;
 import android.widget.TextView;
-
 import com.android.tv.data.Channel;
 import com.android.tv.testing.testinput.TvTestInputConstants;
 import com.android.tv.ui.ChannelBannerView;
-
+import java.util.List;
 import org.junit.Test;
 
-import java.util.List;
-
-/**
- * Tests for {@link MainActivity}.
- */
+/** Tests for {@link MainActivity}. */
 @MediumTest
 public class MainActivityTest extends BaseMainActivityTestCase {
     @Test
@@ -61,12 +56,14 @@ public class MainActivityTest extends BaseMainActivityTestCase {
 
     private void showProgramGuide() {
         // Run on UI thread so views can be modified
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mActivity.getOverlayManager().showProgramGuide();
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mActivity.getOverlayManager().showProgramGuide();
+                            }
+                        });
     }
 
     private void assertChannelName(String displayName) {
@@ -83,10 +80,11 @@ public class MainActivityTest extends BaseMainActivityTestCase {
         return (ChannelBannerView) v;
     }
 
-    private View assertExpectedBannerSceneClassShown(Class<ChannelBannerView> expectedClass,
-            boolean expectedShown) {
-        View v = assertViewIsShown(expectedClass.getSimpleName(), R.id.scene_transition_common,
-                expectedShown);
+    private View assertExpectedBannerSceneClassShown(
+            Class<ChannelBannerView> expectedClass, boolean expectedShown) {
+        View v =
+                assertViewIsShown(
+                        expectedClass.getSimpleName(), R.id.scene_transition_common, expectedShown);
         if (v != null) {
             assertEquals(expectedClass, v.getClass());
         }

@@ -18,12 +18,9 @@ package com.android.tv.util;
 
 import android.os.SystemClock;
 import android.util.Log;
-
 import com.android.tv.common.BuildConfig;
 
-/**
- * Times a duration.
- */
+/** Times a duration. */
 public final class DurationTimer {
     private static final String TAG = "DurationTimer";
     public static final long TIME_NOT_SET = -1;
@@ -32,30 +29,24 @@ public final class DurationTimer {
     private String mTag = TAG;
     private boolean mLogEngOnly;
 
-    public DurationTimer() { }
+    public DurationTimer() {}
 
     public DurationTimer(String tag, boolean logEngOnly) {
         mTag = tag;
         mLogEngOnly = logEngOnly;
     }
 
-    /**
-     * Returns true if the timer is running.
-     */
+    /** Returns true if the timer is running. */
     public boolean isRunning() {
         return mStartTimeMs != TIME_NOT_SET;
     }
 
-    /**
-     * Start the timer.
-     */
+    /** Start the timer. */
     public void start() {
         mStartTimeMs = SystemClock.elapsedRealtime();
     }
 
-    /**
-     * Returns true if timer is started.
-     */
+    /** Returns true if timer is started. */
     public boolean isStarted() {
         return mStartTimeMs != TIME_NOT_SET;
     }
@@ -72,7 +63,7 @@ public final class DurationTimer {
      * Stops the timer and resets its value to {@link #TIME_NOT_SET}.
      *
      * @return the current duration in milliseconds or {@link #TIME_NOT_SET} if the timer is not
-     * running.
+     *     running.
      */
     public long reset() {
         long duration = getDuration();
@@ -80,9 +71,7 @@ public final class DurationTimer {
         return duration;
     }
 
-    /**
-     * Adds information and duration time to the log.
-     */
+    /** Adds information and duration time to the log. */
     public void log(String message) {
         if (isRunning() && (!mLogEngOnly || BuildConfig.ENG)) {
             Log.i(mTag, message + " : " + getDuration() + "ms");

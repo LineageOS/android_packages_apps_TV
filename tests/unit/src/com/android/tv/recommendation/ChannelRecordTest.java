@@ -20,18 +20,13 @@ import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.testing.Utils;
-
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-/**
- * Unit tests for {@link ChannelRecord}.
- */
+/** Unit tests for {@link ChannelRecord}. */
 @SmallTest
 public class ChannelRecordTest {
     private static final int CHANNEL_RECORD_MAX_HISTORY_SIZE = ChannelRecord.MAX_HISTORY_SIZE;
@@ -126,8 +121,9 @@ public class ChannelRecordTest {
         mLatestWatchEndTimeMs += TimeUnit.SECONDS.toMillis(mRandom.nextInt(60) + 1);
 
         long durationMs = TimeUnit.SECONDS.toMillis(mRandom.nextInt(60) + 1);
-        mChannelRecord.logWatchHistory(new WatchedProgram(null,
-                mLatestWatchEndTimeMs, mLatestWatchEndTimeMs + durationMs));
+        mChannelRecord.logWatchHistory(
+                new WatchedProgram(
+                        null, mLatestWatchEndTimeMs, mLatestWatchEndTimeMs + durationMs));
         mLatestWatchEndTimeMs += durationMs;
 
         return durationMs;

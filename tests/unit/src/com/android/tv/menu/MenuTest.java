@@ -20,9 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.menu.Menu.OnMenuVisibilityChangeListener;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -30,9 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-/**
- * Tests for {@link Menu}.
- */
+/** Tests for {@link Menu}. */
 @SmallTest
 public class MenuTest {
     private Menu mMenu;
@@ -83,8 +79,11 @@ public class MenuTest {
         Mockito.verify(mVisibilityChangeListener, Mockito.never())
                 .onMenuVisibilityChange(Matchers.eq(false));
         // IMenuView.show should be called with the same parameter.
-        Mockito.verify(mMenuView).onShow(Matchers.eq(Menu.REASON_NONE),
-                Matchers.isNull(String.class), Matchers.isNull(Runnable.class));
+        Mockito.verify(mMenuView)
+                .onShow(
+                        Matchers.eq(Menu.REASON_NONE),
+                        Matchers.isNull(String.class),
+                        Matchers.isNull(Runnable.class));
         mMenu.hide(true);
         setMenuVisible(false);
         // Listener should be called with "false" argument.
@@ -104,8 +103,11 @@ public class MenuTest {
         Mockito.verify(mVisibilityChangeListener, Mockito.never())
                 .onMenuVisibilityChange(Matchers.eq(false));
         // IMenuView.show should be called with the same parameter.
-        Mockito.verify(mMenuView).onShow(Matchers.eq(Menu.REASON_GUIDE),
-                Matchers.eq(ChannelsRow.ID), Matchers.isNull(Runnable.class));
+        Mockito.verify(mMenuView)
+                .onShow(
+                        Matchers.eq(Menu.REASON_GUIDE),
+                        Matchers.eq(ChannelsRow.ID),
+                        Matchers.isNull(Runnable.class));
         mMenu.hide(false);
         setMenuVisible(false);
         // Listener should be called with "false" argument.
@@ -125,8 +127,11 @@ public class MenuTest {
         Mockito.verify(mVisibilityChangeListener, Mockito.never())
                 .onMenuVisibilityChange(Matchers.eq(false));
         // IMenuView.show should be called with the same parameter.
-        Mockito.verify(mMenuView).onShow(Matchers.eq(Menu.REASON_PLAY_CONTROLS_FAST_FORWARD),
-                Matchers.eq(PlayControlsRow.ID), Matchers.isNull(Runnable.class));
+        Mockito.verify(mMenuView)
+                .onShow(
+                        Matchers.eq(Menu.REASON_PLAY_CONTROLS_FAST_FORWARD),
+                        Matchers.eq(PlayControlsRow.ID),
+                        Matchers.isNull(Runnable.class));
         mMenu.hide(false);
         setMenuVisible(false);
         // Listener should be called with "false" argument.
@@ -136,11 +141,13 @@ public class MenuTest {
     }
 
     private void setMenuVisible(final boolean visible) {
-        Mockito.when(mMenuView.isVisible()).thenAnswer(new Answer<Boolean>() {
-            @Override
-            public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                return visible;
-            }
-        });
+        Mockito.when(mMenuView.isVisible())
+                .thenAnswer(
+                        new Answer<Boolean>() {
+                            @Override
+                            public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                                return visible;
+                            }
+                        });
     }
 }

@@ -24,17 +24,12 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
-
 import com.google.android.exoplayer2.ext.ffmpeg.FfmpegAudioDecoder;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/**
- * Ffmpeg based audio decoder service.
- * It should be isolatedProcess due to security reason.
- */
+/** Ffmpeg based audio decoder service. It should be isolatedProcess due to security reason. */
 public class FfmpegDecoderService extends Service {
     private static final String TAG = "FfmpegDecoderService";
     private static final boolean DEBUG = false;
@@ -56,7 +51,7 @@ public class FfmpegDecoderService extends Service {
 
     private FfmpegDecoder mBinder = new FfmpegDecoder();
     private volatile Object mMinijailSetupMonitor = new Object();
-    //@GuardedBy("mMinijailSetupMonitor")
+    // @GuardedBy("mMinijailSetupMonitor")
     private volatile Boolean mMinijailSetup;
 
     @Override
@@ -118,6 +113,7 @@ public class FfmpegDecoderService extends Service {
 
     private final class FfmpegDecoder extends IFfmpegDecoder.Stub {
         FfmpegAudioDecoder mDecoder;
+
         @Override
         public boolean isAvailable() {
             return isMinijailSetupDone() && FfmpegAudioDecoder.isAvailable();
@@ -201,5 +197,6 @@ public class FfmpegDecoderService extends Service {
     }
 
     private native void nativeSetupMinijail(int policyFd);
+
     private native void nativeTestMinijail();
 }

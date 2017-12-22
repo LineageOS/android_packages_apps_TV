@@ -28,21 +28,17 @@ import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.tv.common.TvCommonConstants;
 import com.android.tv.util.ImageLoader;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
-
 import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * A convenience class to create and insert channel entries into the database.
- */
+/** A convenience class to create and insert channel entries into the database. */
 public final class Channel {
     private static final String TAG = "Channel";
 
@@ -51,15 +47,14 @@ public final class Channel {
     public static final int LOAD_IMAGE_TYPE_APP_LINK_ICON = 2;
     public static final int LOAD_IMAGE_TYPE_APP_LINK_POSTER_ART = 3;
 
-    /**
-     * Compares the channel numbers of channels which belong to the same input.
-     */
-    public static final Comparator<Channel> CHANNEL_NUMBER_COMPARATOR = new Comparator<Channel>() {
-        @Override
-        public int compare(Channel lhs, Channel rhs) {
-            return ChannelNumber.compare(lhs.getDisplayNumber(), rhs.getDisplayNumber());
-        }
-    };
+    /** Compares the channel numbers of channels which belong to the same input. */
+    public static final Comparator<Channel> CHANNEL_NUMBER_COMPARATOR =
+            new Comparator<Channel>() {
+                @Override
+                public int compare(Channel lhs, Channel rhs) {
+                    return ChannelNumber.compare(lhs.getDisplayNumber(), rhs.getDisplayNumber());
+                }
+            };
 
     /**
      * When a TIS doesn't provide any information about app link, and it doesn't have a leanback
@@ -67,8 +62,8 @@ public final class Channel {
      */
     public static final int APP_LINK_TYPE_NONE = -1;
     /**
-     * When a TIS provide a specific app link information, the app link card will be
-     * {@code APP_LINK_TYPE_CHANNEL} which contains all the provided information.
+     * When a TIS provide a specific app link information, the app link card will be {@code
+     * APP_LINK_TYPE_CHANNEL} which contains all the provided information.
      */
     public static final int APP_LINK_TYPE_CHANNEL = 1;
     /**
@@ -81,36 +76,33 @@ public final class Channel {
     private static final String INVALID_PACKAGE_NAME = "packageName";
 
     public static final String[] PROJECTION = {
-            // Columns must match what is read in Channel.fromCursor()
-            TvContract.Channels._ID,
-            TvContract.Channels.COLUMN_PACKAGE_NAME,
-            TvContract.Channels.COLUMN_INPUT_ID,
-            TvContract.Channels.COLUMN_TYPE,
-            TvContract.Channels.COLUMN_DISPLAY_NUMBER,
-            TvContract.Channels.COLUMN_DISPLAY_NAME,
-            TvContract.Channels.COLUMN_DESCRIPTION,
-            TvContract.Channels.COLUMN_VIDEO_FORMAT,
-            TvContract.Channels.COLUMN_BROWSABLE,
-            TvContract.Channels.COLUMN_SEARCHABLE,
-            TvContract.Channels.COLUMN_LOCKED,
-            TvContract.Channels.COLUMN_APP_LINK_TEXT,
-            TvContract.Channels.COLUMN_APP_LINK_COLOR,
-            TvContract.Channels.COLUMN_APP_LINK_ICON_URI,
-            TvContract.Channels.COLUMN_APP_LINK_POSTER_ART_URI,
-            TvContract.Channels.COLUMN_APP_LINK_INTENT_URI,
-            TvContract.Channels.COLUMN_INTERNAL_PROVIDER_FLAG2, // Only used in bundled input
+        // Columns must match what is read in Channel.fromCursor()
+        TvContract.Channels._ID,
+        TvContract.Channels.COLUMN_PACKAGE_NAME,
+        TvContract.Channels.COLUMN_INPUT_ID,
+        TvContract.Channels.COLUMN_TYPE,
+        TvContract.Channels.COLUMN_DISPLAY_NUMBER,
+        TvContract.Channels.COLUMN_DISPLAY_NAME,
+        TvContract.Channels.COLUMN_DESCRIPTION,
+        TvContract.Channels.COLUMN_VIDEO_FORMAT,
+        TvContract.Channels.COLUMN_BROWSABLE,
+        TvContract.Channels.COLUMN_SEARCHABLE,
+        TvContract.Channels.COLUMN_LOCKED,
+        TvContract.Channels.COLUMN_APP_LINK_TEXT,
+        TvContract.Channels.COLUMN_APP_LINK_COLOR,
+        TvContract.Channels.COLUMN_APP_LINK_ICON_URI,
+        TvContract.Channels.COLUMN_APP_LINK_POSTER_ART_URI,
+        TvContract.Channels.COLUMN_APP_LINK_INTENT_URI,
+        TvContract.Channels.COLUMN_INTERNAL_PROVIDER_FLAG2, // Only used in bundled input
     };
 
-    /**
-     * Channel number delimiter between major and minor parts.
-     */
+    /** Channel number delimiter between major and minor parts. */
     public static final char CHANNEL_NUMBER_DELIMITER = '-';
 
     /**
      * Creates {@code Channel} object from cursor.
      *
      * <p>The query that created the cursor MUST use {@link #PROJECTION}
-     *
      */
     public static Channel fromCursor(Cursor cursor) {
         // Columns read must match the order of {@link #PROJECTION}
@@ -138,15 +130,14 @@ public final class Channel {
         return channel;
     }
 
-    /**
-     * Replaces the channel number separator with dash('-').
-     */
+    /** Replaces the channel number separator with dash('-'). */
     public static String normalizeDisplayNumber(String string) {
         if (!TextUtils.isEmpty(string)) {
             int length = string.length();
             for (int i = 0; i < length; i++) {
                 char c = string.charAt(i);
-                if (c == '.' || Character.isWhitespace(c)
+                if (c == '.'
+                        || Character.isWhitespace(c)
                         || Character.getType(c) == Character.DASH_PUNCTUATION) {
                     StringBuilder sb = new StringBuilder(string);
                     sb.setCharAt(i, CHANNEL_NUMBER_DELIMITER);
@@ -233,11 +224,12 @@ public final class Channel {
     }
 
     /**
-     * Gets identification text for displaying or debugging.
-     * It's made from Channels' display number plus their display name.
+     * Gets identification text for displaying or debugging. It's made from Channels' display number
+     * plus their display name.
      */
     public String getDisplayText() {
-        return TextUtils.isEmpty(mDisplayName) ? mDisplayNumber
+        return TextUtils.isEmpty(mDisplayName)
+                ? mDisplayNumber
                 : mDisplayNumber + " " + mDisplayName;
     }
 
@@ -261,9 +253,7 @@ public final class Channel {
         return mAppLinkIntentUri;
     }
 
-    /**
-     * Returns channel logo uri which is got from cloud, it's used only for ChannelLogoFetcher.
-     */
+    /** Returns channel logo uri which is got from cloud, it's used only for ChannelLogoFetcher. */
     public String getLogoUri() {
         return mLogoUri;
     }
@@ -272,16 +262,12 @@ public final class Channel {
         return mRecordingProhibited;
     }
 
-    /**
-     * Checks whether this channel is physical tuner channel or not.
-     */
+    /** Checks whether this channel is physical tuner channel or not. */
     public boolean isPhysicalTunerChannel() {
         return !TextUtils.isEmpty(mType) && !TvContract.Channels.TYPE_OTHER.equals(mType);
     }
 
-    /**
-     * Checks if two channels equal by checking ids.
-     */
+    /** Checks if two channels equal by checking ids. */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Channel)) {
@@ -289,7 +275,8 @@ public final class Channel {
         }
         Channel other = (Channel) o;
         // All pass-through TV channels have INVALID_ID value for mId.
-        return mId == other.mId && TextUtils.equals(mInputId, other.mInputId)
+        return mId == other.mId
+                && TextUtils.equals(mInputId, other.mInputId)
                 && mIsPassthrough == other.mIsPassthrough;
     }
 
@@ -319,9 +306,7 @@ public final class Channel {
         mLocked = locked;
     }
 
-    /**
-     * Sets channel logo uri which is got from cloud.
-     */
+    /** Sets channel logo uri which is got from cloud. */
     public void setLogoUri(String logoUri) {
         mLogoUri = logoUri;
     }
@@ -353,20 +338,35 @@ public final class Channel {
     @Override
     public String toString() {
         return "Channel{"
-                + "id=" + mId
-                + ", packageName=" + mPackageName
-                + ", inputId=" + mInputId
-                + ", type=" + mType
-                + ", displayNumber=" + mDisplayNumber
-                + ", displayName=" + mDisplayName
-                + ", description=" + mDescription
-                + ", videoFormat=" + mVideoFormat
-                + ", isPassthrough=" + mIsPassthrough
-                + ", browsable=" + mBrowsable
-                + ", searchable=" + mSearchable
-                + ", locked=" + mLocked
-                + ", appLinkText=" + mAppLinkText
-                + ", recordingProhibited=" + mRecordingProhibited + "}";
+                + "id="
+                + mId
+                + ", packageName="
+                + mPackageName
+                + ", inputId="
+                + mInputId
+                + ", type="
+                + mType
+                + ", displayNumber="
+                + mDisplayNumber
+                + ", displayName="
+                + mDisplayName
+                + ", description="
+                + mDescription
+                + ", videoFormat="
+                + mVideoFormat
+                + ", isPassthrough="
+                + mIsPassthrough
+                + ", browsable="
+                + mBrowsable
+                + ", searchable="
+                + mSearchable
+                + ", locked="
+                + mLocked
+                + ", appLinkText="
+                + mAppLinkText
+                + ", recordingProhibited="
+                + mRecordingProhibited
+                + "}";
     }
 
     void copyFrom(Channel other) {
@@ -396,9 +396,7 @@ public final class Channel {
         mChannelLogoExist = other.mChannelLogoExist;
     }
 
-    /**
-     * Creates a channel for a passthrough TV input.
-     */
+    /** Creates a channel for a passthrough TV input. */
     public static Channel createPassthroughChannel(Uri uri) {
         if (!TvContract.isChannelUriForPassthroughInput(uri)) {
             throw new IllegalArgumentException("URI is not a passthrough channel URI");
@@ -407,27 +405,19 @@ public final class Channel {
         return createPassthroughChannel(inputId);
     }
 
-    /**
-     * Creates a channel for a passthrough TV input with {@code inputId}.
-     */
+    /** Creates a channel for a passthrough TV input with {@code inputId}. */
     public static Channel createPassthroughChannel(String inputId) {
-        return new Builder()
-                .setInputId(inputId)
-                .setPassthrough(true)
-                .build();
+        return new Builder().setInputId(inputId).setPassthrough(true).build();
     }
 
-    /**
-     * Checks whether the channel is valid or not.
-     */
+    /** Checks whether the channel is valid or not. */
     public static boolean isValid(Channel channel) {
         return channel != null && (channel.mId != INVALID_ID || channel.mIsPassthrough);
     }
 
     /**
-     * Builder class for {@code Channel}.
-     * Suppress using this outside of ChannelDataManager
-     * so Channels could be managed by ChannelDataManager.
+     * Builder class for {@code Channel}. Suppress using this outside of ChannelDataManager so
+     * Channels could be managed by ChannelDataManager.
      */
     public static final class Builder {
         private final Channel mChannel;
@@ -555,9 +545,7 @@ public final class Channel {
         }
     }
 
-    /**
-     * Prefetches the images for this channel.
-     */
+    /** Prefetches the images for this channel. */
     public void prefetchImage(Context context, int type, int maxWidth, int maxHeight) {
         String uriString = getImageUriString(type);
         if (!TextUtils.isEmpty(uriString)) {
@@ -566,47 +554,48 @@ public final class Channel {
     }
 
     /**
-     * Loads the bitmap of this channel and returns it via {@code callback}.
-     * The loaded bitmap will be cached and resized with given params.
-     * <p>
-     * Note that it may directly call {@code callback} if the bitmap is already loaded.
+     * Loads the bitmap of this channel and returns it via {@code callback}. The loaded bitmap will
+     * be cached and resized with given params.
+     *
+     * <p>Note that it may directly call {@code callback} if the bitmap is already loaded.
      *
      * @param context A context.
-     * @param type The type of bitmap which will be loaded. It should be one of follows:
-     *        {@link #LOAD_IMAGE_TYPE_CHANNEL_LOGO}, {@link #LOAD_IMAGE_TYPE_APP_LINK_ICON}, or
-     *        {@link #LOAD_IMAGE_TYPE_APP_LINK_POSTER_ART}.
+     * @param type The type of bitmap which will be loaded. It should be one of follows: {@link
+     *     #LOAD_IMAGE_TYPE_CHANNEL_LOGO}, {@link #LOAD_IMAGE_TYPE_APP_LINK_ICON}, or {@link
+     *     #LOAD_IMAGE_TYPE_APP_LINK_POSTER_ART}.
      * @param maxWidth The max width of the loaded bitmap.
      * @param maxHeight The max height of the loaded bitmap.
      * @param callback A callback which will be called after the loading finished.
      */
     @UiThread
-    public void loadBitmap(Context context, final int type, int maxWidth, int maxHeight,
+    public void loadBitmap(
+            Context context,
+            final int type,
+            int maxWidth,
+            int maxHeight,
             ImageLoader.ImageLoaderCallback callback) {
         String uriString = getImageUriString(type);
         ImageLoader.loadBitmap(context, uriString, maxWidth, maxHeight, callback);
     }
 
     /**
-     * Sets if the channel logo exists. This method should be only called from
-     * {@link ChannelDataManager}.
+     * Sets if the channel logo exists. This method should be only called from {@link
+     * ChannelDataManager}.
      */
     void setChannelLogoExist(boolean exist) {
         mChannelLogoExist = exist;
     }
 
-    /**
-     * Returns if channel logo exists.
-     */
+    /** Returns if channel logo exists. */
     public boolean channelLogoExists() {
         return mChannelLogoExist;
     }
 
     /**
-     * Returns the type of app link for this channel.
-     * It returns {@link #APP_LINK_TYPE_CHANNEL} if the channel has a non null app link text and
-     * a valid app link intent, it returns {@link #APP_LINK_TYPE_APP} if the input service which
-     * holds the channel has leanback launch intent, and it returns {@link #APP_LINK_TYPE_NONE}
-     * otherwise.
+     * Returns the type of app link for this channel. It returns {@link #APP_LINK_TYPE_CHANNEL} if
+     * the channel has a non null app link text and a valid app link intent, it returns {@link
+     * #APP_LINK_TYPE_APP} if the input service which holds the channel has leanback launch intent,
+     * and it returns {@link #APP_LINK_TYPE_NONE} otherwise.
      */
     public int getAppLinkType(Context context) {
         if (mAppLinkType == APP_LINK_TYPE_NOT_SET) {
@@ -616,8 +605,8 @@ public final class Channel {
     }
 
     /**
-     * Returns the app link intent for this channel.
-     * If the type of app link is {@link #APP_LINK_TYPE_NONE}, it returns {@code null}.
+     * Returns the app link intent for this channel. If the type of app link is {@link
+     * #APP_LINK_TYPE_NONE}, it returns {@code null}.
      */
     public Intent getAppLinkIntent(Context context) {
         if (mAppLinkType == APP_LINK_TYPE_NOT_SET) {
@@ -635,8 +624,8 @@ public final class Channel {
                 Intent intent = Intent.parseUri(mAppLinkIntentUri, Intent.URI_INTENT_SCHEME);
                 if (intent.resolveActivityInfo(pm, 0) != null) {
                     mAppLinkIntent = intent;
-                    mAppLinkIntent.putExtra(TvCommonConstants.EXTRA_APP_LINK_CHANNEL_URI,
-                            getUri().toString());
+                    mAppLinkIntent.putExtra(
+                            TvCommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
                     mAppLinkType = APP_LINK_TYPE_CHANNEL;
                     return;
                 } else {
@@ -652,8 +641,8 @@ public final class Channel {
         }
         mAppLinkIntent = pm.getLeanbackLaunchIntentForPackage(mPackageName);
         if (mAppLinkIntent != null) {
-            mAppLinkIntent.putExtra(TvCommonConstants.EXTRA_APP_LINK_CHANNEL_URI,
-                    getUri().toString());
+            mAppLinkIntent.putExtra(
+                    TvCommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
             mAppLinkType = APP_LINK_TYPE_APP;
         }
     }
@@ -699,8 +688,10 @@ public final class Channel {
             // Compare the input labels.
             String lhsLabel = getInputLabelForChannel(lhs);
             String rhsLabel = getInputLabelForChannel(rhs);
-            int result = lhsLabel == null ? (rhsLabel == null ? 0 : 1) : rhsLabel == null ? -1
-                    : lhsLabel.compareTo(rhsLabel);
+            int result =
+                    lhsLabel == null
+                            ? (rhsLabel == null ? 0 : 1)
+                            : rhsLabel == null ? -1 : lhsLabel.compareTo(rhsLabel);
             if (result != 0) {
                 return result;
             }
@@ -712,8 +703,13 @@ public final class Channel {
             // Compare the channel numbers if both channels belong to the same input.
             result = ChannelNumber.compare(lhs.getDisplayNumber(), rhs.getDisplayNumber());
             if (mDetectDuplicatesEnabled && result == 0) {
-                Log.w(TAG, "Duplicate channels detected! - \""
-                        + lhs.getDisplayText() + "\" and \"" + rhs.getDisplayText() + "\"");
+                Log.w(
+                        TAG,
+                        "Duplicate channels detected! - \""
+                                + lhs.getDisplayText()
+                                + "\" and \""
+                                + rhs.getDisplayText()
+                                + "\"");
             }
             return result;
         }

@@ -18,23 +18,18 @@ package com.android.tv.dvr.recorder;
 
 import android.support.annotation.MainThread;
 import android.support.annotation.VisibleForTesting;
-
 import com.android.tv.dvr.WritableDvrDataManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.util.Clock;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Deletes {@link ScheduledRecording} older than {@value @DAYS} days.
- */
+/** Deletes {@link ScheduledRecording} older than {@value @DAYS} days. */
 class ScheduledProgramReaper implements Runnable {
 
-    @VisibleForTesting
-    static final  int DAYS = 2;
+    @VisibleForTesting static final int DAYS = 2;
     private final WritableDvrDataManager mDvrDataManager;
     private final Clock mClock;
 
@@ -54,7 +49,7 @@ class ScheduledProgramReaper implements Runnable {
             // series recording.
             if (r.getEndTimeMs() < cutoff
                     && (r.getSeriesRecordingId() == SeriesRecording.ID_NOT_SET
-                    || r.getState() != ScheduledRecording.STATE_RECORDING_FINISHED)) {
+                            || r.getState() != ScheduledRecording.STATE_RECORDING_FINISHED)) {
                 toRemove.add(r);
             }
         }

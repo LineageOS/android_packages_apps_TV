@@ -26,20 +26,16 @@ import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.android.tv.testing.ChannelInfo;
 import com.android.tv.testing.ChannelUtils;
 import com.android.tv.testing.Constants;
 import com.android.tv.testing.ProgramInfo;
 import com.android.tv.testing.ProgramUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * The setup activity for {@link TestTvInputService}.
- */
+/** The setup activity for {@link TestTvInputService}. */
 public class TestTvInputSetupActivity extends Activity {
     private static final String TAG = "TestTvInputSetup";
     private String mInputId;
@@ -71,34 +67,40 @@ public class TestTvInputSetupActivity extends Activity {
                 ChannelUtils.queryChannelInfoMapForTvInput(context, inputId);
         for (Long channelId : channelIdToInfoMap.keySet()) {
             ProgramInfo programInfo = ProgramInfo.create();
-            ProgramUtils.populatePrograms(context, TvContract.buildChannelUri(channelId),
-                    programInfo);
+            ProgramUtils.populatePrograms(
+                    context, TvContract.buildChannelUri(channelId), programInfo);
         }
     }
 
     public static class MyAlertDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity()).setTitle(R.string.simple_setup_title)
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.simple_setup_title)
                     .setMessage(R.string.simple_setup_message)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            // TODO: add UI to ask how many channels
-                            ((TestTvInputSetupActivity) getActivity())
-                                    .registerChannels(Constants.UNIT_TEST_CHANNEL_COUNT);
-                            // Sets the results so that the application can process the
-                            // registered channels properly.
-                            getActivity().setResult(Activity.RESULT_OK);
-                            getActivity().finish();
-                        }
-                    }).setNegativeButton(android.R.string.cancel,
+                    .setPositiveButton(
+                            android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    // TODO: add UI to ask how many channels
+                                    ((TestTvInputSetupActivity) getActivity())
+                                            .registerChannels(Constants.UNIT_TEST_CHANNEL_COUNT);
+                                    // Sets the results so that the application can process the
+                                    // registered channels properly.
+                                    getActivity().setResult(Activity.RESULT_OK);
+                                    getActivity().finish();
+                                }
+                            })
+                    .setNegativeButton(
+                            android.R.string.cancel,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     getActivity().finish();
                                 }
-                            }).create();
+                            })
+                    .create();
         }
     }
 }

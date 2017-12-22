@@ -26,28 +26,25 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.android.tv.tuner.R;
-
 import java.util.Arrays;
 import java.util.Comparator;
 
-/**
- * A layout that scales its children using the given percentage value.
- */
+/** A layout that scales its children using the given percentage value. */
 public class ScaledLayout extends ViewGroup {
     private static final String TAG = "ScaledLayout";
     private static final boolean DEBUG = false;
-    private static final Comparator<Rect> mRectTopLeftSorter = new Comparator<Rect>() {
-        @Override
-        public int compare(Rect lhs, Rect rhs) {
-            if (lhs.top != rhs.top) {
-                return lhs.top - rhs.top;
-            } else {
-                return lhs.left - rhs.left;
-            }
-        }
-    };
+    private static final Comparator<Rect> mRectTopLeftSorter =
+            new Comparator<Rect>() {
+                @Override
+                public int compare(Rect lhs, Rect rhs) {
+                    if (lhs.top != rhs.top) {
+                        return lhs.top - rhs.top;
+                    } else {
+                        return lhs.left - rhs.left;
+                    }
+                }
+            };
 
     private Rect[] mRectArray;
     private final int mMaxWidth;
@@ -64,8 +61,8 @@ public class ScaledLayout extends ViewGroup {
     public ScaledLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         Point size = new Point();
-        DisplayManager displayManager = (DisplayManager) getContext()
-                .getSystemService(Context.DISPLAY_SERVICE);
+        DisplayManager displayManager =
+                (DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE);
         Display display = displayManager.getDisplay(Display.DEFAULT_DISPLAY);
         display.getRealSize(size);
         mMaxWidth = size.x;
@@ -73,21 +70,19 @@ public class ScaledLayout extends ViewGroup {
     }
 
     /**
-     * ScaledLayoutParams stores the four scale factors.
-     * <br>
-     * Vertical coordinate system:   ({@code scaleStartRow} * 100) % ~ ({@code scaleEndRow} * 100) %
+     * ScaledLayoutParams stores the four scale factors. <br>
+     * Vertical coordinate system: ({@code scaleStartRow} * 100) % ~ ({@code scaleEndRow} * 100) %
      * Horizontal coordinate system: ({@code scaleStartCol} * 100) % ~ ({@code scaleEndCol} * 100) %
      * <br>
      * In XML, for example,
-     * <pre>
-     * {@code
+     *
+     * <pre>{@code
      * <View
      *     app:layout_scaleStartRow="0.1"
      *     app:layout_scaleEndRow="0.5"
      *     app:layout_scaleStartCol="0.4"
      *     app:layout_scaleEndCol="1" />
-     * }
-     * </pre>
+     * }</pre>
      */
     public static class ScaledLayoutParams extends ViewGroup.LayoutParams {
         public static final float SCALE_UNSPECIFIED = -1;
@@ -96,8 +91,8 @@ public class ScaledLayout extends ViewGroup {
         public final float scaleStartCol;
         public final float scaleEndCol;
 
-        public ScaledLayoutParams(float scaleStartRow, float scaleEndRow,
-                float scaleStartCol, float scaleEndCol) {
+        public ScaledLayoutParams(
+                float scaleStartRow, float scaleEndRow, float scaleStartCol, float scaleEndCol) {
             super(MATCH_PARENT, MATCH_PARENT);
             this.scaleStartRow = scaleStartRow;
             this.scaleEndRow = scaleEndRow;
@@ -107,16 +102,19 @@ public class ScaledLayout extends ViewGroup {
 
         public ScaledLayoutParams(Context context, AttributeSet attrs) {
             super(MATCH_PARENT, MATCH_PARENT);
-            TypedArray array =
-                context.obtainStyledAttributes(attrs, R.styleable.utScaledLayout);
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.utScaledLayout);
             scaleStartRow =
-                array.getFloat(R.styleable.utScaledLayout_layout_scaleStartRow, SCALE_UNSPECIFIED);
+                    array.getFloat(
+                            R.styleable.utScaledLayout_layout_scaleStartRow, SCALE_UNSPECIFIED);
             scaleEndRow =
-                array.getFloat(R.styleable.utScaledLayout_layout_scaleEndRow, SCALE_UNSPECIFIED);
+                    array.getFloat(
+                            R.styleable.utScaledLayout_layout_scaleEndRow, SCALE_UNSPECIFIED);
             scaleStartCol =
-                array.getFloat(R.styleable.utScaledLayout_layout_scaleStartCol, SCALE_UNSPECIFIED);
+                    array.getFloat(
+                            R.styleable.utScaledLayout_layout_scaleStartCol, SCALE_UNSPECIFIED);
             scaleEndCol =
-                array.getFloat(R.styleable.utScaledLayout_layout_scaleEndCol, SCALE_UNSPECIFIED);
+                    array.getFloat(
+                            R.styleable.utScaledLayout_layout_scaleEndCol, SCALE_UNSPECIFIED);
             array.recycle();
         }
     }
@@ -155,31 +153,43 @@ public class ScaledLayout extends ViewGroup {
             scaleStartCol = ((ScaledLayoutParams) params).scaleStartCol;
             scaleEndCol = ((ScaledLayoutParams) params).scaleEndCol;
             if (scaleStartRow < 0 || scaleStartRow > 1) {
-                throw new RuntimeException("A child of ScaledLayout should have a range of "
-                        + "scaleStartRow between 0 and 1");
+                throw new RuntimeException(
+                        "A child of ScaledLayout should have a range of "
+                                + "scaleStartRow between 0 and 1");
             }
             if (scaleEndRow < scaleStartRow || scaleStartRow > 1) {
-                throw new RuntimeException("A child of ScaledLayout should have a range of "
-                        + "scaleEndRow between scaleStartRow and 1");
+                throw new RuntimeException(
+                        "A child of ScaledLayout should have a range of "
+                                + "scaleEndRow between scaleStartRow and 1");
             }
             if (scaleEndCol < 0 || scaleEndCol > 1) {
-                throw new RuntimeException("A child of ScaledLayout should have a range of "
-                        + "scaleStartCol between 0 and 1");
+                throw new RuntimeException(
+                        "A child of ScaledLayout should have a range of "
+                                + "scaleStartCol between 0 and 1");
             }
             if (scaleEndCol < scaleStartCol || scaleEndCol > 1) {
-                throw new RuntimeException("A child of ScaledLayout should have a range of "
-                        + "scaleEndCol between scaleStartCol and 1");
+                throw new RuntimeException(
+                        "A child of ScaledLayout should have a range of "
+                                + "scaleEndCol between scaleStartCol and 1");
             }
             if (DEBUG) {
-                Log.d(TAG, String.format("onMeasure child scaleStartRow: %f scaleEndRow: %f "
-                        + "scaleStartCol: %f scaleEndCol: %f",
-                        scaleStartRow, scaleEndRow, scaleStartCol, scaleEndCol));
+                Log.d(
+                        TAG,
+                        String.format(
+                                "onMeasure child scaleStartRow: %f scaleEndRow: %f "
+                                        + "scaleStartCol: %f scaleEndCol: %f",
+                                scaleStartRow, scaleEndRow, scaleStartCol, scaleEndCol));
             }
-            mRectArray[i] = new Rect((int) (scaleStartCol * width), (int) (scaleStartRow * height),
-                    (int) (scaleEndCol * width), (int) (scaleEndRow * height));
+            mRectArray[i] =
+                    new Rect(
+                            (int) (scaleStartCol * width),
+                            (int) (scaleStartRow * height),
+                            (int) (scaleEndCol * width),
+                            (int) (scaleEndRow * height));
             int scaleWidth = (int) (width * (scaleEndCol - scaleStartCol));
-            int childWidthSpec = MeasureSpec.makeMeasureSpec(
-                    scaleWidth > mMaxWidth ? mMaxWidth : scaleWidth, MeasureSpec.EXACTLY);
+            int childWidthSpec =
+                    MeasureSpec.makeMeasureSpec(
+                            scaleWidth > mMaxWidth ? mMaxWidth : scaleWidth, MeasureSpec.EXACTLY);
             int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
             child.measure(childWidthSpec, childHeightSpec);
 
@@ -201,8 +211,10 @@ public class ScaledLayout extends ViewGroup {
                 }
             }
             int scaleHeight = (int) (height * (scaleEndRow - scaleStartRow));
-            childHeightSpec = MeasureSpec.makeMeasureSpec(
-                    scaleHeight > mMaxHeight ? mMaxHeight : scaleHeight, MeasureSpec.EXACTLY);
+            childHeightSpec =
+                    MeasureSpec.makeMeasureSpec(
+                            scaleHeight > mMaxHeight ? mMaxHeight : scaleHeight,
+                            MeasureSpec.EXACTLY);
             child.measure(childWidthSpec, childHeightSpec);
         }
 
@@ -225,7 +237,8 @@ public class ScaledLayout extends ViewGroup {
             for (int j = i + 1; j < visibleRectCount; ++j) {
                 if (Rect.intersects(visibleRectArray[i], visibleRectArray[j])) {
                     visibleRectGroup[j] = visibleRectGroup[i];
-                    visibleRectArray[j].set(visibleRectArray[j].left,
+                    visibleRectArray[j].set(
+                            visibleRectArray[j].left,
                             visibleRectArray[i].bottom,
                             visibleRectArray[j].right,
                             visibleRectArray[i].bottom + visibleRectArray[j].height());
@@ -239,7 +252,8 @@ public class ScaledLayout extends ViewGroup {
                 int overflowedHeight = visibleRectArray[i].bottom - height;
                 for (int j = 0; j <= i; ++j) {
                     if (visibleRectGroup[i] == visibleRectGroup[j]) {
-                        visibleRectArray[j].set(visibleRectArray[j].left,
+                        visibleRectArray[j].set(
+                                visibleRectArray[j].left,
                                 visibleRectArray[j].top - overflowedHeight,
                                 visibleRectArray[j].right,
                                 visibleRectArray[j].bottom - overflowedHeight);
@@ -263,9 +277,11 @@ public class ScaledLayout extends ViewGroup {
                 int childBottom = paddingLeft + mRectArray[i].bottom;
                 int childRight = paddingTop + mRectArray[i].right;
                 if (DEBUG) {
-                    Log.d(TAG, String.format("layoutChild bottom: %d left: %d right: %d top: %d",
-                            childBottom, childLeft,
-                            childRight, childTop));
+                    Log.d(
+                            TAG,
+                            String.format(
+                                    "layoutChild bottom: %d left: %d right: %d top: %d",
+                                    childBottom, childLeft, childRight, childTop));
                 }
                 child.layout(childLeft, childTop, childRight, childBottom);
             }

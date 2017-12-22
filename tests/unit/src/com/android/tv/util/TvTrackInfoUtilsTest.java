@@ -20,19 +20,14 @@ import static org.junit.Assert.assertEquals;
 
 import android.media.tv.TvTrackInfo;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.testing.ComparatorTester;
-
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.junit.Test;
 
-/**
- * Tests for {@link com.android.tv.util.TvTrackInfoUtils}.
- */
+/** Tests for {@link com.android.tv.util.TvTrackInfoUtils}. */
 @SmallTest
 public class TvTrackInfoUtilsTest {
     private static final String UN_MATCHED_ID = "no matching ID";
@@ -54,10 +49,10 @@ public class TvTrackInfoUtilsTest {
                 .build();
     }
 
-    private static final List<TvTrackInfo> ALL = Arrays.asList(INFO_1_EN_1, INFO_2_EN_5,
-            INFO_3_FR_8, INFO_4_NULL_2, INFO_5_NULL_6);
-    private static final List<TvTrackInfo> NULL_LANGUAGE_TRACKS = Arrays.asList(INFO_4_NULL_2,
-            INFO_5_NULL_6);
+    private static final List<TvTrackInfo> ALL =
+            Arrays.asList(INFO_1_EN_1, INFO_2_EN_5, INFO_3_FR_8, INFO_4_NULL_2, INFO_5_NULL_6);
+    private static final List<TvTrackInfo> NULL_LANGUAGE_TRACKS =
+            Arrays.asList(INFO_4_NULL_2, INFO_5_NULL_6);
 
     @Test
     public void testGetBestTrackInfo_empty() {
@@ -112,15 +107,17 @@ public class TvTrackInfoUtilsTest {
         Comparator<TvTrackInfo> comparator = TvTrackInfoUtils.createComparator("1", "en", 1);
         ComparatorTester.withoutEqualsTest(comparator)
                 // lang not match
-                .addComparableGroup(create("1", "kr", 1), create("2", "kr", 2),
+                .addComparableGroup(
+                        create("1", "kr", 1),
+                        create("2", "kr", 2),
                         create("1", "ja", 1),
                         create("1", "ch", 1))
-                 // lang match not count match
-                .addComparableGroup(create("2", "en", 2), create("3", "en", 3),
-                        create("1", "en", 2))
-                 // lang and count match
+                // lang match not count match
+                .addComparableGroup(
+                        create("2", "en", 2), create("3", "en", 3), create("1", "en", 2))
+                // lang and count match
                 .addComparableGroup(create("2", "en", 1), create("3", "en", 1))
-                 // all match
+                // all match
                 .addComparableGroup(create("1", "en", 1), create("1", "en", 1))
                 .test();
     }

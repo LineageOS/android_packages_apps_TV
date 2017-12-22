@@ -58,8 +58,8 @@ public final class DvrContract {
         /**
          * The priority of this recording.
          *
-         * <p> The lowest number is recorded first. If there is a tie in priority then the lower id
-         * wins.  Defaults to {@value Long#MAX_VALUE}
+         * <p>The lowest number is recorded first. If there is a tie in priority then the lower id
+         * wins. Defaults to {@value Long#MAX_VALUE}
          *
          * <p>Type: INTEGER (long)
          */
@@ -68,8 +68,8 @@ public final class DvrContract {
         /**
          * The type of this recording.
          *
-         * <p>This value should be one of the followings: {@link #TYPE_PROGRAM} and
-         * {@link #TYPE_TIMED}.
+         * <p>This value should be one of the followings: {@link #TYPE_PROGRAM} and {@link
+         * #TYPE_TIMED}.
          *
          * <p>This is a required field.
          *
@@ -184,9 +184,9 @@ public final class DvrContract {
          * The state of this recording.
          *
          * <p>This value should be one of the followings: {@link #STATE_RECORDING_NOT_STARTED},
-         * {@link #STATE_RECORDING_IN_PROGRESS}, {@link #STATE_RECORDING_FINISHED},
-         * {@link #STATE_RECORDING_FAILED}, {@link #STATE_RECORDING_CLIPPED} and
-         * {@link #STATE_RECORDING_DELETED}.
+         * {@link #STATE_RECORDING_IN_PROGRESS}, {@link #STATE_RECORDING_FINISHED}, {@link
+         * #STATE_RECORDING_FAILED}, {@link #STATE_RECORDING_CLIPPED} and {@link
+         * #STATE_RECORDING_DELETED}.
          *
          * <p>This is a required field.
          *
@@ -201,7 +201,7 @@ public final class DvrContract {
          */
         public static final String COLUMN_SERIES_RECORDING_ID = "series_recording_id";
 
-        private Schedules() { }
+        private Schedules() {}
     }
 
     /** Column definition for Recording table. */
@@ -210,8 +210,8 @@ public final class DvrContract {
         public static final String TABLE_NAME = "series_recording";
 
         /**
-         * This value is used for {@link #COLUMN_START_FROM_SEASON} and
-         * {@link #COLUMN_START_FROM_EPISODE} to mean record all seasons or episodes.
+         * This value is used for {@link #COLUMN_START_FROM_SEASON} and {@link
+         * #COLUMN_START_FROM_EPISODE} to mean record all seasons or episodes.
          */
         public static final int THE_BEGINNING = -1;
 
@@ -227,21 +227,17 @@ public final class DvrContract {
          */
         public static final String OPTION_CHANNEL_ALL = "OPTION_CHANNEL_ALL";
 
-        /**
-         * The state indicates that it is a normal one.
-         */
+        /** The state indicates that it is a normal one. */
         public static final String STATE_SERIES_NORMAL = "STATE_SERIES_NORMAL";
 
-        /**
-         * The state indicates that it is stopped.
-         */
+        /** The state indicates that it is stopped. */
         public static final String STATE_SERIES_STOPPED = "STATE_SERIES_STOPPED";
 
         /**
          * The priority of this recording.
          *
-         * <p> The lowest number is recorded first. If there is a tie in priority then the lower id
-         * wins.  Defaults to {@value Long#MAX_VALUE}
+         * <p>The lowest number is recorded first. If there is a tie in priority then the lower id
+         * wins. Defaults to {@value Long#MAX_VALUE}
          *
          * <p>Type: INTEGER (long)
          */
@@ -266,7 +262,7 @@ public final class DvrContract {
         public static final String COLUMN_CHANNEL_ID = "channel_id";
 
         /**
-         * The  ID of the associated series to record.
+         * The ID of the associated series to record.
          *
          * <p>The id is an opaque but stable string.
          *
@@ -300,8 +296,8 @@ public final class DvrContract {
         public static final String COLUMN_LONG_DESCRIPTION = "long_description";
 
         /**
-         * The number of the earliest season to record. The
-         * value {@link #THE_BEGINNING} means record all seasons.
+         * The number of the earliest season to record. The value {@link #THE_BEGINNING} means
+         * record all seasons.
          *
          * <p>Default value is {@value #THE_BEGINNING} {@link #THE_BEGINNING}.
          *
@@ -310,7 +306,7 @@ public final class DvrContract {
         public static final String COLUMN_START_FROM_SEASON = "start_from_season";
 
         /**
-         * The number of the earliest episode to record in {@link #COLUMN_START_FROM_SEASON}.  The
+         * The number of the earliest episode to record in {@link #COLUMN_START_FROM_SEASON}. The
          * value {@link #THE_BEGINNING} means record all episodes.
          *
          * <p>Default value is {@value #THE_BEGINNING} {@link #THE_BEGINNING}.
@@ -322,8 +318,8 @@ public final class DvrContract {
         /**
          * The series recording option which indicates the channels to record.
          *
-         * <p>This value should be one of the followings: {@link #OPTION_CHANNEL_ONE} and
-         * {@link #OPTION_CHANNEL_ALL}. The default value is OPTION_CHANNEL_ONE.
+         * <p>This value should be one of the followings: {@link #OPTION_CHANNEL_ONE} and {@link
+         * #OPTION_CHANNEL_ALL}. The default value is OPTION_CHANNEL_ONE.
          *
          * <p>Type: TEXT
          */
@@ -338,6 +334,7 @@ public final class DvrContract {
          * to get the canonical genre strings from the text stored in the column.
          *
          * <p>Type: TEXT
+         *
          * @see android.media.tv.TvContract.Programs.Genres
          * @see android.media.tv.TvContract.Programs.Genres#encode
          * @see android.media.tv.TvContract.Programs.Genres#decode
@@ -350,10 +347,9 @@ public final class DvrContract {
          * <p>The data in the column must be a URL, or a URI in one of the following formats:
          *
          * <ul>
-         * <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})</li>
-         * <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})
-         * </li>
-         * <li>file ({@link android.content.ContentResolver#SCHEME_FILE})</li>
+         *   <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})
+         *   <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})
+         *   <li>file ({@link android.content.ContentResolver#SCHEME_FILE})
          * </ul>
          *
          * <p>Type: TEXT
@@ -366,10 +362,9 @@ public final class DvrContract {
          * <p>The data in the column must be a URL, or a URI in one of the following formats:
          *
          * <ul>
-         * <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})</li>
-         * <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})
-         * </li>
-         * <li>file ({@link android.content.ContentResolver#SCHEME_FILE})</li>
+         *   <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})
+         *   <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})
+         *   <li>file ({@link android.content.ContentResolver#SCHEME_FILE})
          * </ul>
          *
          * <p>Type: TEXT
@@ -379,15 +374,15 @@ public final class DvrContract {
         /**
          * The state of whether the series recording be canceled or not.
          *
-         * <p>This value should be one of the followings: {@link #STATE_SERIES_NORMAL} and
-         * {@link #STATE_SERIES_STOPPED}. The default value is STATE_SERIES_NORMAL.
+         * <p>This value should be one of the followings: {@link #STATE_SERIES_NORMAL} and {@link
+         * #STATE_SERIES_STOPPED}. The default value is STATE_SERIES_NORMAL.
          *
          * <p>Type: TEXT
          */
         public static final String COLUMN_STATE = "state";
 
-        private SeriesRecordings() { }
+        private SeriesRecordings() {}
     }
 
-    private DvrContract() { }
+    private DvrContract() {}
 }

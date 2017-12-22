@@ -22,7 +22,6 @@ import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.SampleSource.SampleSourceReader;
 import com.google.android.exoplayer.util.Assertions;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,8 +131,8 @@ public final class MpegTsSampleSource implements SampleSource, SampleSourceReade
     }
 
     @Override
-    public int readData(int track, long positionUs, MediaFormatHolder formatHolder,
-      SampleHolder sampleHolder) {
+    public int readData(
+            int track, long positionUs, MediaFormatHolder formatHolder, SampleHolder sampleHolder) {
         Assertions.checkState(mPrepared);
         Assertions.checkState(mTrackStates.get(track) != TRACK_STATE_DISABLED);
         if (mPendingDiscontinuities.get(track)) {

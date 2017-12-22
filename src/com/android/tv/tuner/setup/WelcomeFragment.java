@@ -28,12 +28,9 @@ import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.TunerPreferences;
 import java.util.List;
 
-/**
- * A fragment for initial screen.
- */
+/** A fragment for initial screen. */
 public class WelcomeFragment extends SetupMultiPaneFragment {
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.tuner.setup.WelcomeFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.WelcomeFragment";
 
     @Override
     protected SetupGuidedStepFragment onCreateContentFragment() {
@@ -67,8 +64,11 @@ public class WelcomeFragment extends SetupMultiPaneFragment {
         public Guidance onCreateGuidance(Bundle savedInstanceState) {
             String title;
             String description;
-            int tunerType = getArguments().getInt(TunerSetupActivity.KEY_TUNER_TYPE,
-                    TunerHal.TUNER_TYPE_BUILT_IN);
+            int tunerType =
+                    getArguments()
+                            .getInt(
+                                    TunerSetupActivity.KEY_TUNER_TYPE,
+                                    TunerHal.TUNER_TYPE_BUILT_IN);
             if (mChannelCountOnPreference == 0) {
                 switch (tunerType) {
                     case TunerHal.TUNER_TYPE_USB:
@@ -100,16 +100,23 @@ public class WelcomeFragment extends SetupMultiPaneFragment {
         }
 
         @Override
-        public void onCreateActions(@NonNull List<GuidedAction> actions,
-                Bundle savedInstanceState) {
-            String[] choices = getResources().getStringArray(mChannelCountOnPreference == 0
-                    ? R.array.ut_setup_new_choices : R.array.ut_setup_again_choices);
+        public void onCreateActions(
+                @NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
+            String[] choices =
+                    getResources()
+                            .getStringArray(
+                                    mChannelCountOnPreference == 0
+                                            ? R.array.ut_setup_new_choices
+                                            : R.array.ut_setup_again_choices);
             for (int i = 0; i < choices.length - 1; ++i) {
-                actions.add(new GuidedAction.Builder(getActivity()).id(i).title(choices[i])
-                        .build());
+                actions.add(
+                        new GuidedAction.Builder(getActivity()).id(i).title(choices[i]).build());
             }
-            actions.add(new GuidedAction.Builder(getActivity()).id(ACTION_DONE)
-                    .title(choices[choices.length - 1]).build());
+            actions.add(
+                    new GuidedAction.Builder(getActivity())
+                            .id(ACTION_DONE)
+                            .title(choices[choices.length - 1])
+                            .build());
         }
 
         @Override

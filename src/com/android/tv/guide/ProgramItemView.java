@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
@@ -49,7 +48,6 @@ import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.guide.ProgramManager.TableEntry;
 import com.android.tv.util.ToastUtils;
 import com.android.tv.util.Utils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
 
@@ -60,10 +58,10 @@ public class ProgramItemView extends TextView {
     private static final int MAX_PROGRESS = 10000; // From android.widget.ProgressBar.MAX_VALUE
 
     // State indicating the focused program is the current program
-    private static final int[] STATE_CURRENT_PROGRAM = { R.attr.state_current_program };
+    private static final int[] STATE_CURRENT_PROGRAM = {R.attr.state_current_program};
 
     // Workaround state in order to not use too much texture memory for RippleDrawable
-    private static final int[] STATE_TOO_WIDE = { R.attr.state_program_too_wide };
+    private static final int[] STATE_TOO_WIDE = {R.attr.state_program_too_wide};
 
     private static int sVisibleThreshold;
     private static int sItemPadding;
@@ -84,96 +82,119 @@ public class ProgramItemView extends TextView {
     // as a result of the re-layout (see b/21378855).
     private boolean mPreventParentRelayout;
 
-    private static final View.OnClickListener ON_CLICKED = new View.OnClickListener() {
-        @Override
-        public void onClick(final View view) {
-            TableEntry entry = ((ProgramItemView) view).mTableEntry;
-            if (entry == null) {
-                //do nothing
-                return;
-            }
-            ApplicationSingletons singletons = TvApplication.getSingletons(view.getContext());
-            Tracker tracker = singletons.getTracker();
-            tracker.sendEpgItemClicked();
-            final MainActivity tvActivity = (MainActivity) view.getContext();
-            final Channel channel = tvActivity.getChannelDataManager().getChannel(entry.channelId);
-            if (entry.isCurrentProgram()) {
-                view.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvActivity.tuneToChannel(channel);
-                        tvActivity.hideOverlaysForTune();
+    private static final View.OnClickListener ON_CLICKED =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    TableEntry entry = ((ProgramItemView) view).mTableEntry;
+                    if (entry == null) {
+                        // do nothing
+                        return;
                     }
-                }, entry.getWidth() > ((ProgramItemView) view).mMaxWidthForRipple ? 0
-                        : view.getResources()
-                                .getInteger(R.integer.program_guide_ripple_anim_duration));
-            } else if (entry.program != null && CommonFeatures.DVR.isEnabled(view.getContext())) {
-                DvrManager dvrManager = singletons.getDvrManager();
-                if (entry.entryStartUtcMillis > System.currentTimeMillis()
-                        && dvrManager.isProgramRecordable(entry.program)) {
-                    if (entry.scheduledRecording == null) {
-                        DvrUiHelper.checkStorageStatusAndShowErrorMessage(tvActivity,
-                                channel.getInputId(), new Runnable() {
+                    ApplicationSingletons singletons =
+                            TvApplication.getSingletons(view.getContext());
+                    Tracker tracker = singletons.getTracker();
+                    tracker.sendEpgItemClicked();
+                    final MainActivity tvActivity = (MainActivity) view.getContext();
+                    final Channel channel =
+                            tvActivity.getChannelDataManager().getChannel(entry.channelId);
+                    if (entry.isCurrentProgram()) {
+                        view.postDelayed(
+                                new Runnable() {
                                     @Override
                                     public void run() {
-                                        DvrUiHelper.requestRecordingFutureProgram(tvActivity,
-                                                entry.program, false);
+                                        tvActivity.tuneToChannel(channel);
+                                        tvActivity.hideOverlaysForTune();
                                     }
-                                });
-                    } else {
-                        dvrManager.removeScheduledRecording(entry.scheduledRecording);
-                        String msg = view.getResources().getString(
-                                R.string.dvr_schedules_deletion_info, entry.program.getTitle());
-                        ToastUtils.show(view.getContext(), msg, Toast.LENGTH_SHORT);
+                                },
+                                entry.getWidth() > ((ProgramItemView) view).mMaxWidthForRipple
+                                        ? 0
+                                        : view.getResources()
+                                                .getInteger(
+                                                        R.integer
+                                                                .program_guide_ripple_anim_duration));
+                    } else if (entry.program != null
+                            && CommonFeatures.DVR.isEnabled(view.getContext())) {
+                        DvrManager dvrManager = singletons.getDvrManager();
+                        if (entry.entryStartUtcMillis > System.currentTimeMillis()
+                                && dvrManager.isProgramRecordable(entry.program)) {
+                            if (entry.scheduledRecording == null) {
+                                DvrUiHelper.checkStorageStatusAndShowErrorMessage(
+                                        tvActivity,
+                                        channel.getInputId(),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                DvrUiHelper.requestRecordingFutureProgram(
+                                                        tvActivity, entry.program, false);
+                                            }
+                                        });
+                            } else {
+                                dvrManager.removeScheduledRecording(entry.scheduledRecording);
+                                String msg =
+                                        view.getResources()
+                                                .getString(
+                                                        R.string.dvr_schedules_deletion_info,
+                                                        entry.program.getTitle());
+                                ToastUtils.show(view.getContext(), msg, Toast.LENGTH_SHORT);
+                            }
+                        } else {
+                            ToastUtils.show(
+                                    view.getContext(),
+                                    view.getResources()
+                                            .getString(R.string.dvr_msg_cannot_record_program),
+                                    Toast.LENGTH_SHORT);
+                        }
                     }
-                } else {
-                    ToastUtils.show(view.getContext(), view.getResources()
-                            .getString(R.string.dvr_msg_cannot_record_program), Toast.LENGTH_SHORT);
                 }
-            }
-        }
-    };
+            };
 
     private static final View.OnFocusChangeListener ON_FOCUS_CHANGED =
             new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View view, boolean hasFocus) {
-            if (hasFocus) {
-                ((ProgramItemView) view).mUpdateFocus.run();
-            } else {
-                Handler handler = view.getHandler();
-                if (handler != null) {
-                    handler.removeCallbacks(((ProgramItemView) view).mUpdateFocus);
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    if (hasFocus) {
+                        ((ProgramItemView) view).mUpdateFocus.run();
+                    } else {
+                        Handler handler = view.getHandler();
+                        if (handler != null) {
+                            handler.removeCallbacks(((ProgramItemView) view).mUpdateFocus);
+                        }
+                    }
                 }
-            }
-        }
-    };
+            };
 
-    private final Runnable mUpdateFocus = new Runnable() {
-        @Override
-        public void run() {
-            refreshDrawableState();
-            TableEntry entry = mTableEntry;
-            if (entry == null) {
-                //do nothing
-                return;
-            }
-            if (entry.isCurrentProgram()) {
-                Drawable background = getBackground();
-                if (!mProgramGuide.isActive() || mProgramGuide.isRunningAnimation()) {
-                    // If program guide is not active or is during showing/hiding,
-                    // the animation is unnecessary, skip it.
-                    background.jumpToCurrentState();
+    private final Runnable mUpdateFocus =
+            new Runnable() {
+                @Override
+                public void run() {
+                    refreshDrawableState();
+                    TableEntry entry = mTableEntry;
+                    if (entry == null) {
+                        // do nothing
+                        return;
+                    }
+                    if (entry.isCurrentProgram()) {
+                        Drawable background = getBackground();
+                        if (!mProgramGuide.isActive() || mProgramGuide.isRunningAnimation()) {
+                            // If program guide is not active or is during showing/hiding,
+                            // the animation is unnecessary, skip it.
+                            background.jumpToCurrentState();
+                        }
+                        int progress =
+                                getProgress(entry.entryStartUtcMillis, entry.entryEndUtcMillis);
+                        setProgress(background, R.id.reverse_progress, MAX_PROGRESS - progress);
+                    }
+                    if (getHandler() != null) {
+                        getHandler()
+                                .postAtTime(
+                                        this,
+                                        Utils.ceilTime(
+                                                SystemClock.uptimeMillis(),
+                                                FOCUS_UPDATE_FREQUENCY));
+                    }
                 }
-                int progress = getProgress(entry.entryStartUtcMillis, entry.entryEndUtcMillis);
-                setProgress(background, R.id.reverse_progress, MAX_PROGRESS - progress);
-            }
-            if (getHandler() != null) {
-                getHandler().postAtTime(this,
-                        Utils.ceilTime(SystemClock.uptimeMillis(), FOCUS_UPDATE_FREQUENCY));
-            }
-        }
-    };
+            };
 
     public ProgramItemView(Context context) {
         this(context, null);
@@ -196,35 +217,46 @@ public class ProgramItemView extends TextView {
         }
         Resources res = getContext().getResources();
 
-        sVisibleThreshold = res.getDimensionPixelOffset(
-                R.dimen.program_guide_table_item_visible_threshold);
+        sVisibleThreshold =
+                res.getDimensionPixelOffset(R.dimen.program_guide_table_item_visible_threshold);
 
         sItemPadding = res.getDimensionPixelOffset(R.dimen.program_guide_table_item_padding);
-        sCompoundDrawablePadding = res.getDimensionPixelOffset(
-                R.dimen.program_guide_table_item_compound_drawable_padding);
+        sCompoundDrawablePadding =
+                res.getDimensionPixelOffset(
+                        R.dimen.program_guide_table_item_compound_drawable_padding);
 
-        ColorStateList programTitleColor = ColorStateList.valueOf(res.getColor(
-                R.color.program_guide_table_item_program_title_text_color, null));
-        ColorStateList grayedOutProgramTitleColor = res.getColorStateList(
-                R.color.program_guide_table_item_grayed_out_program_text_color, null);
-        ColorStateList episodeTitleColor = ColorStateList.valueOf(res.getColor(
-                R.color.program_guide_table_item_program_episode_title_text_color, null));
-        ColorStateList grayedOutEpisodeTitleColor = ColorStateList.valueOf(res.getColor(
-                R.color.program_guide_table_item_grayed_out_program_episode_title_text_color,
-                null));
-        int programTitleSize = res.getDimensionPixelSize(
-                R.dimen.program_guide_table_item_program_title_font_size);
-        int episodeTitleSize = res.getDimensionPixelSize(
-                R.dimen.program_guide_table_item_program_episode_title_font_size);
+        ColorStateList programTitleColor =
+                ColorStateList.valueOf(
+                        res.getColor(
+                                R.color.program_guide_table_item_program_title_text_color, null));
+        ColorStateList grayedOutProgramTitleColor =
+                res.getColorStateList(
+                        R.color.program_guide_table_item_grayed_out_program_text_color, null);
+        ColorStateList episodeTitleColor =
+                ColorStateList.valueOf(
+                        res.getColor(
+                                R.color.program_guide_table_item_program_episode_title_text_color,
+                                null));
+        ColorStateList grayedOutEpisodeTitleColor =
+                ColorStateList.valueOf(
+                        res.getColor(
+                                R.color
+                                        .program_guide_table_item_grayed_out_program_episode_title_text_color,
+                                null));
+        int programTitleSize =
+                res.getDimensionPixelSize(R.dimen.program_guide_table_item_program_title_font_size);
+        int episodeTitleSize =
+                res.getDimensionPixelSize(
+                        R.dimen.program_guide_table_item_program_episode_title_font_size);
 
-        sProgramTitleStyle = new TextAppearanceSpan(null, 0, programTitleSize, programTitleColor,
-                null);
-        sGrayedOutProgramTitleStyle = new TextAppearanceSpan(null, 0, programTitleSize,
-                grayedOutProgramTitleColor, null);
-        sEpisodeTitleStyle = new TextAppearanceSpan(null, 0, episodeTitleSize, episodeTitleColor,
-                null);
-        sGrayedOutEpisodeTitleStyle = new TextAppearanceSpan(null, 0, episodeTitleSize,
-                grayedOutEpisodeTitleColor, null);
+        sProgramTitleStyle =
+                new TextAppearanceSpan(null, 0, programTitleSize, programTitleColor, null);
+        sGrayedOutProgramTitleStyle =
+                new TextAppearanceSpan(null, 0, programTitleSize, grayedOutProgramTitleColor, null);
+        sEpisodeTitleStyle =
+                new TextAppearanceSpan(null, 0, episodeTitleSize, episodeTitleColor, null);
+        sGrayedOutEpisodeTitleStyle =
+                new TextAppearanceSpan(null, 0, episodeTitleSize, grayedOutEpisodeTitleColor, null);
     }
 
     @Override
@@ -236,8 +268,9 @@ public class ProgramItemView extends TextView {
     @Override
     protected int[] onCreateDrawableState(int extraSpace) {
         if (mTableEntry != null) {
-            int states[] = super.onCreateDrawableState(extraSpace
-                    + STATE_CURRENT_PROGRAM.length + STATE_TOO_WIDE.length);
+            int states[] =
+                    super.onCreateDrawableState(
+                            extraSpace + STATE_CURRENT_PROGRAM.length + STATE_TOO_WIDE.length);
             if (mTableEntry.isCurrentProgram()) {
                 mergeDrawableStates(states, STATE_CURRENT_PROGRAM);
             }
@@ -254,8 +287,13 @@ public class ProgramItemView extends TextView {
     }
 
     @SuppressLint("SwitchIntDef")
-    public void setValues(ProgramGuide programGuide, TableEntry entry, int selectedGenreId,
-            long fromUtcMillis, long toUtcMillis, String gapTitle) {
+    public void setValues(
+            ProgramGuide programGuide,
+            TableEntry entry,
+            int selectedGenreId,
+            long fromUtcMillis,
+            long toUtcMillis,
+            String gapTitle) {
         mProgramGuide = programGuide;
         mTableEntry = entry;
 
@@ -264,8 +302,8 @@ public class ProgramItemView extends TextView {
         setLayoutParams(layoutParams);
 
         String title = entry.program != null ? entry.program.getTitle() : null;
-        String episode = entry.program != null ?
-                entry.program.getEpisodeDisplayTitle(getContext()) : null;
+        String episode =
+                entry.program != null ? entry.program.getEpisodeDisplayTitle(getContext()) : null;
 
         TextAppearanceSpan titleStyle = sGrayedOutProgramTitleStyle;
         TextAppearanceSpan episodeStyle = sGrayedOutEpisodeTitleStyle;
@@ -298,11 +336,14 @@ public class ProgramItemView extends TextView {
                 description.append(episode);
 
                 description.setSpan(titleStyle, 0, middle, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                description.setSpan(episodeStyle, middle, description.length(),
+                description.setSpan(
+                        episodeStyle,
+                        middle,
+                        description.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                description.setSpan(titleStyle, 0, description.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                description.setSpan(
+                        titleStyle, 0, description.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             setText(description);
 
@@ -331,9 +372,7 @@ public class ProgramItemView extends TextView {
         mMaxWidthForRipple = GuideUtils.convertMillisToPixel(fromUtcMillis, toUtcMillis);
     }
 
-    /**
-     * Update programItemView to handle alignments of text.
-     */
+    /** Update programItemView to handle alignments of text. */
     public void updateVisibleArea() {
         View parentView = ((View) getParent());
         if (parentView == null) {
@@ -341,7 +380,7 @@ public class ProgramItemView extends TextView {
         }
         if (getLayoutDirection() == LAYOUT_DIRECTION_LTR) {
             layoutVisibleArea(parentView.getLeft() - getLeft(), getRight() - parentView.getRight());
-        } else  {
+        } else {
             layoutVisibleArea(getRight() - parentView.getRight(), parentView.getLeft() - getLeft());
         }
     }
@@ -349,16 +388,14 @@ public class ProgramItemView extends TextView {
     /**
      * Layout title and episode according to visible area.
      *
-     * Here's the spec.
-     *   1. Don't show text if it's shorter than 48dp.
-     *   2. Try showing whole text in visible area by placing and wrapping text,
-     *      but do not wrap text less than 30min.
-     *   3. Episode title is visible only if title isn't multi-line.
+     * <p>Here's the spec. 1. Don't show text if it's shorter than 48dp. 2. Try showing whole text
+     * in visible area by placing and wrapping text, but do not wrap text less than 30min. 3.
+     * Episode title is visible only if title isn't multi-line.
      *
      * @param startOffset Offset of the start position from the enclosing view's start position.
      * @param endOffset Offset of the end position from the enclosing view's end position.
      */
-     private void layoutVisibleArea(int startOffset, int endOffset) {
+    private void layoutVisibleArea(int startOffset, int endOffset) {
         int width = mTableEntry.getWidth();
         int startPadding = Math.max(0, startOffset);
         int endPadding = Math.max(0, endOffset);
@@ -417,11 +454,15 @@ public class ProgramItemView extends TextView {
 
     private static int getStateCount(StateListDrawable stateListDrawable) {
         try {
-            Object stateCount = StateListDrawable.class.getDeclaredMethod("getStateCount")
-                    .invoke(stateListDrawable);
+            Object stateCount =
+                    StateListDrawable.class
+                            .getDeclaredMethod("getStateCount")
+                            .invoke(stateListDrawable);
             return (int) stateCount;
-        } catch (NoSuchMethodException|IllegalAccessException|IllegalArgumentException
-                |InvocationTargetException e) {
+        } catch (NoSuchMethodException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException e) {
             Log.e(TAG, "Failed to call StateListDrawable.getStateCount()", e);
             return 0;
         }
@@ -429,12 +470,15 @@ public class ProgramItemView extends TextView {
 
     private static Drawable getStateDrawable(StateListDrawable stateListDrawable, int index) {
         try {
-            Object drawable = StateListDrawable.class
-                    .getDeclaredMethod("getStateDrawable", Integer.TYPE)
-                    .invoke(stateListDrawable, index);
+            Object drawable =
+                    StateListDrawable.class
+                            .getDeclaredMethod("getStateDrawable", Integer.TYPE)
+                            .invoke(stateListDrawable, index);
             return (Drawable) drawable;
-        } catch (NoSuchMethodException|IllegalAccessException|IllegalArgumentException
-                |InvocationTargetException e) {
+        } catch (NoSuchMethodException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException e) {
             Log.e(TAG, "Failed to call StateListDrawable.getStateDrawable(" + index + ")", e);
             return null;
         }

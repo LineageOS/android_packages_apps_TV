@@ -31,9 +31,7 @@
 
 package com.android.tv.tuner.util;
 
-/**
- * An expandable byte buffer built on byte array.
- */
+/** An expandable byte buffer built on byte array. */
 public final class ByteArrayBuffer {
 
     private byte[] buffer;
@@ -57,8 +55,11 @@ public final class ByteArrayBuffer {
         if (b == null) {
             return;
         }
-        if ((off < 0) || (off > b.length) || (len < 0) ||
-                ((off + len) < 0) || ((off + len) > b.length)) {
+        if ((off < 0)
+                || (off > b.length)
+                || (len < 0)
+                || ((off + len) < 0)
+                || ((off + len) > b.length)) {
             throw new IndexOutOfBoundsException();
         }
         if (len == 0) {
@@ -85,8 +86,11 @@ public final class ByteArrayBuffer {
         if (b == null) {
             return;
         }
-        if ((off < 0) || (off > b.length) || (len < 0) ||
-                ((off + len) < 0) || ((off + len) > b.length)) {
+        if ((off < 0)
+                || (off > b.length)
+                || (len < 0)
+                || ((off + len) < 0)
+                || ((off + len) > b.length)) {
             throw new IndexOutOfBoundsException();
         }
         if (len == 0) {
@@ -145,5 +149,4 @@ public final class ByteArrayBuffer {
     public boolean isFull() {
         return this.len == this.buffer.length;
     }
-
 }

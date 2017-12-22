@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
@@ -41,13 +40,10 @@ import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.ScheduledRecording.RecordingState;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.util.Utils;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Displays the DVR history.
- */
+/** Displays the DVR history. */
 @TargetApi(VERSION_CODES.N)
 public class DvrHistoryDialogFragment extends SafeDismissDialogFragment {
     public static final String DIALOG_TAG = DvrHistoryDialogFragment.class.getSimpleName();
@@ -67,60 +63,78 @@ public class DvrHistoryDialogFragment extends SafeDismissDialogFragment {
         }
         mSchedules.sort(ScheduledRecording.START_TIME_COMPARATOR.reversed());
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        ArrayAdapter adapter = new ArrayAdapter<ScheduledRecording>(getContext(),
-                R.layout.list_item_dvr_history, ScheduledRecording.toArray(mSchedules)) {
-            @NonNull
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = inflater.inflate(R.layout.list_item_dvr_history, parent, false);
-                ScheduledRecording schedule = mSchedules.get(position);
-                setText(view, R.id.state, getStateString(schedule.getState()));
-                setText(view, R.id.schedule_time, getRecordingTimeText(schedule));
-                setText(view, R.id.program_title, DvrUiHelper.getStyledTitleWithEpisodeNumber(
-                        getContext(), schedule, 0));
-                setText(view, R.id.channel_name, getChannelNameText(schedule));
-                return view;
-            }
+        ArrayAdapter adapter =
+                new ArrayAdapter<ScheduledRecording>(
+                        getContext(),
+                        R.layout.list_item_dvr_history,
+                        ScheduledRecording.toArray(mSchedules)) {
+                    @NonNull
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        View view = inflater.inflate(R.layout.list_item_dvr_history, parent, false);
+                        ScheduledRecording schedule = mSchedules.get(position);
+                        setText(view, R.id.state, getStateString(schedule.getState()));
+                        setText(view, R.id.schedule_time, getRecordingTimeText(schedule));
+                        setText(
+                                view,
+                                R.id.program_title,
+                                DvrUiHelper.getStyledTitleWithEpisodeNumber(
+                                        getContext(), schedule, 0));
+                        setText(view, R.id.channel_name, getChannelNameText(schedule));
+                        return view;
+                    }
 
-            private void setText(View view, int id, CharSequence text) {
-                ((TextView) view.findViewById(id)).setText(text);
-            }
+                    private void setText(View view, int id, CharSequence text) {
+                        ((TextView) view.findViewById(id)).setText(text);
+                    }
 
-            private void setText(View view, int id, int text) {
-                ((TextView) view.findViewById(id)).setText(text);
-            }
+                    private void setText(View view, int id, int text) {
+                        ((TextView) view.findViewById(id)).setText(text);
+                    }
 
-            @SuppressLint("SwitchIntDef")
-            private int getStateString(@RecordingState int state) {
-                switch (state) {
-                    case ScheduledRecording.STATE_RECORDING_CLIPPED:
-                        return R.string.dvr_history_dialog_state_clip;
-                    case ScheduledRecording.STATE_RECORDING_FAILED:
-                        return R.string.dvr_history_dialog_state_fail;
-                    case ScheduledRecording.STATE_RECORDING_FINISHED:
-                        return R.string.dvr_history_dialog_state_success;
-                    default:
-                        break;
-                }
-                return 0;
-            }
+                    @SuppressLint("SwitchIntDef")
+                    private int getStateString(@RecordingState int state) {
+                        switch (state) {
+                            case ScheduledRecording.STATE_RECORDING_CLIPPED:
+                                return R.string.dvr_history_dialog_state_clip;
+                            case ScheduledRecording.STATE_RECORDING_FAILED:
+                                return R.string.dvr_history_dialog_state_fail;
+                            case ScheduledRecording.STATE_RECORDING_FINISHED:
+                                return R.string.dvr_history_dialog_state_success;
+                            default:
+                                break;
+                        }
+                        return 0;
+                    }
 
-            private String getChannelNameText(ScheduledRecording schedule) {
-                Channel channel = channelDataManager.getChannel(schedule.getChannelId());
-                return channel == null ? null :
-                        TextUtils.isEmpty(channel.getDisplayName()) ? channel.getDisplayNumber() :
-                                channel.getDisplayName().trim() + " " + channel.getDisplayNumber();
-            }
+                    private String getChannelNameText(ScheduledRecording schedule) {
+                        Channel channel = channelDataManager.getChannel(schedule.getChannelId());
+                        return channel == null
+                                ? null
+                                : TextUtils.isEmpty(channel.getDisplayName())
+                                        ? channel.getDisplayNumber()
+                                        : channel.getDisplayName().trim()
+                                                + " "
+                                                + channel.getDisplayNumber();
+                    }
 
-            private String getRecordingTimeText(ScheduledRecording schedule) {
-                return Utils.getDurationString(getContext(), schedule.getStartTimeMs(),
-                        schedule.getEndTimeMs(), true, true, true, 0);
-            }
-        };
+                    private String getRecordingTimeText(ScheduledRecording schedule) {
+                        return Utils.getDurationString(
+                                getContext(),
+                                schedule.getStartTimeMs(),
+                                schedule.getEndTimeMs(),
+                                true,
+                                true,
+                                true,
+                                0);
+                    }
+                };
         ListView listView = new ListView(getActivity());
         listView.setAdapter(adapter);
-        return new AlertDialog.Builder(getActivity()).setTitle(R.string.dvr_history_dialog_title)
-                .setView(listView).create();
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.dvr_history_dialog_title)
+                .setView(listView)
+                .create();
     }
 
     @Override

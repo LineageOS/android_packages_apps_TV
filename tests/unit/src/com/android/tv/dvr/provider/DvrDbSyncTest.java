@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 import android.os.Build;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManagerImpl;
@@ -35,15 +34,12 @@ import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.recorder.SeriesRecordingScheduler;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-/**
- * Tests for {@link com.android.tv.dvr.DvrScheduleManager}
- */
+/** Tests for {@link com.android.tv.dvr.DvrScheduleManager} */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class DvrDbSyncTest {
@@ -53,12 +49,20 @@ public class DvrDbSyncTest {
     private static final long BASE_END_TIME_MS = 1;
     private static final String BASE_SEASON_NUMBER = "2";
     private static final String BASE_EPISODE_NUMBER = "3";
-    private static final Program BASE_PROGRAM = new Program.Builder().setId(BASE_PROGRAM_ID)
-            .setStartTimeUtcMillis(BASE_START_TIME_MS).setEndTimeUtcMillis(BASE_END_TIME_MS)
-            .build();
-    private static final Program BASE_SERIES_PROGRAM = new Program.Builder().setId(BASE_PROGRAM_ID)
-            .setStartTimeUtcMillis(BASE_START_TIME_MS).setEndTimeUtcMillis(BASE_END_TIME_MS)
-            .setSeasonNumber(BASE_SEASON_NUMBER).setEpisodeNumber(BASE_EPISODE_NUMBER).build();
+    private static final Program BASE_PROGRAM =
+            new Program.Builder()
+                    .setId(BASE_PROGRAM_ID)
+                    .setStartTimeUtcMillis(BASE_START_TIME_MS)
+                    .setEndTimeUtcMillis(BASE_END_TIME_MS)
+                    .build();
+    private static final Program BASE_SERIES_PROGRAM =
+            new Program.Builder()
+                    .setId(BASE_PROGRAM_ID)
+                    .setStartTimeUtcMillis(BASE_START_TIME_MS)
+                    .setEndTimeUtcMillis(BASE_END_TIME_MS)
+                    .setSeasonNumber(BASE_SEASON_NUMBER)
+                    .setEpisodeNumber(BASE_EPISODE_NUMBER)
+                    .build();
     private static final ScheduledRecording BASE_SCHEDULE =
             ScheduledRecording.builder(INPUT_ID, BASE_PROGRAM).build();
     private static final ScheduledRecording BASE_SERIES_SCHEDULE =
@@ -76,8 +80,13 @@ public class DvrDbSyncTest {
         when(mChannelDataManager.isDbLoadFinished()).thenReturn(true);
         when(mDvrManager.addSeriesRecording(anyObject(), anyObject(), anyInt()))
                 .thenReturn(SeriesRecording.builder(INPUT_ID, BASE_PROGRAM).build());
-        mDbSync = new DvrDbSync(getContext(), mDataManager, mChannelDataManager,
-                mDvrManager, mSeriesRecordingScheduler);
+        mDbSync =
+                new DvrDbSync(
+                        getContext(),
+                        mDataManager,
+                        mChannelDataManager,
+                        mDvrManager,
+                        mSeriesRecordingScheduler);
     }
 
     @Test
@@ -92,19 +101,25 @@ public class DvrDbSyncTest {
         addSchedule(BASE_PROGRAM_ID, BASE_SCHEDULE);
         long startTimeMs = BASE_START_TIME_MS + 1;
         long endTimeMs = BASE_END_TIME_MS + 1;
-        Program program = new Program.Builder(BASE_PROGRAM).setStartTimeUtcMillis(startTimeMs)
-                .setEndTimeUtcMillis(endTimeMs).build();
+        Program program =
+                new Program.Builder(BASE_PROGRAM)
+                        .setStartTimeUtcMillis(startTimeMs)
+                        .setEndTimeUtcMillis(endTimeMs)
+                        .build();
         mDbSync.handleUpdateProgram(program, BASE_PROGRAM_ID);
         assertUpdateScheduleCalled(program);
     }
 
     @Test
     public void testHandleUpdateProgram_changeTimeInProgressNotCalled() {
-        addSchedule(BASE_PROGRAM_ID, ScheduledRecording.buildFrom(BASE_SCHEDULE)
-                .setState(ScheduledRecording.STATE_RECORDING_IN_PROGRESS).build());
+        addSchedule(
+                BASE_PROGRAM_ID,
+                ScheduledRecording.buildFrom(BASE_SCHEDULE)
+                        .setState(ScheduledRecording.STATE_RECORDING_IN_PROGRESS)
+                        .build());
         long startTimeMs = BASE_START_TIME_MS + 1;
-        Program program = new Program.Builder(BASE_PROGRAM).setStartTimeUtcMillis(startTimeMs)
-                .build();
+        Program program =
+                new Program.Builder(BASE_PROGRAM).setStartTimeUtcMillis(startTimeMs).build();
         mDbSync.handleUpdateProgram(program, BASE_PROGRAM_ID);
         verify(mDataManager, never()).updateScheduledRecording(anyObject());
     }
@@ -114,20 +129,29 @@ public class DvrDbSyncTest {
         addSchedule(BASE_PROGRAM_ID, BASE_SERIES_SCHEDULE);
         String seasonNumber = BASE_SEASON_NUMBER + "1";
         String episodeNumber = BASE_EPISODE_NUMBER + "1";
-        Program program = new Program.Builder(BASE_SERIES_PROGRAM).setSeasonNumber(seasonNumber)
-                .setEpisodeNumber(episodeNumber).build();
+        Program program =
+                new Program.Builder(BASE_SERIES_PROGRAM)
+                        .setSeasonNumber(seasonNumber)
+                        .setEpisodeNumber(episodeNumber)
+                        .build();
         mDbSync.handleUpdateProgram(program, BASE_PROGRAM_ID);
         assertUpdateScheduleCalled(program);
     }
 
     @Test
     public void testHandleUpdateProgram_finished() {
-        addSchedule(BASE_PROGRAM_ID, ScheduledRecording.buildFrom(BASE_SERIES_SCHEDULE)
-                .setState(ScheduledRecording.STATE_RECORDING_FINISHED).build());
+        addSchedule(
+                BASE_PROGRAM_ID,
+                ScheduledRecording.buildFrom(BASE_SERIES_SCHEDULE)
+                        .setState(ScheduledRecording.STATE_RECORDING_FINISHED)
+                        .build());
         String seasonNumber = BASE_SEASON_NUMBER + "1";
         String episodeNumber = BASE_EPISODE_NUMBER + "1";
-        Program program = new Program.Builder(BASE_SERIES_PROGRAM).setSeasonNumber(seasonNumber)
-                .setEpisodeNumber(episodeNumber).build();
+        Program program =
+                new Program.Builder(BASE_SERIES_PROGRAM)
+                        .setSeasonNumber(seasonNumber)
+                        .setEpisodeNumber(episodeNumber)
+                        .build();
         mDbSync.handleUpdateProgram(program, BASE_PROGRAM_ID);
         verify(mDataManager, never()).updateScheduledRecording(anyObject());
     }
@@ -137,7 +161,8 @@ public class DvrDbSyncTest {
     }
 
     private void assertUpdateScheduleCalled(Program program) {
-        verify(mDataManager).updateScheduledRecording(
-                eq(ScheduledRecording.builder(INPUT_ID, program).build()));
+        verify(mDataManager)
+                .updateScheduledRecording(
+                        eq(ScheduledRecording.builder(INPUT_ID, program).build()));
     }
 }

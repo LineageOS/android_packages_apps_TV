@@ -20,27 +20,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.testing.ComparableTester;
-
 import org.junit.Test;
 
-/**
- * Tests for {@link ChannelNumber}.
- */
+/** Tests for {@link ChannelNumber}. */
 @SmallTest
 public class ChannelNumberTest {
-    /**
-     * Test method for {@link ChannelNumber#ChannelNumber()}.
-     */
+    /** Test method for {@link ChannelNumber#ChannelNumber()}. */
     @Test
     public void testChannelNumber() {
         assertChannelEquals(new ChannelNumber(), "", false, "");
     }
 
     /**
-     * Test method for
-     * {@link com.android.tv.data.ChannelNumber#parseChannelNumber(java.lang.String)}.
+     * Test method for {@link
+     * com.android.tv.data.ChannelNumber#parseChannelNumber(java.lang.String)}.
      */
     @Test
     public void testParseChannelNumber() {
@@ -55,9 +49,7 @@ public class ChannelNumberTest {
         assertChannelEquals(parseChannelNumber("5-6"), "5", true, "6");
     }
 
-    /**
-     * Test method for {@link ChannelNumber#compareTo(com.android.tv.data.ChannelNumber)}.
-     */
+    /** Test method for {@link ChannelNumber#compareTo(com.android.tv.data.ChannelNumber)}. */
     @Test
     public void testCompareTo() {
         new ComparableTester<ChannelNumber>()
@@ -73,9 +65,7 @@ public class ChannelNumberTest {
                 .test();
     }
 
-    /**
-     * Test method for {@link ChannelNumber#compare(java.lang.String, java.lang.String)}.
-     */
+    /** Test method for {@link ChannelNumber#compare(java.lang.String, java.lang.String)}. */
     @Test
     public void testCompare() {
         // Only need to test nulls, the reset is tested by testCompareTo
@@ -87,11 +77,13 @@ public class ChannelNumberTest {
         assertEquals("compareTo(1,null)>0", true, ChannelNumber.compare("1", null) > 0);
     }
 
-    private void assertChannelEquals(ChannelNumber actual, String expectedMajor,
-            boolean expectedHasDelimiter, String expectedMinor) {
+    private void assertChannelEquals(
+            ChannelNumber actual,
+            String expectedMajor,
+            boolean expectedHasDelimiter,
+            String expectedMinor) {
         assertEquals(actual + " major", actual.majorNumber, expectedMajor);
         assertEquals(actual + " hasDelimiter", actual.hasDelimiter, expectedHasDelimiter);
         assertEquals(actual + " minor", actual.minorNumber, expectedMinor);
     }
-
 }

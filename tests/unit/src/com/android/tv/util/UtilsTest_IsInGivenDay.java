@@ -20,30 +20,28 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
-
-import org.junit.Test;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import org.junit.Test;
 
-/**
- * Tests for {@link com.android.tv.util.Utils#isInGivenDay}.
- */
+/** Tests for {@link com.android.tv.util.Utils#isInGivenDay}. */
 @SmallTest
 public class UtilsTest_IsInGivenDay {
     @Test
     public void testIsInGivenDay() {
-        assertTrue(Utils.isInGivenDay(
-                new GregorianCalendar(2015, Calendar.JANUARY, 1).getTimeInMillis(),
-                new GregorianCalendar(2015, Calendar.JANUARY, 1, 0, 30).getTimeInMillis()));
+        assertTrue(
+                Utils.isInGivenDay(
+                        new GregorianCalendar(2015, Calendar.JANUARY, 1).getTimeInMillis(),
+                        new GregorianCalendar(2015, Calendar.JANUARY, 1, 0, 30).getTimeInMillis()));
     }
 
     @Test
     public void testIsNotInGivenDay() {
-        assertFalse(Utils.isInGivenDay(
-                new GregorianCalendar(2015, Calendar.JANUARY, 1).getTimeInMillis(),
-                new GregorianCalendar(2015, Calendar.JANUARY, 2).getTimeInMillis()));
+        assertFalse(
+                Utils.isInGivenDay(
+                        new GregorianCalendar(2015, Calendar.JANUARY, 1).getTimeInMillis(),
+                        new GregorianCalendar(2015, Calendar.JANUARY, 2).getTimeInMillis()));
     }
 
     @Test
@@ -53,8 +51,7 @@ public class UtilsTest_IsInGivenDay {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 
         // 2015.01.01 00:00 in KST = 2014.12.31 15:00 in UTC
-        long date2015StartMs =
-                new GregorianCalendar(2015, Calendar.JANUARY, 1).getTimeInMillis();
+        long date2015StartMs = new GregorianCalendar(2015, Calendar.JANUARY, 1).getTimeInMillis();
 
         // 2015.01.01 10:00 in KST = 2015.01.01 01:00 in UTC
         long date2015Start10AMMs =

@@ -22,17 +22,12 @@ import static org.junit.Assert.assertTrue;
 import android.os.Build;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.dvr.data.SeasonEpisodeNumber;
-
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 
-/**
- * Tests for {@link EpisodicProgramLoadTask}
- */
+/** Tests for {@link EpisodicProgramLoadTask} */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class EpisodicProgramLoadTaskTest {
@@ -46,38 +41,49 @@ public class EpisodicProgramLoadTaskTest {
     @Test
     public void testEpisodeAlreadyScheduled_true() {
         List<SeasonEpisodeNumber> seasonEpisodeNumbers = new ArrayList<>();
-        SeasonEpisodeNumber seasonEpisodeNumber = new SeasonEpisodeNumber(
-                SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1);
+        SeasonEpisodeNumber seasonEpisodeNumber =
+                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1);
         seasonEpisodeNumbers.add(seasonEpisodeNumber);
-        assertTrue(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1)));
+        assertTrue(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(
+                                SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1)));
     }
 
     @Test
     public void testEpisodeAlreadyScheduled_false() {
         List<SeasonEpisodeNumber> seasonEpisodeNumbers = new ArrayList<>();
-        SeasonEpisodeNumber seasonEpisodeNumber = new SeasonEpisodeNumber(
-                SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1);
+        SeasonEpisodeNumber seasonEpisodeNumber =
+                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1);
         seasonEpisodeNumbers.add(seasonEpisodeNumber);
-        assertFalse(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID2, SEASON_NUMBER1, EPISODE_NUMBER1)));
-        assertFalse(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER2, EPISODE_NUMBER1)));
-        assertFalse(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER2)));
+        assertFalse(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(
+                                SERIES_RECORDING_ID2, SEASON_NUMBER1, EPISODE_NUMBER1)));
+        assertFalse(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(
+                                SERIES_RECORDING_ID1, SEASON_NUMBER2, EPISODE_NUMBER1)));
+        assertFalse(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(
+                                SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER2)));
     }
 
     @Test
     public void testEpisodeAlreadyScheduled_null() {
         List<SeasonEpisodeNumber> seasonEpisodeNumbers = new ArrayList<>();
-        SeasonEpisodeNumber seasonEpisodeNumber = new SeasonEpisodeNumber(
-                SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1);
+        SeasonEpisodeNumber seasonEpisodeNumber =
+                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, EPISODE_NUMBER1);
         seasonEpisodeNumbers.add(seasonEpisodeNumber);
-        assertFalse(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, null, EPISODE_NUMBER1)));
-        assertFalse(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, null)));
-        assertFalse(seasonEpisodeNumbers.contains(
-                new SeasonEpisodeNumber(SERIES_RECORDING_ID1, null, null)));
+        assertFalse(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(SERIES_RECORDING_ID1, null, EPISODE_NUMBER1)));
+        assertFalse(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(SERIES_RECORDING_ID1, SEASON_NUMBER1, null)));
+        assertFalse(
+                seasonEpisodeNumbers.contains(
+                        new SeasonEpisodeNumber(SERIES_RECORDING_ID1, null, null)));
     }
 }

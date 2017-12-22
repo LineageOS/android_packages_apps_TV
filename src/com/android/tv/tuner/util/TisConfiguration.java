@@ -2,9 +2,7 @@ package com.android.tv.tuner.util;
 
 import android.content.Context;
 
-/**
- * A helper class of tuner configuration.
- */
+/** A helper class of tuner configuration. */
 public class TisConfiguration {
     private static final String LC_PACKAGE_NAME = "com.android.tv";
 
@@ -17,6 +15,6 @@ public class TisConfiguration {
     }
 
     public static int getTunerHwDeviceId(Context context) {
-        return 0;  // FIXME: Make it OEM configurable
+        return 0; // FIXME: Make it OEM configurable
     }
 }

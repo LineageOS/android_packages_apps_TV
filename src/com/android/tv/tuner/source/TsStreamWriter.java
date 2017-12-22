@@ -19,7 +19,6 @@ package com.android.tv.tuner.source;
 import android.content.Context;
 import android.util.Log;
 import com.android.tv.tuner.data.TunerChannel;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,9 +26,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Stores TS files to the disk for debugging.
- */
+/** Stores TS files to the disk for debugging. */
 public class TsStreamWriter {
     private static final String TAG = "TsStreamWriter";
     private static final boolean DEBUG = false;
@@ -79,16 +76,19 @@ public class TsStreamWriter {
         mChannel = channel;
     }
 
-    /**
-     * Opens a file to store TS data.
-     */
+    /** Opens a file to store TS data. */
     public void openFile() {
         if (mChannel == null || mDirectoryPath == null) {
             return;
         }
         mFileStartTimeMs = System.currentTimeMillis();
-        mFileName = mChannel.getDisplayNumber() + SEPARATOR + mFileStartTimeMs + SEPARATOR
-                + mInstanceId + ".ts";
+        mFileName =
+                mChannel.getDisplayNumber()
+                        + SEPARATOR
+                        + mFileStartTimeMs
+                        + SEPARATOR
+                        + mInstanceId
+                        + ".ts";
         String filePath = mDirectoryPath + "/" + mFileName;
         try {
             mFileOutputStream = new FileOutputStream(filePath, false);
@@ -101,7 +101,7 @@ public class TsStreamWriter {
      * Closes the file and stops storing TS data.
      *
      * @param calledWhenStopStream {@code true} if this method is called when the stream is stopped
-     *                             {@code false} otherwise
+     *     {@code false} otherwise
      */
     public void closeFile(boolean calledWhenStopStream) {
         if (mFileOutputStream == null) {
@@ -141,8 +141,8 @@ public class TsStreamWriter {
     /**
      * Deletes outdated files to save storage.
      *
-     * @param deleteAll {@code true} if all the files with the relative ID should be deleted
-     *                  {@code false} if the most recent file should not be deleted
+     * @param deleteAll {@code true} if all the files with the relative ID should be deleted {@code
+     *     false} if the most recent file should not be deleted
      */
     private void deleteOutdatedFiles(boolean deleteAll) {
         if (mFileName == null) {
@@ -157,7 +157,8 @@ public class TsStreamWriter {
             return;
         }
         for (File file : mDirectory.listFiles()) {
-            if (file.isFile() && getFileId(file) == mInstanceId
+            if (file.isFile()
+                    && getFileId(file) == mInstanceId
                     && (deleteAll || !mFileName.equals(file.getName()))) {
                 boolean deleted = file.delete();
                 if (DEBUG && !deleted) {
@@ -178,11 +179,11 @@ public class TsStreamWriter {
         }
         Set<Integer> idSet = getExistingIds();
         if (idSet == null) {
-            return  NO_INSTANCE_ID;
+            return NO_INSTANCE_ID;
         }
         for (int i = 0; i < MAX_GET_ID_RETRY_COUNT; i++) {
             // Range [1, MAX_INSTANCE_ID]
-            int id = (int)Math.floor(Math.random() * MAX_INSTANCE_ID) + 1;
+            int id = (int) Math.floor(Math.random() * MAX_INSTANCE_ID) + 1;
             if (!idSet.contains(id)) {
                 return id;
             }
@@ -203,7 +204,7 @@ public class TsStreamWriter {
         Set<Integer> idSet = new HashSet<>();
         for (File file : mDirectory.listFiles()) {
             int id = getFileId(file);
-            if(id != NO_INSTANCE_ID) {
+            if (id != NO_INSTANCE_ID) {
                 idSet.add(id);
             }
         }

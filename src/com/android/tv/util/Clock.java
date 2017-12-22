@@ -18,13 +18,13 @@ package com.android.tv.util;
 import android.os.SystemClock;
 
 /**
- * An interface through which system clocks can be read. The {@link #SYSTEM} implementation
- * must be used for all non-test cases.
+ * An interface through which system clocks can be read. The {@link #SYSTEM} implementation must be
+ * used for all non-test cases.
  */
 public interface Clock {
     /**
-     * Returns the current time in milliseconds since January 1, 1970 00:00:00.0 UTC.
-     * See {@link System#currentTimeMillis()}.
+     * Returns the current time in milliseconds since January 1, 1970 00:00:00.0 UTC. See {@link
+     * System#currentTimeMillis()}.
      */
     long currentTimeMillis();
 
@@ -43,23 +43,22 @@ public interface Clock {
      */
     void sleep(long ms);
 
-    /**
-     * The default implementation of Clock.
-     */
-    Clock SYSTEM = new Clock() {
-        @Override
-        public long currentTimeMillis() {
-            return System.currentTimeMillis();
-        }
+    /** The default implementation of Clock. */
+    Clock SYSTEM =
+            new Clock() {
+                @Override
+                public long currentTimeMillis() {
+                    return System.currentTimeMillis();
+                }
 
-        @Override
-        public long elapsedRealtime() {
-            return SystemClock.elapsedRealtime();
-        }
+                @Override
+                public long elapsedRealtime() {
+                    return SystemClock.elapsedRealtime();
+                }
 
-        @Override
-        public void sleep(long ms) {
-            SystemClock.sleep(ms);
-        }
-    };
+                @Override
+                public void sleep(long ms) {
+                    SystemClock.sleep(ms);
+                }
+            };
 }

@@ -19,9 +19,8 @@ import com.google.android.exoplayer2.util.LibraryLoader;
 import com.google.android.exoplayer2.util.MimeTypes;
 
 /**
- * This class is based on com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary from ExoPlayer2
- * in order to support mp2 decoder.
- * Configures and queries the underlying native library.
+ * This class is based on com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary from ExoPlayer2 in
+ * order to support mp2 decoder. Configures and queries the underlying native library.
  */
 public final class FfmpegLibrary {
 
@@ -39,23 +38,17 @@ public final class FfmpegLibrary {
         LOADER.setLibraries(libraries);
     }
 
-    /**
-     * Returns whether the underlying library is available, loading it if necessary.
-     */
+    /** Returns whether the underlying library is available, loading it if necessary. */
     public static boolean isAvailable() {
         return LOADER.isAvailable();
     }
 
-    /**
-     * Returns the version of the underlying library if available, or null otherwise.
-     */
+    /** Returns the version of the underlying library if available, or null otherwise. */
     public static String getVersion() {
         return isAvailable() ? ffmpegGetVersion() : null;
     }
 
-    /**
-     * Returns whether the underlying library supports the specified MIME type.
-     */
+    /** Returns whether the underlying library supports the specified MIME type. */
     public static boolean supportsFormat(String mimeType) {
         if (!isAvailable()) {
             return false;
@@ -64,9 +57,7 @@ public final class FfmpegLibrary {
         return codecName != null && ffmpegHasDecoder(codecName);
     }
 
-    /**
-     * Returns the name of the FFmpeg decoder that could be used to decode {@code mimeType}.
-     */
+    /** Returns the name of the FFmpeg decoder that could be used to decode {@code mimeType}. */
     /* package */ static String getCodecName(String mimeType) {
         switch (mimeType) {
             case MimeTypes.AUDIO_MPEG_L2:
@@ -79,6 +70,6 @@ public final class FfmpegLibrary {
     }
 
     private static native String ffmpegGetVersion();
-    private static native boolean ffmpegHasDecoder(String codecName);
 
+    private static native boolean ffmpegHasDecoder(String codecName);
 }

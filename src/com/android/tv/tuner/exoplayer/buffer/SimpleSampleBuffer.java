@@ -17,23 +17,20 @@
 package com.android.tv.tuner.exoplayer.buffer;
 
 import android.os.ConditionVariable;
-
 import android.support.annotation.NonNull;
-
+import com.android.tv.common.SoftPreconditions;
+import com.android.tv.tuner.exoplayer.SampleExtractor;
+import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
-import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
-import com.android.tv.tuner.exoplayer.SampleExtractor;
-
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Handles I/O for {@link SampleExtractor} when
- * physical storage based buffer is not used. Trickplay is disabled.
+ * Handles I/O for {@link SampleExtractor} when physical storage based buffer is not used. Trickplay
+ * is disabled.
  */
 public class SimpleSampleBuffer implements BufferManager.SampleBuffer {
     private final SamplePool mSamplePool = new SamplePool();
@@ -50,8 +47,8 @@ public class SimpleSampleBuffer implements BufferManager.SampleBuffer {
     }
 
     @Override
-    public synchronized void init(@NonNull List<String> ids,
-            @NonNull List<MediaFormat> mediaFormats) {
+    public synchronized void init(
+            @NonNull List<String> ids, @NonNull List<MediaFormat> mediaFormats) {
         int trackCount = ids.size();
         mPlayingSampleQueues = new SampleQueue[trackCount];
         for (int i = 0; i < trackCount; i++) {
@@ -124,8 +121,8 @@ public class SimpleSampleBuffer implements BufferManager.SampleBuffer {
     }
 
     @Override
-    public void writeSample(int index, SampleHolder sample,
-            ConditionVariable conditionVariable) throws IOException {
+    public void writeSample(int index, SampleHolder sample, ConditionVariable conditionVariable)
+            throws IOException {
         sample.data.position(0).limit(sample.size);
         SampleHolder sampleToQueue = mSamplePool.acquireSample(sample.size);
         sampleToQueue.size = sample.size;

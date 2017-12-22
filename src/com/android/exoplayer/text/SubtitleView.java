@@ -32,27 +32,20 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
-
 import com.google.android.exoplayer.util.Util;
-
 import java.util.ArrayList;
 
 /**
- * Since this class does not exist in recent version of ExoPlayer and used by
- * {@link com.android.tv.tuner.cc.CaptionWindowLayout}, this class is copied from
- * older version of ExoPlayer.
- * A view for rendering a single caption.
+ * Since this class does not exist in recent version of ExoPlayer and used by {@link
+ * com.android.tv.tuner.cc.CaptionWindowLayout}, this class is copied from older version of
+ * ExoPlayer. A view for rendering a single caption.
  */
 @Deprecated
 public class SubtitleView extends View {
-    /**
-     * Ratio of inner padding to font size.
-     */
+    /** Ratio of inner padding to font size. */
     private static final float INNER_PADDING_RATIO = 0.125f;
 
-    /**
-     * Temporary rectangle used for computing line bounds.
-     */
+    /** Temporary rectangle used for computing line bounds. */
     private final RectF mLineBounds = new RectF();
 
     // Styled dimensions.
@@ -93,8 +86,12 @@ public class SubtitleView extends View {
     public SubtitleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        int[] viewAttr = {android.R.attr.text, android.R.attr.textSize,
-                android.R.attr.lineSpacingExtra, android.R.attr.lineSpacingMultiplier};
+        int[] viewAttr = {
+            android.R.attr.text,
+            android.R.attr.textSize,
+            android.R.attr.lineSpacingExtra,
+            android.R.attr.lineSpacingMultiplier
+        };
         TypedArray a = context.obtainStyledAttributes(attrs, viewAttr, defStyleAttr, 0);
         CharSequence text = a.getText(0);
         int textSize = a.getDimensionPixelSize(1, 15);
@@ -250,8 +247,9 @@ public class SubtitleView extends View {
 
         mHasMeasurements = true;
         mLastMeasuredWidth = maxWidth;
-        mLayout = new StaticLayout(mText, mTextPaint, maxWidth, mAlignment,
-                mSpacingMult, mSpacingAdd, true);
+        mLayout =
+                new StaticLayout(
+                        mText, mTextPaint, maxWidth, mAlignment, mSpacingMult, mSpacingAdd, true);
         return true;
     }
 
@@ -320,5 +318,4 @@ public class SubtitleView extends View {
         textPaint.setShadowLayer(0, 0, 0, 0);
         c.restoreToCount(saveCount);
     }
-
 }

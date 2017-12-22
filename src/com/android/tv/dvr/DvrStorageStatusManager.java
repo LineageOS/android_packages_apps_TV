@@ -36,14 +36,11 @@ import android.support.annotation.AnyThread;
 import android.support.annotation.IntDef;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
-
 import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.tuner.tvinput.TunerTvInputService;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -54,52 +51,44 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-/**
- * Signals DVR storage status change such as plugging/unplugging.
- */
+/** Signals DVR storage status change such as plugging/unplugging. */
 public class DvrStorageStatusManager {
     private static final String TAG = "DvrStorageStatusManager";
     private static final boolean DEBUG = false;
 
-    /**
-     * Minimum storage size to support DVR
-     */
+    /** Minimum storage size to support DVR */
     public static final long MIN_STORAGE_SIZE_FOR_DVR_IN_BYTES = 50 * 1024 * 1024 * 1024L; // 50GB
-    private static final long MIN_FREE_STORAGE_SIZE_FOR_DVR_IN_BYTES
-            = 10 * 1024 * 1024 * 1024L; // 10GB
+
+    private static final long MIN_FREE_STORAGE_SIZE_FOR_DVR_IN_BYTES =
+            10 * 1024 * 1024 * 1024L; // 10GB
     private static final String RECORDING_DATA_SUB_PATH = "/recording";
 
     private static final String[] PROJECTION = {
-            TvContract.RecordedPrograms._ID,
-            TvContract.RecordedPrograms.COLUMN_PACKAGE_NAME,
-            TvContract.RecordedPrograms.COLUMN_RECORDING_DATA_URI
+        TvContract.RecordedPrograms._ID,
+        TvContract.RecordedPrograms.COLUMN_PACKAGE_NAME,
+        TvContract.RecordedPrograms.COLUMN_RECORDING_DATA_URI
     };
-    private final static int BATCH_OPERATION_COUNT = 100;
+    private static final int BATCH_OPERATION_COUNT = 100;
 
-    @IntDef({STORAGE_STATUS_OK, STORAGE_STATUS_TOTAL_CAPACITY_TOO_SMALL,
-            STORAGE_STATUS_FREE_SPACE_INSUFFICIENT, STORAGE_STATUS_MISSING})
+    @IntDef({
+        STORAGE_STATUS_OK,
+        STORAGE_STATUS_TOTAL_CAPACITY_TOO_SMALL,
+        STORAGE_STATUS_FREE_SPACE_INSUFFICIENT,
+        STORAGE_STATUS_MISSING
+    })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface StorageStatus {
-    }
+    public @interface StorageStatus {}
 
-    /**
-     * Current storage is OK to record a program.
-     */
+    /** Current storage is OK to record a program. */
     public static final int STORAGE_STATUS_OK = 0;
 
-    /**
-     * Current storage's total capacity is smaller than DVR requirement.
-     */
+    /** Current storage's total capacity is smaller than DVR requirement. */
     public static final int STORAGE_STATUS_TOTAL_CAPACITY_TOO_SMALL = 1;
 
-    /**
-     * Current storage's free space is insufficient to record programs.
-     */
+    /** Current storage's free space is insufficient to record programs. */
     public static final int STORAGE_STATUS_FREE_SPACE_INSUFFICIENT = 2;
 
-    /**
-     * Current storage is missing.
-     */
+    /** Current storage is missing. */
     public static final int STORAGE_STATUS_MISSING = 3;
 
     private final Context mContext;
@@ -142,8 +131,8 @@ public class DvrStorageStatusManager {
         /**
          * Listener for DVR storage status change.
          *
-         * @param storageMounted {@code true} when DVR possible storage is mounted,
-         *                       {@code false} otherwise.
+         * @param storageMounted {@code true} when DVR possible storage is mounted, {@code false}
+         *     otherwise.
          */
         void onStorageMountChanged(boolean storageMounted);
     }
@@ -205,24 +194,17 @@ public class DvrStorageStatusManager {
         mOnStorageMountChangedListeners.add(listener);
     }
 
-    /**
-     * Removes the current listener.
-     */
+    /** Removes the current listener. */
     public void removeListener(OnStorageMountChangedListener listener) {
         mOnStorageMountChangedListeners.remove(listener);
     }
 
-    /**
-     * Returns true if a storage is mounted.
-     */
+    /** Returns true if a storage is mounted. */
     public boolean isStorageMounted() {
         return mMountedStorageStatus.mStorageMounted;
     }
 
-    /**
-     * Returns the path to DVR recording data directory.
-     * This can take for a while sometimes.
-     */
+    /** Returns the path to DVR recording data directory. This can take for a while sometimes. */
     @WorkerThread
     public File getRecordingRootDataDirectory() {
         SoftPreconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
@@ -294,8 +276,7 @@ public class DvrStorageStatusManager {
                 storageMountedDir = null;
             }
         }
-        return new MountedStorageStatus(
-                storageMounted, storageMountedDir, storageMountedCapacity);
+        return new MountedStorageStatus(storageMounted, storageMountedDir, storageMountedCapacity);
     }
 
     private class CleanUpDbTask extends AsyncTask<Void, Void, Boolean> {
@@ -318,11 +299,14 @@ public class DvrStorageStatusManager {
             if (ops == null || ops.isEmpty()) {
                 return null;
             }
-            Log.i(TAG, "New device storage mounted. # of recordings to be forgotten : "
-                    + ops.size());
-            for (int i = 0 ; i < ops.size() && !isCancelled() ; i += BATCH_OPERATION_COUNT) {
-                int toIndex = (i + BATCH_OPERATION_COUNT) > ops.size()
-                        ? ops.size() : (i + BATCH_OPERATION_COUNT);
+            Log.i(
+                    TAG,
+                    "New device storage mounted. # of recordings to be forgotten : " + ops.size());
+            for (int i = 0; i < ops.size() && !isCancelled(); i += BATCH_OPERATION_COUNT) {
+                int toIndex =
+                        (i + BATCH_OPERATION_COUNT) > ops.size()
+                                ? ops.size()
+                                : (i + BATCH_OPERATION_COUNT);
                 ArrayList<ContentProviderOperation> batchOps =
                         new ArrayList<>(ops.subList(i, toIndex));
                 try {
@@ -359,14 +343,19 @@ public class DvrStorageStatusManager {
         private List<ContentProviderOperation> getDeleteOps() {
             List<ContentProviderOperation> ops = new ArrayList<>();
 
-            try (Cursor c = mContentResolver.query(
-                    TvContract.RecordedPrograms.CONTENT_URI, PROJECTION, null, null, null)) {
+            try (Cursor c =
+                    mContentResolver.query(
+                            TvContract.RecordedPrograms.CONTENT_URI,
+                            PROJECTION,
+                            null,
+                            null,
+                            null)) {
                 if (c == null) {
                     return null;
                 }
                 while (c.moveToNext()) {
-                    @DvrStorageStatusManager.StorageStatus int storageStatus =
-                            getDvrStorageStatus();
+                    @DvrStorageStatusManager.StorageStatus
+                    int storageStatus = getDvrStorageStatus();
                     if (isCancelled()
                             || storageStatus == DvrStorageStatusManager.STORAGE_STATUS_MISSING) {
                         ops.clear();
@@ -380,14 +369,18 @@ public class DvrStorageStatusManager {
                     }
                     Uri dataUri = Uri.parse(dataUriString);
                     if (!Utils.isInBundledPackageSet(packageName)
-                            || dataUri == null || dataUri.getPath() == null
+                            || dataUri == null
+                            || dataUri.getPath() == null
                             || !ContentResolver.SCHEME_FILE.equals(dataUri.getScheme())) {
                         continue;
                     }
                     File recordedProgramDir = new File(dataUri.getPath());
                     if (!recordedProgramDir.exists()) {
-                        ops.add(ContentProviderOperation.newDelete(
-                                TvContract.buildRecordedProgramUri(Long.parseLong(id))).build());
+                        ops.add(
+                                ContentProviderOperation.newDelete(
+                                                TvContract.buildRecordedProgramUri(
+                                                        Long.parseLong(id)))
+                                        .build());
                     }
                 }
                 return ops;

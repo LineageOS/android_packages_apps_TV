@@ -23,14 +23,12 @@ import android.media.tv.TvContract;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
-
 import java.util.Objects;
 
-/**
- * Channel Information.
- */
+/** Channel Information. */
 public final class ChannelInfo {
     private static final SparseArray<String> VIDEO_HEIGHT_TO_FORMAT_MAP = new SparseArray<>();
+
     static {
         VIDEO_HEIGHT_TO_FORMAT_MAP.put(480, TvContract.Channels.VIDEO_FORMAT_480P);
         VIDEO_HEIGHT_TO_FORMAT_MAP.put(576, TvContract.Channels.VIDEO_FORMAT_576P);
@@ -41,9 +39,9 @@ public final class ChannelInfo {
     }
 
     public static final String[] PROJECTION = {
-            TvContract.Channels.COLUMN_DISPLAY_NUMBER,
-            TvContract.Channels.COLUMN_DISPLAY_NAME,
-            TvContract.Channels.COLUMN_ORIGINAL_NETWORK_ID,
+        TvContract.Channels.COLUMN_DISPLAY_NUMBER,
+        TvContract.Channels.COLUMN_DISPLAY_NAME,
+        TvContract.Channels.COLUMN_ORIGINAL_NETWORK_ID,
     };
 
     public final String number;
@@ -67,14 +65,15 @@ public final class ChannelInfo {
      * Create a channel info for TVTestInput.
      *
      * @param context a context to insert logo. It can be null if logo isn't needed.
-     * @param channelNumber a channel number to be use as an identifier.
-     *                      {@link #originalNetworkId} will be assigned the same value, too.
+     * @param channelNumber a channel number to be use as an identifier. {@link #originalNetworkId}
+     *     will be assigned the same value, too.
      */
     public static ChannelInfo create(@Nullable Context context, int channelNumber) {
-        Builder builder = new Builder()
-                .setNumber(String.valueOf(channelNumber))
-                .setName("Channel " + channelNumber)
-                .setOriginalNetworkId(channelNumber);
+        Builder builder =
+                new Builder()
+                        .setNumber(String.valueOf(channelNumber))
+                        .setName("Channel " + channelNumber)
+                        .setOriginalNetworkId(channelNumber);
         if (context != null) {
             // tests/input/tools/get_test_logos.sh only stores 1000 logos.
             builder.setLogoUrl(getUriStringForChannelLogo(context, channelNumber));
@@ -88,7 +87,9 @@ public final class ChannelInfo {
                 .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
                 .authority(context.getPackageName())
                 .path("drawable")
-                .appendPath("ch_" + index + "_logo").build().toString();
+                .appendPath("ch_" + index + "_logo")
+                .build()
+                .toString();
     }
 
     public static ChannelInfo fromCursor(Cursor c) {
@@ -109,10 +110,22 @@ public final class ChannelInfo {
         return builder.build();
     }
 
-    private ChannelInfo(String number, String name, String logoUrl, int originalNetworkId,
-            int videoWidth, int videoHeight, float videoPixelAspectRatio, int audioChannel,
-            int audioLanguageCount, boolean hasClosedCaption, ProgramInfo program,
-            String appLinkText, int appLinkColor, String appLinkIconUri, String appLinkPosterArtUri,
+    private ChannelInfo(
+            String number,
+            String name,
+            String logoUrl,
+            int originalNetworkId,
+            int videoWidth,
+            int videoHeight,
+            float videoPixelAspectRatio,
+            int audioChannel,
+            int audioLanguageCount,
+            boolean hasClosedCaption,
+            ProgramInfo program,
+            String appLinkText,
+            int appLinkColor,
+            String appLinkIconUri,
+            String appLinkPosterArtUri,
             String appLinkIntentUri) {
         this.number = number;
         this.name = name;
@@ -139,20 +152,35 @@ public final class ChannelInfo {
     @Override
     public String toString() {
         return "Channel{"
-                + "number=" + number
-                + ", name=" + name
-                + ", logoUri=" + logoUrl
-                + ", originalNetworkId=" + originalNetworkId
-                + ", videoWidth=" + videoWidth
-                + ", videoHeight=" + videoHeight
-                + ", audioChannel=" + audioChannel
-                + ", audioLanguageCount=" + audioLanguageCount
-                + ", hasClosedCaption=" + hasClosedCaption
-                + ", appLinkText=" + appLinkText
-                + ", appLinkColor=" + appLinkColor
-                + ", appLinkIconUri=" + appLinkIconUri
-                + ", appLinkPosterArtUri=" + appLinkPosterArtUri
-                + ", appLinkIntentUri=" + appLinkIntentUri + "}";
+                + "number="
+                + number
+                + ", name="
+                + name
+                + ", logoUri="
+                + logoUrl
+                + ", originalNetworkId="
+                + originalNetworkId
+                + ", videoWidth="
+                + videoWidth
+                + ", videoHeight="
+                + videoHeight
+                + ", audioChannel="
+                + audioChannel
+                + ", audioLanguageCount="
+                + audioLanguageCount
+                + ", hasClosedCaption="
+                + hasClosedCaption
+                + ", appLinkText="
+                + appLinkText
+                + ", appLinkColor="
+                + appLinkColor
+                + ", appLinkIconUri="
+                + appLinkIconUri
+                + ", appLinkPosterArtUri="
+                + appLinkPosterArtUri
+                + ", appLinkIntentUri="
+                + appLinkIntentUri
+                + "}";
     }
 
     @Override
@@ -164,21 +192,21 @@ public final class ChannelInfo {
             return false;
         }
         ChannelInfo that = (ChannelInfo) o;
-        return Objects.equals(originalNetworkId, that.originalNetworkId) &&
-                Objects.equals(videoWidth, that.videoWidth) &&
-                Objects.equals(videoHeight, that.videoHeight) &&
-                Objects.equals(audioChannel, that.audioChannel) &&
-                Objects.equals(audioLanguageCount, that.audioLanguageCount) &&
-                Objects.equals(hasClosedCaption, that.hasClosedCaption) &&
-                Objects.equals(appLinkColor, that.appLinkColor) &&
-                Objects.equals(number, that.number) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(logoUrl, that.logoUrl) &&
-                Objects.equals(program, that.program) &&
-                Objects.equals(appLinkText, that.appLinkText) &&
-                Objects.equals(appLinkIconUri, that.appLinkIconUri) &&
-                Objects.equals(appLinkPosterArtUri, that.appLinkPosterArtUri) &&
-                Objects.equals(appLinkIntentUri, that.appLinkIntentUri);
+        return Objects.equals(originalNetworkId, that.originalNetworkId)
+                && Objects.equals(videoWidth, that.videoWidth)
+                && Objects.equals(videoHeight, that.videoHeight)
+                && Objects.equals(audioChannel, that.audioChannel)
+                && Objects.equals(audioLanguageCount, that.audioLanguageCount)
+                && Objects.equals(hasClosedCaption, that.hasClosedCaption)
+                && Objects.equals(appLinkColor, that.appLinkColor)
+                && Objects.equals(number, that.number)
+                && Objects.equals(name, that.name)
+                && Objects.equals(logoUrl, that.logoUrl)
+                && Objects.equals(program, that.program)
+                && Objects.equals(appLinkText, that.appLinkText)
+                && Objects.equals(appLinkIconUri, that.appLinkIconUri)
+                && Objects.equals(appLinkPosterArtUri, that.appLinkPosterArtUri)
+                && Objects.equals(appLinkIntentUri, that.appLinkIntentUri);
     }
 
     @Override
@@ -186,17 +214,15 @@ public final class ChannelInfo {
         return Objects.hash(number, name, originalNetworkId);
     }
 
-    /**
-     * Builder class for {@code ChannelInfo}.
-     */
+    /** Builder class for {@code ChannelInfo}. */
     public static class Builder {
         private String mNumber;
         private String mName;
         private String mLogoUrl = null;
         private int mOriginalNetworkId;
-        private int mVideoWidth = 1920;  // Width for HD video.
-        private int mVideoHeight = 1080;  // Height for HD video.
-        private float mVideoPixelAspectRatio = 1.0f; //default value
+        private int mVideoWidth = 1920; // Width for HD video.
+        private int mVideoHeight = 1080; // Height for HD video.
+        private float mVideoPixelAspectRatio = 1.0f; // default value
         private int mAudioChannel;
         private int mAudioLanguageCount;
         private boolean mHasClosedCaption;
@@ -207,8 +233,7 @@ public final class ChannelInfo {
         private String mAppLinkPosterArtUri;
         private String mAppLinkIntentUri;
 
-        public Builder() {
-        }
+        public Builder() {}
 
         public Builder(ChannelInfo other) {
             mNumber = other.number;
@@ -305,11 +330,23 @@ public final class ChannelInfo {
         }
 
         public ChannelInfo build() {
-            return new ChannelInfo(mNumber, mName, mLogoUrl, mOriginalNetworkId,
-                    mVideoWidth, mVideoHeight, mVideoPixelAspectRatio, mAudioChannel,
-                    mAudioLanguageCount, mHasClosedCaption, mProgram, mAppLinkText, mAppLinkColor,
-                    mAppLinkIconUri, mAppLinkPosterArtUri, mAppLinkIntentUri);
-
+            return new ChannelInfo(
+                    mNumber,
+                    mName,
+                    mLogoUrl,
+                    mOriginalNetworkId,
+                    mVideoWidth,
+                    mVideoHeight,
+                    mVideoPixelAspectRatio,
+                    mAudioChannel,
+                    mAudioLanguageCount,
+                    mHasClosedCaption,
+                    mProgram,
+                    mAppLinkText,
+                    mAppLinkColor,
+                    mAppLinkIconUri,
+                    mAppLinkPosterArtUri,
+                    mAppLinkIntentUri);
         }
     }
 }

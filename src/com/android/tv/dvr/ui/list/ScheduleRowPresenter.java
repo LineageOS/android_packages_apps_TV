@@ -37,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
@@ -50,21 +49,22 @@ import com.android.tv.dvr.ui.DvrStopRecordingFragment;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.util.ToastUtils;
 import com.android.tv.util.Utils;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/**
- * A RowPresenter for {@link ScheduleRow}.
- */
+/** A RowPresenter for {@link ScheduleRow}. */
 @TargetApi(Build.VERSION_CODES.N)
 class ScheduleRowPresenter extends RowPresenter {
     private static final String TAG = "ScheduleRowPresenter";
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ACTION_START_RECORDING, ACTION_STOP_RECORDING, ACTION_CREATE_SCHEDULE,
-            ACTION_REMOVE_SCHEDULE})
+    @IntDef({
+        ACTION_START_RECORDING,
+        ACTION_STOP_RECORDING,
+        ACTION_CREATE_SCHEDULE,
+        ACTION_REMOVE_SCHEDULE
+    })
     public @interface ScheduleRowAction {}
     /** An action to start recording. */
     public static final int ACTION_START_RECORDING = 1;
@@ -85,9 +85,7 @@ class ScheduleRowPresenter extends RowPresenter {
 
     private int mLastFocusedViewId;
 
-    /**
-     * A ViewHolder for {@link ScheduleRow}
-     */
+    /** A ViewHolder for {@link ScheduleRow} */
     public static class ScheduleRowViewHolder extends RowPresenter.ViewHolder {
         private ScheduleRowPresenter mPresenter;
         @ScheduleRowAction private int[] mActions;
@@ -118,29 +116,30 @@ class ScheduleRowPresenter extends RowPresenter {
                 new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean focused) {
-                        view.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (view.isFocused()) {
-                                    mPresenter.mLastFocusedViewId = view.getId();
-                                }
-                                updateSelector();
-                            }
-                        });
+                        view.post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (view.isFocused()) {
+                                            mPresenter.mLastFocusedViewId = view.getId();
+                                        }
+                                        updateSelector();
+                                    }
+                                });
                     }
                 };
 
         public ScheduleRowViewHolder(View view, ScheduleRowPresenter presenter) {
             super(view);
             mPresenter = presenter;
-            mLtr = view.getContext().getResources().getConfiguration().getLayoutDirection()
-                    == View.LAYOUT_DIRECTION_LTR;
+            mLtr =
+                    view.getContext().getResources().getConfiguration().getLayoutDirection()
+                            == View.LAYOUT_DIRECTION_LTR;
             mInfoContainer = (LinearLayout) view.findViewById(R.id.info_container);
-            mSecondActionContainer = (RelativeLayout) view.findViewById(
-                    R.id.action_second_container);
+            mSecondActionContainer =
+                    (RelativeLayout) view.findViewById(R.id.action_second_container);
             mSecondActionView = (ImageView) view.findViewById(R.id.action_second);
-            mFirstActionContainer = (RelativeLayout) view.findViewById(
-                    R.id.action_first_container);
+            mFirstActionContainer = (RelativeLayout) view.findViewById(R.id.action_first_container);
             mFirstActionView = (ImageView) view.findViewById(R.id.action_first);
             mSelectorView = view.findViewById(R.id.selector);
             mTimeView = (TextView) view.findViewById(R.id.time);
@@ -151,47 +150,48 @@ class ScheduleRowPresenter extends RowPresenter {
             Resources res = view.getResources();
             mSelectorTranslationDelta =
                     res.getDimensionPixelSize(R.dimen.dvr_schedules_item_section_margin)
-                    - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_focus_translation_delta);
-            mSelectorWidthDelta = res.getDimensionPixelSize(
-                    R.dimen.dvr_schedules_item_focus_width_delta);
+                            - res.getDimensionPixelSize(
+                                    R.dimen.dvr_schedules_item_focus_translation_delta);
+            mSelectorWidthDelta =
+                    res.getDimensionPixelSize(R.dimen.dvr_schedules_item_focus_width_delta);
             mRoundRectRadius = res.getDimensionPixelSize(R.dimen.dvr_schedules_selector_radius);
-            int fullWidth = res.getDimensionPixelSize(
-                    R.dimen.dvr_schedules_item_width)
-                    - 2 * res.getDimensionPixelSize(R.dimen.dvr_schedules_layout_padding);
+            int fullWidth =
+                    res.getDimensionPixelSize(R.dimen.dvr_schedules_item_width)
+                            - 2 * res.getDimensionPixelSize(R.dimen.dvr_schedules_layout_padding);
             mInfoContainerTargetWidthWithNoAction = fullWidth + 2 * mRoundRectRadius;
-            mInfoContainerTargetWidthWithOneAction = fullWidth
-                    - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_section_margin)
-                    - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_delete_width)
-                    + mRoundRectRadius + mSelectorWidthDelta;
-            mInfoContainerTargetWidthWithTwoAction = mInfoContainerTargetWidthWithOneAction
-                    - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_section_margin)
-                    - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_icon_size);
+            mInfoContainerTargetWidthWithOneAction =
+                    fullWidth
+                            - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_section_margin)
+                            - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_delete_width)
+                            + mRoundRectRadius
+                            + mSelectorWidthDelta;
+            mInfoContainerTargetWidthWithTwoAction =
+                    mInfoContainerTargetWidthWithOneAction
+                            - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_section_margin)
+                            - res.getDimensionPixelSize(R.dimen.dvr_schedules_item_icon_size);
 
             mInfoContainer.setOnFocusChangeListener(mOnFocusChangeListener);
             mFirstActionContainer.setOnFocusChangeListener(mOnFocusChangeListener);
             mSecondActionContainer.setOnFocusChangeListener(mOnFocusChangeListener);
         }
 
-        /**
-         * Returns time view.
-         */
+        /** Returns time view. */
         public TextView getTimeView() {
             return mTimeView;
         }
 
-        /**
-         * Returns title view.
-         */
+        /** Returns title view. */
         public TextView getProgramTitleView() {
             return mProgramTitleView;
         }
 
         private void updateSelector() {
-            int animationDuration = mSelectorView.getResources().getInteger(
-                    android.R.integer.config_shortAnimTime);
+            int animationDuration =
+                    mSelectorView.getResources().getInteger(android.R.integer.config_shortAnimTime);
             DecelerateInterpolator interpolator = new DecelerateInterpolator();
 
-            if (mInfoContainer.isFocused() || mSecondActionContainer.isFocused()
+            if (mInfoContainer.isFocused()
+                    || mSecondActionContainer.isFocused()
                     || mFirstActionContainer.isFocused()) {
                 final ViewGroup.LayoutParams lp = mSelectorView.getLayoutParams();
                 final int targetWidth;
@@ -208,33 +208,50 @@ class ScheduleRowPresenter extends RowPresenter {
                 } else if (mSecondActionContainer.isFocused()) {
                     targetWidth = Math.max(mSecondActionContainer.getWidth(), 2 * mRoundRectRadius);
                 } else {
-                    targetWidth = mFirstActionContainer.getWidth() + mRoundRectRadius
-                            + mSelectorTranslationDelta;
+                    targetWidth =
+                            mFirstActionContainer.getWidth()
+                                    + mRoundRectRadius
+                                    + mSelectorTranslationDelta;
                 }
 
                 float targetTranslationX;
                 if (mInfoContainer.isFocused()) {
-                    targetTranslationX = mLtr ? mInfoContainer.getLeft() - mRoundRectRadius
-                            - mSelectorView.getLeft() :
-                            mInfoContainer.getRight() + mRoundRectRadius - mSelectorView.getRight();
+                    targetTranslationX =
+                            mLtr
+                                    ? mInfoContainer.getLeft()
+                                            - mRoundRectRadius
+                                            - mSelectorView.getLeft()
+                                    : mInfoContainer.getRight()
+                                            + mRoundRectRadius
+                                            - mSelectorView.getRight();
                 } else if (mSecondActionContainer.isFocused()) {
                     if (mSecondActionContainer.getWidth() > 2 * mRoundRectRadius) {
-                        targetTranslationX = mLtr ? mSecondActionContainer.getLeft() -
-                                mSelectorView.getLeft()
-                                : mSecondActionContainer.getRight() - mSelectorView.getRight();
+                        targetTranslationX =
+                                mLtr
+                                        ? mSecondActionContainer.getLeft() - mSelectorView.getLeft()
+                                        : mSecondActionContainer.getRight()
+                                                - mSelectorView.getRight();
                     } else {
-                        targetTranslationX = mLtr ? mSecondActionContainer.getLeft() -
-                                (mRoundRectRadius - mSecondActionContainer.getWidth() / 2) -
-                                mSelectorView.getLeft()
-                                : mSecondActionContainer.getRight() +
-                                (mRoundRectRadius - mSecondActionContainer.getWidth() / 2) -
-                                mSelectorView.getRight();
+                        targetTranslationX =
+                                mLtr
+                                        ? mSecondActionContainer.getLeft()
+                                                - (mRoundRectRadius
+                                                        - mSecondActionContainer.getWidth() / 2)
+                                                - mSelectorView.getLeft()
+                                        : mSecondActionContainer.getRight()
+                                                + (mRoundRectRadius
+                                                        - mSecondActionContainer.getWidth() / 2)
+                                                - mSelectorView.getRight();
                     }
                 } else {
-                    targetTranslationX = mLtr ? mFirstActionContainer.getLeft()
-                            - mSelectorTranslationDelta - mSelectorView.getLeft()
-                            : mFirstActionContainer.getRight() + mSelectorTranslationDelta
-                            - mSelectorView.getRight();
+                    targetTranslationX =
+                            mLtr
+                                    ? mFirstActionContainer.getLeft()
+                                            - mSelectorTranslationDelta
+                                            - mSelectorView.getLeft()
+                                    : mFirstActionContainer.getRight()
+                                            + mSelectorTranslationDelta
+                                            - mSelectorView.getRight();
                 }
 
                 if (mSelectorView.getAlpha() == 0) {
@@ -246,57 +263,80 @@ class ScheduleRowPresenter extends RowPresenter {
                 // animate the selector in and to the proper width and translation X.
                 final float deltaWidth = lp.width - targetWidth;
                 mSelectorView.animate().cancel();
-                mSelectorView.animate().translationX(targetTranslationX).alpha(1f)
-                        .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                // Set width to the proper width for this animation step.
-                                lp.width = targetWidth + Math.round(
-                                        deltaWidth * (1f - animation.getAnimatedFraction()));
-                                mSelectorView.requestLayout();
-                            }
-                        }).setDuration(animationDuration).setInterpolator(interpolator).start();
+                mSelectorView
+                        .animate()
+                        .translationX(targetTranslationX)
+                        .alpha(1f)
+                        .setUpdateListener(
+                                new ValueAnimator.AnimatorUpdateListener() {
+                                    @Override
+                                    public void onAnimationUpdate(ValueAnimator animation) {
+                                        // Set width to the proper width for this animation step.
+                                        lp.width =
+                                                targetWidth
+                                                        + Math.round(
+                                                                deltaWidth
+                                                                        * (1f
+                                                                                - animation
+                                                                                        .getAnimatedFraction()));
+                                        mSelectorView.requestLayout();
+                                    }
+                                })
+                        .setDuration(animationDuration)
+                        .setInterpolator(interpolator)
+                        .start();
                 if (mPendingAnimationRunnable != null) {
                     mPendingAnimationRunnable.run();
                     mPendingAnimationRunnable = null;
                 }
             } else {
                 mSelectorView.animate().cancel();
-                mSelectorView.animate().alpha(0f).setDuration(animationDuration)
-                        .setInterpolator(interpolator).setUpdateListener(null).start();
+                mSelectorView
+                        .animate()
+                        .alpha(0f)
+                        .setDuration(animationDuration)
+                        .setInterpolator(interpolator)
+                        .setUpdateListener(null)
+                        .start();
             }
         }
 
-        /**
-         * Grey out the information body.
-         */
+        /** Grey out the information body. */
         public void greyOutInfo() {
-            mTimeView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info_grey, null));
-            mProgramTitleView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info_grey, null));
-            mInfoSeparatorView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info_grey, null));
-            mChannelNameView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info_grey, null));
-            mConflictInfoView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info_grey, null));
+            mTimeView.setTextColor(
+                    mInfoContainer
+                            .getResources()
+                            .getColor(R.color.dvr_schedules_item_info_grey, null));
+            mProgramTitleView.setTextColor(
+                    mInfoContainer
+                            .getResources()
+                            .getColor(R.color.dvr_schedules_item_info_grey, null));
+            mInfoSeparatorView.setTextColor(
+                    mInfoContainer
+                            .getResources()
+                            .getColor(R.color.dvr_schedules_item_info_grey, null));
+            mChannelNameView.setTextColor(
+                    mInfoContainer
+                            .getResources()
+                            .getColor(R.color.dvr_schedules_item_info_grey, null));
+            mConflictInfoView.setTextColor(
+                    mInfoContainer
+                            .getResources()
+                            .getColor(R.color.dvr_schedules_item_info_grey, null));
         }
 
-        /**
-         * Reverse grey out operation.
-         */
+        /** Reverse grey out operation. */
         public void whiteBackInfo() {
-            mTimeView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info, null));
-            mProgramTitleView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_main, null));
-            mInfoSeparatorView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info, null));
-            mChannelNameView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info, null));
-            mConflictInfoView.setTextColor(mInfoContainer.getResources().getColor(R.color
-                    .dvr_schedules_item_info, null));
+            mTimeView.setTextColor(
+                    mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
+            mProgramTitleView.setTextColor(
+                    mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_main, null));
+            mInfoSeparatorView.setTextColor(
+                    mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
+            mChannelNameView.setTextColor(
+                    mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
+            mConflictInfoView.setTextColor(
+                    mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
         }
     }
 
@@ -306,30 +346,27 @@ class ScheduleRowPresenter extends RowPresenter {
         mContext = context;
         mDvrManager = TvApplication.getSingletons(context).getDvrManager();
         mDvrScheduleManager = TvApplication.getSingletons(context).getDvrScheduleManager();
-        mTunerConflictWillNotBeRecordedInfo = mContext.getString(
-                R.string.dvr_schedules_tuner_conflict_will_not_be_recorded_info);
-        mTunerConflictWillBePartiallyRecordedInfo = mContext.getString(
-                R.string.dvr_schedules_tuner_conflict_will_be_partially_recorded);
-        mAnimationDuration = mContext.getResources().getInteger(
-                android.R.integer.config_shortAnimTime);
+        mTunerConflictWillNotBeRecordedInfo =
+                mContext.getString(R.string.dvr_schedules_tuner_conflict_will_not_be_recorded_info);
+        mTunerConflictWillBePartiallyRecordedInfo =
+                mContext.getString(
+                        R.string.dvr_schedules_tuner_conflict_will_be_partially_recorded);
+        mAnimationDuration =
+                mContext.getResources().getInteger(android.R.integer.config_shortAnimTime);
     }
 
     @Override
     public ViewHolder createRowViewHolder(ViewGroup parent) {
-        return onGetScheduleRowViewHolder(LayoutInflater.from(mContext)
-                .inflate(R.layout.dvr_schedules_item, parent, false));
+        return onGetScheduleRowViewHolder(
+                LayoutInflater.from(mContext).inflate(R.layout.dvr_schedules_item, parent, false));
     }
 
-    /**
-     * Returns context.
-     */
+    /** Returns context. */
     protected Context getContext() {
         return mContext;
     }
 
-    /**
-     * Returns DVR manager.
-     */
+    /** Returns DVR manager. */
     protected DvrManager getDvrManager() {
         return mDvrManager;
     }
@@ -341,40 +378,49 @@ class ScheduleRowPresenter extends RowPresenter {
         ScheduleRow row = (ScheduleRow) item;
         @ScheduleRowAction int[] actions = getAvailableActions(row);
         viewHolder.mActions = actions;
-        viewHolder.mInfoContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isInfoClickable(row)) {
-                    onInfoClicked(row);
-                }
-            }
-        });
+        viewHolder.mInfoContainer.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (isInfoClickable(row)) {
+                            onInfoClicked(row);
+                        }
+                    }
+                });
 
-        viewHolder.mFirstActionContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onActionClicked(actions[0], row);
-            }
-        });
+        viewHolder.mFirstActionContainer.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onActionClicked(actions[0], row);
+                    }
+                });
 
-        viewHolder.mSecondActionContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onActionClicked(actions[1], row);
-            }
-        });
+        viewHolder.mSecondActionContainer.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onActionClicked(actions[1], row);
+                    }
+                });
 
         viewHolder.mTimeView.setText(onGetRecordingTimeText(row));
         String programInfoText = onGetProgramInfoText(row);
         if (TextUtils.isEmpty(programInfoText)) {
             int durationMins = Math.max(1, Utils.getRoundOffMinsFromMs(row.getDuration()));
-            programInfoText = mContext.getResources().getQuantityString(
-                    R.plurals.dvr_schedules_recording_duration, durationMins, durationMins);
+            programInfoText =
+                    mContext.getResources()
+                            .getQuantityString(
+                                    R.plurals.dvr_schedules_recording_duration,
+                                    durationMins,
+                                    durationMins);
         }
         String channelName = getChannelNameText(row);
         viewHolder.mProgramTitleView.setText(programInfoText);
-        viewHolder.mInfoSeparatorView.setVisibility((!TextUtils.isEmpty(programInfoText)
-                && !TextUtils.isEmpty(channelName)) ? View.VISIBLE : View.GONE);
+        viewHolder.mInfoSeparatorView.setVisibility(
+                (!TextUtils.isEmpty(programInfoText) && !TextUtils.isEmpty(channelName))
+                        ? View.VISIBLE
+                        : View.GONE);
         viewHolder.mChannelNameView.setText(channelName);
         if (actions != null) {
             switch (actions.length) {
@@ -422,39 +468,35 @@ class ScheduleRowPresenter extends RowPresenter {
         }
     }
 
-    /**
-     * Returns view holder for schedule row.
-     */
+    /** Returns view holder for schedule row. */
     protected ScheduleRowViewHolder onGetScheduleRowViewHolder(View view) {
         return new ScheduleRowViewHolder(view, this);
     }
 
-    /**
-     * Returns time text for time view from scheduled recording.
-     */
+    /** Returns time text for time view from scheduled recording. */
     protected String onGetRecordingTimeText(ScheduleRow row) {
-        return Utils.getDurationString(mContext, row.getStartTimeMs(), row.getEndTimeMs(), true,
-                false, true, 0);
+        return Utils.getDurationString(
+                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, false, true, 0);
     }
 
-    /**
-     * Returns program info text for program title view.
-     */
+    /** Returns program info text for program title view. */
     protected String onGetProgramInfoText(ScheduleRow row) {
         return row.getProgramTitleWithEpisodeNumber(mContext);
     }
 
     private String getChannelNameText(ScheduleRow row) {
-        Channel channel = TvApplication.getSingletons(mContext).getChannelDataManager()
-                .getChannel(row.getChannelId());
-        return channel == null ? null :
-                TextUtils.isEmpty(channel.getDisplayName()) ? channel.getDisplayNumber() :
-                        channel.getDisplayName().trim() + " " + channel.getDisplayNumber();
+        Channel channel =
+                TvApplication.getSingletons(mContext)
+                        .getChannelDataManager()
+                        .getChannel(row.getChannelId());
+        return channel == null
+                ? null
+                : TextUtils.isEmpty(channel.getDisplayName())
+                        ? channel.getDisplayNumber()
+                        : channel.getDisplayName().trim() + " " + channel.getDisplayNumber();
     }
 
-    /**
-     * Called when user click Info in {@link ScheduleRow}.
-     */
+    /** Called when user click Info in {@link ScheduleRow}. */
     protected void onInfoClicked(ScheduleRow row) {
         DvrUiHelper.startDetailsActivity((Activity) mContext, row.getSchedule(), null, true);
     }
@@ -464,9 +506,7 @@ class ScheduleRowPresenter extends RowPresenter {
                 && (row.getSchedule().isNotStarted() || row.getSchedule().isInProgress());
     }
 
-    /**
-     * Called when the button in a row is clicked.
-     */
+    /** Called when the button in a row is clicked. */
     protected void onActionClicked(@ScheduleRowAction final int action, ScheduleRow row) {
         switch (action) {
             case ACTION_START_RECORDING:
@@ -484,9 +524,7 @@ class ScheduleRowPresenter extends RowPresenter {
         }
     }
 
-    /**
-     * Action handler for {@link #ACTION_START_RECORDING}.
-     */
+    /** Action handler for {@link #ACTION_START_RECORDING}. */
     protected void onStartRecording(ScheduleRow row) {
         ScheduledRecording schedule = row.getSchedule();
         if (schedule == null) {
@@ -495,12 +533,16 @@ class ScheduleRowPresenter extends RowPresenter {
         }
         // Checks if there are current recordings that will be stopped by schedule this program.
         // If so, shows confirmation dialog to users.
-        List<ScheduledRecording> conflictSchedules = mDvrScheduleManager.getConflictingSchedules(
-                schedule.getChannelId(), System.currentTimeMillis(), schedule.getEndTimeMs());
+        List<ScheduledRecording> conflictSchedules =
+                mDvrScheduleManager.getConflictingSchedules(
+                        schedule.getChannelId(),
+                        System.currentTimeMillis(),
+                        schedule.getEndTimeMs());
         for (int i = conflictSchedules.size() - 1; i >= 0; i--) {
             ScheduledRecording conflictSchedule = conflictSchedules.get(i);
             if (conflictSchedule.isInProgress()) {
-                DvrUiHelper.showStopRecordingDialog((Activity) mContext,
+                DvrUiHelper.showStopRecordingDialog(
+                        (Activity) mContext,
                         conflictSchedule.getChannelId(),
                         DvrStopRecordingFragment.REASON_ON_CONFLICT,
                         new HalfSizedDialogFragment.OnActionClickListener() {
@@ -523,26 +565,27 @@ class ScheduleRowPresenter extends RowPresenter {
             if (row.isRecordingNotStarted()) {
                 mDvrManager.setHighestPriority(row.getSchedule());
             } else if (row.isRecordingFinished()) {
-                mDvrManager.addSchedule(ScheduledRecording.buildFrom(row.getSchedule())
-                        .setId(ScheduledRecording.ID_NOT_SET)
-                        .setState(ScheduledRecording.STATE_RECORDING_NOT_STARTED)
-                        .setPriority(mDvrManager.suggestHighestPriority(row.getSchedule()))
-                        .build());
+                mDvrManager.addSchedule(
+                        ScheduledRecording.buildFrom(row.getSchedule())
+                                .setId(ScheduledRecording.ID_NOT_SET)
+                                .setState(ScheduledRecording.STATE_RECORDING_NOT_STARTED)
+                                .setPriority(mDvrManager.suggestHighestPriority(row.getSchedule()))
+                                .build());
             } else {
-                SoftPreconditions.checkState(false, TAG, "Invalid row state to start recording: "
-                        + row);
+                SoftPreconditions.checkState(
+                        false, TAG, "Invalid row state to start recording: " + row);
                 return;
             }
-            String msg = mContext.getString(R.string.dvr_msg_current_program_scheduled,
-                    row.getSchedule().getProgramTitle(),
-                    Utils.toTimeString(row.getEndTimeMs(), false));
+            String msg =
+                    mContext.getString(
+                            R.string.dvr_msg_current_program_scheduled,
+                            row.getSchedule().getProgramTitle(),
+                            Utils.toTimeString(row.getEndTimeMs(), false));
             ToastUtils.show(mContext, msg, Toast.LENGTH_SHORT);
         }
     }
 
-    /**
-     * Action handler for {@link #ACTION_STOP_RECORDING}.
-     */
+    /** Action handler for {@link #ACTION_STOP_RECORDING}. */
     protected void onStopRecording(ScheduleRow row) {
         if (row.getSchedule() == null) {
             // This row has been deleted.
@@ -555,15 +598,15 @@ class ScheduleRowPresenter extends RowPresenter {
             if (TextUtils.isEmpty(deletedInfo)) {
                 deletedInfo = getChannelNameText(row);
             }
-            ToastUtils.show(mContext, mContext.getResources()
-                    .getString(R.string.dvr_schedules_deletion_info, deletedInfo),
+            ToastUtils.show(
+                    mContext,
+                    mContext.getResources()
+                            .getString(R.string.dvr_schedules_deletion_info, deletedInfo),
                     Toast.LENGTH_SHORT);
         }
     }
 
-    /**
-     * Action handler for {@link #ACTION_CREATE_SCHEDULE}.
-     */
+    /** Action handler for {@link #ACTION_CREATE_SCHEDULE}. */
     protected void onCreateSchedule(ScheduleRow row) {
         if (row.getSchedule() == null) {
             // This row has been deleted.
@@ -571,12 +614,15 @@ class ScheduleRowPresenter extends RowPresenter {
         }
         if (!row.isOnAir()) {
             if (row.isScheduleCanceled()) {
-                mDvrManager.updateScheduledRecording(ScheduledRecording.buildFrom(row.getSchedule())
-                        .setState(ScheduledRecording.STATE_RECORDING_NOT_STARTED)
-                        .setPriority(mDvrManager.suggestHighestPriority(row.getSchedule()))
-                        .build());
-                String msg = mContext.getString(R.string.dvr_msg_program_scheduled,
-                        row.getSchedule().getProgramTitle());
+                mDvrManager.updateScheduledRecording(
+                        ScheduledRecording.buildFrom(row.getSchedule())
+                                .setState(ScheduledRecording.STATE_RECORDING_NOT_STARTED)
+                                .setPriority(mDvrManager.suggestHighestPriority(row.getSchedule()))
+                                .build());
+                String msg =
+                        mContext.getString(
+                                R.string.dvr_msg_program_scheduled,
+                                row.getSchedule().getProgramTitle());
                 ToastUtils.show(mContext, msg, Toast.LENGTH_SHORT);
             } else if (mDvrManager.isConflicting(row.getSchedule())) {
                 mDvrManager.setHighestPriority(row.getSchedule());
@@ -584,9 +630,7 @@ class ScheduleRowPresenter extends RowPresenter {
         }
     }
 
-    /**
-     * Action handler for {@link #ACTION_REMOVE_SCHEDULE}.
-     */
+    /** Action handler for {@link #ACTION_REMOVE_SCHEDULE}. */
     protected void onRemoveSchedule(ScheduleRow row) {
         if (row.getSchedule() == null) {
             // This row has been deleted.
@@ -605,13 +649,16 @@ class ScheduleRowPresenter extends RowPresenter {
                 mDvrManager.removeScheduledRecording(row.getSchedule());
             } else if (row.isRecordingNotStarted()) {
                 deletedInfo = getDeletedInfo(row);
-                mDvrManager.updateScheduledRecording(ScheduledRecording.buildFrom(row.getSchedule())
-                        .setState(ScheduledRecording.STATE_RECORDING_CANCELED)
-                        .build());
+                mDvrManager.updateScheduledRecording(
+                        ScheduledRecording.buildFrom(row.getSchedule())
+                                .setState(ScheduledRecording.STATE_RECORDING_CANCELED)
+                                .build());
             }
         }
         if (deletedInfo != null) {
-            ToastUtils.show(mContext, mContext.getResources()
+            ToastUtils.show(
+                    mContext,
+                    mContext.getResources()
                             .getString(R.string.dvr_schedules_deletion_info, deletedInfo),
                     Toast.LENGTH_SHORT);
         }
@@ -631,9 +678,7 @@ class ScheduleRowPresenter extends RowPresenter {
         updateActionContainer(vh, selected);
     }
 
-    /**
-     * Internal method for onRowViewSelected, can be customized by subclass.
-     */
+    /** Internal method for onRowViewSelected, can be customized by subclass. */
     private void updateActionContainer(ViewHolder vh, boolean selected) {
         ScheduleRowViewHolder viewHolder = (ScheduleRowViewHolder) vh;
         viewHolder.mSecondActionContainer.animate().setListener(null).cancel();
@@ -643,38 +688,43 @@ class ScheduleRowPresenter extends RowPresenter {
                 case 2:
                     prepareShowActionView(viewHolder.mSecondActionContainer);
                     prepareShowActionView(viewHolder.mFirstActionContainer);
-                    viewHolder.mPendingAnimationRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            showActionView(viewHolder.mSecondActionContainer);
-                            showActionView(viewHolder.mFirstActionContainer);
-                        }
-                    };
+                    viewHolder.mPendingAnimationRunnable =
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    showActionView(viewHolder.mSecondActionContainer);
+                                    showActionView(viewHolder.mFirstActionContainer);
+                                }
+                            };
                     break;
                 case 1:
                     prepareShowActionView(viewHolder.mFirstActionContainer);
-                    viewHolder.mPendingAnimationRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            hideActionView(viewHolder.mSecondActionContainer, View.GONE);
-                            showActionView(viewHolder.mFirstActionContainer);
-                        }
-                    };
+                    viewHolder.mPendingAnimationRunnable =
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideActionView(viewHolder.mSecondActionContainer, View.GONE);
+                                    showActionView(viewHolder.mFirstActionContainer);
+                                }
+                            };
                     if (mLastFocusedViewId == R.id.action_second_container) {
                         mLastFocusedViewId = R.id.info_container;
                     }
                     break;
                 case 0:
                 default:
-                    viewHolder.mPendingAnimationRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            hideActionView(viewHolder.mSecondActionContainer, View.GONE);
-                            hideActionView(viewHolder.mFirstActionContainer, View.GONE);
-                        }
-                    };
+                    viewHolder.mPendingAnimationRunnable =
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideActionView(viewHolder.mSecondActionContainer, View.GONE);
+                                    hideActionView(viewHolder.mFirstActionContainer, View.GONE);
+                                }
+                            };
                     mLastFocusedViewId = R.id.info_container;
-                    SoftPreconditions.checkState(viewHolder.mInfoContainer.isFocusable(), TAG,
+                    SoftPreconditions.checkState(
+                            viewHolder.mInfoContainer.isFocusable(),
+                            TAG,
                             "No focusable view in this row: " + viewHolder);
                     break;
             }
@@ -685,7 +735,7 @@ class ScheduleRowPresenter extends RowPresenter {
                 // requestFocus() explicitly.
                 if (view.hasFocus()) {
                     viewHolder.mPendingAnimationRunnable.run();
-                } else if (view.isFocusable()){
+                } else if (view.isFocusable()) {
                     view.requestFocus();
                 } else {
                     viewHolder.view.requestFocus();
@@ -705,17 +755,16 @@ class ScheduleRowPresenter extends RowPresenter {
         view.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Add animation when view is visible.
-     */
+    /** Add animation when view is visible. */
     private void showActionView(View view) {
-        view.animate().alpha(1.0f).setInterpolator(new DecelerateInterpolator())
-                .setDuration(mAnimationDuration).start();
+        view.animate()
+                .alpha(1.0f)
+                .setInterpolator(new DecelerateInterpolator())
+                .setDuration(mAnimationDuration)
+                .start();
     }
 
-    /**
-     * Add animation when view change to invisible.
-     */
+    /** Add animation when view change to invisible. */
     private void hideActionView(View view, int visibility) {
         if (view.getVisibility() != View.VISIBLE) {
             if (view.getVisibility() != visibility) {
@@ -723,15 +772,19 @@ class ScheduleRowPresenter extends RowPresenter {
             }
             return;
         }
-        view.animate().alpha(0.0f).setInterpolator(new DecelerateInterpolator())
+        view.animate()
+                .alpha(0.0f)
+                .setInterpolator(new DecelerateInterpolator())
                 .setDuration(mAnimationDuration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        view.setVisibility(visibility);
-                        view.animate().setListener(null);
-                    }
-                }).start();
+                .setListener(
+                        new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                view.setVisibility(visibility);
+                                view.animate().setListener(null);
+                            }
+                        })
+                .start();
     }
 
     /**
@@ -742,7 +795,7 @@ class ScheduleRowPresenter extends RowPresenter {
     protected int[] getAvailableActions(ScheduleRow row) {
         if (row.getSchedule() != null) {
             if (row.isRecordingInProgress()) {
-                return new int[]{ACTION_STOP_RECORDING};
+                return new int[] {ACTION_STOP_RECORDING};
             } else if (row.isOnAir()) {
                 if (row.isRecordingNotStarted()) {
                     if (canResolveConflict()) {
@@ -754,8 +807,12 @@ class ScheduleRowPresenter extends RowPresenter {
                 } else if (row.isRecordingFinished()) {
                     return new int[] {ACTION_START_RECORDING};
                 } else {
-                    SoftPreconditions.checkState(false, TAG, "Invalid row state in checking the"
-                            + " available actions(on air): " + row);
+                    SoftPreconditions.checkState(
+                            false,
+                            TAG,
+                            "Invalid row state in checking the"
+                                    + " available actions(on air): "
+                                    + row);
                 }
             } else {
                 if (row.isScheduleCanceled()) {
@@ -765,31 +822,29 @@ class ScheduleRowPresenter extends RowPresenter {
                 } else if (row.isRecordingNotStarted()) {
                     return new int[] {ACTION_REMOVE_SCHEDULE};
                 } else {
-                    SoftPreconditions.checkState(false, TAG, "Invalid row state in checking the"
-                            + " available actions(future schedule): " + row);
+                    SoftPreconditions.checkState(
+                            false,
+                            TAG,
+                            "Invalid row state in checking the"
+                                    + " available actions(future schedule): "
+                                    + row);
                 }
             }
         }
         return null;
     }
 
-    /**
-     * Check if the conflict can be resolved in this screen.
-     */
+    /** Check if the conflict can be resolved in this screen. */
     protected boolean canResolveConflict() {
         return true;
     }
 
-    /**
-     * Check if the schedule should be kept after removing it.
-     */
+    /** Check if the schedule should be kept after removing it. */
     protected boolean shouldKeepScheduleAfterRemoving() {
         return false;
     }
 
-    /**
-     * Checks if the row should be grayed out.
-     */
+    /** Checks if the row should be grayed out. */
     protected boolean shouldBeGrayedOut(ScheduleRow row) {
         return row.getSchedule() == null
                 || (row.isOnAir() && !row.isRecordingInProgress())

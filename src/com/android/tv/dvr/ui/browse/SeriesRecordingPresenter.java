@@ -19,7 +19,6 @@ package com.android.tv.dvr.ui.browse;
 import android.content.Context;
 import android.media.tv.TvInputManager;
 import android.text.TextUtils;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
@@ -32,27 +31,29 @@ import com.android.tv.dvr.DvrWatchedPositionManager.WatchedPositionChangedListen
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
-
 import java.util.List;
 
-/**
- * Presents a {@link SeriesRecording} in {@link DvrBrowseFragment}.
- */
+/** Presents a {@link SeriesRecording} in {@link DvrBrowseFragment}. */
 class SeriesRecordingPresenter extends DvrItemPresenter<SeriesRecording> {
     private final DvrDataManager mDvrDataManager;
     private final DvrManager mDvrManager;
     private final DvrWatchedPositionManager mWatchedPositionManager;
 
-    private final class SeriesRecordingViewHolder extends DvrItemViewHolder implements
-            WatchedPositionChangedListener, ScheduledRecordingListener, RecordedProgramListener {
+    private final class SeriesRecordingViewHolder extends DvrItemViewHolder
+            implements WatchedPositionChangedListener,
+                    ScheduledRecordingListener,
+                    RecordedProgramListener {
         private SeriesRecording mSeriesRecording;
         private RecordingCardView mCardView;
         private DvrDataManager mDvrDataManager;
         private DvrManager mDvrManager;
         private DvrWatchedPositionManager mWatchedPositionManager;
 
-        SeriesRecordingViewHolder(RecordingCardView view, DvrDataManager dvrDataManager,
-                DvrManager dvrManager, DvrWatchedPositionManager watchedPositionManager) {
+        SeriesRecordingViewHolder(
+                RecordingCardView view,
+                DvrDataManager dvrDataManager,
+                DvrManager dvrManager,
+                DvrWatchedPositionManager watchedPositionManager) {
             super(view);
             mCardView = view;
             mDvrDataManager = dvrDataManager;
@@ -92,8 +93,8 @@ class SeriesRecordingPresenter extends DvrItemPresenter<SeriesRecording> {
         public void onRecordedProgramsAdded(RecordedProgram... recordedPrograms) {
             boolean needToUpdateCardView = false;
             for (RecordedProgram recordedProgram : recordedPrograms) {
-                if (TextUtils.equals(recordedProgram.getSeriesId(),
-                        mSeriesRecording.getSeriesId())) {
+                if (TextUtils.equals(
+                        recordedProgram.getSeriesId(), mSeriesRecording.getSeriesId())) {
                     mDvrDataManager.removeScheduledRecordingListener(this);
                     mWatchedPositionManager.addListener(this, recordedProgram.getId());
                     needToUpdateCardView = true;
@@ -108,8 +109,8 @@ class SeriesRecordingPresenter extends DvrItemPresenter<SeriesRecording> {
         public void onRecordedProgramsRemoved(RecordedProgram... recordedPrograms) {
             boolean needToUpdateCardView = false;
             for (RecordedProgram recordedProgram : recordedPrograms) {
-                if (TextUtils.equals(recordedProgram.getSeriesId(),
-                        mSeriesRecording.getSeriesId())) {
+                if (TextUtils.equals(
+                        recordedProgram.getSeriesId(), mSeriesRecording.getSeriesId())) {
                     if (mWatchedPositionManager.getWatchedPosition(recordedProgram.getId())
                             == TvInputManager.TIME_SHIFT_INVALID_TIME) {
                         mWatchedPositionManager.removeListener(this, recordedProgram.getId());
@@ -177,8 +178,9 @@ class SeriesRecordingPresenter extends DvrItemPresenter<SeriesRecording> {
                     quantityStringID = R.plurals.dvr_count_new_recordings;
                 }
             }
-            mCardView.setContent(mCardView.getResources()
-                    .getQuantityString(quantityStringID, count, count), null);
+            mCardView.setContent(
+                    mCardView.getResources().getQuantityString(quantityStringID, count, count),
+                    null);
         }
     }
 
@@ -192,8 +194,11 @@ class SeriesRecordingPresenter extends DvrItemPresenter<SeriesRecording> {
 
     @Override
     public DvrItemViewHolder onCreateDvrItemViewHolder() {
-        return new SeriesRecordingViewHolder(new RecordingCardView(mContext), mDvrDataManager,
-                mDvrManager, mWatchedPositionManager);
+        return new SeriesRecordingViewHolder(
+                new RecordingCardView(mContext),
+                mDvrDataManager,
+                mDvrManager,
+                mWatchedPositionManager);
     }
 
     @Override

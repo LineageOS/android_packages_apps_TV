@@ -27,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.android.tv.R;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelNumber;
@@ -37,7 +36,6 @@ import com.android.tv.ui.sidepanel.ChannelCheckItem;
 import com.android.tv.ui.sidepanel.DividerItem;
 import com.android.tv.ui.sidepanel.Item;
 import com.android.tv.ui.sidepanel.SideFragment;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,44 +47,52 @@ public class ChannelsBlockedFragment extends SideFragment {
     private final List<Channel> mChannels = new ArrayList<>();
     private long mLastFocusedChannelId = Channel.INVALID_ID;
     private int mSelectedPosition = INVALID_POSITION;
-    private final ContentObserver mProgramUpdateObserver = new ContentObserver(new Handler()) {
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            notifyItemsChanged();
-        }
-    };
+    private final ContentObserver mProgramUpdateObserver =
+            new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfChange, Uri uri) {
+                    notifyItemsChanged();
+                }
+            };
     private final Item mLockAllItem = new BlockAllItem();
     private final List<Item> mItems = new ArrayList<>();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (mSelectedPosition != INVALID_POSITION) {
             setSelectedPosition(mSelectedPosition);
         }
         VerticalGridView listView = (VerticalGridView) view.findViewById(R.id.side_panel_list);
-        listView.setOnKeyInterceptListener(new OnRepeatedKeyInterceptListener(listView) {
-            @Override
-            public boolean onInterceptKeyEvent(KeyEvent event) {
-                // In order to send tune operation once for continuous channel up/down events,
-                // we only call the moveToChannel method on ACTION_UP event of channel switch keys.
-                if (event.getAction() == KeyEvent.ACTION_UP) {
-                    switch (event.getKeyCode()) {
-                        case KeyEvent.KEYCODE_DPAD_UP:
-                        case KeyEvent.KEYCODE_DPAD_DOWN:
-                            if (mLastFocusedChannelId != Channel.INVALID_ID) {
-                                getMainActivity().tuneToChannel(
-                                        getChannelDataManager().getChannel(mLastFocusedChannelId));
+        listView.setOnKeyInterceptListener(
+                new OnRepeatedKeyInterceptListener(listView) {
+                    @Override
+                    public boolean onInterceptKeyEvent(KeyEvent event) {
+                        // In order to send tune operation once for continuous channel up/down
+                        // events,
+                        // we only call the moveToChannel method on ACTION_UP event of channel
+                        // switch keys.
+                        if (event.getAction() == KeyEvent.ACTION_UP) {
+                            switch (event.getKeyCode()) {
+                                case KeyEvent.KEYCODE_DPAD_UP:
+                                case KeyEvent.KEYCODE_DPAD_DOWN:
+                                    if (mLastFocusedChannelId != Channel.INVALID_ID) {
+                                        getMainActivity()
+                                                .tuneToChannel(
+                                                        getChannelDataManager()
+                                                                .getChannel(mLastFocusedChannelId));
+                                    }
+                                    break;
                             }
-                            break;
+                        }
+                        return super.onInterceptKeyEvent(event);
                     }
-                }
-                return super.onInterceptKeyEvent(event);
-            }
-        });
-        getActivity().getContentResolver().registerContentObserver(TvContract.Programs.CONTENT_URI,
-                true, mProgramUpdateObserver);
+                });
+        getActivity()
+                .getContentResolver()
+                .registerContentObserver(
+                        TvContract.Programs.CONTENT_URI, true, mProgramUpdateObserver);
         getMainActivity().startShrunkenTvView(true, true);
         return view;
     }
@@ -115,22 +121,24 @@ public class ChannelsBlockedFragment extends SideFragment {
         mItems.add(mLockAllItem);
         mChannels.clear();
         mChannels.addAll(getChannelDataManager().getChannelList());
-        Collections.sort(mChannels, new Comparator<Channel>() {
-            @Override
-            public int compare(Channel lhs, Channel rhs) {
-                if (lhs.isBrowsable() != rhs.isBrowsable()) {
-                    return lhs.isBrowsable() ? -1 : 1;
-                }
-                return ChannelNumber.compare(lhs.getDisplayNumber(), rhs.getDisplayNumber());
-            }
-        });
+        Collections.sort(
+                mChannels,
+                new Comparator<Channel>() {
+                    @Override
+                    public int compare(Channel lhs, Channel rhs) {
+                        if (lhs.isBrowsable() != rhs.isBrowsable()) {
+                            return lhs.isBrowsable() ? -1 : 1;
+                        }
+                        return ChannelNumber.compare(
+                                lhs.getDisplayNumber(), rhs.getDisplayNumber());
+                    }
+                });
 
         final long currentChannelId = getMainActivity().getCurrentChannelId();
         boolean hasHiddenChannels = false;
         for (Channel channel : mChannels) {
             if (!channel.isBrowsable() && !hasHiddenChannels) {
-                mItems.add(new DividerItem(
-                        getString(R.string.option_channels_subheader_hidden)));
+                mItems.add(new DividerItem(getString(R.string.option_channels_subheader_hidden)));
                 hasHiddenChannels = true;
             }
             mItems.add(new ChannelBlockedItem(channel));
@@ -186,8 +194,11 @@ public class ChannelsBlockedFragment extends SideFragment {
         }
 
         private void updateText() {
-            mTextView.setText(getString(areAllChannelsBlocked() ?
-                    R.string.option_channels_unlock_all : R.string.option_channels_lock_all));
+            mTextView.setText(
+                    getString(
+                            areAllChannelsBlocked()
+                                    ? R.string.option_channels_unlock_all
+                                    : R.string.option_channels_lock_all));
         }
 
         private boolean areAllChannelsBlocked() {

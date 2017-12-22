@@ -19,7 +19,6 @@ package com.android.tv.tuner.exoplayer.audio;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
-
 import java.nio.ByteBuffer;
 
 /** A base class for audio decoders. */

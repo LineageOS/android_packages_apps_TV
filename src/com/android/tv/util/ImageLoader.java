@@ -30,10 +30,8 @@ import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 import android.util.ArraySet;
 import android.util.Log;
-
 import com.android.tv.R;
 import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
-
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,8 +45,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This class wraps up completing some arbitrary long running work when loading a bitmap. It
- * handles things like using a memory cache, running the work in a background thread.
+ * This class wraps up completing some arbitrary long running work when loading a bitmap. It handles
+ * things like using a memory cache, running the work in a background thread.
  */
 public final class ImageLoader {
     private static final String TAG = "ImageLoader";
@@ -69,19 +67,23 @@ public final class ImageLoader {
     /**
      * An private {@link Executor} that can be used to execute tasks in parallel.
      *
-     * <p>{@code IMAGE_THREAD_POOL_EXECUTOR} setting are copied from {@link AsyncTask}
-     * Since we do a lot of concurrent image loading we can exhaust a thread pool.
-     * ImageLoader catches the error, and just leaves the image blank.
-     * However other tasks will fail and crash the application.
+     * <p>{@code IMAGE_THREAD_POOL_EXECUTOR} setting are copied from {@link AsyncTask} Since we do a
+     * lot of concurrent image loading we can exhaust a thread pool. ImageLoader catches the error,
+     * and just leaves the image blank. However other tasks will fail and crash the application.
      *
      * <p>Using a separate thread pool prevents image loading from causing other tasks to fail.
      */
     private static final Executor IMAGE_THREAD_POOL_EXECUTOR;
 
     static {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,
-                MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, sPoolWorkQueue,
-                sThreadFactory);
+        ThreadPoolExecutor threadPoolExecutor =
+                new ThreadPoolExecutor(
+                        CORE_POOL_SIZE,
+                        MAXIMUM_POOL_SIZE,
+                        KEEP_ALIVE_SECONDS,
+                        TimeUnit.SECONDS,
+                        sPoolWorkQueue,
+                        sThreadFactory);
         threadPoolExecutor.allowCoreThreadTimeOut(true);
         IMAGE_THREAD_POOL_EXECUTOR = threadPoolExecutor;
     }
@@ -91,28 +93,26 @@ public final class ImageLoader {
     /**
      * Handles when image loading is finished.
      *
-     * <p>Use this to prevent leaking an Activity or other Context while image loading is
-     *  still pending. When you extend this class you <strong>MUST NOT</strong> use a non static
-     *  inner class, or the containing object will still be leaked.
+     * <p>Use this to prevent leaking an Activity or other Context while image loading is still
+     * pending. When you extend this class you <strong>MUST NOT</strong> use a non static inner
+     * class, or the containing object will still be leaked.
      */
     @UiThread
-    public static abstract class ImageLoaderCallback<T> {
+    public abstract static class ImageLoaderCallback<T> {
         private final WeakReference<T> mWeakReference;
 
         /**
          * Creates an callback keeping a weak reference to {@code referent}.
          *
-         * <p> If the "referent" is no longer valid, it no longer makes sense to run the
-         * callback. The referent is the View, or Activity or whatever that actually needs to
-         * receive the Bitmap.  If the referent has been GC, then no need to run the callback.
+         * <p>If the "referent" is no longer valid, it no longer makes sense to run the callback.
+         * The referent is the View, or Activity or whatever that actually needs to receive the
+         * Bitmap. If the referent has been GC, then no need to run the callback.
          */
         public ImageLoaderCallback(T referent) {
             mWeakReference = new WeakReference<>(referent);
         }
 
-        /**
-         * Called when bitmap is loaded.
-         */
+        /** Called when bitmap is loaded. */
         private void onBitmapLoaded(@Nullable Bitmap bitmap) {
             T referent = mWeakReference.get();
             if (referent != null) {
@@ -122,9 +122,7 @@ public final class ImageLoader {
             }
         }
 
-        /**
-         * Called when bitmap is loaded if the weak reference is still valid.
-         */
+        /** Called when bitmap is loaded if the weak reference is still valid. */
         public abstract void onBitmapLoaded(T referent, @Nullable Bitmap bitmap);
     }
 
@@ -134,62 +132,80 @@ public final class ImageLoader {
      * Preload a bitmap image into the cache.
      *
      * <p>Not to make heavy CPU load, AsyncTask.SERIAL_EXECUTOR is used for the image loading.
+     *
      * <p>This method is thread safe.
      */
-    public static void prefetchBitmap(Context context, final String uriString, final int maxWidth,
-            final int maxHeight) {
+    public static void prefetchBitmap(
+            Context context, final String uriString, final int maxWidth, final int maxHeight) {
         if (DEBUG) Log.d(TAG, "prefetchBitmap() " + uriString);
         if (Looper.getMainLooper() == Looper.myLooper()) {
             doLoadBitmap(context, uriString, maxWidth, maxHeight, null, AsyncTask.SERIAL_EXECUTOR);
         } else {
             final Context appContext = context.getApplicationContext();
-            getMainHandler().post(new Runnable() {
-                @Override
-                @MainThread
-                public void run() {
-                    // Calling from the main thread prevents a ConcurrentModificationException
-                    // in LoadBitmapTask.onPostExecute
-                    doLoadBitmap(appContext, uriString, maxWidth, maxHeight, null,
-                            AsyncTask.SERIAL_EXECUTOR);
-                }
-            });
+            getMainHandler()
+                    .post(
+                            new Runnable() {
+                                @Override
+                                @MainThread
+                                public void run() {
+                                    // Calling from the main thread prevents a
+                                    // ConcurrentModificationException
+                                    // in LoadBitmapTask.onPostExecute
+                                    doLoadBitmap(
+                                            appContext,
+                                            uriString,
+                                            maxWidth,
+                                            maxHeight,
+                                            null,
+                                            AsyncTask.SERIAL_EXECUTOR);
+                                }
+                            });
         }
     }
 
     /**
      * Load a bitmap image with the cache using a ContentResolver.
      *
-     * <p><b>Note</b> that the callback will be called synchronously if the bitmap already is in
-     * the cache.
+     * <p><b>Note</b> that the callback will be called synchronously if the bitmap already is in the
+     * cache.
      *
      * @return {@code true} if the load is complete and the callback is executed.
      */
     @UiThread
-    public static boolean loadBitmap(Context context, String uriString,
-            ImageLoaderCallback callback) {
+    public static boolean loadBitmap(
+            Context context, String uriString, ImageLoaderCallback callback) {
         return loadBitmap(context, uriString, Integer.MAX_VALUE, Integer.MAX_VALUE, callback);
     }
 
     /**
      * Load a bitmap image with the cache and resize it with given params.
      *
-     * <p><b>Note</b> that the callback will be called synchronously if the bitmap already is in
-     * the cache.
+     * <p><b>Note</b> that the callback will be called synchronously if the bitmap already is in the
+     * cache.
      *
      * @return {@code true} if the load is complete and the callback is executed.
      */
     @UiThread
-    public static boolean loadBitmap(Context context, String uriString, int maxWidth, int maxHeight,
+    public static boolean loadBitmap(
+            Context context,
+            String uriString,
+            int maxWidth,
+            int maxHeight,
             ImageLoaderCallback callback) {
         if (DEBUG) {
             Log.d(TAG, "loadBitmap() " + uriString);
         }
-        return doLoadBitmap(context, uriString, maxWidth, maxHeight, callback,
-                IMAGE_THREAD_POOL_EXECUTOR);
+        return doLoadBitmap(
+                context, uriString, maxWidth, maxHeight, callback, IMAGE_THREAD_POOL_EXECUTOR);
     }
 
-    private static boolean doLoadBitmap(Context context, String uriString,
-            int maxWidth, int maxHeight, ImageLoaderCallback callback, Executor executor) {
+    private static boolean doLoadBitmap(
+            Context context,
+            String uriString,
+            int maxWidth,
+            int maxHeight,
+            ImageLoaderCallback callback,
+            Executor executor) {
         // Check the cache before creating a Task.  The cache will be checked again in doLoadBitmap
         // but checking a cache is much cheaper than creating an new task.
         ImageCache imageCache = ImageCache.getInstance();
@@ -200,7 +216,9 @@ public final class ImageLoader {
             }
             return true;
         }
-        return doLoadBitmap(callback, executor,
+        return doLoadBitmap(
+                callback,
+                executor,
                 new LoadBitmapFromUriTask(context, imageCache, uriString, maxWidth, maxHeight));
     }
 
@@ -219,12 +237,10 @@ public final class ImageLoader {
         return doLoadBitmap(callback, IMAGE_THREAD_POOL_EXECUTOR, loadBitmapTask);
     }
 
-    /**
-     * @return {@code true} if the load is complete and the callback is executed.
-     */
+    /** @return {@code true} if the load is complete and the callback is executed. */
     @UiThread
-    private static boolean doLoadBitmap(ImageLoaderCallback callback, Executor executor,
-            LoadBitmapTask loadBitmapTask) {
+    private static boolean doLoadBitmap(
+            ImageLoaderCallback callback, Executor executor, LoadBitmapTask loadBitmapTask) {
         ScaledBitmapInfo bitmapInfo = loadBitmapTask.getFromCache();
         boolean needToReload = loadBitmapTask.isReloadNeeded();
         if (bitmapInfo != null && !needToReload) {
@@ -259,7 +275,7 @@ public final class ImageLoader {
      *
      * <p>Implement {@link #doGetBitmapInBackground} to do the actual loading.
      */
-    public static abstract class LoadBitmapTask extends AsyncTask<Void, Void, ScaledBitmapInfo> {
+    public abstract static class LoadBitmapTask extends AsyncTask<Void, Void, ScaledBitmapInfo> {
         protected final Context mAppContext;
         protected final int mMaxWidth;
         protected final int mMaxHeight;
@@ -273,24 +289,28 @@ public final class ImageLoader {
          */
         private boolean isReloadNeeded() {
             ScaledBitmapInfo bitmapInfo = getFromCache();
-            boolean needToReload = bitmapInfo != null && bitmapInfo
-                    .needToReload(mMaxWidth, mMaxHeight);
+            boolean needToReload =
+                    bitmapInfo != null && bitmapInfo.needToReload(mMaxWidth, mMaxHeight);
             if (DEBUG) {
                 if (needToReload) {
-                    Log.d(TAG, "Bitmap needs to be reloaded. {"
-                            + "originalWidth=" + bitmapInfo.bitmap.getWidth()
-                            + ", originalHeight=" + bitmapInfo.bitmap.getHeight()
-                            + ", reqWidth=" + mMaxWidth
-                            + ", reqHeight=" + mMaxHeight
-                            + "}");
+                    Log.d(
+                            TAG,
+                            "Bitmap needs to be reloaded. {"
+                                    + "originalWidth="
+                                    + bitmapInfo.bitmap.getWidth()
+                                    + ", originalHeight="
+                                    + bitmapInfo.bitmap.getHeight()
+                                    + ", reqWidth="
+                                    + mMaxWidth
+                                    + ", reqHeight="
+                                    + mMaxHeight
+                                    + "}");
                 }
             }
             return needToReload;
         }
 
-        /**
-         * Checks if a reload would be needed if the results of other was available.
-         */
+        /** Checks if a reload would be needed if the results of other was available. */
         private boolean isReloadNeeded(LoadBitmapTask other) {
             return (other.mMaxHeight != Integer.MAX_VALUE && mMaxHeight >= other.mMaxHeight * 2)
                     || (other.mMaxWidth != Integer.MAX_VALUE && mMaxWidth >= other.mMaxWidth * 2);
@@ -301,11 +321,14 @@ public final class ImageLoader {
             return mImageCache.get(mKey);
         }
 
-        public LoadBitmapTask(Context context, ImageCache imageCache, String key, int maxHeight,
-                int maxWidth) {
+        public LoadBitmapTask(
+                Context context, ImageCache imageCache, String key, int maxHeight, int maxWidth) {
             if (maxWidth == 0 || maxHeight == 0) {
                 throw new IllegalArgumentException(
-                        "Image size should not be 0. {width=" + maxWidth + ", height=" + maxHeight
+                        "Image size should not be 0. {width="
+                                + maxWidth
+                                + ", height="
+                                + maxHeight
                                 + "}");
             }
             mAppContext = context.getApplicationContext();
@@ -315,9 +338,7 @@ public final class ImageLoader {
             mMaxWidth = maxWidth;
         }
 
-        /**
-         * Loads the bitmap returning a possibly scaled down version.
-         */
+        /** Loads the bitmap returning a possibly scaled down version. */
         @Nullable
         @WorkerThread
         public abstract ScaledBitmapInfo doGetBitmapInBackground();
@@ -352,40 +373,48 @@ public final class ImageLoader {
 
         @Override
         public String toString() {
-            return this.getClass().getSimpleName() + "(" + mKey + " " + mMaxWidth + "x" + mMaxHeight
+            return this.getClass().getSimpleName()
+                    + "("
+                    + mKey
+                    + " "
+                    + mMaxWidth
+                    + "x"
+                    + mMaxHeight
                     + ")";
         }
     }
 
     private static final class LoadBitmapFromUriTask extends LoadBitmapTask {
-        private LoadBitmapFromUriTask(Context context, ImageCache imageCache, String uriString,
-                int maxWidth, int maxHeight) {
+        private LoadBitmapFromUriTask(
+                Context context,
+                ImageCache imageCache,
+                String uriString,
+                int maxWidth,
+                int maxHeight) {
             super(context, imageCache, uriString, maxHeight, maxWidth);
         }
 
         @Override
         @Nullable
         public final ScaledBitmapInfo doGetBitmapInBackground() {
-            return BitmapUtils
-                    .decodeSampledBitmapFromUriString(mAppContext, getKey(), mMaxWidth, mMaxHeight);
+            return BitmapUtils.decodeSampledBitmapFromUriString(
+                    mAppContext, getKey(), mMaxWidth, mMaxHeight);
         }
     }
 
-    /**
-     * Loads and caches the logo for a given {@link TvInputInfo}
-     */
+    /** Loads and caches the logo for a given {@link TvInputInfo} */
     public static final class LoadTvInputLogoTask extends LoadBitmapTask {
         private final TvInputInfo mInfo;
 
         public LoadTvInputLogoTask(Context context, ImageCache cache, TvInputInfo info) {
-            super(context,
+            super(
+                    context,
                     cache,
                     getTvInputLogoKey(info.getId()),
                     context.getResources()
                             .getDimensionPixelSize(R.dimen.channel_banner_input_logo_size),
                     context.getResources()
-                            .getDimensionPixelSize(R.dimen.channel_banner_input_logo_size)
-            );
+                            .getDimensionPixelSize(R.dimen.channel_banner_input_logo_size));
             mInfo = info;
         }
 
@@ -403,9 +432,7 @@ public final class ImageLoader {
             return BitmapUtils.createScaledBitmapInfo(getKey(), original, mMaxWidth, mMaxHeight);
         }
 
-        /**
-         * Returns key of TV input logo.
-         */
+        /** Returns key of TV input logo. */
         public static String getTvInputLogoKey(String inputId) {
             return inputId + "-logo";
         }
@@ -418,6 +445,5 @@ public final class ImageLoader {
         return sMainHandler;
     }
 
-    private ImageLoader() {
-    }
+    private ImageLoader() {}
 }

@@ -17,13 +17,11 @@
 package com.android.tv.tuner.source;
 
 import android.content.Context;
-
 import com.android.tv.common.AutoCloseableUtils;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.tvinput.EventDetector;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Manages {@link TunerTsStreamer} for playback and recording.
- * The class hides handling of {@link TunerHal} from other classes.
- * This class is used by {@link TsDataSourceManager}. Don't use this class directly.
+ * Manages {@link TunerTsStreamer} for playback and recording. The class hides handling of {@link
+ * TunerHal} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
+ * class directly.
  */
 class TunerTsStreamerManager {
     // The lock will protect mStreamerFinder, mSourceToStreamerMap and some part of TsStreamCreator
@@ -49,6 +47,7 @@ class TunerTsStreamerManager {
 
     /**
      * Returns the singleton instance for the class
+     *
      * @return TunerTsStreamerManager
      */
     static synchronized TunerTsStreamerManager getInstance() {
@@ -58,16 +57,19 @@ class TunerTsStreamerManager {
         return sInstance;
     }
 
-    private TunerTsStreamerManager() { }
+    private TunerTsStreamerManager() {}
 
     synchronized TsDataSource createDataSource(
-            Context context, TunerChannel channel, EventDetector.EventListener listener,
-            int sessionId, boolean reuse) {
+            Context context,
+            TunerChannel channel,
+            EventDetector.EventListener listener,
+            int sessionId,
+            boolean reuse) {
         TsStreamerCreator creator;
         synchronized (mCancelLock) {
             if (mStreamerFinder.containsLocked(channel)) {
                 mStreamerFinder.appendSessionLocked(channel, sessionId);
-                TunerTsStreamer streamer =  mStreamerFinder.getStreamerLocked(channel);
+                TunerTsStreamer streamer = mStreamerFinder.getStreamerLocked(channel);
                 TsDataSource source = streamer.createDataSource();
                 mListeners.put(sessionId, listener);
                 streamer.registerListener(listener);
@@ -99,8 +101,7 @@ class TunerTsStreamerManager {
         return null;
     }
 
-    synchronized void releaseDataSource(TsDataSource source, int sessionId,
-            boolean reuse) {
+    synchronized void releaseDataSource(TsDataSource source, int sessionId, boolean reuse) {
         TunerTsStreamer streamer;
         synchronized (mCancelLock) {
             streamer = mSourceToStreamerMap.get(source);
@@ -125,15 +126,13 @@ class TunerTsStreamerManager {
 
     void setHasPendingTune(int sessionId) {
         synchronized (mCancelLock) {
-           if (mCreators.containsKey(sessionId)) {
-               mCreators.get(sessionId).cancelLocked();
-           }
+            if (mCreators.containsKey(sessionId)) {
+                mCreators.get(sessionId).cancelLocked();
+            }
         }
     }
 
-    /**
-     * Add tuner hal into TunerHalManager for test.
-     */
+    /** Add tuner hal into TunerHalManager for test. */
     void addTunerHal(TunerHal tunerHal, int sessionId) {
         mTunerHalManager.addTunerHal(tunerHal, sessionId);
     }
@@ -183,8 +182,8 @@ class TunerTsStreamerManager {
     }
 
     /**
-     * {@link TunerTsStreamer} creation can be cancelled by a new tune request for the same
-     * session. The class supports the cancellation in creating new {@link TunerTsStreamer}.
+     * {@link TunerTsStreamer} creation can be cancelled by a new tune request for the same session.
+     * The class supports the cancellation in creating new {@link TunerTsStreamer}.
      */
     private class TsStreamerCreator {
         private final Context mContext;
@@ -195,8 +194,8 @@ class TunerTsStreamerManager {
         private boolean mCancelled;
         private TunerHal mTunerHal;
 
-        private TsStreamerCreator(Context context, TunerChannel channel,
-                EventDetector.EventListener listener) {
+        private TsStreamerCreator(
+                Context context, TunerChannel channel, EventDetector.EventListener listener) {
             mContext = context;
             mChannel = channel;
             mEventListener = listener;
@@ -233,24 +232,24 @@ class TunerTsStreamerManager {
 
         // @GuardedBy("mCancelLock")
         private void cancelLocked() {
-                if (mCancelled) {
-                    return;
-                }
-                mCancelled = true;
-                if (mTunerHal != null) {
-                    mTunerHal.setHasPendingTune(true);
-                }
+            if (mCancelled) {
+                return;
+            }
+            mCancelled = true;
+            if (mTunerHal != null) {
+                mTunerHal.setHasPendingTune(true);
+            }
         }
 
         // @GuardedBy("mCancelLock")
         private boolean isCancelledLocked() {
-                return mCancelled;
+            return mCancelled;
         }
     }
 
     /**
-     * Supports sharing {@link TunerHal} among multiple sessions.
-     * The class also supports session affinity for {@link TunerHal} allocation.
+     * Supports sharing {@link TunerHal} among multiple sessions. The class also supports session
+     * affinity for {@link TunerHal} allocation.
      */
     private class TunerHalManager {
         private final Map<Integer, TunerHal> mTunerHals = new HashMap<>();

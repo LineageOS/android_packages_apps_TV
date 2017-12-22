@@ -28,16 +28,13 @@ import android.os.Handler;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.IntDef;
 import android.support.annotation.MainThread;
-
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.tuner.TunerPreferenceProvider.Preferences;
 import com.android.tv.tuner.util.TisConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A helper class for the USB tuner preferences.
- */
+/** A helper class for the USB tuner preferences. */
 public class TunerPreferences {
     private static final String TAG = "TunerPreferences";
 
@@ -56,42 +53,32 @@ public class TunerPreferences {
 
     @IntDef({TRICKPLAY_SETTING_NOT_SET, TRICKPLAY_SETTING_DISABLED, TRICKPLAY_SETTING_ENABLED})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TrickplaySetting {
-    }
+    public @interface TrickplaySetting {}
 
-    /**
-     * Trickplay setting is not changed by a user. Trickplay will be enabled in this case.
-     */
+    /** Trickplay setting is not changed by a user. Trickplay will be enabled in this case. */
     public static final int TRICKPLAY_SETTING_NOT_SET = -1;
 
-    /**
-     * Trickplay setting is disabled.
-     */
+    /** Trickplay setting is disabled. */
     public static final int TRICKPLAY_SETTING_DISABLED = 0;
 
-    /**
-     * Trickplay setting is enabled.
-     */
+    /** Trickplay setting is enabled. */
     public static final int TRICKPLAY_SETTING_ENABLED = 1;
 
     @GuardedBy("TunerPreferences.class")
     private static final Bundle sPreferenceValues = new Bundle();
+
     private static LoadPreferencesTask sLoadPreferencesTask;
     private static ContentObserver sContentObserver;
     private static TunerPreferencesChangedListener sPreferencesChangedListener = null;
 
     private static boolean sInitialized;
 
-    /**
-     * Listeners for TunerPreferences change.
-     */
+    /** Listeners for TunerPreferences change. */
     public interface TunerPreferencesChangedListener {
         void onTunerPreferencesChanged();
     }
 
-    /**
-     * Initializes the USB tuner preferences.
-     */
+    /** Initializes the USB tuner preferences. */
     @MainThread
     public static void initialize(final Context context) {
         if (sInitialized) {
@@ -100,14 +87,18 @@ public class TunerPreferences {
         sInitialized = true;
         if (useContentProvider(context)) {
             loadPreferences(context);
-            sContentObserver = new ContentObserver(new Handler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                    loadPreferences(context);
-                }
-            };
-            context.getContentResolver().registerContentObserver(
-                    TunerPreferenceProvider.Preferences.CONTENT_URI, true, sContentObserver);
+            sContentObserver =
+                    new ContentObserver(new Handler()) {
+                        @Override
+                        public void onChange(boolean selfChange) {
+                            loadPreferences(context);
+                        }
+                    };
+            context.getContentResolver()
+                    .registerContentObserver(
+                            TunerPreferenceProvider.Preferences.CONTENT_URI,
+                            true,
+                            sContentObserver);
         } else {
             new AsyncTask<Void, Void, Void>() {
                 @Override
@@ -119,9 +110,7 @@ public class TunerPreferences {
         }
     }
 
-    /**
-     * Releases the resources.
-     */
+    /** Releases the resources. */
     public static synchronized void release(Context context) {
         if (useContentProvider(context) && sContentObserver != null) {
             context.getContentResolver().unregisterContentObserver(sContentObserver);
@@ -129,9 +118,7 @@ public class TunerPreferences {
         setTunerPreferencesChangedListener(null);
     }
 
-    /**
-     * Sets the listener for TunerPreferences change.
-     */
+    /** Sets the listener for TunerPreferences change. */
     public static void setTunerPreferencesChangedListener(
             TunerPreferencesChangedListener listener) {
         sPreferencesChangedListener = listener;
@@ -139,9 +126,9 @@ public class TunerPreferences {
 
     /**
      * Loads the preferences from database.
-     * <p>
-     * This preferences is used across processes, so the preferences should be loaded again when the
-     * databases changes.
+     *
+     * <p>This preferences is used across processes, so the preferences should be loaded again when
+     * the databases changes.
      */
     @MainThread
     public static void loadPreferences(Context context) {
@@ -161,11 +148,12 @@ public class TunerPreferences {
     public static synchronized int getChannelDataVersion(Context context) {
         SoftPreconditions.checkState(sInitialized);
         if (useContentProvider(context)) {
-            return sPreferenceValues.getInt(PREFS_KEY_CHANNEL_DATA_VERSION,
-                    CHANNEL_DATA_VERSION_NOT_SET);
+            return sPreferenceValues.getInt(
+                    PREFS_KEY_CHANNEL_DATA_VERSION, CHANNEL_DATA_VERSION_NOT_SET);
         } else {
             return getSharedPreferences(context)
-                    .getInt(TunerPreferences.PREFS_KEY_CHANNEL_DATA_VERSION,
+                    .getInt(
+                            TunerPreferences.PREFS_KEY_CHANNEL_DATA_VERSION,
                             CHANNEL_DATA_VERSION_NOT_SET);
         }
     }
@@ -174,7 +162,8 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_CHANNEL_DATA_VERSION, version);
         } else {
-            getSharedPreferences(context).edit()
+            getSharedPreferences(context)
+                    .edit()
                     .putInt(TunerPreferences.PREFS_KEY_CHANNEL_DATA_VERSION, version)
                     .apply();
         }
@@ -194,7 +183,8 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_SCANNED_CHANNEL_COUNT, channelCount);
         } else {
-            getSharedPreferences(context).edit()
+            getSharedPreferences(context)
+                    .edit()
                     .putInt(TunerPreferences.PREFS_KEY_SCANNED_CHANNEL_COUNT, channelCount)
                     .apply();
         }
@@ -213,8 +203,10 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_LAST_POSTAL_CODE, postalCode);
         } else {
-            getSharedPreferences(context).edit()
-                    .putString(PREFS_KEY_LAST_POSTAL_CODE, postalCode).apply();
+            getSharedPreferences(context)
+                    .edit()
+                    .putString(PREFS_KEY_LAST_POSTAL_CODE, postalCode)
+                    .apply();
         }
     }
 
@@ -232,7 +224,8 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_SCAN_DONE, true);
         } else {
-            getSharedPreferences(context).edit()
+            getSharedPreferences(context)
+                    .edit()
                     .putBoolean(TunerPreferences.PREFS_KEY_SCAN_DONE, true)
                     .apply();
         }
@@ -252,7 +245,8 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_LAUNCH_SETUP, need);
         } else {
-            getSharedPreferences(context).edit()
+            getSharedPreferences(context)
+                    .edit()
                     .putBoolean(TunerPreferences.PREFS_KEY_LAUNCH_SETUP, need)
                     .apply();
         }
@@ -272,32 +266,36 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_TRICKPLAY_EXPIRED_MS, timeMs);
         } else {
-            getSharedPreferences(context).edit()
+            getSharedPreferences(context)
+                    .edit()
                     .putLong(TunerPreferences.PREFS_KEY_TRICKPLAY_EXPIRED_MS, timeMs)
                     .apply();
         }
     }
 
-    public static synchronized  @TrickplaySetting int getTrickplaySetting(Context context) {
+    public static synchronized @TrickplaySetting int getTrickplaySetting(Context context) {
         SoftPreconditions.checkState(sInitialized);
         if (useContentProvider(context)) {
             return sPreferenceValues.getInt(PREFS_KEY_TRICKPLAY_SETTING, TRICKPLAY_SETTING_NOT_SET);
         } else {
             return getSharedPreferences(context)
-                .getInt(TunerPreferences.PREFS_KEY_TRICKPLAY_SETTING, TRICKPLAY_SETTING_NOT_SET);
+                    .getInt(
+                            TunerPreferences.PREFS_KEY_TRICKPLAY_SETTING,
+                            TRICKPLAY_SETTING_NOT_SET);
         }
     }
 
-    public static synchronized void setTrickplaySetting(Context context,
-            @TrickplaySetting int trickplaySetting) {
+    public static synchronized void setTrickplaySetting(
+            Context context, @TrickplaySetting int trickplaySetting) {
         SoftPreconditions.checkState(sInitialized);
         SoftPreconditions.checkArgument(trickplaySetting != TRICKPLAY_SETTING_NOT_SET);
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_TRICKPLAY_SETTING, trickplaySetting);
         } else {
-            getSharedPreferences(context).edit()
-                .putInt(TunerPreferences.PREFS_KEY_TRICKPLAY_SETTING, trickplaySetting)
-                .apply();
+            getSharedPreferences(context)
+                    .edit()
+                    .putInt(TunerPreferences.PREFS_KEY_TRICKPLAY_SETTING, trickplaySetting)
+                    .apply();
         }
     }
 
@@ -315,7 +313,8 @@ public class TunerPreferences {
         if (useContentProvider(context)) {
             setPreference(context, PREFS_KEY_STORE_TS_STREAM, shouldStore);
         } else {
-            getSharedPreferences(context).edit()
+            getSharedPreferences(context)
+                    .edit()
                     .putBoolean(TunerPreferences.PREFS_KEY_STORE_TS_STREAM, shouldStore)
                     .apply();
         }
@@ -335,7 +334,7 @@ public class TunerPreferences {
         savePreference(context, key, Integer.toString(value));
     }
 
-    private static synchronized  void setPreference(Context context, String key, long value) {
+    private static synchronized void setPreference(Context context, String key, long value) {
         sPreferenceValues.putLong(key, value);
         savePreference(context, key, Long.toString(value));
     }
@@ -345,8 +344,8 @@ public class TunerPreferences {
         savePreference(context, key, Boolean.toString(value));
     }
 
-    private static void savePreference(final Context context, final String key,
-            final String value) {
+    private static void savePreference(
+            final Context context, final String key, final String value) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -357,8 +356,8 @@ public class TunerPreferences {
                 try {
                     resolver.insert(Preferences.CONTENT_URI, values);
                 } catch (Exception e) {
-                    SoftPreconditions.warn(TAG, "setPreference", "Error writing preference values",
-                            e);
+                    SoftPreconditions.warn(
+                            TAG, "setPreference", "Error writing preference values", e);
                 }
                 return null;
             }
@@ -367,6 +366,7 @@ public class TunerPreferences {
 
     private static class LoadPreferencesTask extends AsyncTask<Void, Void, Bundle> {
         private final Context mContext;
+
         private LoadPreferencesTask(Context context) {
             mContext = context;
         }
@@ -375,9 +375,9 @@ public class TunerPreferences {
         protected Bundle doInBackground(Void... params) {
             Bundle bundle = new Bundle();
             ContentResolver resolver = mContext.getContentResolver();
-            String[] projection = new String[] { Preferences.COLUMN_KEY, Preferences.COLUMN_VALUE };
-            try (Cursor cursor = resolver.query(Preferences.CONTENT_URI, projection, null, null,
-                    null)) {
+            String[] projection = new String[] {Preferences.COLUMN_KEY, Preferences.COLUMN_VALUE};
+            try (Cursor cursor =
+                    resolver.query(Preferences.CONTENT_URI, projection, null, null, null)) {
                 if (cursor != null) {
                     while (!isCancelled() && cursor.moveToNext()) {
                         String key = cursor.getString(0);

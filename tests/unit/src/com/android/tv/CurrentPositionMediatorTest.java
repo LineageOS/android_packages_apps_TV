@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotSame;
 
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.filters.MediumTest;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,8 +76,8 @@ public class CurrentPositionMediatorTest extends BaseMainActivityTestCase {
         assertCurrentPositionMediator(INVALID_TIME, newCurrentTimeMs);
     }
 
-    private void assertCurrentPositionMediator(long expectedSeekRequestTimeMs,
-            long expectedCurrentPositionMs) {
+    private void assertCurrentPositionMediator(
+            long expectedSeekRequestTimeMs, long expectedCurrentPositionMs) {
         assertEquals("Seek request time", expectedSeekRequestTimeMs, mMediator.mSeekRequestTimeMs);
         assertEquals("Current position", expectedCurrentPositionMs, mMediator.mCurrentPositionMs);
     }

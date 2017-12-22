@@ -27,9 +27,7 @@ import android.support.test.uiautomator.UiDevice;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 
-/**
- * Static utility methods for {@link UiDevice}.
- */
+/** Static utility methods for {@link UiDevice}. */
 public final class UiDeviceUtils {
 
     public static void pressDpad(UiDevice uiDevice, Direction direction) {
@@ -51,7 +49,6 @@ public final class UiDeviceUtils {
         }
     }
 
-
     public static void pressKeys(UiDevice uiDevice, int... keyCodes) {
         for (int k : keyCodes) {
             uiDevice.pressKeyCode(k);
@@ -60,8 +57,8 @@ public final class UiDeviceUtils {
 
     /**
      * Parses the string and sends the corresponding individual key presses.
-     * <p>
-     * <b>Note:</b> only handles 0-9, '.', and '-'.
+     *
+     * <p><b>Note:</b> only handles 0-9, '.', and '-'.
      */
     public static void pressKeys(UiDevice uiDevice, String keys) {
         for (char c : keys.toCharArray()) {
@@ -78,8 +75,8 @@ public final class UiDeviceUtils {
     }
 
     /**
-     * Sends the DPAD Center key presses with the {@code repeat} count.
-     * TODO: Remove instrumentation argument once migrated to JUnit4.
+     * Sends the DPAD Center key presses with the {@code repeat} count. TODO: Remove instrumentation
+     * argument once migrated to JUnit4.
      */
     public static void pressDPadCenter(Instrumentation instrumentation, int repeat) {
         pressKey(instrumentation, KeyEvent.KEYCODE_DPAD_CENTER, repeat);
@@ -97,27 +94,38 @@ public final class UiDeviceUtils {
         assertPressKeyUp(instrumentation, keyCode, true);
     }
 
-    private static void assertPressKeyDown(Instrumentation instrumentation, int keyCode,
-            boolean sync) {
+    private static void assertPressKeyDown(
+            Instrumentation instrumentation, int keyCode, boolean sync) {
         assertPressKey(instrumentation, KeyEvent.ACTION_DOWN, keyCode, sync);
     }
 
-    private static void assertPressKeyUp(Instrumentation instrumentation, int keyCode,
-            boolean sync) {
+    private static void assertPressKeyUp(
+            Instrumentation instrumentation, int keyCode, boolean sync) {
         assertPressKey(instrumentation, KeyEvent.ACTION_UP, keyCode, sync);
     }
 
-    private static void assertPressKey(Instrumentation instrumentation, int action, int keyCode,
-            boolean sync) {
+    private static void assertPressKey(
+            Instrumentation instrumentation, int action, int keyCode, boolean sync) {
         long eventTime = SystemClock.uptimeMillis();
-        KeyEvent event = new KeyEvent(eventTime, eventTime, action, keyCode, 0, 0, -1, 0, 0,
-                InputDevice.SOURCE_KEYBOARD);
-        assertTrue("Failed to inject key up event:" + event,
+        KeyEvent event =
+                new KeyEvent(
+                        eventTime,
+                        eventTime,
+                        action,
+                        keyCode,
+                        0,
+                        0,
+                        -1,
+                        0,
+                        0,
+                        InputDevice.SOURCE_KEYBOARD);
+        assertTrue(
+                "Failed to inject key up event:" + event,
                 injectEvent(instrumentation, event, sync));
     }
 
-    private static boolean injectEvent(Instrumentation instrumentation, KeyEvent event,
-            boolean sync) {
+    private static boolean injectEvent(
+            Instrumentation instrumentation, KeyEvent event, boolean sync) {
         return getUiAutomation(instrumentation).injectInputEvent(event, sync);
     }
 
@@ -130,6 +138,5 @@ public final class UiDeviceUtils {
         }
     }
 
-    private UiDeviceUtils() {
-    }
+    private UiDeviceUtils() {}
 }

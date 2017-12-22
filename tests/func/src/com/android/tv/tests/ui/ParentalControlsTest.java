@@ -22,7 +22,6 @@ import android.support.test.filters.SmallTest;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.ByResource;
 import com.android.tv.testing.uihelper.DialogHelper;
@@ -36,8 +35,8 @@ public class ParentalControlsTest extends LiveChannelsTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mLiveChannelsHelper.assertAppStarted();
-        mBySettingsSidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_settings);
+        mBySettingsSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_settings);
         prepareParentalControl();
     }
 
@@ -49,8 +48,8 @@ public class ParentalControlsTest extends LiveChannelsTestCase {
 
     public void testRatingDependentSelect() {
         // Show ratings fragment.
-        BySelector bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.option_program_restrictions);
+        BySelector bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.option_program_restrictions);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         mSidePanelHelper.assertNavigateToItem(R.string.option_ratings);
         mDevice.pressDPadCenter();
@@ -63,8 +62,10 @@ public class ParentalControlsTest extends LiveChannelsTestCase {
         int maxAge = 20;
         int minAge = 4;
         for (int age = minAge; age <= maxAge; age++) {
-            UiObject2 ratingCheckBox = mSidePanelHelper.assertNavigateToItem(String.valueOf(age))
-                    .findObject(ByResource.id(mTargetResources, R.id.check_box));
+            UiObject2 ratingCheckBox =
+                    mSidePanelHelper
+                            .assertNavigateToItem(String.valueOf(age))
+                            .findObject(ByResource.id(mTargetResources, R.id.check_box));
             if (ratingCheckBox.isChecked()) {
                 mDevice.pressDPadCenter();
             }
@@ -80,26 +81,29 @@ public class ParentalControlsTest extends LiveChannelsTestCase {
         getInstrumentation().waitForIdleSync();
     }
 
-    private void assertRatingViewIsChecked(int minAge, int maxAge, int selectedAge,
-            boolean expectedValue) {
+    private void assertRatingViewIsChecked(
+            int minAge, int maxAge, int selectedAge, boolean expectedValue) {
         for (int age = minAge; age <= maxAge; age++) {
-            UiObject2 ratingCheckBox = mSidePanelHelper.assertNavigateToItem(String.valueOf(age))
-                    .findObject(ByResource.id(mTargetResources, R.id.check_box));
+            UiObject2 ratingCheckBox =
+                    mSidePanelHelper
+                            .assertNavigateToItem(String.valueOf(age))
+                            .findObject(ByResource.id(mTargetResources, R.id.check_box));
             if (age < selectedAge) {
                 assertTrue("The lower rating age should be unblocked", !ratingCheckBox.isChecked());
             } else if (age > selectedAge) {
                 assertTrue("The higher rating age should be blocked", ratingCheckBox.isChecked());
             } else {
-                assertEquals("The rating for age " + selectedAge + " isBlocked ", expectedValue,
+                assertEquals(
+                        "The rating for age " + selectedAge + " isBlocked ",
+                        expectedValue,
                         ratingCheckBox.isChecked());
             }
         }
     }
 
     /**
-     * Prepare the need for testRatingDependentSelect.
-     * 1. Turn on parental control if it's off.
-     * 2. Make sure Japan rating system is selected.
+     * Prepare the need for testRatingDependentSelect. 1. Turn on parental control if it's off. 2.
+     * Make sure Japan rating system is selected.
      */
     private void prepareParentalControl() {
         showParentalControl();
@@ -107,18 +111,20 @@ public class ParentalControlsTest extends LiveChannelsTestCase {
         // Show all rating systems.
         mSidePanelHelper.assertNavigateToItem(R.string.option_program_restrictions);
         mDevice.pressDPadCenter();
-        BySelector bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.option_program_restrictions);
+        BySelector bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.option_program_restrictions);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         mSidePanelHelper.assertNavigateToItem(R.string.option_country_rating_systems);
         mDevice.pressDPadCenter();
         bySidePanel = mSidePanelHelper.bySidePanelTitled(R.string.option_country_rating_systems);
-        assertWaitForCondition(mDevice,Until.hasObject(bySidePanel));
+        assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         mSidePanelHelper.assertNavigateToItem(R.string.option_see_all_rating_systems);
         mDevice.pressDPadCenter();
         // Make sure Japan rating system is selected.
-        UiObject2 ratingSystemCheckBox = mSidePanelHelper.assertNavigateToItem("Japan")
-                .findObject(ByResource.id(mTargetResources, R.id.check_box));
+        UiObject2 ratingSystemCheckBox =
+                mSidePanelHelper
+                        .assertNavigateToItem("Japan")
+                        .findObject(ByResource.id(mTargetResources, R.id.check_box));
         if (!ratingSystemCheckBox.isChecked()) {
             mDevice.pressDPadCenter();
             getInstrumentation().waitForIdleSync();
@@ -147,8 +153,8 @@ public class ParentalControlsTest extends LiveChannelsTestCase {
         dialogHelper.assertWaitForPinDialogOpen();
         dialogHelper.enterPinCodes();
         dialogHelper.assertWaitForPinDialogClose();
-        BySelector bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.menu_parental_controls);
+        BySelector bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.menu_parental_controls);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
     }
 }

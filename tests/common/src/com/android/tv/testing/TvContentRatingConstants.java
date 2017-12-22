@@ -18,16 +18,17 @@ package com.android.tv.testing;
 
 import android.media.tv.TvContentRating;
 
-/**
- * Constants for the content rating strings.
- */
+/** Constants for the content rating strings. */
 public final class TvContentRatingConstants {
     /**
      * A content rating object.
      *
      * <p>Domain: com.android.tv
+     *
      * <p>Rating system: US_TV
+     *
      * <p>Rating: US_TV_Y7
+     *
      * <p>Sub ratings: US_TV_FV
      */
     public static final TvContentRating CONTENT_RATING_US_TV_Y7_US_TV_FV =
@@ -39,7 +40,9 @@ public final class TvContentRatingConstants {
      * A content rating object.
      *
      * <p>Domain: com.android.tv
+     *
      * <p>Rating system: US_TV
+     *
      * <p>Rating: US_TV_MA
      */
     public static final TvContentRating CONTENT_RATING_US_TV_MA =
@@ -51,11 +54,14 @@ public final class TvContentRatingConstants {
      * A content rating object.
      *
      * <p>Domain: com.android.tv
+     *
      * <p>Rating system: US_TV
+     *
      * <p>Rating: US_TV_PG
+     *
      * <p>Sub ratings: US_TV_L, US_TV_S
      */
     public static final TvContentRating CONTENT_RATING_US_TV_PG_US_TV_L_US_TV_S =
-            TvContentRating.createRating("com.android.tv", "US_TV", "US_TV_PG", "US_TV_L",
-                    "US_TV_S");
+            TvContentRating.createRating(
+                    "com.android.tv", "US_TV", "US_TV_PG", "US_TV_L", "US_TV_S");
 }

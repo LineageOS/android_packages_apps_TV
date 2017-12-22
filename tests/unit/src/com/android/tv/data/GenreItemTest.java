@@ -25,12 +25,9 @@ import static org.junit.Assert.assertTrue;
 import android.media.tv.TvContract.Programs.Genres;
 import android.os.Build;
 import android.support.test.filters.SmallTest;
-
 import org.junit.Test;
 
-/**
- * Tests for {@link Channel}.
- */
+/** Tests for {@link Channel}. */
 @SmallTest
 public class GenreItemTest {
     private static final String INVALID_GENRE = "INVALID GENRE";

@@ -35,6 +35,5 @@ public final class Constants {
     public static final BySelector DVR_SCHEDULES = By.res(TV_APP_PACKAGE, "dvr_schedules");
     public static final BySelector FOCUSED_VIEW = By.focused(true);
 
-    private Constants() {
-    }
+    private Constants() {}
 }

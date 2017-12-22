@@ -32,12 +32,9 @@ import com.android.tv.tuner.util.PostalCodeUtils;
 import com.android.tv.util.LocationUtils;
 import java.util.List;
 
-/**
- * A fragment for initial screen.
- */
+/** A fragment for initial screen. */
 public class PostalCodeFragment extends SetupMultiPaneFragment {
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.tuner.setup.PostalCodeFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.PostalCodeFragment";
     private static final int VIEW_TYPE_EDITABLE = 1;
 
     @Override
@@ -141,11 +138,15 @@ public class PostalCodeFragment extends SetupMultiPaneFragment {
         }
 
         @Override
-        public void onCreateActions(@NonNull List<GuidedAction> actions,
-                Bundle savedInstanceState) {
+        public void onCreateActions(
+                @NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
             String description = getString(R.string.postal_code_action_description);
-            mEditAction = new GuidedAction.Builder(getActivity()).id(0).editable(true)
-                    .description(description).build();
+            mEditAction =
+                    new GuidedAction.Builder(getActivity())
+                            .id(0)
+                            .editable(true)
+                            .description(description)
+                            .build();
             actions.add(mEditAction);
         }
 

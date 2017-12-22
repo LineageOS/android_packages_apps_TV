@@ -18,12 +18,9 @@ package com.android.tv.tuner.exoplayer.buffer;
 
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
-
 import java.util.LinkedList;
 
-/**
- * A sample queue which reads from the buffer and passes to player pipeline.
- */
+/** A sample queue which reads from the buffer and passes to player pipeline. */
 public class SampleQueue {
     private final LinkedList<SampleHolder> mQueue = new LinkedList<>();
     private final SamplePool mSamplePool;

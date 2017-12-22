@@ -25,9 +25,7 @@ import android.media.tv.TvContract;
 import android.media.tv.TvContract.Programs;
 import android.net.Uri;
 import android.util.Log;
-
 import com.android.tv.common.TvContentRatingCache;
-
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -40,9 +38,8 @@ public class ProgramUtils {
     private static final int MAX_DB_INSERT_COUNT_AT_ONCE = 500;
 
     /**
-     * Populate programs by repeating given program information.
-     * This method will populate programs without any gap nor overlapping
-     * starting from the current time.
+     * Populate programs by repeating given program information. This method will populate programs
+     * without any gap nor overlapping starting from the current time.
      */
     public static void populatePrograms(Context context, Uri channelUri, ProgramInfo program) {
         ContentValues values = new ContentValues();
@@ -50,7 +47,8 @@ public class ProgramUtils {
 
         values.put(Programs.COLUMN_CHANNEL_ID, channelId);
         values.put(Programs.COLUMN_SHORT_DESCRIPTION, program.description);
-        values.put(Programs.COLUMN_CONTENT_RATING,
+        values.put(
+                Programs.COLUMN_CONTENT_RATING,
                 TvContentRatingCache.contentRatingsToString(program.contentRatings));
 
         long currentTimeMs = System.currentTimeMillis();
@@ -81,11 +79,12 @@ public class ProgramUtils {
             list.add(new ContentValues(values));
             timeMs += programAt.durationMs;
 
-            if (list.size() >= MAX_DB_INSERT_COUNT_AT_ONCE
-                    || timeMs >= targetEndTimeMs) {
+            if (list.size() >= MAX_DB_INSERT_COUNT_AT_ONCE || timeMs >= targetEndTimeMs) {
                 try {
-                    context.getContentResolver().bulkInsert(Programs.CONTENT_URI,
-                            list.toArray(new ContentValues[list.size()]));
+                    context.getContentResolver()
+                            .bulkInsert(
+                                    Programs.CONTENT_URI,
+                                    list.toArray(new ContentValues[list.size()]));
                 } catch (SQLiteException e) {
                     Log.e(TAG, "Can't insert EPG.", e);
                     return;

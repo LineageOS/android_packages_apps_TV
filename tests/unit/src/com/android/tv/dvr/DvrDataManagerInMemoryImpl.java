@@ -24,14 +24,12 @@ import android.support.test.filters.SdkSuppress;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Range;
-
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.ScheduledRecording.RecordingState;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.util.Clock;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /** A DVR Data manager that stores values in memory suitable for testing. */
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
-    private final static String TAG = "DvrDataManagerInMemory";
+    private static final String TAG = "DvrDataManagerInMemory";
     private final AtomicLong mNextId = new AtomicLong(1);
     private final Map<Long, ScheduledRecording> mScheduledRecordings = new HashMap<>();
     private final Map<Long, RecordedProgram> mRecordedPrograms = new HashMap<>();
@@ -99,7 +97,7 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
     @Override
     public long getNextScheduledStartTimeAfter(long startTime) {
 
-        List<ScheduledRecording> temp =  getNonStartedScheduledRecordings();
+        List<ScheduledRecording> temp = getNonStartedScheduledRecordings();
         Collections.sort(temp, ScheduledRecording.START_TIME_COMPARATOR);
         for (ScheduledRecording r : temp) {
             if (r.getStartTimeMs() > startTime) {
@@ -110,8 +108,8 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
     }
 
     @Override
-    public List<ScheduledRecording> getScheduledRecordings(Range<Long> period,
-            @RecordingState int state) {
+    public List<ScheduledRecording> getScheduledRecordings(
+            Range<Long> period, @RecordingState int state) {
         List<ScheduledRecording> temp = getScheduledRecordingsPrograms();
         List<ScheduledRecording> result = new ArrayList<>();
         for (ScheduledRecording r : temp) {
@@ -144,16 +142,13 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
         return result;
     }
 
-    /**
-     * Add a new scheduled recording.
-     */
+    /** Add a new scheduled recording. */
     @Override
     public void addScheduledRecording(ScheduledRecording... scheduledRecordings) {
         for (ScheduledRecording r : scheduledRecordings) {
             addScheduledRecordingInternal(r);
         }
     }
-
 
     public void addRecordedProgram(RecordedProgram recordedProgram) {
         addRecordedProgramInternal(recordedProgram);
@@ -174,26 +169,30 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
         notifyRecordedProgramsRemoved(scheduledRecording);
     }
 
-
     public ScheduledRecording addScheduledRecordingInternal(ScheduledRecording scheduledRecording) {
-        SoftPreconditions
-                .checkState(scheduledRecording.getId() == ScheduledRecording.ID_NOT_SET, TAG,
-                        "expected id of " + ScheduledRecording.ID_NOT_SET + " but was "
-                                + scheduledRecording);
-        scheduledRecording = ScheduledRecording.buildFrom(scheduledRecording)
-                .setId(mNextId.incrementAndGet())
-                .build();
+        SoftPreconditions.checkState(
+                scheduledRecording.getId() == ScheduledRecording.ID_NOT_SET,
+                TAG,
+                "expected id of "
+                        + ScheduledRecording.ID_NOT_SET
+                        + " but was "
+                        + scheduledRecording);
+        scheduledRecording =
+                ScheduledRecording.buildFrom(scheduledRecording)
+                        .setId(mNextId.incrementAndGet())
+                        .build();
         mScheduledRecordings.put(scheduledRecording.getId(), scheduledRecording);
         notifyScheduledRecordingAdded(scheduledRecording);
         return scheduledRecording;
     }
 
     public RecordedProgram addRecordedProgramInternal(RecordedProgram recordedProgram) {
-        SoftPreconditions.checkState(recordedProgram.getId() == RecordedProgram.ID_NOT_SET, TAG,
+        SoftPreconditions.checkState(
+                recordedProgram.getId() == RecordedProgram.ID_NOT_SET,
+                TAG,
                 "expected id of " + RecordedProgram.ID_NOT_SET + " but was " + recordedProgram);
-        recordedProgram = RecordedProgram.buildFrom(recordedProgram)
-                .setId(mNextId.incrementAndGet())
-                .build();
+        recordedProgram =
+                RecordedProgram.buildFrom(recordedProgram).setId(mNextId.incrementAndGet()).build();
         mRecordedPrograms.put(recordedProgram.getId(), recordedProgram);
         notifyRecordedProgramsAdded(recordedProgram);
         return recordedProgram;
@@ -265,7 +264,7 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
     public ScheduledRecording getScheduledRecordingForProgramId(long programId) {
         for (ScheduledRecording r : mScheduledRecordings.values()) {
             if (r.getProgramId() == programId) {
-                    return r;
+                return r;
             }
         }
         return null;

@@ -19,25 +19,20 @@ package com.android.tv.tuner.data;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-
 import com.android.tv.tuner.data.nano.Track.AtscAudioTrack;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.android.tv.tuner.ts.SectionParser;
 import com.android.tv.tuner.util.ConvertUtils;
 import com.android.tv.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Collection of ATSC PSIP table items.
- */
+/** Collection of ATSC PSIP table items. */
 public class PsipData {
 
-    private PsipData() {
-    }
+    private PsipData() {}
 
     public static class PsipSection {
         private final int mTableId;
@@ -56,7 +51,10 @@ public class PsipData {
             return new PsipSection(tableId, tableIdExtension, sectionNumber, currentNextIndicator);
         }
 
-        private PsipSection(int tableId, int tableIdExtension, int sectionNumber,
+        private PsipSection(
+                int tableId,
+                int tableIdExtension,
+                int sectionNumber,
                 boolean currentNextIndicator) {
             mTableId = tableId;
             mTableIdExtension = tableIdExtension;
@@ -104,29 +102,21 @@ public class PsipData {
         }
     }
 
-    /**
-     * {@link TvTracksInterface} for serving the audio and caption tracks.
-     */
+    /** {@link TvTracksInterface} for serving the audio and caption tracks. */
     public interface TvTracksInterface {
-        /**
-         * Set the flag that tells the caption tracks have been found in this section container.
-         */
+        /** Set the flag that tells the caption tracks have been found in this section container. */
         void setHasCaptionTrack();
 
         /**
-         * Returns whether or not the caption tracks have been found in this section container.
-         * If true, zero caption track will be interpreted as a clearance of the caption tracks.
+         * Returns whether or not the caption tracks have been found in this section container. If
+         * true, zero caption track will be interpreted as a clearance of the caption tracks.
          */
         boolean hasCaptionTrack();
 
-        /**
-         * Returns the audio tracks received.
-         */
+        /** Returns the audio tracks received. */
         List<AtscAudioTrack> getAudioTracks();
 
-        /**
-         * Returns the caption tracks received.
-         */
+        /** Returns the caption tracks received. */
         List<AtscCaptionTrack> getCaptionTracks();
     }
 
@@ -165,8 +155,15 @@ public class PsipData {
         private final int mSourceId;
         private String mDescription;
 
-        public VctItem(String shortName, String longName, int serviceType, int channelTsid,
-                int programNumber, int majorChannelNumber, int minorChannelNumber, int sourceId) {
+        public VctItem(
+                String shortName,
+                String longName,
+                int serviceType,
+                int channelTsid,
+                int programNumber,
+                int majorChannelNumber,
+                int minorChannelNumber,
+                int sourceId) {
             mShortName = shortName;
             mLongName = longName;
             mServiceType = serviceType;
@@ -211,11 +208,18 @@ public class PsipData {
 
         @Override
         public String toString() {
-            return String
-                    .format(Locale.US, "ShortName: %s LongName: %s ServiceType: %d ChannelTsid: %x "
+            return String.format(
+                    Locale.US,
+                    "ShortName: %s LongName: %s ServiceType: %d ChannelTsid: %x "
                             + "ProgramNumber:%d %d-%d SourceId: %x",
-                    mShortName, mLongName, mServiceType, mChannelTsid,
-                    mProgramNumber, mMajorChannelNumber, mMinorChannelNumber, mSourceId);
+                    mShortName,
+                    mLongName,
+                    mServiceType,
+                    mChannelTsid,
+                    mProgramNumber,
+                    mMajorChannelNumber,
+                    mMinorChannelNumber,
+                    mSourceId);
         }
 
         public void setDescription(String description) {
@@ -234,8 +238,12 @@ public class PsipData {
         private final int mServiceId;
         private final int mOriginalNetWorkId;
 
-        public SdtItem(String serviceName, String serviceProviderName, int serviceType,
-                       int serviceId, int originalNetWorkId) {
+        public SdtItem(
+                String serviceName,
+                String serviceProviderName,
+                int serviceType,
+                int serviceId,
+                int originalNetWorkId) {
             mServiceName = serviceName;
             mServiceProviderName = serviceProviderName;
             mServiceType = serviceType;
@@ -265,15 +273,14 @@ public class PsipData {
 
         @Override
         public String toString() {
-            return String.format("ServiceName: %s ServiceProviderName:%s ServiceType:%d "
+            return String.format(
+                    "ServiceName: %s ServiceProviderName:%s ServiceType:%d "
                             + "OriginalNetworkId:%d",
                     mServiceName, mServiceProviderName, mServiceType, mOriginalNetWorkId);
         }
     }
 
-    /**
-     * A base class for descriptors of Ts packets.
-     */
+    /** A base class for descriptors of Ts packets. */
     public abstract static class TsDescriptor {
         public abstract int getTag();
     }
@@ -374,10 +381,22 @@ public class PsipData {
         private final String mLanguage;
         private final String mLanguage2;
 
-        public Ac3AudioDescriptor(byte sampleRateCode, byte bsid, byte bitRateCode,
-                byte surroundMode, byte bsmod, int numChannels, boolean fullSvc, byte langCod,
-                byte langCod2, byte mainId, byte priority, byte asvcflags, String text,
-                String language, String language2) {
+        public Ac3AudioDescriptor(
+                byte sampleRateCode,
+                byte bsid,
+                byte bitRateCode,
+                byte surroundMode,
+                byte bsmod,
+                int numChannels,
+                boolean fullSvc,
+                byte langCod,
+                byte langCod2,
+                byte mainId,
+                byte priority,
+                byte asvcflags,
+                String text,
+                String language,
+                String language2) {
             mSampleRateCode = sampleRateCode;
             mBsid = bsid;
             mBitRateCode = bitRateCode;
@@ -475,13 +494,27 @@ public class PsipData {
 
         @Override
         public String toString() {
-            return String.format(Locale.US,
+            return String.format(
+                    Locale.US,
                     "AC3 audio stream sampleRateCode: %d, bsid: %d, bitRateCode: %d, "
-                    + "surroundMode: %d, bsmod: %d, numChannels: %d, fullSvc: %s, langCod: %d, "
-                    + "langCod2: %d, mainId: %d, priority: %d, avcflags: %d, text: %s, language: %s"
-                    + ", language2: %s", mSampleRateCode, mBsid, mBitRateCode, mSurroundMode,
-                    mBsmod, mNumChannels, mFullSvc, mLangCod, mLangCod2, mMainId, mPriority,
-                    mAsvcflags, mText, mLanguage, mLanguage2);
+                            + "surroundMode: %d, bsmod: %d, numChannels: %d, fullSvc: %s, langCod: %d, "
+                            + "langCod2: %d, mainId: %d, priority: %d, avcflags: %d, text: %s, language: %s"
+                            + ", language2: %s",
+                    mSampleRateCode,
+                    mBsid,
+                    mBitRateCode,
+                    mSurroundMode,
+                    mBsmod,
+                    mNumChannels,
+                    mFullSvc,
+                    mLangCod,
+                    mLangCod2,
+                    mMainId,
+                    mPriority,
+                    mAsvcflags,
+                    mText,
+                    mLanguage,
+                    mLanguage2);
         }
     }
 
@@ -540,7 +573,8 @@ public class PsipData {
             return String.format(
                     "Service descriptor, service type: %d, "
                             + "service provider name: %s, "
-                            + "service name: %s", mServiceType, mServiceProviderName, mServiceName);
+                            + "service name: %s",
+                    mServiceType, mServiceProviderName, mServiceName);
         }
     }
 
@@ -566,8 +600,9 @@ public class PsipData {
 
         @Override
         public String toString() {
-            return String.format("ShortEvent Descriptor, language:%s, event name: %s, "
-                    + "text:%s", mLanguage, mEventName, mText);
+            return String.format(
+                    "ShortEvent Descriptor, language:%s, event name: %s, " + "text:%s",
+                    mLanguage, mEventName, mText);
         }
     }
 
@@ -652,9 +687,17 @@ public class PsipData {
         private final String mBroadcastGenre;
         private final String mCanonicalGenre;
 
-        public EitItem(long programId, int eventId, String titleText, long startTime,
-                int lengthInSecond, String contentRating, List<AtscAudioTrack> audioTracks,
-                List<AtscCaptionTrack> captionTracks, String broadcastGenre, String canonicalGenre,
+        public EitItem(
+                long programId,
+                int eventId,
+                String titleText,
+                long startTime,
+                int lengthInSecond,
+                String contentRating,
+                List<AtscAudioTrack> audioTracks,
+                List<AtscCaptionTrack> captionTracks,
+                String broadcastGenre,
+                String canonicalGenre,
                 String description) {
             mProgramId = programId;
             mEventId = eventId;
@@ -702,8 +745,8 @@ public class PsipData {
         }
 
         public long getEndTimeUtcMillis() {
-            return ConvertUtils.convertGPSTimeToUnixEpoch(
-                    mStartTime + mLengthInSecond) * DateUtils.SECOND_IN_MILLIS;
+            return ConvertUtils.convertGPSTimeToUnixEpoch(mStartTime + mLengthInSecond)
+                    * DateUtils.SECOND_IN_MILLIS;
         }
 
         public String getContentRating() {
@@ -797,14 +840,22 @@ public class PsipData {
 
         @Override
         public String toString() {
-            return String.format(Locale.US,
+            return String.format(
+                    Locale.US,
                     "EitItem programId: %d, eventId: %d, title: %s, startTime: %10d, "
                             + "length: %6d, rating: %s, audio tracks: %d, caption tracks: %d, "
                             + "genres (broadcast: %s, canonical: %s), description: %s",
-                    mProgramId, mEventId, mTitleText, mStartTime, mLengthInSecond, mContentRating,
+                    mProgramId,
+                    mEventId,
+                    mTitleText,
+                    mStartTime,
+                    mLengthInSecond,
+                    mContentRating,
                     mAudioTracks != null ? mAudioTracks.size() : 0,
                     mCaptionTracks != null ? mCaptionTracks.size() : 0,
-                    mBroadcastGenre, mCanonicalGenre, mDescription);
+                    mBroadcastGenre,
+                    mCanonicalGenre,
+                    mDescription);
         }
     }
 

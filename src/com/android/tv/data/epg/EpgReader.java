@@ -19,28 +19,22 @@ package com.android.tv.data.epg;
 import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
-
 import com.android.tv.data.Channel;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.data.SeriesInfo;
-
 import java.util.List;
 import java.util.Map;
 
-/**
- * An interface used to retrieve the EPG data. This class should be used in worker thread.
- */
+/** An interface used to retrieve the EPG data. This class should be used in worker thread. */
 @WorkerThread
 public interface EpgReader {
-    /**
-     * Checks if the reader is available.
-     */
+    /** Checks if the reader is available. */
     boolean isAvailable();
 
     /**
-     * Returns the timestamp of the current EPG.
-     * The format should be YYYYMMDDHHmmSS as a long value. ex) 20160308141500
+     * Returns the timestamp of the current EPG. The format should be YYYYMMDDHHmmSS as a long
+     * value. ex) 20160308141500
      */
     long getEpgTimestamp();
 
@@ -66,9 +60,7 @@ public interface EpgReader {
     /** Pre-loads and caches channels for a given lineup. */
     void preloadChannels(@NonNull String lineupId);
 
-    /**
-     * Clears cached channels for a given lineup.
-     */
+    /** Clears cached channels for a given lineup. */
     @AnyThread
     void clearCachedChannels(@NonNull String lineupId);
 

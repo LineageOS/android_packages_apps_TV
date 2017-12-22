@@ -22,12 +22,9 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.media.tv.TvTrackInfo;
 import android.support.test.filters.SmallTest;
-
 import org.junit.Test;
 
-/**
- * Tests for {@link com.android.tv.util.Utils#getMultiAudioString}.
- */
+/** Tests for {@link com.android.tv.util.Utils#getMultiAudioString}. */
 @SmallTest
 public class UtilsTest_GetMultiAudioString {
     private static final String TRACK_ID = "test_track_id";
@@ -36,13 +33,15 @@ public class UtilsTest_GetMultiAudioString {
     @Test
     public void testAudioTrackLanguage() {
         Context context = getTargetContext();
-        assertEquals("Korean",
-                Utils.getMultiAudioString(context, createAudioTrackInfo("kor"), false));
-        assertEquals("English",
-                Utils.getMultiAudioString(context, createAudioTrackInfo("eng"), false));
-        assertEquals("Unknown language",
+        assertEquals(
+                "Korean", Utils.getMultiAudioString(context, createAudioTrackInfo("kor"), false));
+        assertEquals(
+                "English", Utils.getMultiAudioString(context, createAudioTrackInfo("eng"), false));
+        assertEquals(
+                "Unknown language",
                 Utils.getMultiAudioString(context, createAudioTrackInfo(null), false));
-        assertEquals("Unknown language",
+        assertEquals(
+                "Unknown language",
                 Utils.getMultiAudioString(context, createAudioTrackInfo(""), false));
         assertEquals("abc", Utils.getMultiAudioString(context, createAudioTrackInfo("abc"), false));
     }
@@ -50,36 +49,48 @@ public class UtilsTest_GetMultiAudioString {
     @Test
     public void testAudioTrackCount() {
         Context context = getTargetContext();
-        assertEquals("English",
+        assertEquals(
+                "English",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", -1), false));
-        assertEquals("English",
+        assertEquals(
+                "English",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 0), false));
-        assertEquals("English (mono)",
+        assertEquals(
+                "English (mono)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 1), false));
-        assertEquals("English (stereo)",
+        assertEquals(
+                "English (stereo)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 2), false));
-        assertEquals("English (3 channels)",
+        assertEquals(
+                "English (3 channels)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 3), false));
-        assertEquals("English (4 channels)",
+        assertEquals(
+                "English (4 channels)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 4), false));
-        assertEquals("English (5 channels)",
+        assertEquals(
+                "English (5 channels)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 5), false));
-        assertEquals("English (5.1 surround)",
+        assertEquals(
+                "English (5.1 surround)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 6), false));
-        assertEquals("English (7 channels)",
+        assertEquals(
+                "English (7 channels)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 7), false));
-        assertEquals("English (7.1 surround)",
+        assertEquals(
+                "English (7.1 surround)",
                 Utils.getMultiAudioString(context, createAudioTrackInfo("eng", 8), false));
     }
 
     @Test
     public void testShowSampleRate() {
-        assertEquals("Korean (48kHz)",
-                Utils.getMultiAudioString(getTargetContext(),
-                createAudioTrackInfo("kor", 0), true));
-        assertEquals("Korean (7.1 surround, 48kHz)",
-                Utils.getMultiAudioString(getTargetContext(),
-                createAudioTrackInfo("kor", 8), true));
+        assertEquals(
+                "Korean (48kHz)",
+                Utils.getMultiAudioString(
+                        getTargetContext(), createAudioTrackInfo("kor", 0), true));
+        assertEquals(
+                "Korean (7.1 surround, 48kHz)",
+                Utils.getMultiAudioString(
+                        getTargetContext(), createAudioTrackInfo("kor", 8), true));
     }
 
     private static TvTrackInfo createAudioTrackInfo(String language) {
@@ -88,7 +99,9 @@ public class UtilsTest_GetMultiAudioString {
 
     private static TvTrackInfo createAudioTrackInfo(String language, int channelCount) {
         return new TvTrackInfo.Builder(TvTrackInfo.TYPE_AUDIO, TRACK_ID)
-                .setLanguage(language).setAudioChannelCount(channelCount)
-                .setAudioSampleRate(AUDIO_SAMPLE_RATE).build();
+                .setLanguage(language)
+                .setAudioChannelCount(channelCount)
+                .setAudioSampleRate(AUDIO_SAMPLE_RATE)
+                .build();
     }
 }

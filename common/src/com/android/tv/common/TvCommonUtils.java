@@ -19,13 +19,11 @@ package com.android.tv.common;
 import android.content.Intent;
 import android.media.tv.TvInputInfo;
 
-/**
- * Util class for common use in TV app and inputs.
- */
+/** Util class for common use in TV app and inputs. */
 public final class TvCommonUtils {
     private static Boolean sRunningInTest;
 
-    private TvCommonUtils() { }
+    private TvCommonUtils() {}
 
     /**
      * Returns an intent to start the setup activity for the TV input using {@link

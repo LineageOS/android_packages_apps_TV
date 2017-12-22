@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-
 import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import com.android.tv.tuner.data.Cea708Data.CaptionPenAttr;
 import com.android.tv.tuner.data.Cea708Data.CaptionPenColor;
@@ -28,13 +27,10 @@ import com.android.tv.tuner.data.Cea708Data.CaptionPenLocation;
 import com.android.tv.tuner.data.Cea708Data.CaptionWindow;
 import com.android.tv.tuner.data.Cea708Data.CaptionWindowAttr;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
-
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Decodes and renders CEA-708.
- */
+/** Decodes and renders CEA-708. */
 public class CaptionTrackRenderer implements Handler.Callback {
     // TODO: Remaining works
     // CaptionTrackRenderer does not support the full spec of CEA-708. The remaining works are
@@ -291,8 +287,8 @@ public class CaptionTrackRenderer implements Handler.Callback {
             return;
         }
         mIsDelayed = true;
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_DELAY_CANCEL),
-                tenthsOfSeconds * DELAY_IN_MILLIS);
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(MSG_DELAY_CANCEL), tenthsOfSeconds * DELAY_IN_MILLIS);
     }
 
     private void delayCancel() {
@@ -318,8 +314,8 @@ public class CaptionTrackRenderer implements Handler.Callback {
         if (mCurrentWindowLayout != null) {
             mCurrentWindowLayout.sendBuffer(buffer);
             mHandler.removeMessages(MSG_CAPTION_CLEAR);
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_CAPTION_CLEAR),
-                    CAPTION_CLEAR_INTERVAL_MS);
+            mHandler.sendMessageDelayed(
+                    mHandler.obtainMessage(MSG_CAPTION_CLEAR), CAPTION_CLEAR_INTERVAL_MS);
         }
     }
 

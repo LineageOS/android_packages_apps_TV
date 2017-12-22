@@ -17,7 +17,6 @@
 package com.android.tv.tuner.tvinput;
 
 import android.content.Context;
-import android.media.tv.TvInputManager;
 import android.media.tv.TvInputService;
 import android.net.Uri;
 import android.support.annotation.MainThread;
@@ -25,20 +24,18 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
-/**
- * Processes DVR recordings, and deletes the previously recorded contents.
- */
+/** Processes DVR recordings, and deletes the previously recorded contents. */
 public class TunerRecordingSession extends TvInputService.RecordingSession {
     private static final String TAG = "TunerRecordingSession";
     private static final boolean DEBUG = false;
 
     private final TunerRecordingSessionWorker mSessionWorker;
 
-    public TunerRecordingSession(Context context, String inputId,
-            ChannelDataManager channelDataManager) {
+    public TunerRecordingSession(
+            Context context, String inputId, ChannelDataManager channelDataManager) {
         super(context);
-        mSessionWorker = new TunerRecordingSessionWorker(context, inputId, channelDataManager,
-                this);
+        mSessionWorker =
+                new TunerRecordingSessionWorker(context, inputId, channelDataManager, this);
     }
 
     // RecordingSession

@@ -17,7 +17,6 @@
 package com.android.tv.util;
 
 import android.content.Context;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.InputSessionManager;
 import com.android.tv.MainActivityWrapper;
@@ -36,9 +35,7 @@ import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
 
-/**
- * Mock {@link ApplicationSingletons} class.
- */
+/** Mock {@link ApplicationSingletons} class. */
 public class MockApplicationSingletons implements ApplicationSingletons {
     private final TvApplication mApp;
 

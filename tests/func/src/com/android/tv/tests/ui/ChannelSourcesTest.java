@@ -20,14 +20,11 @@ import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertWaitForCondi
 import android.support.test.filters.LargeTest;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.ByResource;
 import com.android.tv.testing.uihelper.UiDeviceUtils;
 
-/**
- * Tests for channel sources.
- */
+/** Tests for channel sources. */
 @LargeTest
 public class ChannelSourcesTest extends LiveChannelsTestCase {
     private BySelector mBySettingsSidePanel;
@@ -35,11 +32,11 @@ public class ChannelSourcesTest extends LiveChannelsTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mBySettingsSidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_settings);
+        mBySettingsSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_settings);
     }
 
-    //TODO: create a cancelable test channel setup.
+    // TODO: create a cancelable test channel setup.
 
     public void testSetup_cancel() {
         mLiveChannelsHelper.assertAppStarted();
@@ -49,7 +46,8 @@ public class ChannelSourcesTest extends LiveChannelsTestCase {
         mSidePanelHelper.assertNavigateToItem(R.string.settings_channel_source_item_setup);
         mDevice.pressDPadCenter();
 
-        assertWaitForCondition(mDevice,
+        assertWaitForCondition(
+                mDevice,
                 Until.hasObject(ByResource.text(mTargetResources, R.string.setup_sources_text)));
         mDevice.pressBack();
     }
@@ -63,7 +61,8 @@ public class ChannelSourcesTest extends LiveChannelsTestCase {
         mSidePanelHelper.assertNavigateToItem(R.string.settings_channel_source_item_setup);
         UiDeviceUtils.pressDPadCenter(getInstrumentation(), 2);
 
-        assertWaitForCondition(mDevice,
+        assertWaitForCondition(
+                mDevice,
                 Until.hasObject(ByResource.text(mTargetResources, R.string.setup_sources_text)));
         mDevice.pressBack();
     }

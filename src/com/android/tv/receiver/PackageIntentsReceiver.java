@@ -21,13 +21,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-
 import com.android.tv.TvApplication;
 import com.android.tv.util.Partner;
 
-/**
- * A class for handling the broadcast intents from PackageManager.
- */
+/** A class for handling the broadcast intents from PackageManager. */
 public class PackageIntentsReceiver extends BroadcastReceiver {
     private static final String TAG = "PackageIntentsReceiver";
 

@@ -27,7 +27,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.Log;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -41,33 +40,30 @@ public class TvCustomizationManager {
     private static final boolean DEBUG = false;
 
     private static final String[] CUSTOMIZE_PERMISSIONS = {
-            "com.android.tv.permission.CUSTOMIZE_TV_APP"
+        "com.android.tv.permission.CUSTOMIZE_TV_APP"
     };
 
-    private static final String CATEGORY_TV_CUSTOMIZATION =
-            "com.android.tv.category";
+    private static final String CATEGORY_TV_CUSTOMIZATION = "com.android.tv.category";
 
-    /**
-     * Row IDs to share customized actions.
-     * Only rows listed below can have customized action.
-     */
+    /** Row IDs to share customized actions. Only rows listed below can have customized action. */
     public static final String ID_OPTIONS_ROW = "options_row";
+
     public static final String ID_PARTNER_ROW = "partner_row";
 
     @IntDef({TRICKPLAY_MODE_ENABLED, TRICKPLAY_MODE_DISABLED, TRICKPLAY_MODE_USE_EXTERNAL_STORAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TRICKPLAY_MODE {}
+
     public static final int TRICKPLAY_MODE_ENABLED = 0;
     public static final int TRICKPLAY_MODE_DISABLED = 1;
     public static final int TRICKPLAY_MODE_USE_EXTERNAL_STORAGE = 2;
 
     private static final String[] TRICKPLAY_MODE_STRINGS = {
-        "enabled",
-        "disabled",
-        "use_external_storage_only"
+        "enabled", "disabled", "use_external_storage_only"
     };
 
     private static final HashMap<String, String> INTENT_CATEGORY_TO_ROW_ID;
+
     static {
         INTENT_CATEGORY_TO_ROW_ID = new HashMap<>();
         INTENT_CATEGORY_TO_ROW_ID.put(CATEGORY_TV_CUSTOMIZATION + ".OPTIONS_ROW", ID_OPTIONS_ROW);
@@ -108,10 +104,14 @@ public class TvCustomizationManager {
                 sHasLinuxDvbBuiltInTuner = false;
             } else {
                 try {
-                    Resources res = context.getPackageManager()
-                            .getResourcesForApplication(sCustomizationPackage);
-                    int resId = res.getIdentifier(RES_ID_HAS_LINUX_DVB_BUILT_IN_TUNER,
-                            RES_TYPE_BOOLEAN, sCustomizationPackage);
+                    Resources res =
+                            context.getPackageManager()
+                                    .getResourcesForApplication(sCustomizationPackage);
+                    int resId =
+                            res.getIdentifier(
+                                    RES_ID_HAS_LINUX_DVB_BUILT_IN_TUNER,
+                                    RES_TYPE_BOOLEAN,
+                                    sCustomizationPackage);
                     sHasLinuxDvbBuiltInTuner = resId != 0 && res.getBoolean(resId);
                 } catch (NameNotFoundException e) {
                     sHasLinuxDvbBuiltInTuner = false;
@@ -128,10 +128,12 @@ public class TvCustomizationManager {
             } else {
                 try {
                     String customization = null;
-                    Resources res = context.getPackageManager()
-                            .getResourcesForApplication(sCustomizationPackage);
-                    int resId = res.getIdentifier(RES_ID_TRICKPLAY_MODE,
-                            RES_TYPE_STRING, sCustomizationPackage);
+                    Resources res =
+                            context.getPackageManager()
+                                    .getResourcesForApplication(sCustomizationPackage);
+                    int resId =
+                            res.getIdentifier(
+                                    RES_ID_TRICKPLAY_MODE, RES_TYPE_STRING, sCustomizationPackage);
                     customization = resId == 0 ? null : res.getString(resId);
                     sTrickplayMode = TRICKPLAY_MODE_ENABLED;
                     if (customization != null) {
@@ -152,17 +154,15 @@ public class TvCustomizationManager {
 
     private static String getCustomizationPackageName(Context context) {
         if (sCustomizationPackage == null) {
-            List<PackageInfo> packageInfos = context.getPackageManager()
-                    .getPackagesHoldingPermissions(CUSTOMIZE_PERMISSIONS, 0);
+            List<PackageInfo> packageInfos =
+                    context.getPackageManager()
+                            .getPackagesHoldingPermissions(CUSTOMIZE_PERMISSIONS, 0);
             sCustomizationPackage = packageInfos.size() == 0 ? "" : packageInfos.get(0).packageName;
         }
         return sCustomizationPackage;
     }
 
-    /**
-     * Initialize TV customization options.
-     * Run this API only on the main thread.
-     */
+    /** Initialize TV customization options. Run this API only on the main thread. */
     public void initialize() {
         if (mInitialized) {
             return;
@@ -181,14 +181,21 @@ public class TvCustomizationManager {
             Intent customOptionIntent = new Intent(Intent.ACTION_MAIN);
             customOptionIntent.addCategory(intentCategory);
 
-            List<ResolveInfo> activities = pm.queryIntentActivities(customOptionIntent,
-                    PackageManager.GET_RECEIVERS | PackageManager.GET_RESOLVED_FILTER
-                            | PackageManager.GET_META_DATA);
+            List<ResolveInfo> activities =
+                    pm.queryIntentActivities(
+                            customOptionIntent,
+                            PackageManager.GET_RECEIVERS
+                                    | PackageManager.GET_RESOLVED_FILTER
+                                    | PackageManager.GET_META_DATA);
             for (ResolveInfo info : activities) {
                 String packageName = info.activityInfo.packageName;
                 if (!TextUtils.equals(packageName, sCustomizationPackage)) {
-                    Log.w(TAG, "A customization package " + sCustomizationPackage
-                            + " already exist. Ignoring " + packageName);
+                    Log.w(
+                            TAG,
+                            "A customization package "
+                                    + sCustomizationPackage
+                                    + " already exist. Ignoring "
+                                    + packageName);
                     continue;
                 }
 
@@ -217,8 +224,14 @@ public class TvCustomizationManager {
             Log.d(TAG, "Dumping custom actions");
             for (String id : mRowIdToCustomActionsMap.keySet()) {
                 for (CustomAction action : mRowIdToCustomActionsMap.get(id)) {
-                    Log.d(TAG, "Custom row rowId=" + id + " title=" + action.getTitle()
-                        + " class=" + action.getIntent());
+                    Log.d(
+                            TAG,
+                            "Custom row rowId="
+                                    + id
+                                    + " title="
+                                    + action.getTitle()
+                                    + " class="
+                                    + action.getIntent());
                 }
             }
             Log.d(TAG, "Dumping custom actions - end of dump");
@@ -228,7 +241,7 @@ public class TvCustomizationManager {
     /**
      * Returns custom actions for given row id.
      *
-     * Row ID is one of ID_OPTIONS_ROW or ID_PARTNER_ROW.
+     * <p>Row ID is one of ID_OPTIONS_ROW or ID_PARTNER_ROW.
      */
     public List<CustomAction> getCustomActions(String rowId) {
         return mRowIdToCustomActionsMap.get(rowId);
@@ -238,23 +251,20 @@ public class TvCustomizationManager {
         mPartnerRowTitle = null;
         Resources res;
         try {
-            res = mContext.getPackageManager()
-                    .getResourcesForApplication(sCustomizationPackage);
+            res = mContext.getPackageManager().getResourcesForApplication(sCustomizationPackage);
         } catch (NameNotFoundException e) {
             Log.w(TAG, "Could not get resources for package " + sCustomizationPackage);
             return;
         }
-        int resId = res.getIdentifier(
-                RES_ID_PARTNER_ROW_TITLE, RES_TYPE_STRING, sCustomizationPackage);
+        int resId =
+                res.getIdentifier(RES_ID_PARTNER_ROW_TITLE, RES_TYPE_STRING, sCustomizationPackage);
         if (resId != 0) {
             mPartnerRowTitle = res.getString(resId);
         }
         if (DEBUG) Log.d(TAG, "Partner row title [" + mPartnerRowTitle + "]");
     }
 
-    /**
-     * Returns partner row title.
-     */
+    /** Returns partner row title. */
     public String getPartnerRowTitle() {
         return mPartnerRowTitle;
     }

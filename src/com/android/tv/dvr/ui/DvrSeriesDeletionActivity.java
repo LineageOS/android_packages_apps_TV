@@ -19,17 +19,12 @@ package com.android.tv.dvr.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v17.leanback.app.GuidedStepFragment;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 
-/**
- * Activity to show details view in DVR.
- */
+/** Activity to show details view in DVR. */
 public class DvrSeriesDeletionActivity extends Activity {
-    /**
-     * Name of series id added to the Intent.
-     */
+    /** Name of series id added to the Intent. */
     public static final String SERIES_RECORDING_ID = "series_recording_id";
 
     @Override

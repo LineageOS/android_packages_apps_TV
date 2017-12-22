@@ -22,14 +22,10 @@ import android.os.Build;
 import android.os.Parcel;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.data.Program;
-
 import org.junit.Test;
 
-/**
- * Tests for {@link SeriesRecording}.
- */
+/** Tests for {@link SeriesRecording}. */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class SeriesRecordingTest {
@@ -39,32 +35,41 @@ public class SeriesRecordingTest {
     private static final String SERIES_ID = "SERIES_ID";
     private static final String OTHER_SERIES_ID = "OTHER_SERIES_ID";
 
-    private final SeriesRecording mBaseSeriesRecording = new SeriesRecording.Builder()
-            .setTitle(PROGRAM_TITLE).setChannelId(CHANNEL_ID).setSeriesId(SERIES_ID).build();
-    private final SeriesRecording mSeriesRecordingSeason2 = SeriesRecording
-            .buildFrom(mBaseSeriesRecording).setStartFromSeason(2).build();
-    private final SeriesRecording mSeriesRecordingSeason2Episode5 = SeriesRecording
-            .buildFrom(mSeriesRecordingSeason2).setStartFromEpisode(5).build();
-    private final Program mBaseProgram = new Program.Builder().setTitle(PROGRAM_TITLE)
-            .setChannelId(CHANNEL_ID).setSeriesId(SERIES_ID).build();
+    private final SeriesRecording mBaseSeriesRecording =
+            new SeriesRecording.Builder()
+                    .setTitle(PROGRAM_TITLE)
+                    .setChannelId(CHANNEL_ID)
+                    .setSeriesId(SERIES_ID)
+                    .build();
+    private final SeriesRecording mSeriesRecordingSeason2 =
+            SeriesRecording.buildFrom(mBaseSeriesRecording).setStartFromSeason(2).build();
+    private final SeriesRecording mSeriesRecordingSeason2Episode5 =
+            SeriesRecording.buildFrom(mSeriesRecordingSeason2).setStartFromEpisode(5).build();
+    private final Program mBaseProgram =
+            new Program.Builder()
+                    .setTitle(PROGRAM_TITLE)
+                    .setChannelId(CHANNEL_ID)
+                    .setSeriesId(SERIES_ID)
+                    .build();
 
     @Test
     public void testParcelable() {
-        SeriesRecording r1 = new SeriesRecording.Builder()
-                .setId(1)
-                .setChannelId(2)
-                .setPriority(3)
-                .setTitle("4")
-                .setDescription("5")
-                .setLongDescription("5-long")
-                .setSeriesId("6")
-                .setStartFromEpisode(7)
-                .setStartFromSeason(8)
-                .setChannelOption(SeriesRecording.OPTION_CHANNEL_ALL)
-                .setCanonicalGenreIds(new int[] {9, 10})
-                .setPosterUri("11")
-                .setPhotoUri("12")
-                .build();
+        SeriesRecording r1 =
+                new SeriesRecording.Builder()
+                        .setId(1)
+                        .setChannelId(2)
+                        .setPriority(3)
+                        .setTitle("4")
+                        .setDescription("5")
+                        .setLongDescription("5-long")
+                        .setSeriesId("6")
+                        .setStartFromEpisode(7)
+                        .setStartFromSeason(8)
+                        .setChannelOption(SeriesRecording.OPTION_CHANNEL_ALL)
+                        .setCanonicalGenreIds(new int[] {9, 10})
+                        .setPosterUri("11")
+                        .setPhotoUri("12")
+                        .build();
         Parcel p1 = Parcel.obtain();
         Parcel p2 = Parcel.obtain();
         try {
@@ -125,9 +130,11 @@ public class SeriesRecordingTest {
         assertDoesProgramMatch(program, mSeriesRecordingSeason2Episode5, true);
     }
 
-    private void assertDoesProgramMatch(Program p, SeriesRecording seriesRecording,
-            boolean expected) {
-        assertEquals(seriesRecording + " doesProgramMatch " + p, expected,
+    private void assertDoesProgramMatch(
+            Program p, SeriesRecording seriesRecording, boolean expected) {
+        assertEquals(
+                seriesRecording + " doesProgramMatch " + p,
+                expected,
                 seriesRecording.matchProgram(p));
     }
 }

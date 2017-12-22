@@ -17,13 +17,10 @@
 package com.android.tv.common;
 
 /**
- * Interface for the fine-grained memory management.
- * The class which wants to release memory based on the system constraints should inherit
- * this interface and implement {@link #performTrimMemory}.
+ * Interface for the fine-grained memory management. The class which wants to release memory based
+ * on the system constraints should inherit this interface and implement {@link #performTrimMemory}.
  */
 public interface MemoryManageable {
-    /**
-     * For more information, see {@link android.content.ComponentCallbacks2#onTrimMemory}.
-     */
+    /** For more information, see {@link android.content.ComponentCallbacks2#onTrimMemory}. */
     void performTrimMemory(int level);
 }

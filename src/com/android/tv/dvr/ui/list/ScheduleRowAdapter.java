@@ -25,29 +25,25 @@ import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.text.format.DateUtils;
 import android.util.ArraySet;
 import android.util.Log;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.dvr.DvrManager;
-import com.android.tv.dvr.ui.list.SchedulesHeaderRow.DateHeaderRow;
 import com.android.tv.dvr.data.ScheduledRecording;
+import com.android.tv.dvr.ui.list.SchedulesHeaderRow.DateHeaderRow;
 import com.android.tv.util.Utils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * An adapter for {@link ScheduleRow}.
- */
+/** An adapter for {@link ScheduleRow}. */
 class ScheduleRowAdapter extends ArrayObjectAdapter {
     private static final String TAG = "ScheduleRowAdapter";
     private static final boolean DEBUG = false;
 
-    private final static long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
+    private static final long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
 
     private static final int MSG_UPDATE_ROW = 1;
 
@@ -55,16 +51,17 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
     private final List<String> mTitles = new ArrayList<>();
     private final Set<ScheduleRow> mPendingUpdate = new ArraySet<>();
 
-    private final Handler mHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == MSG_UPDATE_ROW) {
-                long currentTimeMs = System.currentTimeMillis();
-                handleUpdateRow(currentTimeMs);
-                sendNextUpdateMessage(currentTimeMs);
-            }
-        }
-    };
+    private final Handler mHandler =
+            new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg.what == MSG_UPDATE_ROW) {
+                        long currentTimeMs = System.currentTimeMillis();
+                        handleUpdateRow(currentTimeMs);
+                        sendNextUpdateMessage(currentTimeMs);
+                    }
+                }
+            };
 
     public ScheduleRowAdapter(Context context, ClassPresenterSelector classPresenterSelector) {
         super(classPresenterSelector);
@@ -73,37 +70,41 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         mTitles.add(mContext.getString(R.string.dvr_date_tomorrow));
     }
 
-    /**
-     * Returns context.
-     */
+    /** Returns context. */
     protected Context getContext() {
         return mContext;
     }
 
-    /**
-     * Starts schedule row adapter.
-     */
+    /** Starts schedule row adapter. */
     public void start() {
         clear();
-        List<ScheduledRecording> recordingList = TvApplication.getSingletons(mContext)
-                .getDvrDataManager().getNonStartedScheduledRecordings();
-        recordingList.addAll(TvApplication.getSingletons(mContext).getDvrDataManager()
-                .getStartedRecordings());
-        Collections.sort(recordingList,
-                ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR);
+        List<ScheduledRecording> recordingList =
+                TvApplication.getSingletons(mContext)
+                        .getDvrDataManager()
+                        .getNonStartedScheduledRecordings();
+        recordingList.addAll(
+                TvApplication.getSingletons(mContext).getDvrDataManager().getStartedRecordings());
+        Collections.sort(
+                recordingList, ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR);
         long deadLine = Utils.getLastMillisecondOfDay(System.currentTimeMillis());
-        for (int i = 0; i < recordingList.size();) {
+        for (int i = 0; i < recordingList.size(); ) {
             ArrayList<ScheduledRecording> section = new ArrayList<>();
             while (i < recordingList.size() && recordingList.get(i).getStartTimeMs() < deadLine) {
                 section.add(recordingList.get(i++));
             }
             if (!section.isEmpty()) {
-                SchedulesHeaderRow headerRow = new DateHeaderRow(calculateHeaderDate(deadLine),
-                        mContext.getResources().getQuantityString(
-                        R.plurals.dvr_schedules_section_subtitle, section.size(), section.size()),
-                        section.size(), deadLine);
+                SchedulesHeaderRow headerRow =
+                        new DateHeaderRow(
+                                calculateHeaderDate(deadLine),
+                                mContext.getResources()
+                                        .getQuantityString(
+                                                R.plurals.dvr_schedules_section_subtitle,
+                                                section.size(),
+                                                section.size()),
+                                section.size(),
+                                deadLine);
                 add(headerRow);
-                for(ScheduledRecording recording : section){
+                for (ScheduledRecording recording : section) {
                     add(new ScheduleRow(recording, headerRow));
                 }
             }
@@ -113,22 +114,26 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
     }
 
     private String calculateHeaderDate(long deadLine) {
-        int titleIndex = (int) ((deadLine -
-                Utils.getLastMillisecondOfDay(System.currentTimeMillis())) / ONE_DAY_MS);
+        int titleIndex =
+                (int)
+                        ((deadLine - Utils.getLastMillisecondOfDay(System.currentTimeMillis()))
+                                / ONE_DAY_MS);
         String headerDate;
         if (titleIndex < mTitles.size()) {
             headerDate = mTitles.get(titleIndex);
         } else {
-            headerDate = DateUtils.formatDateTime(getContext(), deadLine,
-                    DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE
-                            | DateUtils.FORMAT_ABBREV_MONTH);
+            headerDate =
+                    DateUtils.formatDateTime(
+                            getContext(),
+                            deadLine,
+                            DateUtils.FORMAT_SHOW_WEEKDAY
+                                    | DateUtils.FORMAT_SHOW_DATE
+                                    | DateUtils.FORMAT_ABBREV_MONTH);
         }
         return headerDate;
     }
 
-    /**
-     * Stops schedules row adapter.
-     */
+    /** Stops schedules row adapter. */
     public void stop() {
         mHandler.removeCallbacksAndMessages(null);
         DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
@@ -142,9 +147,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         }
     }
 
-    /**
-     * Gets which {@link ScheduleRow} the {@link ScheduledRecording} belongs to.
-     */
+    /** Gets which {@link ScheduleRow} the {@link ScheduledRecording} belongs to. */
     public ScheduleRow findRowByScheduledRecording(ScheduledRecording recording) {
         if (recording == null) {
             return null;
@@ -167,7 +170,8 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
                 continue;
             }
             ScheduleRow row = (ScheduleRow) item;
-            if (row.getSchedule() != null && row.isStartRecordingRequested()
+            if (row.getSchedule() != null
+                    && row.isStartRecordingRequested()
                     && row.matchSchedule(schedule)) {
                 return row;
             }
@@ -185,7 +189,8 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
                 if (get(index) instanceof ScheduleRow) {
                     ScheduleRow scheduleRow = (ScheduleRow) get(index);
                     if (ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR.compare(
-                            scheduleRow.getSchedule(), recording) > 0) {
+                                    scheduleRow.getSchedule(), recording)
+                            > 0) {
                         break;
                     }
                     pre = index;
@@ -205,9 +210,14 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
                 add(index, addedRow);
                 updateHeaderDescription(headerRow);
             } else {
-                SchedulesHeaderRow headerRow = new DateHeaderRow(calculateHeaderDate(deadLine),
-                        mContext.getResources().getQuantityString(
-                        R.plurals.dvr_schedules_section_subtitle, 1, 1), 1, deadLine);
+                SchedulesHeaderRow headerRow =
+                        new DateHeaderRow(
+                                calculateHeaderDate(deadLine),
+                                mContext.getResources()
+                                        .getQuantityString(
+                                                R.plurals.dvr_schedules_section_subtitle, 1, 1),
+                                1,
+                                deadLine);
                 add(++pre, headerRow);
                 ScheduleRow addedRow = new ScheduleRow(recording, headerRow);
                 add(pre, addedRow);
@@ -241,14 +251,15 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
     }
 
     private void updateHeaderDescription(SchedulesHeaderRow headerRow) {
-        headerRow.setDescription(mContext.getResources().getQuantityString(
-                R.plurals.dvr_schedules_section_subtitle,
-                headerRow.getItemCount(), headerRow.getItemCount()));
+        headerRow.setDescription(
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.dvr_schedules_section_subtitle,
+                                headerRow.getItemCount(),
+                                headerRow.getItemCount()));
     }
 
-    /**
-     * Called when a schedule recording is added to dvr date manager.
-     */
+    /** Called when a schedule recording is added to dvr date manager. */
     public void onScheduledRecordingAdded(ScheduledRecording schedule) {
         if (DEBUG) Log.d(TAG, "onScheduledRecordingAdded: " + schedule);
         ScheduleRow row = findRowWithStartRequest(schedule);
@@ -263,9 +274,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         }
     }
 
-    /**
-     * Called when a schedule recording is removed from dvr date manager.
-     */
+    /** Called when a schedule recording is removed from dvr date manager. */
     public void onScheduledRecordingRemoved(ScheduledRecording schedule) {
         if (DEBUG) Log.d(TAG, "onScheduledRecordingRemoved: " + schedule);
         ScheduleRow row = findRowByScheduledRecording(schedule);
@@ -276,9 +285,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         }
     }
 
-    /**
-     * Called when a schedule recording is updated in dvr date manager.
-     */
+    /** Called when a schedule recording is updated in dvr date manager. */
     public void onScheduledRecordingUpdated(ScheduledRecording schedule, boolean conflictChange) {
         if (DEBUG) Log.d(TAG, "onScheduledRecordingUpdated: " + schedule);
         ScheduleRow row = findRowByScheduledRecording(schedule);
@@ -329,9 +336,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         }
     }
 
-    /**
-     * Checks if there is a row which requested start/stop recording.
-     */
+    /** Checks if there is a row which requested start/stop recording. */
     protected boolean isStartOrStopRequested() {
         for (int i = 0; i < size(); i++) {
             Object item = get(i);
@@ -345,16 +350,12 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         return false;
     }
 
-    /**
-     * Delays update of the row.
-     */
+    /** Delays update of the row. */
     protected void addPendingUpdate(ScheduleRow row) {
         mPendingUpdate.add(row);
     }
 
-    /**
-     * Executes the pending updates.
-     */
+    /** Executes the pending updates. */
     protected void executePendingUpdate() {
         for (ScheduleRow row : mPendingUpdate) {
             int index = indexOf(row);
@@ -365,21 +366,17 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         mPendingUpdate.clear();
     }
 
-    /**
-     * To check whether the recording should be kept or not.
-     */
+    /** To check whether the recording should be kept or not. */
     protected boolean willBeKept(ScheduledRecording schedule) {
         // CANCELED state means that the schedule was removed temporarily, which should be shown
         // in the list so that the user can reschedule it.
         return schedule.getEndTimeMs() > System.currentTimeMillis()
                 && (schedule.getState() == ScheduledRecording.STATE_RECORDING_IN_PROGRESS
-                || schedule.getState() == ScheduledRecording.STATE_RECORDING_NOT_STARTED
-                || schedule.getState() == ScheduledRecording.STATE_RECORDING_CANCELED);
+                        || schedule.getState() == ScheduledRecording.STATE_RECORDING_NOT_STARTED
+                        || schedule.getState() == ScheduledRecording.STATE_RECORDING_CANCELED);
     }
 
-    /**
-     * Handle the message to update/remove rows.
-     */
+    /** Handle the message to update/remove rows. */
     protected void handleUpdateRow(long currentTimeMs) {
         for (int i = 0; i < size(); i++) {
             Object item = get(i);
@@ -392,9 +389,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         }
     }
 
-    /**
-     * Returns the next update time. Return {@link Long#MAX_VALUE} if no timer is necessary.
-     */
+    /** Returns the next update time. Return {@link Long#MAX_VALUE} if no timer is necessary. */
     protected long getNextTimerMs(long currentTimeMs) {
         long earliest = Long.MAX_VALUE;
         for (int i = 0; i < size(); i++) {
@@ -411,15 +406,12 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
         return earliest;
     }
 
-    /**
-     * Send update message at the time returned by {@link #getNextTimerMs}.
-     */
+    /** Send update message at the time returned by {@link #getNextTimerMs}. */
     protected final void sendNextUpdateMessage(long currentTimeMs) {
         mHandler.removeMessages(MSG_UPDATE_ROW);
         long nextTime = getNextTimerMs(currentTimeMs);
         if (nextTime != Long.MAX_VALUE) {
-            mHandler.sendEmptyMessageDelayed(MSG_UPDATE_ROW,
-                    nextTime - System.currentTimeMillis());
+            mHandler.sendEmptyMessageDelayed(MSG_UPDATE_ROW, nextTime - System.currentTimeMillis());
         }
     }
 }

@@ -19,31 +19,23 @@ package com.android.tv.config;
 /**
  * Manages Live TV Configuration, allowing remote updates.
  *
- * <p>This is a thin wrapper around
- * <a href="https://firebase.google.com/docs/remote-config/"></a>Firebase Remote Config</a>
+ * <p>This is a thin wrapper around <a
+ * href="https://firebase.google.com/docs/remote-config/"></a>Firebase Remote Config</a>
  */
 public interface RemoteConfig {
 
-    /**
-     * Notified on successful completion of a {@link #fetch)}
-     */
+    /** Notified on successful completion of a {@link #fetch)} */
     interface OnRemoteConfigUpdatedListener {
         void onRemoteConfigUpdated();
     }
 
-    /**
-     * Starts a fetch and notifies {@code listener} on successful completion.
-     */
+    /** Starts a fetch and notifies {@code listener} on successful completion. */
     void fetch(OnRemoteConfigUpdatedListener listener);
 
-    /**
-     * Gets value as a string corresponding to the specified key.
-     */
+    /** Gets value as a string corresponding to the specified key. */
     String getString(String key);
 
-    /**
-     * Gets value as a boolean corresponding to the specified key.
-     */
+    /** Gets value as a boolean corresponding to the specified key. */
     boolean getBoolean(String key);
 
     /** Gets value as a long corresponding to the specified key. */

@@ -17,23 +17,18 @@
 package com.android.tv.data.epg;
 
 import android.content.Context;
-
 import android.support.annotation.NonNull;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.data.SeriesInfo;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A stub class to read EPG.
- */
-public class StubEpgReader implements EpgReader{
-    public StubEpgReader(@SuppressWarnings("unused") Context context) {
-    }
+/** A stub class to read EPG. */
+public class StubEpgReader implements EpgReader {
+    public StubEpgReader(@SuppressWarnings("unused") Context context) {}
 
     @Override
     public boolean isAvailable() {

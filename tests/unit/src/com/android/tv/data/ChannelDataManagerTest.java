@@ -39,28 +39,25 @@ import android.test.mock.MockCursor;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
-
 import com.android.tv.testing.ChannelInfo;
 import com.android.tv.testing.Constants;
 import com.android.tv.util.TvInputManagerHelper;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Test for {@link ChannelDataManager}
  *
- * A test method may include tests for multiple methods to minimize the DB access.
- * Note that all the methods of {@link ChannelDataManager} should be called from the UI thread.
+ * <p>A test method may include tests for multiple methods to minimize the DB access. Note that all
+ * the methods of {@link ChannelDataManager} should be called from the UI thread.
  */
 @SmallTest
 public class ChannelDataManagerTest {
@@ -86,46 +83,57 @@ public class ChannelDataManagerTest {
         mContentResolver = new FakeContentResolver();
         mContentResolver.addProvider(TvContract.AUTHORITY, mContentProvider);
         mListener = new TestChannelDataManagerListener();
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                TvInputManagerHelper mockHelper = Mockito.mock(TvInputManagerHelper.class);
-                Mockito.when(mockHelper.hasTvInputInfo(Matchers.anyString())).thenReturn(true);
-                mChannelDataManager = new ChannelDataManager(getTargetContext(), mockHelper,
-                        mContentResolver);
-                mChannelDataManager.addListener(mListener);
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                TvInputManagerHelper mockHelper =
+                                        Mockito.mock(TvInputManagerHelper.class);
+                                Mockito.when(mockHelper.hasTvInputInfo(Matchers.anyString()))
+                                        .thenReturn(true);
+                                mChannelDataManager =
+                                        new ChannelDataManager(
+                                                getTargetContext(), mockHelper, mContentResolver);
+                                mChannelDataManager.addListener(mListener);
+                            }
+                        });
     }
 
     @After
     public void tearDown() {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mChannelDataManager.stop();
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mChannelDataManager.stop();
+                            }
+                        });
     }
 
     private void startAndWaitForComplete() throws InterruptedException {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mChannelDataManager.start();
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mChannelDataManager.start();
+                            }
+                        });
         assertTrue(mListener.loadFinishedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
     }
 
     private void restart() throws InterruptedException {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mChannelDataManager.stop();
-                mListener.reset();
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mChannelDataManager.stop();
+                                mListener.reset();
+                            }
+                        });
         startAndWaitForComplete();
     }
 
@@ -136,10 +144,8 @@ public class ChannelDataManagerTest {
     }
 
     /**
-     * Test for following methods
-     *   - {@link ChannelDataManager#getChannelCount}
-     *   - {@link ChannelDataManager#getChannelList}
-     *   - {@link ChannelDataManager#getChannel}
+     * Test for following methods - {@link ChannelDataManager#getChannelCount} - {@link
+     * ChannelDataManager#getChannelList} - {@link ChannelDataManager#getChannel}
      */
     @Test
     public void testGetChannels() throws InterruptedException {
@@ -173,9 +179,7 @@ public class ChannelDataManagerTest {
         }
     }
 
-    /**
-     * Test for {@link ChannelDataManager#getChannelCount} when no channel is available.
-     */
+    /** Test for {@link ChannelDataManager#getChannelCount} when no channel is available. */
     @Test
     public void testGetChannels_noChannels() throws InterruptedException {
         mContentProvider.clear();
@@ -184,9 +188,8 @@ public class ChannelDataManagerTest {
     }
 
     /**
-     * Test for following methods and channel listener with notifying change.
-     *   - {@link ChannelDataManager#updateBrowsable}
-     *   - {@link ChannelDataManager#applyUpdatedValuesToDb}
+     * Test for following methods and channel listener with notifying change. - {@link
+     * ChannelDataManager#updateBrowsable} - {@link ChannelDataManager#applyUpdatedValuesToDb}
      */
     @Test
     public void testBrowsable() throws InterruptedException {
@@ -226,9 +229,8 @@ public class ChannelDataManagerTest {
     }
 
     /**
-     * Test for following methods and channel listener without notifying change.
-     *   - {@link ChannelDataManager#updateBrowsable}
-     *   - {@link ChannelDataManager#applyUpdatedValuesToDb}
+     * Test for following methods and channel listener without notifying change. - {@link
+     * ChannelDataManager#updateBrowsable} - {@link ChannelDataManager#applyUpdatedValuesToDb}
      */
     @Test
     public void testBrowsable_skipNotification() throws InterruptedException {
@@ -263,9 +265,8 @@ public class ChannelDataManagerTest {
     }
 
     /**
-     * Test for following methods and channel listener.
-     *   - {@link ChannelDataManager#updateLocked}
-     *   - {@link ChannelDataManager#applyUpdatedValuesToDb}
+     * Test for following methods and channel listener. - {@link ChannelDataManager#updateLocked} -
+     * {@link ChannelDataManager#applyUpdatedValuesToDb}
      */
     @Test
     public void testLocked() throws InterruptedException {
@@ -295,9 +296,7 @@ public class ChannelDataManagerTest {
         mChannelDataManager.updateLocked(channel.getId(), false);
     }
 
-    /**
-     * Test ChannelDataManager when channels in TvContract are updated, removed, or added.
-     */
+    /** Test ChannelDataManager when channels in TvContract are updated, removed, or added. */
     @Test
     public void testChannelListChanged() throws InterruptedException {
         startAndWaitForComplete();
@@ -329,8 +328,7 @@ public class ChannelDataManagerTest {
         assertEquals(testChannelId, updatedChannel.getId());
         assertEquals(testChannelInfo.number, updatedChannel.getDisplayNumber());
         assertEquals(newName, updatedChannel.getDisplayName());
-        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT + 1,
-                mChannelDataManager.getChannelCount());
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT + 1, mChannelDataManager.getChannelCount());
 
         // Test channel remove.
         mListener.reset();
@@ -352,6 +350,7 @@ public class ChannelDataManagerTest {
         public ChannelInfo channelInfo;
         public boolean browsable;
         public boolean locked;
+
         public ChannelInfoWrapper(ChannelInfo channelInfo) {
             this.channelInfo = channelInfo;
             browsable = true;
@@ -366,8 +365,14 @@ public class ChannelDataManagerTest {
         public void notifyChange(Uri uri, ContentObserver observer, boolean syncToNetwork) {
             super.notifyChange(uri, observer, syncToNetwork);
             if (DEBUG) {
-                Log.d(TAG, "onChanged(uri=" + uri + ", observer=" + observer + ") - Notification "
-                        + (mNotifyDisabled ? "disabled" : "enabled"));
+                Log.d(
+                        TAG,
+                        "onChanged(uri="
+                                + uri
+                                + ", observer="
+                                + observer
+                                + ") - Notification "
+                                + (mNotifyDisabled ? "disabled" : "enabled"));
             }
             if (mNotifyDisabled) {
                 return;
@@ -390,19 +395,23 @@ public class ChannelDataManagerTest {
         public FakeContentProvider(Context context) {
             super(context);
             for (int i = 1; i <= Constants.UNIT_TEST_CHANNEL_COUNT; i++) {
-                mChannelInfoList.put(i,
-                        new ChannelInfoWrapper(ChannelInfo.create(getTargetContext(), i)));
+                mChannelInfoList.put(
+                        i, new ChannelInfoWrapper(ChannelInfo.create(getTargetContext(), i)));
             }
         }
 
         /**
-         * Implementation of {@link ContentProvider#query}.
-         * This assumes that {@link ChannelDataManager} queries channels
-         * with empty {@code selection}. (i.e. channels are always queries for all)
+         * Implementation of {@link ContentProvider#query}. This assumes that {@link
+         * ChannelDataManager} queries channels with empty {@code selection}. (i.e. channels are
+         * always queries for all)
          */
         @Override
-        public Cursor query(Uri uri, String[] projection, String selection, String[]
-                selectionArgs, String sortOrder) {
+        public Cursor query(
+                Uri uri,
+                String[] projection,
+                String selection,
+                String[] selectionArgs,
+                String sortOrder) {
             if (DEBUG) {
                 Log.d(TAG, "dump query");
                 Log.d(TAG, "  uri=" + uri);
@@ -414,9 +423,8 @@ public class ChannelDataManagerTest {
         }
 
         /**
-         * Implementation of {@link ContentProvider#update}.
-         * This assumes that {@link ChannelDataManager} update channels
-         * only for changing browsable and locked.
+         * Implementation of {@link ContentProvider#update}. This assumes that {@link
+         * ChannelDataManager} update channels only for changing browsable and locked.
          */
         @Override
         public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
@@ -434,8 +442,9 @@ public class ChannelDataManagerTest {
                     }
                 } else {
                     // See {@link Utils#buildSelectionForIds} for the syntax.
-                    String selectionForId = selection.substring(
-                            selection.indexOf("(") + 1, selection.lastIndexOf(")"));
+                    String selectionForId =
+                            selection.substring(
+                                    selection.indexOf("(") + 1, selection.lastIndexOf(")"));
                     String[] ids = selectionForId.split(", ");
                     if (ids != null) {
                         for (String id : ids) {
@@ -476,27 +485,25 @@ public class ChannelDataManagerTest {
         }
 
         /**
-         * Simulates channel data insert.
-         * This assigns original network ID (the same with channel number) to channel ID.
+         * Simulates channel data insert. This assigns original network ID (the same with channel
+         * number) to channel ID.
          */
         public void simulateInsert(ChannelInfo testChannelInfo) {
             long channelId = testChannelInfo.originalNetworkId;
-            mChannelInfoList.put((int) channelId, new ChannelInfoWrapper(
-                    ChannelInfo.create(getTargetContext(), (int) channelId)));
+            mChannelInfoList.put(
+                    (int) channelId,
+                    new ChannelInfoWrapper(
+                            ChannelInfo.create(getTargetContext(), (int) channelId)));
             mContentResolver.notifyChange(TvContract.buildChannelUri(channelId), null);
         }
 
-        /**
-         * Simulates channel data delete.
-         */
+        /** Simulates channel data delete. */
         public void simulateDelete(long channelId) {
             mChannelInfoList.remove((int) channelId);
             mContentResolver.notifyChange(TvContract.buildChannelUri(channelId), null);
         }
 
-        /**
-         * Simulates channel data update.
-         */
+        /** Simulates channel data update. */
         public void simulateUpdate(long channelId, String newName) {
             ChannelInfoWrapper channel = mChannelInfoList.get((int) channelId);
             ChannelInfo.Builder builder = new ChannelInfo.Builder(channel.channelInfo);
@@ -506,7 +513,8 @@ public class ChannelDataManagerTest {
         }
 
         private void assertChannelUri(Uri uri) {
-            assertTrue("Uri(" + uri + ") isn't channel uri",
+            assertTrue(
+                    "Uri(" + uri + ") isn't channel uri",
                     uri.toString().startsWith(Channels.CONTENT_URI.toString()));
         }
 
@@ -528,15 +536,16 @@ public class ChannelDataManagerTest {
     }
 
     private class FakeCursor extends MockCursor {
-        private final String[] ALL_COLUMNS =  {
-                Channels._ID,
-                Channels.COLUMN_DISPLAY_NAME,
-                Channels.COLUMN_DISPLAY_NUMBER,
-                Channels.COLUMN_INPUT_ID,
-                Channels.COLUMN_VIDEO_FORMAT,
-                Channels.COLUMN_ORIGINAL_NETWORK_ID,
-                COLUMN_BROWSABLE,
-                COLUMN_LOCKED};
+        private final String[] ALL_COLUMNS = {
+            Channels._ID,
+            Channels.COLUMN_DISPLAY_NAME,
+            Channels.COLUMN_DISPLAY_NUMBER,
+            Channels.COLUMN_INPUT_ID,
+            Channels.COLUMN_VIDEO_FORMAT,
+            Channels.COLUMN_ORIGINAL_NETWORK_ID,
+            COLUMN_BROWSABLE,
+            COLUMN_LOCKED
+        };
         private final String[] mColumns;
         private int mPosition;
 

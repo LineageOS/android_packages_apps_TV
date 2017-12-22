@@ -15,15 +15,11 @@
  */
 package com.android.tv.tuner.exoplayer;
 
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.Extractor;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.extractor.TimestampAdjuster;
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory;
 import com.google.android.exoplayer2.extractor.ts.TsExtractor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Extractor factory, mainly aim at create TsExtractor with FLAG_ALLOW_NON_IDR_KEYFRAMES flags for
@@ -34,8 +30,12 @@ public final class ExoPlayerExtractorsFactory implements ExtractorsFactory {
     public Extractor[] createExtractors() {
         // Only create TsExtractor since we only target MPEG2TS stream.
         Extractor[] extractors = {
-                new TsExtractor(new TimestampAdjuster(0), new DefaultTsPayloadReaderFactory(
-                        DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES), false) };
+            new TsExtractor(
+                    new TimestampAdjuster(0),
+                    new DefaultTsPayloadReaderFactory(
+                            DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES),
+                    false)
+        };
         return extractors;
     }
 }

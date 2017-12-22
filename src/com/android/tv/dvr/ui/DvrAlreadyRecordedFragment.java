@@ -24,13 +24,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.RecordedProgram;
-
 import java.util.List;
 
 /**
@@ -52,12 +50,18 @@ public class DvrAlreadyRecordedFragment extends DvrGuidedStepFragment {
         super.onAttach(context);
         mProgram = getArguments().getParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM);
         DvrManager dvrManager = TvApplication.getSingletons(context).getDvrManager();
-        mDuplicate = dvrManager.getRecordedProgram(mProgram.getTitle(),
-                mProgram.getSeasonNumber(), mProgram.getEpisodeNumber());
+        mDuplicate =
+                dvrManager.getRecordedProgram(
+                        mProgram.getTitle(),
+                        mProgram.getSeasonNumber(),
+                        mProgram.getEpisodeNumber());
         if (mDuplicate == null) {
             dvrManager.addSchedule(mProgram);
-            DvrUiHelper.showAddScheduleToast(context, mProgram.getTitle(),
-                    mProgram.getStartTimeUtcMillis(), mProgram.getEndTimeUtcMillis());
+            DvrUiHelper.showAddScheduleToast(
+                    context,
+                    mProgram.getTitle(),
+                    mProgram.getStartTimeUtcMillis(),
+                    mProgram.getEndTimeUtcMillis());
             dismissDialog();
         }
     }
@@ -74,18 +78,21 @@ public class DvrAlreadyRecordedFragment extends DvrGuidedStepFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         Context context = getContext();
-        actions.add(new GuidedAction.Builder(context)
-                .id(ACTION_RECORD_ANYWAY)
-                .title(R.string.dvr_action_record_anyway)
-                .build());
-        actions.add(new GuidedAction.Builder(context)
-                .id(ACTION_WATCH)
-                .title(R.string.dvr_action_watch_now)
-                .build());
-        actions.add(new GuidedAction.Builder(context)
-                .id(ACTION_CANCEL)
-                .title(R.string.dvr_action_record_cancel)
-                .build());
+        actions.add(
+                new GuidedAction.Builder(context)
+                        .id(ACTION_RECORD_ANYWAY)
+                        .title(R.string.dvr_action_record_anyway)
+                        .build());
+        actions.add(
+                new GuidedAction.Builder(context)
+                        .id(ACTION_WATCH)
+                        .title(R.string.dvr_action_watch_now)
+                        .build());
+        actions.add(
+                new GuidedAction.Builder(context)
+                        .id(ACTION_CANCEL)
+                        .title(R.string.dvr_action_record_cancel)
+                        .build());
     }
 
     @Override

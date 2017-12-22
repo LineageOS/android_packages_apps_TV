@@ -22,10 +22,7 @@ import android.os.ParcelFileDescriptor;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import com.android.tv.common.recording.RecordingCapability;
-import com.android.tv.tuner.tvinput.TunerTvInputService;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
@@ -35,15 +32,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Provides with the file descriptors to access DVB device.
- */
+/** Provides with the file descriptors to access DVB device. */
 public class DvbDeviceAccessor {
     private static final String TAG = "DvbDeviceAccessor";
 
     @IntDef({DVB_DEVICE_DEMUX, DVB_DEVICE_DVR, DVB_DEVICE_FRONTEND})
     @Retention(RetentionPolicy.SOURCE)
     public @interface DvbDevice {}
+
     public static final int DVB_DEVICE_DEMUX = 0; // TvInputManager.DVB_DEVICE_DEMUX;
     public static final int DVB_DEVICE_DVR = 1; // TvInputManager.DVB_DEVICE_DVR;
     public static final int DVB_DEVICE_FRONTEND = 2; // TvInputManager.DVB_DEVICE_FRONTEND;
@@ -59,8 +55,9 @@ public class DvbDeviceAccessor {
             Class dvbDeviceInfoClass = Class.forName("android.media.tv.DvbDeviceInfo");
             sGetDvbDeviceListMethod = tvInputManagerClass.getDeclaredMethod("getDvbDeviceList");
             sGetDvbDeviceListMethod.setAccessible(true);
-            sOpenDvbDeviceMethod = tvInputManagerClass.getDeclaredMethod(
-                    "openDvbDevice", dvbDeviceInfoClass, Integer.TYPE);
+            sOpenDvbDeviceMethod =
+                    tvInputManagerClass.getDeclaredMethod(
+                            "openDvbDevice", dvbDeviceInfoClass, Integer.TYPE);
             sOpenDvbDeviceMethod.setAccessible(true);
         } catch (ClassNotFoundException e) {
             Log.e(TAG, "Couldn't find class", e);
@@ -90,9 +87,7 @@ public class DvbDeviceAccessor {
         return null;
     }
 
-    /**
-     * Returns the number of currently connected DVB devices.
-     */
+    /** Returns the number of currently connected DVB devices. */
     public int getNumOfDvbDevices() {
         List<DvbDeviceInfoWrapper> dvbDeviceList = getDvbDeviceList();
         return dvbDeviceList == null ? 0 : dvbDeviceList.size();
@@ -110,11 +105,12 @@ public class DvbDeviceAccessor {
         return false;
     }
 
-    public ParcelFileDescriptor openDvbDevice(DvbDeviceInfoWrapper deviceInfo,
-            @DvbDevice int device) {
+    public ParcelFileDescriptor openDvbDevice(
+            DvbDeviceInfoWrapper deviceInfo, @DvbDevice int device) {
         try {
-            return (ParcelFileDescriptor) sOpenDvbDeviceMethod.invoke(
-                    mTvInputManager, deviceInfo.getDvbDeviceInfo(), device);
+            return (ParcelFileDescriptor)
+                    sOpenDvbDeviceMethod.invoke(
+                            mTvInputManager, deviceInfo.getDvbDeviceInfo(), device);
         } catch (IllegalAccessException e) {
             Log.e(TAG, "Couldn't access", e);
         } catch (InvocationTargetException e) {
@@ -125,6 +121,7 @@ public class DvbDeviceAccessor {
 
     /**
      * Returns the current recording capability for USB tuner.
+     *
      * @param inputId the input id to use.
      */
     public RecordingCapability getRecordingCapability(String inputId) {
@@ -215,7 +212,9 @@ public class DvbDeviceAccessor {
 
         @Override
         public String toString() {
-            return String.format(Locale.US, "DvbDeviceInfo {adapterId: %d, deviceId: %d}",
+            return String.format(
+                    Locale.US,
+                    "DvbDeviceInfo {adapterId: %d, deviceId: %d}",
                     getAdapterId(),
                     getDeviceId());
         }

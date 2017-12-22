@@ -19,19 +19,14 @@ package com.android.tv.dvr.ui;
 import android.support.test.filters.SmallTest;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.ObjectAdapter;
-
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
+import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Tests for {@link SortedArrayAdapter}.
- */
+/** Tests for {@link SortedArrayAdapter}. */
 @SmallTest
 public class SortedArrayAdapterTest extends TestCase {
     public static final TestData P1 = TestData.create(1, "c");
@@ -228,12 +223,13 @@ public class SortedArrayAdapterTest extends TestCase {
 
     private static class TestSortedArrayAdapter extends SortedArrayAdapter<TestData> {
 
-        private static final Comparator<TestData> TEXT_COMPARATOR = new Comparator<TestData>() {
-            @Override
-            public int compare(TestData lhs, TestData rhs) {
-                return lhs.mText.compareTo(rhs.mText);
-            }
-        };
+        private static final Comparator<TestData> TEXT_COMPARATOR =
+                new Comparator<TestData>() {
+                    @Override
+                    public int compare(TestData lhs, TestData rhs) {
+                        return lhs.mText.compareTo(rhs.mText);
+                    }
+                };
 
         TestSortedArrayAdapter(int maxInitialCount, Object extra) {
             super(new ClassPresenterSelector(), TEXT_COMPARATOR, maxInitialCount);
