@@ -54,31 +54,23 @@ public class TunerPreferenceProvider extends ContentProvider {
 
     /**
      * Builds a Uri that points to a specific preference.
-
+     *
      * @param key a key of the preference to point to
      */
     public static Uri buildPreferenceUri(String key) {
         return Preferences.CONTENT_URI.buildUpon().appendPath(key).build();
     }
 
-    /**
-     * Columns definitions for the preferences table.
-     */
+    /** Columns definitions for the preferences table. */
     public interface Preferences {
 
-        /**
-         * The content:// style for the preferences table.
-         */
+        /** The content:// style for the preferences table. */
         Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH_PREFERENCES);
 
-        /**
-         * The MIME type of a directory of preferences.
-         */
+        /** The MIME type of a directory of preferences. */
         String CONTENT_TYPE = "vnd.android.cursor.dir/preferences";
 
-        /**
-         * The MIME type of a single preference.
-         */
+        /** The MIME type of a single preference. */
         String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/preferences";
 
         /**
@@ -114,10 +106,16 @@ public class TunerPreferenceProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + PREFERENCES_TABLE + " ("
-                    + Preferences._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + Preferences.COLUMN_KEY + " TEXT NOT NULL,"
-                    + Preferences.COLUMN_VALUE + " TEXT);");
+            db.execSQL(
+                    "CREATE TABLE "
+                            + PREFERENCES_TABLE
+                            + " ("
+                            + Preferences._ID
+                            + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                            + Preferences.COLUMN_KEY
+                            + " TEXT NOT NULL,"
+                            + Preferences.COLUMN_VALUE
+                            + " TEXT);");
         }
 
         @Override
@@ -133,15 +131,26 @@ public class TunerPreferenceProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         int match = sUriMatcher.match(uri);
         if (match != MATCH_PREFERENCE && match != MATCH_PREFERENCE_KEY) {
             throw new UnsupportedOperationException();
         }
         SQLiteDatabase db = mDatabaseOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(PREFERENCES_TABLE, projection, selection, selectionArgs,
-                null, null, sortOrder);
+        Cursor cursor =
+                db.query(
+                        PREFERENCES_TABLE,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -160,7 +169,7 @@ public class TunerPreferenceProvider extends ContentProvider {
     /**
      * Inserts a preference row into the preference table.
      *
-     * If a key is already exists in the table, it removes the old row and inserts a new row.
+     * <p>If a key is already exists in the table, it removes the old row and inserts a new row.
      *
      * @param uri the URL of the table to insert into
      * @param values the initial values for the newly inserted row
@@ -178,8 +187,10 @@ public class TunerPreferenceProvider extends ContentProvider {
         SQLiteDatabase db = mDatabaseOpenHelper.getWritableDatabase();
 
         // Remove the old row.
-        db.delete(PREFERENCES_TABLE, Preferences.COLUMN_KEY + " like ?",
-                new String[]{values.getAsString(Preferences.COLUMN_KEY)});
+        db.delete(
+                PREFERENCES_TABLE,
+                Preferences.COLUMN_KEY + " like ?",
+                new String[] {values.getAsString(Preferences.COLUMN_KEY)});
 
         long rowId = db.insert(PREFERENCES_TABLE, null, values);
         if (rowId > 0) {

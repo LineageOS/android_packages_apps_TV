@@ -23,19 +23,16 @@ import android.support.annotation.NonNull;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
-
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.testing.dvr.RecordingTestUtils;
-
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link BaseDvrDataManager} using {@link DvrDataManagerInMemoryImpl}. */
 @SmallTest
@@ -62,8 +59,9 @@ public class BaseDvrDataManagerTest {
 
     @Test
     public void testGetNonStartedScheduledRecordings() {
-        ScheduledRecording recording = mDvrDataManager
-                .addScheduledRecordingInternal(createNewScheduledRecordingStartingNow());
+        ScheduledRecording recording =
+                mDvrDataManager.addScheduledRecordingInternal(
+                        createNewScheduledRecordingStartingNow());
         List<ScheduledRecording> result = mDvrDataManager.getNonStartedScheduledRecordings();
         MoreAsserts.assertContentsInAnyOrder(result, recording);
     }
@@ -78,12 +76,13 @@ public class BaseDvrDataManagerTest {
 
     @NonNull
     private ScheduledRecording createNewScheduledRecordingStartingNow() {
-        return ScheduledRecording.buildFrom(RecordingTestUtils
-                .createTestRecordingWithIdAndPeriod(
-                        ScheduledRecording.ID_NOT_SET,
-                        INPUT_ID, CHANNEL_ID,
-                        mFakeClock.currentTimeMillis(),
-                        mFakeClock.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)))
+        return ScheduledRecording.buildFrom(
+                        RecordingTestUtils.createTestRecordingWithIdAndPeriod(
+                                ScheduledRecording.ID_NOT_SET,
+                                INPUT_ID,
+                                CHANNEL_ID,
+                                mFakeClock.currentTimeMillis(),
+                                mFakeClock.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)))
                 .setState(ScheduledRecording.STATE_RECORDING_NOT_STARTED)
                 .build();
     }

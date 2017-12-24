@@ -20,9 +20,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-
-import com.google.android.exoplayer.C;
-import com.google.android.exoplayer.upstream.DataSpec;
 import com.android.tv.Features;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.tuner.ChannelScanFileParser.ScanChannel;
@@ -30,7 +27,8 @@ import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.ts.TsParser;
 import com.android.tv.tuner.tvinput.EventDetector;
 import com.android.tv.tuner.tvinput.FileSourceEventDetector;
-
+import com.google.android.exoplayer.C;
+import com.google.android.exoplayer.upstream.DataSpec;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,13 +103,16 @@ public class FileTsStreamer implements TsStreamer {
         }
 
         @Override
-        public void close() {
-        }
+        public void close() {}
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
-            int ret = mTsStreamer.readAt(mStartBufferedPosition + mLastReadPosition.get(), buffer,
-                    offset, readLength);
+            int ret =
+                    mTsStreamer.readAt(
+                            mStartBufferedPosition + mLastReadPosition.get(),
+                            buffer,
+                            offset,
+                            readLength);
             if (ret > 0) {
                 mLastReadPosition.addAndGet(ret);
             }
@@ -121,6 +122,7 @@ public class FileTsStreamer implements TsStreamer {
 
     /**
      * Creates {@link TsStreamer} for scanning & playing MPEG-2 TS file.
+     *
      * @param eventListener the listener for channel & program information
      */
     public FileTsStreamer(EventDetector.EventListener eventListener, Context context) {
@@ -216,6 +218,7 @@ public class FileTsStreamer implements TsStreamer {
 
     /**
      * Returns the current buffered position from the file.
+     *
      * @return the current buffered position
      */
     public long getBufferedPosition() {
@@ -224,9 +227,7 @@ public class FileTsStreamer implements TsStreamer {
         }
     }
 
-    /**
-     * Provides MPEG-2 transport stream from a local file. Stream can be filtered by PID.
-     */
+    /** Provides MPEG-2 transport stream from a local file. Stream can be filtered by PID. */
     public static class StreamProvider {
         private final String mFilepath;
         private final SparseBooleanArray mPids = new SparseBooleanArray();
@@ -252,36 +253,29 @@ public class FileTsStreamer implements TsStreamer {
             return mInputStream != null;
         }
 
-        /**
-         * Returns the file path of the MPEG-2 TS file.
-         */
+        /** Returns the file path of the MPEG-2 TS file. */
         public String getFilepath() {
             return mFilepath;
         }
 
-        /**
-         * Adds a pid for filtering from the MPEG-2 TS file.
-         */
+        /** Adds a pid for filtering from the MPEG-2 TS file. */
         public void addPidFilter(int pid) {
             mPids.put(pid, true);
         }
 
-        /**
-         * Returns whether the current pid filter is empty or not.
-         */
+        /** Returns whether the current pid filter is empty or not. */
         public boolean isFilterEmpty() {
             return mPids.size() == 0;
         }
 
-        /**
-         * Clears the current pid filter.
-         */
+        /** Clears the current pid filter. */
         public void clearPidFilter() {
             mPids.clear();
         }
 
         /**
          * Returns whether a pid is in the pid filter or not.
+         *
          * @param pid the pid to check
          */
         public boolean isInFilter(int pid) {
@@ -347,6 +341,7 @@ public class FileTsStreamer implements TsStreamer {
 
     /**
      * Reads data from internal buffer.
+     *
      * @param pos the position to read from
      * @param buffer to read
      * @param offset start position of the read buffer
@@ -387,7 +382,11 @@ public class FileTsStreamer implements TsStreamer {
             }
             System.arraycopy(mCircularBuffer, posInBuffer, buffer, offset, bytesToCopyInFirstPass);
             if (bytesToCopyInFirstPass < amount) {
-                System.arraycopy(mCircularBuffer, 0, buffer, offset + bytesToCopyInFirstPass,
+                System.arraycopy(
+                        mCircularBuffer,
+                        0,
+                        buffer,
+                        offset + bytesToCopyInFirstPass,
                         amount - bytesToCopyInFirstPass);
             }
             mLastReadPosition = pos + amount;
@@ -416,9 +415,9 @@ public class FileTsStreamer implements TsStreamer {
     }
 
     /**
-     * A thread managing a circular buffer that holds stream data to be consumed by player.
-     * Keeps reading data in from a {@link StreamProvider} to hold enough amount for buffering.
-     * Started and stopped by {@link #startStream()} and {@link #stopStream()}, respectively.
+     * A thread managing a circular buffer that holds stream data to be consumed by player. Keeps
+     * reading data in from a {@link StreamProvider} to hold enough amount for buffering. Started
+     * and stopped by {@link #startStream()} and {@link #stopStream()}, respectively.
      */
     private class StreamingThread extends Thread {
         @Override
@@ -466,10 +465,14 @@ public class FileTsStreamer implements TsStreamer {
                     if (posInBuffer + bytesToCopyInFirstPass > mCircularBuffer.length) {
                         bytesToCopyInFirstPass = mCircularBuffer.length - posInBuffer;
                     }
-                    System.arraycopy(dataBuffer, 0, mCircularBuffer, posInBuffer,
-                            bytesToCopyInFirstPass);
+                    System.arraycopy(
+                            dataBuffer, 0, mCircularBuffer, posInBuffer, bytesToCopyInFirstPass);
                     if (bytesToCopyInFirstPass < bytesWritten) {
-                        System.arraycopy(dataBuffer, bytesToCopyInFirstPass, mCircularBuffer, 0,
+                        System.arraycopy(
+                                dataBuffer,
+                                bytesToCopyInFirstPass,
+                                mCircularBuffer,
+                                0,
                                 bytesWritten - bytesToCopyInFirstPass);
                     }
                     mBytesFetched += bytesWritten;

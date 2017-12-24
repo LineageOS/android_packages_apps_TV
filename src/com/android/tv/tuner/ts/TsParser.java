@@ -19,7 +19,6 @@ package com.android.tv.tuner.ts;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-
 import com.android.tv.tuner.data.PsiData.PatItem;
 import com.android.tv.tuner.data.PsiData.PmtItem;
 import com.android.tv.tuner.data.PsipData.EitItem;
@@ -30,7 +29,6 @@ import com.android.tv.tuner.data.PsipData.VctItem;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.ts.SectionParser.OutputListener;
 import com.android.tv.tuner.util.ByteArrayBuffer;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,9 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-/**
- * Parses MPEG-2 TS packets.
- */
+/** Parses MPEG-2 TS packets. */
 public class TsParser {
     private static final String TAG = "TsParser";
     private static final boolean DEBUG = false;
@@ -84,11 +80,17 @@ public class TsParser {
 
     public interface TsOutputListener {
         void onPatDetected(List<PatItem> items);
+
         void onEitPidDetected(int pid);
+
         void onVctItemParsed(VctItem channel, List<PmtItem> pmtItems);
+
         void onEitItemParsed(VctItem channel, List<EitItem> items);
+
         void onEttPidDetected(int pid);
+
         void onAllVctItemsParsed();
+
         void onSdtItemParsed(SdtItem channel, List<PmtItem> pmtItems);
     }
 
@@ -108,6 +110,7 @@ public class TsParser {
         }
 
         protected abstract void handleData(byte[] data, boolean startIndicator);
+
         protected abstract void resetDataVersions();
     }
 
@@ -150,169 +153,187 @@ public class TsParser {
             mSectionParser.resetVersionNumbers();
         }
 
-        private final OutputListener mSectionListener = new OutputListener() {
-            @Override
-            public void onPatParsed(List<PatItem> items) {
-                for (PatItem i : items) {
-                    startListening(i.getPmtPid());
-                }
-                if (mListener != null) {
-                    mListener.onPatDetected(items);
-                }
-            }
-
-            @Override
-            public void onPmtParsed(int programNumber, List<PmtItem> items) {
-                mProgramNumberToPMTMap.put(programNumber, items);
-                if (DEBUG) {
-                    Log.d(TAG, "onPMTParsed, programNo " + programNumber + " handledStatus is "
-                            + mProgramNumberHandledStatus.get(programNumber, false));
-                }
-                int statusIndex = mProgramNumberHandledStatus.indexOfKey(programNumber);
-                if (statusIndex < 0) {
-                    mProgramNumberHandledStatus.put(programNumber, false);
-                }
-                if (!mProgramNumberHandledStatus.get(programNumber)) {
-                    VctItem vctItem = mProgramNumberToVctItemMap.get(programNumber);
-                    if (vctItem != null) {
-                        // When PMT is parsed later than VCT.
-                        mProgramNumberHandledStatus.put(programNumber, true);
-                        handleVctItem(vctItem, items);
-                        mHandledVctItemCount++;
-                        if (mHandledVctItemCount >= mVctItemCount
-                                && mVctSectionParsedCount >= mVctSectionParsed.length
-                                && mListener != null) {
-                            mListener.onAllVctItemsParsed();
+        private final OutputListener mSectionListener =
+                new OutputListener() {
+                    @Override
+                    public void onPatParsed(List<PatItem> items) {
+                        for (PatItem i : items) {
+                            startListening(i.getPmtPid());
                         }
-                    }
-                    SdtItem sdtItem = mProgramNumberToSdtItemMap.get(programNumber);
-                    if (sdtItem != null) {
-                        // When PMT is parsed later than SDT.
-                        mProgramNumberHandledStatus.put(programNumber, true);
-                        handleSdtItem(sdtItem, items);
-                    }
-                }
-            }
-
-            @Override
-            public void onMgtParsed(List<MgtItem> items) {
-                for (MgtItem i : items) {
-                    if (mStreamMap.get(i.getTableTypePid()) != null) {
-                        continue;
-                    }
-                    if (i.getTableType() >= MgtItem.TABLE_TYPE_EIT_RANGE_START
-                            && i.getTableType() <= MgtItem.TABLE_TYPE_EIT_RANGE_END) {
-                        startListening(i.getTableTypePid());
-                        mEITPids.add(i.getTableTypePid());
                         if (mListener != null) {
-                            mListener.onEitPidDetected(i.getTableTypePid());
-                        }
-                    } else if (i.getTableType() == MgtItem.TABLE_TYPE_CHANNEL_ETT ||
-                            (i.getTableType() >= MgtItem.TABLE_TYPE_ETT_RANGE_START
-                                    && i.getTableType() <= MgtItem.TABLE_TYPE_ETT_RANGE_END)) {
-                        startListening(i.getTableTypePid());
-                        mETTPids.add(i.getTableTypePid());
-                        if (mListener != null) {
-                            mListener.onEttPidDetected(i.getTableTypePid());
+                            mListener.onPatDetected(items);
                         }
                     }
-                }
-            }
 
-            @Override
-            public void onVctParsed(List<VctItem> items, int sectionNumber, int lastSectionNumber) {
-                if (mVctSectionParsed == null) {
-                    mVctSectionParsed = new boolean[lastSectionNumber + 1];
-                } else if (mVctSectionParsed[sectionNumber]) {
-                    // The current section was handled before.
-                    if (DEBUG) {
-                        Log.d(TAG, "Duplicate VCT section found.");
-                    }
-                    return;
-                }
-                mVctSectionParsed[sectionNumber] = true;
-                mVctSectionParsedCount++;
-                mVctItemCount += items.size();
-                for (VctItem i : items) {
-                    if (DEBUG) Log.d(TAG, "onVCTParsed " + i);
-                    if (i.getSourceId() != 0) {
-                        mSourceIdToVctItemMap.put(i.getSourceId(), i);
-                        i.setDescription(mSourceIdToVctItemDescriptionMap.get(i.getSourceId()));
-                    }
-                    int programNumber = i.getProgramNumber();
-                    mProgramNumberToVctItemMap.put(programNumber, i);
-                    List<PmtItem> pmtList = mProgramNumberToPMTMap.get(programNumber);
-                    if (pmtList != null) {
-                        mProgramNumberHandledStatus.put(programNumber, true);
-                        handleVctItem(i, pmtList);
-                        mHandledVctItemCount++;
-                        if (mHandledVctItemCount >= mVctItemCount
-                                && mVctSectionParsedCount >= mVctSectionParsed.length
-                                && mListener != null) {
-                            mListener.onAllVctItemsParsed();
+                    @Override
+                    public void onPmtParsed(int programNumber, List<PmtItem> items) {
+                        mProgramNumberToPMTMap.put(programNumber, items);
+                        if (DEBUG) {
+                            Log.d(
+                                    TAG,
+                                    "onPMTParsed, programNo "
+                                            + programNumber
+                                            + " handledStatus is "
+                                            + mProgramNumberHandledStatus.get(
+                                                    programNumber, false));
                         }
-                    } else {
-                        mProgramNumberHandledStatus.put(programNumber, false);
-                        Log.i(TAG, "onVCTParsed, but PMT for programNo " + programNumber
-                                + " is not found yet.");
-                    }
-                }
-            }
-
-            @Override
-            public void onEitParsed(int sourceId, List<EitItem> items) {
-                if (DEBUG) Log.d(TAG, "onEITParsed " + sourceId);
-                EventSourceEntry entry = new EventSourceEntry(mPid, sourceId);
-                mEitMap.put(entry, items);
-                handleEvents(sourceId);
-            }
-
-            @Override
-            public void onEttParsed(int sourceId, List<EttItem> descriptions) {
-                if (DEBUG) {
-                    Log.d(TAG, String.format("onETTParsed sourceId: %d, descriptions.size(): %d",
-                            sourceId, descriptions.size()));
-                }
-                for (EttItem item : descriptions) {
-                    if (item.eventId == 0) {
-                        // Channel description
-                        mSourceIdToVctItemDescriptionMap.put(sourceId, item.text);
-                        VctItem vctItem = mSourceIdToVctItemMap.get(sourceId);
-                        if (vctItem != null) {
-                            vctItem.setDescription(item.text);
-                            List<PmtItem> pmtItems =
-                                    mProgramNumberToPMTMap.get(vctItem.getProgramNumber());
-                            if (pmtItems != null) {
-                                handleVctItem(vctItem, pmtItems);
+                        int statusIndex = mProgramNumberHandledStatus.indexOfKey(programNumber);
+                        if (statusIndex < 0) {
+                            mProgramNumberHandledStatus.put(programNumber, false);
+                        }
+                        if (!mProgramNumberHandledStatus.get(programNumber)) {
+                            VctItem vctItem = mProgramNumberToVctItemMap.get(programNumber);
+                            if (vctItem != null) {
+                                // When PMT is parsed later than VCT.
+                                mProgramNumberHandledStatus.put(programNumber, true);
+                                handleVctItem(vctItem, items);
+                                mHandledVctItemCount++;
+                                if (mHandledVctItemCount >= mVctItemCount
+                                        && mVctSectionParsedCount >= mVctSectionParsed.length
+                                        && mListener != null) {
+                                    mListener.onAllVctItemsParsed();
+                                }
+                            }
+                            SdtItem sdtItem = mProgramNumberToSdtItemMap.get(programNumber);
+                            if (sdtItem != null) {
+                                // When PMT is parsed later than SDT.
+                                mProgramNumberHandledStatus.put(programNumber, true);
+                                handleSdtItem(sdtItem, items);
                             }
                         }
                     }
-                }
 
-                // Event Information description
-                EventSourceEntry entry = new EventSourceEntry(mPid, sourceId);
-                mETTMap.put(entry, descriptions);
-                handleEvents(sourceId);
-            }
-
-            @Override
-            public void onSdtParsed(List<SdtItem> sdtItems) {
-                for (SdtItem sdtItem : sdtItems) {
-                    if (DEBUG) Log.d(TAG, "onSdtParsed " + sdtItem);
-                    int programNumber = sdtItem.getServiceId();
-                    mProgramNumberToSdtItemMap.put(programNumber, sdtItem);
-                    List<PmtItem> pmtList = mProgramNumberToPMTMap.get(programNumber);
-                    if (pmtList != null) {
-                        mProgramNumberHandledStatus.put(programNumber, true);
-                        handleSdtItem(sdtItem, pmtList);
-                    } else {
-                        mProgramNumberHandledStatus.put(programNumber, false);
-                        Log.i(TAG, "onSdtParsed, but PMT for programNo " + programNumber
-                                + " is not found yet.");
+                    @Override
+                    public void onMgtParsed(List<MgtItem> items) {
+                        for (MgtItem i : items) {
+                            if (mStreamMap.get(i.getTableTypePid()) != null) {
+                                continue;
+                            }
+                            if (i.getTableType() >= MgtItem.TABLE_TYPE_EIT_RANGE_START
+                                    && i.getTableType() <= MgtItem.TABLE_TYPE_EIT_RANGE_END) {
+                                startListening(i.getTableTypePid());
+                                mEITPids.add(i.getTableTypePid());
+                                if (mListener != null) {
+                                    mListener.onEitPidDetected(i.getTableTypePid());
+                                }
+                            } else if (i.getTableType() == MgtItem.TABLE_TYPE_CHANNEL_ETT
+                                    || (i.getTableType() >= MgtItem.TABLE_TYPE_ETT_RANGE_START
+                                            && i.getTableType()
+                                                    <= MgtItem.TABLE_TYPE_ETT_RANGE_END)) {
+                                startListening(i.getTableTypePid());
+                                mETTPids.add(i.getTableTypePid());
+                                if (mListener != null) {
+                                    mListener.onEttPidDetected(i.getTableTypePid());
+                                }
+                            }
+                        }
                     }
-                }
-            }
-        };
+
+                    @Override
+                    public void onVctParsed(
+                            List<VctItem> items, int sectionNumber, int lastSectionNumber) {
+                        if (mVctSectionParsed == null) {
+                            mVctSectionParsed = new boolean[lastSectionNumber + 1];
+                        } else if (mVctSectionParsed[sectionNumber]) {
+                            // The current section was handled before.
+                            if (DEBUG) {
+                                Log.d(TAG, "Duplicate VCT section found.");
+                            }
+                            return;
+                        }
+                        mVctSectionParsed[sectionNumber] = true;
+                        mVctSectionParsedCount++;
+                        mVctItemCount += items.size();
+                        for (VctItem i : items) {
+                            if (DEBUG) Log.d(TAG, "onVCTParsed " + i);
+                            if (i.getSourceId() != 0) {
+                                mSourceIdToVctItemMap.put(i.getSourceId(), i);
+                                i.setDescription(
+                                        mSourceIdToVctItemDescriptionMap.get(i.getSourceId()));
+                            }
+                            int programNumber = i.getProgramNumber();
+                            mProgramNumberToVctItemMap.put(programNumber, i);
+                            List<PmtItem> pmtList = mProgramNumberToPMTMap.get(programNumber);
+                            if (pmtList != null) {
+                                mProgramNumberHandledStatus.put(programNumber, true);
+                                handleVctItem(i, pmtList);
+                                mHandledVctItemCount++;
+                                if (mHandledVctItemCount >= mVctItemCount
+                                        && mVctSectionParsedCount >= mVctSectionParsed.length
+                                        && mListener != null) {
+                                    mListener.onAllVctItemsParsed();
+                                }
+                            } else {
+                                mProgramNumberHandledStatus.put(programNumber, false);
+                                Log.i(
+                                        TAG,
+                                        "onVCTParsed, but PMT for programNo "
+                                                + programNumber
+                                                + " is not found yet.");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onEitParsed(int sourceId, List<EitItem> items) {
+                        if (DEBUG) Log.d(TAG, "onEITParsed " + sourceId);
+                        EventSourceEntry entry = new EventSourceEntry(mPid, sourceId);
+                        mEitMap.put(entry, items);
+                        handleEvents(sourceId);
+                    }
+
+                    @Override
+                    public void onEttParsed(int sourceId, List<EttItem> descriptions) {
+                        if (DEBUG) {
+                            Log.d(
+                                    TAG,
+                                    String.format(
+                                            "onETTParsed sourceId: %d, descriptions.size(): %d",
+                                            sourceId, descriptions.size()));
+                        }
+                        for (EttItem item : descriptions) {
+                            if (item.eventId == 0) {
+                                // Channel description
+                                mSourceIdToVctItemDescriptionMap.put(sourceId, item.text);
+                                VctItem vctItem = mSourceIdToVctItemMap.get(sourceId);
+                                if (vctItem != null) {
+                                    vctItem.setDescription(item.text);
+                                    List<PmtItem> pmtItems =
+                                            mProgramNumberToPMTMap.get(vctItem.getProgramNumber());
+                                    if (pmtItems != null) {
+                                        handleVctItem(vctItem, pmtItems);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Event Information description
+                        EventSourceEntry entry = new EventSourceEntry(mPid, sourceId);
+                        mETTMap.put(entry, descriptions);
+                        handleEvents(sourceId);
+                    }
+
+                    @Override
+                    public void onSdtParsed(List<SdtItem> sdtItems) {
+                        for (SdtItem sdtItem : sdtItems) {
+                            if (DEBUG) Log.d(TAG, "onSdtParsed " + sdtItem);
+                            int programNumber = sdtItem.getServiceId();
+                            mProgramNumberToSdtItemMap.put(programNumber, sdtItem);
+                            List<PmtItem> pmtList = mProgramNumberToPMTMap.get(programNumber);
+                            if (pmtList != null) {
+                                mProgramNumberHandledStatus.put(programNumber, true);
+                                handleSdtItem(sdtItem, pmtList);
+                            } else {
+                                mProgramNumberHandledStatus.put(programNumber, false);
+                                Log.i(
+                                        TAG,
+                                        "onSdtParsed, but PMT for programNo "
+                                                + programNumber
+                                                + " is not found yet.");
+                            }
+                        }
+                    }
+                };
     }
 
     private static class EventSourceEntry {
@@ -470,13 +491,16 @@ public class TsParser {
             if (DEBUG) Log.d(TAG, "Payload should be included in a single TS packet.");
             return false;
         }
-        stream.feedData(Arrays.copyOfRange(tsData, payloadPos, pos + TS_PACKET_SIZE),
-                continuityCounter, payloadStartIndicator);
+        stream.feedData(
+                Arrays.copyOfRange(tsData, payloadPos, pos + TS_PACKET_SIZE),
+                continuityCounter,
+                payloadStartIndicator);
         return true;
     }
 
     /**
      * Feeds MPEG-2 TS data to parse.
+     *
      * @param tsData buffer for ATSC TS stream
      * @param pos the offset where buffer starts
      * @param length The length of available data
@@ -489,6 +513,7 @@ public class TsParser {
 
     /**
      * Retrieves the channel information regardless of being well-formed.
+     *
      * @return {@link List} of {@link TunerChannel}
      */
     public List<TunerChannel> getMalFormedChannels() {
@@ -506,9 +531,7 @@ public class TsParser {
         return incompleteChannels;
     }
 
-    /**
-     * Reset the versions so that data with old version number can be handled.
-     */
+    /** Reset the versions so that data with old version number can be handled. */
     public void resetDataVersions() {
         for (int eitPid : mEITPids) {
             Stream stream = mStreamMap.get(eitPid);

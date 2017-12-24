@@ -19,13 +19,10 @@ package com.android.tv.util;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.LruCache;
-
 import com.android.tv.common.MemoryManageable;
 import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
 
-/**
- * A convenience class for caching bitmap.
- */
+/** A convenience class for caching bitmap. */
 public class ImageCache implements MemoryManageable {
     private static final float MAX_CACHE_SIZE_PERCENT = 0.8f;
     private static final float MIN_CACHE_SIZE_PERCENT = 0.05f;
@@ -48,16 +45,17 @@ public class ImageCache implements MemoryManageable {
         if (DEBUG) {
             Log.d(TAG, "Memory cache created (size = " + memCacheSize + " Kbytes)");
         }
-        mMemoryCache = new LruCache<String, ScaledBitmapInfo>(memCacheSize) {
-            /**
-             * Measure item size in kilobytes rather than units which is more practical for a bitmap
-             * cache
-             */
-            @Override
-            protected int sizeOf(String key, ScaledBitmapInfo bitmapInfo) {
-                return (bitmapInfo.bitmap.getByteCount() + 1023) / 1024;
-            }
-        };
+        mMemoryCache =
+                new LruCache<String, ScaledBitmapInfo>(memCacheSize) {
+                    /**
+                     * Measure item size in kilobytes rather than units which is more practical for
+                     * a bitmap cache
+                     */
+                    @Override
+                    protected int sizeOf(String key, ScaledBitmapInfo bitmapInfo) {
+                        return (bitmapInfo.bitmap.getByteCount() + 1023) / 1024;
+                    }
+                };
     }
 
     private static ImageCache sImageCache;
@@ -67,7 +65,7 @@ public class ImageCache implements MemoryManageable {
      * param.
      *
      * @param memCacheSizePercent The cache size as a percent of available app memory. Should be in
-     *                            range of MIN_CACHE_SIZE_PERCENT(0.05) ~ MAX_CACHE_SIZE_PERCENT(0.8).
+     *     range of MIN_CACHE_SIZE_PERCENT(0.05) ~ MAX_CACHE_SIZE_PERCENT(0.8).
      * @return An existing retained ImageCache object or a new one if one did not exist
      */
     public static synchronized ImageCache getInstance(float memCacheSizePercent) {
@@ -82,7 +80,6 @@ public class ImageCache implements MemoryManageable {
         return new ImageCache(memCacheSizePercent);
     }
 
-
     /**
      * Returns an existing ImageCache, if it doesn't exist, a new one is created using
      * DEFAULT_CACHE_SIZE_PERCENT (0.1).
@@ -96,8 +93,8 @@ public class ImageCache implements MemoryManageable {
     /**
      * Adds a bitmap to memory cache.
      *
-     * <p>If there is an existing bitmap only replace it if
-     * {@link ScaledBitmapInfo#needToReload(ScaledBitmapInfo)} is true.
+     * <p>If there is an existing bitmap only replace it if {@link
+     * ScaledBitmapInfo#needToReload(ScaledBitmapInfo)} is true.
      *
      * @param bitmapInfo The {@link ScaledBitmapInfo} object to store
      */
@@ -112,14 +109,25 @@ public class ImageCache implements MemoryManageable {
             if (old != null && !old.needToReload(bitmapInfo)) {
                 mMemoryCache.put(key, old);
                 if (DEBUG) {
-                    Log.d(TAG,
-                            "Kept original " + old + " in memory cache because it was larger than "
-                                    + bitmapInfo + ".");
+                    Log.d(
+                            TAG,
+                            "Kept original "
+                                    + old
+                                    + " in memory cache because it was larger than "
+                                    + bitmapInfo
+                                    + ".");
                 }
             } else {
                 if (DEBUG) {
-                    Log.d(TAG, "Add " + bitmapInfo + " to memory cache. Current size is " +
-                            mMemoryCache.size() + " / " + mMemoryCache.maxSize() + " Kbytes");
+                    Log.d(
+                            TAG,
+                            "Add "
+                                    + bitmapInfo
+                                    + " to memory cache. Current size is "
+                                    + mMemoryCache.size()
+                                    + " / "
+                                    + mMemoryCache.maxSize()
+                                    + " Kbytes");
                 }
             }
         }
@@ -158,19 +166,21 @@ public class ImageCache implements MemoryManageable {
      * Calculates the memory cache size based on a percentage of the max available VM memory. Eg.
      * setting percent to 0.2 would set the memory cache to one fifth of the available memory.
      * Throws {@link IllegalArgumentException} if percent is < 0.05 or > .8. memCacheSize is stored
-     * in kilobytes instead of bytes as this will eventually be passed to construct a LruCache
-     * which takes an int in its constructor. This value should be chosen carefully based on a
-     * number of factors Refer to the corresponding Android Training class for more discussion:
+     * in kilobytes instead of bytes as this will eventually be passed to construct a LruCache which
+     * takes an int in its constructor. This value should be chosen carefully based on a number of
+     * factors Refer to the corresponding Android Training class for more discussion:
      * http://developer.android.com/training/displaying-bitmaps/
      *
      * @param percent Percent of available app memory to use to size memory cache.
      */
     public static int calculateMemCacheSize(float percent) {
         if (percent < MIN_CACHE_SIZE_PERCENT || percent > MAX_CACHE_SIZE_PERCENT) {
-            throw new IllegalArgumentException("setMemCacheSizePercent - percent must be "
-                    + "between 0.05 and 0.8 (inclusive)");
+            throw new IllegalArgumentException(
+                    "setMemCacheSizePercent - percent must be "
+                            + "between 0.05 and 0.8 (inclusive)");
         }
-        return Math.max(MIN_CACHE_SIZE_KBYTES,
+        return Math.max(
+                MIN_CACHE_SIZE_KBYTES,
                 Math.round(percent * Runtime.getRuntime().maxMemory() / 1024));
     }
 

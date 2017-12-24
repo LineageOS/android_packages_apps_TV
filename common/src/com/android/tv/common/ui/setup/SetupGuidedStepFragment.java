@@ -26,12 +26,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
-
 import com.android.tv.common.R;
 
-/**
- * A fragment for channel source info/setup.
- */
+/** A fragment for channel source info/setup. */
 public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     /**
      * Key of the argument which indicate whether the parent of this fragment has three panes.
@@ -41,22 +38,26 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     public static final String KEY_THREE_PANE = "key_three_pane";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         Bundle arguments = getArguments();
         view.findViewById(android.support.v17.leanback.R.id.action_fragment_root)
                 .setPadding(0, 0, 0, 0);
-        LinearLayout.LayoutParams guidanceLayoutParams = (LinearLayout.LayoutParams)
-                view.findViewById(android.support.v17.leanback.R.id.content_fragment)
-                .getLayoutParams();
+        LinearLayout.LayoutParams guidanceLayoutParams =
+                (LinearLayout.LayoutParams)
+                        view.findViewById(android.support.v17.leanback.R.id.content_fragment)
+                                .getLayoutParams();
         guidanceLayoutParams.weight = 0;
         if (arguments != null && arguments.getBoolean(KEY_THREE_PANE, false)) {
             // Content fragment.
-            guidanceLayoutParams.width = getResources().getDimensionPixelOffset(
-                    R.dimen.setup_guidedstep_guidance_section_width_3pane);
-            int doneButtonWidth = getResources().getDimensionPixelOffset(
-                    R.dimen.setup_done_button_container_width);
+            guidanceLayoutParams.width =
+                    getResources()
+                            .getDimensionPixelOffset(
+                                    R.dimen.setup_guidedstep_guidance_section_width_3pane);
+            int doneButtonWidth =
+                    getResources()
+                            .getDimensionPixelOffset(R.dimen.setup_done_button_container_width);
             // Guided actions list
             View list = view.findViewById(android.support.v17.leanback.R.id.guidedactions_list);
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) list.getLayoutParams();
@@ -69,13 +70,16 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
             }
         } else {
             // Content fragment.
-            guidanceLayoutParams.width = getResources().getDimensionPixelOffset(
-                    R.dimen.setup_guidedstep_guidance_section_width_2pane);
+            guidanceLayoutParams.width =
+                    getResources()
+                            .getDimensionPixelOffset(
+                                    R.dimen.setup_guidedstep_guidance_section_width_2pane);
         }
         // gridView Alignment
         VerticalGridView gridView = getGuidedActionsStylist().getActionsGridView();
-        int offset = getResources().getDimensionPixelOffset(
-                R.dimen.setup_guidedactions_selector_margin_top);
+        int offset =
+                getResources()
+                        .getDimensionPixelOffset(R.dimen.setup_guidedactions_selector_margin_top);
         gridView.setWindowAlignmentOffset(offset);
         gridView.setWindowAlignmentOffsetPercent(0);
         gridView.setItemAlignmentOffsetPercent(0);
@@ -83,8 +87,8 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
                 .setTransitionGroup(false);
         // Needed for the shared element transition.
         // content_frame is defined in leanback.
-        ViewGroup group = (ViewGroup) view.findViewById(
-                android.support.v17.leanback.R.id.content_frame);
+        ViewGroup group =
+                (ViewGroup) view.findViewById(android.support.v17.leanback.R.id.content_frame);
         group.setClipChildren(false);
         group.setClipToPadding(false);
         return view;
@@ -94,8 +98,8 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     public GuidanceStylist onCreateGuidanceStylist() {
         return new GuidanceStylist() {
             @Override
-            public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                    Guidance guidance) {
+            public View onCreateView(
+                    LayoutInflater inflater, ViewGroup container, Guidance guidance) {
                 View view = super.onCreateView(inflater, container, guidance);
                 if (guidance.getIconDrawable() == null) {
                     // Icon view should not take up space when we don't use image.
@@ -106,7 +110,7 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
         };
     }
 
-    abstract protected String getActionCategory();
+    protected abstract String getActionCategory();
 
     @Override
     public void onGuidedActionClicked(GuidedAction action) {

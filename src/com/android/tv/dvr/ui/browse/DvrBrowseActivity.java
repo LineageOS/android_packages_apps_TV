@@ -20,13 +20,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.tv.TvInputManager;
 import android.os.Bundle;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 
-/**
- * {@link android.app.Activity} for DVR UI.
- */
+/** {@link android.app.Activity} for DVR UI. */
 public class DvrBrowseActivity extends Activity {
     private DvrBrowseFragment mFragment;
 

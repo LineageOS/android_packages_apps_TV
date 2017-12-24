@@ -23,12 +23,10 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Pair;
-
-import com.google.android.exoplayer.SampleHolder;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.tuner.exoplayer.SampleExtractor;
 import com.android.tv.util.Utils;
-
+import com.google.android.exoplayer.SampleHolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,8 +40,8 @@ import java.util.TreeMap;
 
 /**
  * Manages {@link SampleChunk} objects.
- * <p>
- * The buffer manager can be disabled, while running, if the write throughput to the associated
+ *
+ * <p>The buffer manager can be disabled, while running, if the write throughput to the associated
  * external storage is detected to be lower than a threshold {@code MINIMUM_DISK_WRITE_SPEED_MBPS}".
  * This leads to restarting playback flow.
  */
@@ -53,10 +51,10 @@ public class BufferManager {
 
     // Constants for the disk write speed checking
     private static final long MINIMUM_WRITE_SIZE_FOR_SPEED_CHECK =
-            10L * 1024 * 1024;  // Checks for every 10M disk write
+            10L * 1024 * 1024; // Checks for every 10M disk write
     private static final int MINIMUM_SAMPLE_SIZE_FOR_SPEED_CHECK = 15 * 1024;
-    private static final int MAXIMUM_SPEED_CHECK_COUNT = 5;  // Checks only 5 times
-    private static final int MINIMUM_DISK_WRITE_SPEED_MBPS = 3;  // 3 Megabytes per second
+    private static final int MAXIMUM_SPEED_CHECK_COUNT = 5; // Checks only 5 times
+    private static final int MINIMUM_DISK_WRITE_SPEED_MBPS = 3; // 3 Megabytes per second
 
     private final SampleChunk.SampleChunkCreator mSampleChunkCreator;
     // Maps from track name to a map which maps from starting position to {@link SampleChunk}.
@@ -67,17 +65,18 @@ public class BufferManager {
     private final StorageManager mStorageManager;
     private long mBufferSize = 0;
     private final EvictChunkQueueMap mPendingDelete = new EvictChunkQueueMap();
-    private final SampleChunk.ChunkCallback mChunkCallback = new SampleChunk.ChunkCallback() {
-        @Override
-        public void onChunkWrite(SampleChunk chunk) {
-            mBufferSize += chunk.getSize();
-        }
+    private final SampleChunk.ChunkCallback mChunkCallback =
+            new SampleChunk.ChunkCallback() {
+                @Override
+                public void onChunkWrite(SampleChunk chunk) {
+                    mBufferSize += chunk.getSize();
+                }
 
-        @Override
-        public void onChunkDelete(SampleChunk chunk) {
-            mBufferSize -= chunk.getSize();
-        }
-    };
+                @Override
+                public void onChunkDelete(SampleChunk chunk) {
+                    mBufferSize -= chunk.getSize();
+                }
+            };
 
     private int mMinSampleSizeForSpeedCheck = MINIMUM_SAMPLE_SIZE_FOR_SPEED_CHECK;
     private long mTotalWriteSize;
@@ -88,30 +87,27 @@ public class BufferManager {
     public interface ChunkEvictedListener {
         void onChunkEvicted(String id, long createdTimeMs);
     }
-    /**
-     * Handles I/O
-     * between BufferManager and {@link SampleExtractor}.
-     */
+    /** Handles I/O between BufferManager and {@link SampleExtractor}. */
     public interface SampleBuffer {
 
         /**
          * Initializes SampleBuffer.
+         *
          * @param Ids track identifiers for storage read/write.
          * @param mediaFormats meta-data for each track.
          * @throws IOException
          */
-        void init(@NonNull List<String> Ids,
-                  @NonNull List<com.google.android.exoplayer.MediaFormat> mediaFormats)
+        void init(
+                @NonNull List<String> Ids,
+                @NonNull List<com.google.android.exoplayer.MediaFormat> mediaFormats)
                 throws IOException;
 
-        /**
-         * Selects the track {@code index} for reading sample data.
-         */
+        /** Selects the track {@code index} for reading sample data. */
         void selectTrack(int index);
 
         /**
-         * Deselects the track at {@code index},
-         * so that no more samples will be read from the track.
+         * Deselects the track at {@code index}, so that no more samples will be read from the
+         * track.
          */
         void deselectTrack(int index);
 
@@ -126,71 +122,59 @@ public class BufferManager {
         void writeSample(int index, SampleHolder sample, ConditionVariable conditionVariable)
                 throws IOException;
 
-        /**
-         * Checks whether storage write speed is slow.
-         */
+        /** Checks whether storage write speed is slow. */
         boolean isWriteSpeedSlow(int sampleSize, long writeDurationNs);
 
         /**
          * Handles when write speed is slow.
+         *
          * @throws IOException
          */
         void handleWriteSpeedSlow() throws IOException;
 
-        /**
-         * Sets the flag when EoS was reached.
-         */
+        /** Sets the flag when EoS was reached. */
         void setEos();
 
         /**
          * Reads the next sample in the track at index {@code track} into {@code sampleHolder},
-         * returning {@link com.google.android.exoplayer.SampleSource#SAMPLE_READ}
-         * if it is available.
-         * If the next sample is not available,
-         * returns {@link com.google.android.exoplayer.SampleSource#NOTHING_READ}.
+         * returning {@link com.google.android.exoplayer.SampleSource#SAMPLE_READ} if it is
+         * available. If the next sample is not available, returns {@link
+         * com.google.android.exoplayer.SampleSource#NOTHING_READ}.
          */
         int readSample(int index, SampleHolder outSample);
 
-        /**
-         * Seeks to the specified time in microseconds.
-         */
+        /** Seeks to the specified time in microseconds. */
         void seekTo(long positionUs);
 
-        /**
-         * Returns an estimate of the position up to which data is buffered.
-         */
+        /** Returns an estimate of the position up to which data is buffered. */
         long getBufferedPositionUs();
 
-        /**
-         * Returns whether there is buffered data.
-         */
+        /** Returns whether there is buffered data. */
         boolean continueBuffering(long positionUs);
 
         /**
          * Cleans up and releases everything.
+         *
          * @throws IOException
          */
         void release() throws IOException;
     }
 
-    /**
-     * A Track format which will be loaded and saved from the permanent storage for recordings.
-     */
+    /** A Track format which will be loaded and saved from the permanent storage for recordings. */
     public static class TrackFormat {
 
         /**
-         * The track id for the specified track. The track id will be used as a track identifier
-         * for recordings.
+         * The track id for the specified track. The track id will be used as a track identifier for
+         * recordings.
          */
         public final String trackId;
 
-        /**
-         * The {@link MediaFormat} for the specified track.
-         */
+        /** The {@link MediaFormat} for the specified track. */
         public final MediaFormat format;
 
         /**
          * Creates TrackFormat.
+         *
          * @param trackId
          * @param format
          */
@@ -200,29 +184,24 @@ public class BufferManager {
         }
     }
 
-    /**
-     * A Holder for a sample position which will be loaded from the index file for recordings.
-     */
+    /** A Holder for a sample position which will be loaded from the index file for recordings. */
     public static class PositionHolder {
 
         /**
-         * The current sample position in microseconds.
-         * The position is identical to the PTS(presentation time stamp) of the sample.
+         * The current sample position in microseconds. The position is identical to the
+         * PTS(presentation time stamp) of the sample.
          */
         public final long positionUs;
 
-        /**
-         * Base sample position for the current {@link SampleChunk}.
-         */
+        /** Base sample position for the current {@link SampleChunk}. */
         public final long basePositionUs;
 
-        /**
-         * The file offset for the current sample in the current {@link SampleChunk}.
-         */
+        /** The file offset for the current sample in the current {@link SampleChunk}. */
         public final int offset;
 
         /**
          * Creates a holder for a specific position in the recording.
+         *
          * @param positionUs
          * @param offset
          */
@@ -233,9 +212,7 @@ public class BufferManager {
         }
     }
 
-    /**
-     * Storage configuration and policy manager for {@link BufferManager}
-     */
+    /** Storage configuration and policy manager for {@link BufferManager} */
     public interface StorageManager {
 
         /**
@@ -257,7 +234,7 @@ public class BufferManager {
          *
          * @param bufferSize the current total usage of Storage in bytes.
          * @param pendingDelete the current storage usage which will be deleted in near future by
-         *                      bytes
+         *     bytes
          * @return {@code true} if it reached pre-determined max size
          */
         boolean reachedStorageMax(long bufferSize, long pendingDelete);
@@ -266,7 +243,7 @@ public class BufferManager {
          * Informs whether the storage has enough remained space.
          *
          * @param pendingDelete the current storage usage which will be deleted in near future by
-         *                      bytes
+         *     bytes
          * @return {@code true} if it has enough space
          */
         boolean hasEnoughBuffer(long pendingDelete);
@@ -295,8 +272,7 @@ public class BufferManager {
          * @param isAudio {@code true} if it is for audio track
          * @throws IOException
          */
-        void writeTrackInfoFiles(List<TrackFormat> formatList, boolean isAudio)
-                throws IOException;
+        void writeTrackInfoFiles(List<TrackFormat> formatList, boolean isAudio) throws IOException;
 
         /**
          * Writes index file to storage.
@@ -356,8 +332,8 @@ public class BufferManager {
         this(storageManager, new SampleChunk.SampleChunkCreator());
     }
 
-    public BufferManager(StorageManager storageManager,
-            SampleChunk.SampleChunkCreator sampleChunkCreator) {
+    public BufferManager(
+            StorageManager storageManager, SampleChunk.SampleChunkCreator sampleChunkCreator) {
         mStorageManager = storageManager;
         mSampleChunkCreator = sampleChunkCreator;
     }
@@ -380,14 +356,19 @@ public class BufferManager {
      * @param id the name of the track
      * @param positionUs current position to write a sample in micro seconds.
      * @param samplePool {@link SamplePool} for the fast creation of samples.
-     * @param currentChunk the current {@link SampleChunk} to write, {@code null} when to create
-     *                     a new {@link SampleChunk}.
+     * @param currentChunk the current {@link SampleChunk} to write, {@code null} when to create a
+     *     new {@link SampleChunk}.
      * @param currentOffset the current offset to write.
      * @return returns the created {@link SampleChunk}.
      * @throws IOException
      */
-    public SampleChunk createNewWriteFileIfNeeded(String id, long positionUs, SamplePool samplePool,
-            SampleChunk currentChunk, int currentOffset) throws IOException {
+    public SampleChunk createNewWriteFileIfNeeded(
+            String id,
+            long positionUs,
+            SamplePool samplePool,
+            SampleChunk currentChunk,
+            int currentOffset)
+            throws IOException {
         if (!maybeEvictChunk()) {
             throw new IOException("Not enough storage space");
         }
@@ -400,8 +381,9 @@ public class BufferManager {
         }
         if (currentChunk == null) {
             File file = new File(mStorageManager.getBufferDir(), getFileName(id, positionUs));
-            SampleChunk sampleChunk = mSampleChunkCreator
-                    .createSampleChunk(samplePool, file, positionUs, mChunkCallback);
+            SampleChunk sampleChunk =
+                    mSampleChunkCreator.createSampleChunk(
+                            samplePool, file, positionUs, mChunkCallback);
             map.put(positionUs, new Pair(sampleChunk, 0));
             return sampleChunk;
         } else {
@@ -430,11 +412,16 @@ public class BufferManager {
         }
         SampleChunk chunk = null;
         long basePositionUs = -1;
-        for (PositionHolder position: keyPositions) {
+        for (PositionHolder position : keyPositions) {
             if (position.basePositionUs != basePositionUs) {
-                chunk = mSampleChunkCreator.loadSampleChunkFromFile(samplePool,
-                        mStorageManager.getBufferDir(), getFileName(trackId, position.positionUs),
-                        position.positionUs, mChunkCallback, chunk);
+                chunk =
+                        mSampleChunkCreator.loadSampleChunkFromFile(
+                                samplePool,
+                                mStorageManager.getBufferDir(),
+                                getFileName(trackId, position.positionUs),
+                                position.positionUs,
+                                mChunkCallback,
+                                chunk);
                 basePositionUs = position.basePositionUs;
             }
             map.put(position.positionUs, new Pair(chunk, position.offset));
@@ -467,13 +454,13 @@ public class BufferManager {
      * Evicts chunks which are ready to be evicted for the specified track
      *
      * @param id the specified track
-     * @param earlierThanPositionUs the start position of the {@link SampleChunk}
-     *                   should be earlier than
+     * @param earlierThanPositionUs the start position of the {@link SampleChunk} should be earlier
+     *     than
      */
     public void evictChunks(String id, long earlierThanPositionUs) {
         SampleChunk chunk = null;
         while ((chunk = mPendingDelete.poll(id, earlierThanPositionUs)) != null) {
-            SampleChunk.IoState.release(chunk, !mStorageManager.isPersistent())  ;
+            SampleChunk.IoState.release(chunk, !mStorageManager.isPersistent());
         }
     }
 
@@ -518,11 +505,17 @@ public class BufferManager {
             mPendingDelete.add(earliestChunkId, earliestChunk);
             earliestChunkMap.remove(earliestChunk.getStartPositionUs());
             if (DEBUG) {
-                Log.d(TAG, String.format("bufferSize = %d; pendingDelete = %b; "
-                                + "earliestChunk size = %d; %s@%d (%s)",
-                        mBufferSize, pendingDelete, earliestChunk.getSize(), earliestChunkId,
-                        earliestChunk.getStartPositionUs(),
-                        Utils.toIsoDateTimeString(earliestChunk.getCreatedTimeMs())));
+                Log.d(
+                        TAG,
+                        String.format(
+                                "bufferSize = %d; pendingDelete = %b; "
+                                        + "earliestChunk size = %d; %s@%d (%s)",
+                                mBufferSize,
+                                pendingDelete,
+                                earliestChunk.getSize(),
+                                earliestChunkId,
+                                earliestChunk.getStartPositionUs(),
+                                Utils.toIsoDateTimeString(earliestChunk.getCreatedTimeMs())));
             }
             ChunkEvictedListener listener = mEvictListeners.get(earliestChunkId);
             if (listener != null) {
@@ -593,9 +586,7 @@ public class BufferManager {
         }
     }
 
-    /**
-     * Releases all the resources.
-     */
+    /** Releases all the resources. */
     public void release() {
         try {
             mPendingDelete.release();
@@ -613,8 +604,8 @@ public class BufferManager {
         } catch (ConcurrentModificationException | NullPointerException e) {
             // TODO: remove this after it it confirmed that race condition issues are resolved.
             // b/32492258, b/32373376
-            SoftPreconditions.checkState(false, "Exception on BufferManager#release: ",
-                    e.toString());
+            SoftPreconditions.checkState(
+                    false, "Exception on BufferManager#release: ", e.toString());
         }
     }
 
@@ -624,9 +615,7 @@ public class BufferManager {
         mTotalWriteTimeNs = 0;
     }
 
-    /**
-     * Adds a disk write sample size to calculate the average disk write bandwidth.
-     */
+    /** Adds a disk write sample size to calculate the average disk write bandwidth. */
     public void addWriteStat(long size, long timeNs) {
         if (size >= mMinSampleSizeForSpeedCheck) {
             mTotalWriteSize += size;
@@ -635,8 +624,8 @@ public class BufferManager {
     }
 
     /**
-     * Returns if the average disk write bandwidth is slower than
-     * threshold {@code MINIMUM_DISK_WRITE_SPEED_MBPS}.
+     * Returns if the average disk write bandwidth is slower than threshold {@code
+     * MINIMUM_DISK_WRITE_SPEED_MBPS}.
      */
     public boolean isWriteSlow() {
         if (mTotalWriteSize < MINIMUM_WRITE_SIZE_FOR_SPEED_CHECK) {
@@ -658,8 +647,8 @@ public class BufferManager {
     }
 
     /**
-     * Returns recent write bandwidth in MBps. If recent bandwidth is not available,
-     * returns {float -1.0f}.
+     * Returns recent write bandwidth in MBps. If recent bandwidth is not available, returns {float
+     * -1.0f}.
      */
     public float getWriteBandwidth() {
         return mWriteBandwidth == 0.0f ? -1.0f : mWriteBandwidth;
@@ -673,8 +662,8 @@ public class BufferManager {
     }
 
     /**
-     * Returns if {@link BufferManager} has checked the write speed,
-     * which is suitable for Trickplay.
+     * Returns if {@link BufferManager} has checked the write speed, which is suitable for
+     * Trickplay.
      */
     @VisibleForTesting
     public boolean hasSpeedCheckDone() {
@@ -683,6 +672,7 @@ public class BufferManager {
 
     /**
      * Sets minimum sample size for write speed check.
+     *
      * @param sampleSize minimum sample size for write speed check.
      */
     @VisibleForTesting

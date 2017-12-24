@@ -18,7 +18,6 @@ package com.android.tv.tuner.exoplayer.audio;
 
 import android.media.MediaCodec;
 import android.util.Log;
-
 import com.google.android.exoplayer.CodecCounters;
 import com.google.android.exoplayer.DecoderInfo;
 import com.google.android.exoplayer.ExoPlaybackException;
@@ -26,7 +25,6 @@ import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecUtil;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 

@@ -35,8 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.TunerPreferences.TunerPreferencesChangedListener;
@@ -47,13 +45,14 @@ import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.android.tv.tuner.util.GlobalSettingsUtils;
 import com.android.tv.tuner.util.StatusTextUtils;
 import com.android.tv.tuner.util.SystemPropertiesProxy;
+import com.google.android.exoplayer.audio.AudioCapabilities;
 
 /**
- * Provides a tuner TV input session. It handles Overlay UI works. Main tuner input functions
- * are implemented in {@link TunerSessionWorker}.
+ * Provides a tuner TV input session. It handles Overlay UI works. Main tuner input functions are
+ * implemented in {@link TunerSessionWorker}.
  */
-public class TunerSession extends TvInputService.Session implements
-        Handler.Callback, TunerPreferencesChangedListener {
+public class TunerSession extends TvInputService.Session
+        implements Handler.Callback, TunerPreferencesChangedListener {
     private static final String TAG = "TunerSession";
     private static final boolean DEBUG = false;
     private static final String USBTUNER_SHOW_DEBUG = "persist.tv.tuner.show_debug";
@@ -87,8 +86,8 @@ public class TunerSession extends TvInputService.Session implements
         super(context);
         mContext = context;
         mUiHandler = new Handler(this);
-        LayoutInflater inflater = (LayoutInflater)
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater =
+                (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mOverlayView = inflater.inflate(R.layout.ut_overlay_view, null);
         mMessageLayout = (ViewGroup) mOverlayView.findViewById(R.id.message_layout);
         mMessageLayout.setVisibility(View.INVISIBLE);
@@ -150,14 +149,13 @@ public class TunerSession extends TvInputService.Session implements
     @Override
     public void onTimeShiftSeekTo(long timeMs) {
         if (DEBUG) Log.d(TAG, "Timeshift seekTo requested position: " + timeMs / 1000);
-        mSessionWorker.sendMessage(TunerSessionWorker.MSG_TIMESHIFT_SEEK_TO,
-                mPlayPaused ? 1 : 0, 0, timeMs);
+        mSessionWorker.sendMessage(
+                TunerSessionWorker.MSG_TIMESHIFT_SEEK_TO, mPlayPaused ? 1 : 0, 0, timeMs);
     }
 
     @Override
     public void onTimeShiftSetPlaybackParams(PlaybackParams params) {
-        mSessionWorker.sendMessage(
-                TunerSessionWorker.MSG_TIMESHIFT_SET_PLAYBACKPARAMS, params);
+        mSessionWorker.sendMessage(TunerSessionWorker.MSG_TIMESHIFT_SET_PLAYBACKPARAMS, params);
     }
 
     @Override
@@ -201,8 +199,7 @@ public class TunerSession extends TvInputService.Session implements
 
     @Override
     public void onUnblockContent(TvContentRating unblockedRating) {
-        mSessionWorker.sendMessage(TunerSessionWorker.MSG_UNBLOCKED_RATING,
-                unblockedRating);
+        mSessionWorker.sendMessage(TunerSessionWorker.MSG_UNBLOCKED_RATING, unblockedRating);
     }
 
     @Override
@@ -216,20 +213,21 @@ public class TunerSession extends TvInputService.Session implements
         TunerPreferences.setTunerPreferencesChangedListener(null);
     }
 
-    /**
-     * Sets {@link AudioCapabilities}.
-     */
+    /** Sets {@link AudioCapabilities}. */
     public void setAudioCapabilities(AudioCapabilities audioCapabilities) {
-        mSessionWorker.sendMessage(TunerSessionWorker.MSG_AUDIO_CAPABILITIES_CHANGED,
-                audioCapabilities);
+        mSessionWorker.sendMessage(
+                TunerSessionWorker.MSG_AUDIO_CAPABILITIES_CHANGED, audioCapabilities);
     }
 
     @Override
     public void notifyVideoAvailable() {
         super.notifyVideoAvailable();
         if (mTuneStartTimestamp != 0) {
-            Log.i(TAG, "[Profiler] Video available in "
-                    + (SystemClock.elapsedRealtime() - mTuneStartTimestamp) + " ms");
+            Log.i(
+                    TAG,
+                    "[Profiler] Video available in "
+                            + (SystemClock.elapsedRealtime() - mTuneStartTimestamp)
+                            + " ms");
             mTuneStartTimestamp = 0;
         }
     }
@@ -258,61 +256,80 @@ public class TunerSession extends TvInputService.Session implements
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
-            case MSG_UI_SHOW_MESSAGE: {
-                mMessageView.setText((String) msg.obj);
-                mMessageLayout.setVisibility(View.VISIBLE);
-                return true;
-            }
-            case MSG_UI_HIDE_MESSAGE: {
-                mMessageLayout.setVisibility(View.INVISIBLE);
-                return true;
-            }
-            case MSG_UI_SHOW_AUDIO_UNPLAYABLE: {
-                // Showing message of enabling surround sound only when global surround sound
-                // setting is "never".
-                final int value = GlobalSettingsUtils.getEncodedSurroundOutputSettings(mContext);
-                if (value == GlobalSettingsUtils.ENCODED_SURROUND_OUTPUT_NEVER) {
-                    mAudioStatusView.setText(Html.fromHtml(StatusTextUtils.getAudioWarningInHTML(
-                            mContext.getString(R.string.ut_surround_sound_disabled))));
-                } else {
-                    mAudioStatusView.setText(Html.fromHtml(StatusTextUtils.getAudioWarningInHTML(
-                            mContext.getString(R.string.audio_passthrough_not_supported))));
+            case MSG_UI_SHOW_MESSAGE:
+                {
+                    mMessageView.setText((String) msg.obj);
+                    mMessageLayout.setVisibility(View.VISIBLE);
+                    return true;
                 }
-                mAudioStatusView.setVisibility(View.VISIBLE);
-                return true;
-            }
-            case MSG_UI_HIDE_AUDIO_UNPLAYABLE: {
-                mAudioStatusView.setVisibility(View.INVISIBLE);
-                return true;
-            }
-            case MSG_UI_PROCESS_CAPTION_TRACK: {
-                mCaptionTrackRenderer.processCaptionEvent((CaptionEvent) msg.obj);
-                return true;
-            }
-            case MSG_UI_START_CAPTION_TRACK: {
-                mCaptionTrackRenderer.start((AtscCaptionTrack) msg.obj);
-                return true;
-            }
-            case MSG_UI_STOP_CAPTION_TRACK: {
-                mCaptionTrackRenderer.stop();
-                return true;
-            }
-            case MSG_UI_RESET_CAPTION_TRACK: {
-                mCaptionTrackRenderer.reset();
-                return true;
-            }
-            case MSG_UI_CLEAR_CAPTION_RENDERER: {
-                mCaptionTrackRenderer.clear();
-                return true;
-            }
-            case MSG_UI_SET_STATUS_TEXT: {
-                mStatusView.setText((CharSequence) msg.obj);
-                return true;
-            }
-            case MSG_UI_TOAST_RESCAN_NEEDED: {
-                Toast.makeText(mContext, R.string.ut_rescan_needed, Toast.LENGTH_LONG).show();
-                return true;
-            }
+            case MSG_UI_HIDE_MESSAGE:
+                {
+                    mMessageLayout.setVisibility(View.INVISIBLE);
+                    return true;
+                }
+            case MSG_UI_SHOW_AUDIO_UNPLAYABLE:
+                {
+                    // Showing message of enabling surround sound only when global surround sound
+                    // setting is "never".
+                    final int value =
+                            GlobalSettingsUtils.getEncodedSurroundOutputSettings(mContext);
+                    if (value == GlobalSettingsUtils.ENCODED_SURROUND_OUTPUT_NEVER) {
+                        mAudioStatusView.setText(
+                                Html.fromHtml(
+                                        StatusTextUtils.getAudioWarningInHTML(
+                                                mContext.getString(
+                                                        R.string.ut_surround_sound_disabled))));
+                    } else {
+                        mAudioStatusView.setText(
+                                Html.fromHtml(
+                                        StatusTextUtils.getAudioWarningInHTML(
+                                                mContext.getString(
+                                                        R.string
+                                                                .audio_passthrough_not_supported))));
+                    }
+                    mAudioStatusView.setVisibility(View.VISIBLE);
+                    return true;
+                }
+            case MSG_UI_HIDE_AUDIO_UNPLAYABLE:
+                {
+                    mAudioStatusView.setVisibility(View.INVISIBLE);
+                    return true;
+                }
+            case MSG_UI_PROCESS_CAPTION_TRACK:
+                {
+                    mCaptionTrackRenderer.processCaptionEvent((CaptionEvent) msg.obj);
+                    return true;
+                }
+            case MSG_UI_START_CAPTION_TRACK:
+                {
+                    mCaptionTrackRenderer.start((AtscCaptionTrack) msg.obj);
+                    return true;
+                }
+            case MSG_UI_STOP_CAPTION_TRACK:
+                {
+                    mCaptionTrackRenderer.stop();
+                    return true;
+                }
+            case MSG_UI_RESET_CAPTION_TRACK:
+                {
+                    mCaptionTrackRenderer.reset();
+                    return true;
+                }
+            case MSG_UI_CLEAR_CAPTION_RENDERER:
+                {
+                    mCaptionTrackRenderer.clear();
+                    return true;
+                }
+            case MSG_UI_SET_STATUS_TEXT:
+                {
+                    mStatusView.setText((CharSequence) msg.obj);
+                    return true;
+                }
+            case MSG_UI_TOAST_RESCAN_NEEDED:
+                {
+                    Toast.makeText(mContext, R.string.ut_rescan_needed, Toast.LENGTH_LONG).show();
+                    return true;
+                }
         }
         return false;
     }

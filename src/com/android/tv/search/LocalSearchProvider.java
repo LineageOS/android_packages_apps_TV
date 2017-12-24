@@ -27,7 +27,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.TvCommonUtils;
@@ -36,7 +35,6 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.TvUriMatcher;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,25 +51,26 @@ public class LocalSearchProvider extends ContentProvider {
     // TODO: Remove this once added to the SearchManager.
     private static final String SUGGEST_COLUMN_PROGRESS_BAR_PERCENTAGE = "progress_bar_percentage";
 
-    private static final String[] SEARCHABLE_COLUMNS = new String[] {
-        SearchManager.SUGGEST_COLUMN_TEXT_1,
-        SearchManager.SUGGEST_COLUMN_TEXT_2,
-        SearchManager.SUGGEST_COLUMN_RESULT_CARD_IMAGE,
-        SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
-        SearchManager.SUGGEST_COLUMN_INTENT_DATA,
-        SearchManager.SUGGEST_COLUMN_CONTENT_TYPE,
-        SearchManager.SUGGEST_COLUMN_IS_LIVE,
-        SearchManager.SUGGEST_COLUMN_VIDEO_WIDTH,
-        SearchManager.SUGGEST_COLUMN_VIDEO_HEIGHT,
-        SearchManager.SUGGEST_COLUMN_DURATION,
-        SUGGEST_COLUMN_PROGRESS_BAR_PERCENTAGE
-    };
+    private static final String[] SEARCHABLE_COLUMNS =
+            new String[] {
+                SearchManager.SUGGEST_COLUMN_TEXT_1,
+                SearchManager.SUGGEST_COLUMN_TEXT_2,
+                SearchManager.SUGGEST_COLUMN_RESULT_CARD_IMAGE,
+                SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
+                SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+                SearchManager.SUGGEST_COLUMN_CONTENT_TYPE,
+                SearchManager.SUGGEST_COLUMN_IS_LIVE,
+                SearchManager.SUGGEST_COLUMN_VIDEO_WIDTH,
+                SearchManager.SUGGEST_COLUMN_VIDEO_HEIGHT,
+                SearchManager.SUGGEST_COLUMN_DURATION,
+                SUGGEST_COLUMN_PROGRESS_BAR_PERCENTAGE
+            };
 
     private static final String EXPECTED_PATH_PREFIX = "/" + SearchManager.SUGGEST_URI_PATH_QUERY;
     static final String SUGGEST_PARAMETER_ACTION = "action";
     // The launcher passes 10 as a 'limit' parameter by default.
-    @VisibleForTesting
-    static final int DEFAULT_SEARCH_LIMIT = 10;
+    @VisibleForTesting static final int DEFAULT_SEARCH_LIMIT = 10;
+
     @VisibleForTesting
     static final int DEFAULT_SEARCH_ACTION = SearchInterface.ACTION_TYPE_AMBIGUOUS;
 
@@ -96,15 +95,30 @@ public class LocalSearchProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
+    public Cursor query(
+            @NonNull Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
+            String sortOrder) {
         if (TvUriMatcher.match(uri) != TvUriMatcher.MATCH_ON_DEVICE_SEARCH) {
             throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         TimerEvent queryTimer = mPerformanceMonitor.startTimer();
         if (DEBUG) {
-            Log.d(TAG, "query(" + uri + ", " + Arrays.toString(projection) + ", " + selection + ", "
-                    + Arrays.toString(selectionArgs) + ", " + sortOrder + ")");
+            Log.d(
+                    TAG,
+                    "query("
+                            + uri
+                            + ", "
+                            + Arrays.toString(projection)
+                            + ", "
+                            + selection
+                            + ", "
+                            + Arrays.toString(selectionArgs)
+                            + ", "
+                            + sortOrder
+                            + ")");
         }
         long time = SystemClock.elapsedRealtime();
         SearchInterface search = mSearchInterface;
@@ -118,8 +132,8 @@ public class LocalSearchProvider extends ContentProvider {
             }
         }
         String query = uri.getLastPathSegment();
-        int limit = getQueryParamater(uri, SearchManager.SUGGEST_PARAMETER_LIMIT,
-                DEFAULT_SEARCH_LIMIT);
+        int limit =
+                getQueryParamater(uri, SearchManager.SUGGEST_PARAMETER_LIMIT, DEFAULT_SEARCH_LIMIT);
         if (limit <= 0) {
             limit = DEFAULT_SEARCH_LIMIT;
         }
@@ -134,8 +148,13 @@ public class LocalSearchProvider extends ContentProvider {
         }
         Cursor c = createSuggestionsCursor(results);
         if (DEBUG) {
-            Log.d(TAG, "Elapsed time(count=" + c.getCount() + "): "
-                    + (SystemClock.elapsedRealtime() - time) + "(msec)");
+            Log.d(
+                    TAG,
+                    "Elapsed time(count="
+                            + c.getCount()
+                            + "): "
+                            + (SystemClock.elapsedRealtime() - time)
+                            + "(msec)");
         }
         mPerformanceMonitor.stopTimer(queryTimer, EventNames.ON_DEVICE_SEARCH);
         return c;
@@ -199,9 +218,7 @@ public class LocalSearchProvider extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * A placeholder to a search result.
-     */
+    /** A placeholder to a search result. */
     public static class SearchResult {
         public long channelId;
         public String channelNumber;
@@ -219,20 +236,33 @@ public class LocalSearchProvider extends ContentProvider {
 
         @Override
         public String toString() {
-            return "SearchResult{channelId=" + channelId +
-                    ", channelNumber=" + channelNumber +
-                    ", title=" + title +
-                    ", description=" + description +
-                    ", imageUri=" + imageUri +
-                    ", intentAction=" + intentAction +
-                    ", intentData=" + intentData +
-                    ", contentType=" + contentType +
-                    ", isLive=" + isLive +
-                    ", videoWidth=" + videoWidth +
-                    ", videoHeight=" + videoHeight +
-                    ", duration=" + duration +
-                    ", progressPercentage=" + progressPercentage +
-                    "}";
+            return "SearchResult{channelId="
+                    + channelId
+                    + ", channelNumber="
+                    + channelNumber
+                    + ", title="
+                    + title
+                    + ", description="
+                    + description
+                    + ", imageUri="
+                    + imageUri
+                    + ", intentAction="
+                    + intentAction
+                    + ", intentData="
+                    + intentData
+                    + ", contentType="
+                    + contentType
+                    + ", isLive="
+                    + isLive
+                    + ", videoWidth="
+                    + videoWidth
+                    + ", videoHeight="
+                    + videoHeight
+                    + ", duration="
+                    + duration
+                    + ", progressPercentage="
+                    + progressPercentage
+                    + "}";
         }
     }
 }

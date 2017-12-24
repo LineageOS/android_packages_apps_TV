@@ -19,17 +19,10 @@ package com.android.tv.util;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-
-import java.util.Arrays;
-
-/**
- * Helper methods for getting and selecting a user account.
- */
+/** Helper methods for getting and selecting a user account. */
 public class AccountHelper {
     private static final String TAG = "AccountHelper";
     private static final boolean DEBUG = false;
@@ -38,17 +31,14 @@ public class AccountHelper {
     private final Context mContext;
     private final SharedPreferences mDefaultPreferences;
 
-    @Nullable
-    private Account mSelectedAccount;
+    @Nullable private Account mSelectedAccount;
 
     public AccountHelper(Context context) {
         mContext = context.getApplicationContext();
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     }
 
-    /**
-     * Returns the currently selected account or {@code null} if none is selected.
-     */
+    /** Returns the currently selected account or {@code null} if none is selected. */
     @Nullable
     public Account getSelectedAccount() {
         String accountId = mDefaultPreferences.getString(SELECTED_ACCOUNT, null);
@@ -67,9 +57,7 @@ public class AccountHelper {
         return mSelectedAccount;
     }
 
-    /**
-     * Returns all eligible accounts .
-     */
+    /** Returns all eligible accounts . */
     private Account[] getEligibleAccounts() {
         return new Account[0];
     }
@@ -99,13 +87,10 @@ public class AccountHelper {
         return accounts.length == 0 ? null : accounts[0];
     }
 
-    /**
-     * Sets the given account as the selected account.
-     */
+    /** Sets the given account as the selected account. */
     private void selectAccount(Account account) {
-        SharedPreferences defaultPreferences = PreferenceManager
-                .getDefaultSharedPreferences(mContext);
+        SharedPreferences defaultPreferences =
+                PreferenceManager.getDefaultSharedPreferences(mContext);
         defaultPreferences.edit().putString(SELECTED_ACCOUNT, account.name).commit();
     }
 }
-

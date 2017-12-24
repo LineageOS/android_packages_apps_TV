@@ -30,15 +30,15 @@ public class CommonFeatures {
      *
      * <p>See <a href="https://goto.google.com/atv-dvr-onepager">go/atv-dvr-onepager</a>
      *
-     * DVR API is introduced in N, it only works when app runs as a system app.
+     * <p>DVR API is introduced in N, it only works when app runs as a system app.
      */
-    public static final TestableFeature DVR = createTestableFeature(
-            AND(Sdk.AT_LEAST_N, SystemAppFeature.SYSTEM_APP_FEATURE));
+    public static final TestableFeature DVR =
+            createTestableFeature(AND(Sdk.AT_LEAST_N, SystemAppFeature.SYSTEM_APP_FEATURE));
 
     /**
      * ENABLE_RECORDING_REGARDLESS_OF_STORAGE_STATUS
      *
-     * Enables dvr recording regardless of storage status.
+     * <p>Enables dvr recording regardless of storage status.
      */
     public static final Feature FORCE_RECORDING_UNTIL_NO_SPACE =
             new PropertyFeature("force_recording_until_no_space", false);
@@ -46,9 +46,8 @@ public class CommonFeatures {
     /**
      * USE_SW_CODEC_FOR_SD
      *
-     * Prefer software based codec for SD channels.
+     * <p>Prefer software based codec for SD channels.
      */
     public static final Feature USE_SW_CODEC_FOR_SD =
-            new PropertyFeature("use_sw_codec_for_sd", false
-            );
+            new PropertyFeature("use_sw_codec_for_sd", false);
 }

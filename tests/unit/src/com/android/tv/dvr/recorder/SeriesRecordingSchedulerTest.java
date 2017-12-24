@@ -23,25 +23,20 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
 import android.util.LongSparseArray;
-
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.testing.FakeClock;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-/**
- * Tests for {@link SeriesRecordingScheduler}
- */
+/** Tests for {@link SeriesRecordingScheduler} */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class SeriesRecordingSchedulerTest {
@@ -54,10 +49,18 @@ public class SeriesRecordingSchedulerTest {
     private static final String EPISODE_NUMBER1 = "EPISODE NUMBER1";
     private static final String EPISODE_NUMBER2 = "EPISODE NUMBER2";
 
-    private final SeriesRecording mBaseSeriesRecording = new SeriesRecording.Builder()
-            .setTitle(PROGRAM_TITLE).setChannelId(CHANNEL_ID).setSeriesId(SERIES_ID).build();
-    private final Program mBaseProgram = new Program.Builder().setTitle(PROGRAM_TITLE)
-            .setChannelId(CHANNEL_ID).setSeriesId(SERIES_ID).build();
+    private final SeriesRecording mBaseSeriesRecording =
+            new SeriesRecording.Builder()
+                    .setTitle(PROGRAM_TITLE)
+                    .setChannelId(CHANNEL_ID)
+                    .setSeriesId(SERIES_ID)
+                    .build();
+    private final Program mBaseProgram =
+            new Program.Builder()
+                    .setTitle(PROGRAM_TITLE)
+                    .setChannelId(CHANNEL_ID)
+                    .setSeriesId(SERIES_ID)
+                    .build();
     private final TestableFeature mDvrFeature = CommonFeatures.DVR;
 
     private DvrDataManagerInMemoryImpl mDataManager;
@@ -76,54 +79,70 @@ public class SeriesRecordingSchedulerTest {
 
     @Test
     public void testPickOneProgramPerEpisode_onePerEpisode() {
-        SeriesRecording seriesRecording = SeriesRecording.buildFrom(mBaseSeriesRecording)
-                .setId(SERIES_RECORDING_ID1).build();
+        SeriesRecording seriesRecording =
+                SeriesRecording.buildFrom(mBaseSeriesRecording).setId(SERIES_RECORDING_ID1).build();
         mDataManager.addSeriesRecording(seriesRecording);
         List<Program> programs = new ArrayList<>();
-        Program program1 = new Program.Builder(mBaseProgram).setSeasonNumber(SEASON_NUMBER1)
-                .setEpisodeNumber(EPISODE_NUMBER1).build();
+        Program program1 =
+                new Program.Builder(mBaseProgram)
+                        .setSeasonNumber(SEASON_NUMBER1)
+                        .setEpisodeNumber(EPISODE_NUMBER1)
+                        .build();
         programs.add(program1);
-        Program program2 = new Program.Builder(mBaseProgram).setSeasonNumber(SEASON_NUMBER2)
-                .setEpisodeNumber(EPISODE_NUMBER2).build();
+        Program program2 =
+                new Program.Builder(mBaseProgram)
+                        .setSeasonNumber(SEASON_NUMBER2)
+                        .setEpisodeNumber(EPISODE_NUMBER2)
+                        .build();
         programs.add(program2);
-        LongSparseArray<List<Program>> result = SeriesRecordingScheduler.pickOneProgramPerEpisode(
-                mDataManager, Collections.singletonList(seriesRecording), programs);
+        LongSparseArray<List<Program>> result =
+                SeriesRecordingScheduler.pickOneProgramPerEpisode(
+                        mDataManager, Collections.singletonList(seriesRecording), programs);
         MoreAsserts.assertContentsInAnyOrder(result.get(SERIES_RECORDING_ID1), program1, program2);
     }
 
     @Test
     public void testPickOneProgramPerEpisode_manyPerEpisode() {
-        SeriesRecording seriesRecording = SeriesRecording.buildFrom(mBaseSeriesRecording)
-                .setId(SERIES_RECORDING_ID1).build();
+        SeriesRecording seriesRecording =
+                SeriesRecording.buildFrom(mBaseSeriesRecording).setId(SERIES_RECORDING_ID1).build();
         mDataManager.addSeriesRecording(seriesRecording);
         List<Program> programs = new ArrayList<>();
-        Program program1 = new Program.Builder(mBaseProgram).setSeasonNumber(SEASON_NUMBER1)
-                .setEpisodeNumber(EPISODE_NUMBER1).setStartTimeUtcMillis(0).build();
+        Program program1 =
+                new Program.Builder(mBaseProgram)
+                        .setSeasonNumber(SEASON_NUMBER1)
+                        .setEpisodeNumber(EPISODE_NUMBER1)
+                        .setStartTimeUtcMillis(0)
+                        .build();
         programs.add(program1);
         Program program2 = new Program.Builder(program1).setStartTimeUtcMillis(1).build();
         programs.add(program2);
-        Program program3 = new Program.Builder(mBaseProgram).setSeasonNumber(SEASON_NUMBER2)
-                .setEpisodeNumber(EPISODE_NUMBER2).build();
+        Program program3 =
+                new Program.Builder(mBaseProgram)
+                        .setSeasonNumber(SEASON_NUMBER2)
+                        .setEpisodeNumber(EPISODE_NUMBER2)
+                        .build();
         programs.add(program3);
         Program program4 = new Program.Builder(program1).setStartTimeUtcMillis(1).build();
         programs.add(program4);
-        LongSparseArray<List<Program>> result = SeriesRecordingScheduler.pickOneProgramPerEpisode(
-                mDataManager, Collections.singletonList(seriesRecording), programs);
+        LongSparseArray<List<Program>> result =
+                SeriesRecordingScheduler.pickOneProgramPerEpisode(
+                        mDataManager, Collections.singletonList(seriesRecording), programs);
         MoreAsserts.assertContentsInAnyOrder(result.get(SERIES_RECORDING_ID1), program1, program3);
     }
 
     @Test
     public void testPickOneProgramPerEpisode_nullEpisode() {
-        SeriesRecording seriesRecording = SeriesRecording.buildFrom(mBaseSeriesRecording)
-                .setId(SERIES_RECORDING_ID1).build();
+        SeriesRecording seriesRecording =
+                SeriesRecording.buildFrom(mBaseSeriesRecording).setId(SERIES_RECORDING_ID1).build();
         mDataManager.addSeriesRecording(seriesRecording);
         List<Program> programs = new ArrayList<>();
         Program program1 = new Program.Builder(mBaseProgram).setStartTimeUtcMillis(0).build();
         programs.add(program1);
         Program program2 = new Program.Builder(mBaseProgram).setStartTimeUtcMillis(1).build();
         programs.add(program2);
-        LongSparseArray<List<Program>> result = SeriesRecordingScheduler.pickOneProgramPerEpisode(
-                mDataManager, Collections.singletonList(seriesRecording), programs);
+        LongSparseArray<List<Program>> result =
+                SeriesRecordingScheduler.pickOneProgramPerEpisode(
+                        mDataManager, Collections.singletonList(seriesRecording), programs);
         MoreAsserts.assertContentsInAnyOrder(result.get(SERIES_RECORDING_ID1), program1, program2);
     }
 }

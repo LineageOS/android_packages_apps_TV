@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-
 package com.android.tv.tuner.data;
 
 import com.android.tv.tuner.data.nano.Track.AtscAudioTrack;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
-
 import java.util.List;
 
-/**
- * Collection of MPEG PSI table items.
- */
+/** Collection of MPEG PSI table items. */
 public class PsiData {
 
-    private PsiData() {
-    }
+    private PsiData() {}
 
     public static class PatItem {
         private final int mProgramNo;
@@ -61,8 +56,11 @@ public class PsiData {
         private final List<AtscAudioTrack> mAudioTracks;
         private final List<AtscCaptionTrack> mCaptionTracks;
 
-        public PmtItem(int streamType, int esPid,
-                List<AtscAudioTrack> audioTracks, List<AtscCaptionTrack> captionTracks) {
+        public PmtItem(
+                int streamType,
+                int esPid,
+                List<AtscAudioTrack> audioTracks,
+                List<AtscCaptionTrack> captionTracks) {
             mStreamType = streamType;
             mEsPid = esPid;
             mAudioTracks = audioTracks;
@@ -87,7 +85,8 @@ public class PsiData {
 
         @Override
         public String toString() {
-            return String.format("Stream Type: %x ES Pid: %x AudioTracks: %s CaptionTracks: %s",
+            return String.format(
+                    "Stream Type: %x ES Pid: %x AudioTracks: %s CaptionTracks: %s",
                     mStreamType, mEsPid, mAudioTracks, mCaptionTracks);
         }
     }

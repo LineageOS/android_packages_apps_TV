@@ -26,7 +26,6 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
-
 import com.android.tv.R;
 import com.android.tv.testing.testinput.TvTestInputConstants;
 import com.android.tv.testing.uihelper.DialogHelper;
@@ -47,13 +46,11 @@ public class PlayControlsRowViewTest extends LiveChannelsTestCase {
         // Tune to a new channel to ensure that the channel is changed.
         mDevice.pressDPadUp();
         getInstrumentation().waitForIdleSync();
-        mBySettingsSidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_settings);
+        mBySettingsSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_settings);
     }
 
-    /**
-     * Test the normal case. The play/pause button should have focus initially.
-     */
+    /** Test the normal case. The play/pause button should have focus initially. */
     public void testFocusedViewInNormalCase() {
         mMenuHelper.showMenu();
         mMenuHelper.assertNavigateToPlayControlsRow();
@@ -62,9 +59,8 @@ public class PlayControlsRowViewTest extends LiveChannelsTestCase {
     }
 
     /**
-     * Tests the case when the forwarding action is disabled.
-     * In this case, the button corresponding to the action is disabled, so play/pause button should
-     * have the focus.
+     * Tests the case when the forwarding action is disabled. In this case, the button corresponding
+     * to the action is disabled, so play/pause button should have the focus.
      */
     public void testFocusedViewWithDisabledActionForward() {
         // Fast forward button
@@ -103,8 +99,8 @@ public class PlayControlsRowViewTest extends LiveChannelsTestCase {
         dialogHelper.assertWaitForPinDialogOpen();
         dialogHelper.enterPinCodes();
         dialogHelper.assertWaitForPinDialogClose();
-        BySelector bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.menu_parental_controls);
+        BySelector bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.menu_parental_controls);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         mDevice.pressEnter();
         mDevice.pressEnter();

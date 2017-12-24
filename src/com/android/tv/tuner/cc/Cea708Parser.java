@@ -20,7 +20,6 @@ import android.os.SystemClock;
 import android.support.annotation.IntDef;
 import android.util.Log;
 import android.util.SparseIntArray;
-
 import com.android.tv.tuner.data.Cea708Data;
 import com.android.tv.tuner.data.Cea708Data.CaptionColor;
 import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
@@ -31,7 +30,6 @@ import com.android.tv.tuner.data.Cea708Data.CaptionWindow;
 import com.android.tv.tuner.data.Cea708Data.CaptionWindowAttr;
 import com.android.tv.tuner.data.Cea708Data.CcPacket;
 import com.android.tv.tuner.util.ByteArrayBuffer;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -43,9 +41,9 @@ import java.util.TreeSet;
 /**
  * A class for parsing CEA-708, which is the standard for closed captioning for ATSC DTV.
  *
- * <p>ATSC DTV closed caption data are carried on picture user data of video streams.
- * This class starts to parse from picture user data payload, so extraction process of user_data
- * from video streams is up to outside of this code.
+ * <p>ATSC DTV closed caption data are carried on picture user data of video streams. This class
+ * starts to parse from picture user data payload, so extraction process of user_data from video
+ * streams is up to outside of this code.
  *
  * <p>There are 4 steps to decode user_data to provide closed caption services.
  *
@@ -67,45 +65,47 @@ import java.util.TreeSet;
  *
  * <p>A DTVCC packet consists of multiple service blocks. Each service block represents a caption
  * track and has a service number, which ranges from 1 to 63, that denotes caption track identity.
- * In here, we listen at most one chosen caption track by {@link #mListenServiceNumber}.
- * Otherwise, just skip the other service blocks.
+ * In here, we listen at most one chosen caption track by {@link #mListenServiceNumber}. Otherwise,
+ * just skip the other service blocks.
  *
- * <h3>Step 4. Interpreting Service Block Data ({@link #parseServiceBlockData}, {@code parseXX},
- * and {@link #parseExt1} methods)</h3>
+ * <h3>Step 4. Interpreting Service Block Data ({@link #parseServiceBlockData}, {@code parseXX}, and
+ * {@link #parseExt1} methods)</h3>
  *
  * <p>Service block data is actual caption stream. it looks similar to telnet. It uses most parts of
- * ASCII table and consists of specially defined commands and some ASCII control codes which work
- * in a behavior slightly different from their original purpose. ASCII control codes and caption
+ * ASCII table and consists of specially defined commands and some ASCII control codes which work in
+ * a behavior slightly different from their original purpose. ASCII control codes and caption
  * commands are explicit instructions that control the state of a closed caption service and the
  * other ASCII and text codes are implicit instructions that send their characters to buffer.
  *
  * <p>There are 4 main code groups and 4 extended code groups. Both the range of code groups are the
  * same as the range of a byte.
  *
- * <p>4 main code groups: C0, C1, G0, G1
- * <br>4 extended code groups: C2, C3, G2, G3
+ * <p>4 main code groups: C0, C1, G0, G1 <br>
+ * 4 extended code groups: C2, C3, G2, G3
  *
  * <p>Each code group has its own handle method. For example, {@link #parseC0} handles C0 code group
  * and so on. And {@link #parseServiceBlockData} method maps a stream on the main code groups while
  * {@link #parseExt1} method maps on the extended code groups.
  *
  * <p>The main code groups:
- * <ul>
- * <li>C0 - contains modified ASCII control codes. It is not intended by CEA-708 but Korea TTA
- *      standard for ATSC CC uses P16 character heavily, which is unclear entity in CEA-708 doc,
- *      even for the alphanumeric characters instead of ASCII characters.</li>
- * <li>C1 - contains the caption commands. There are 3 categories of a caption command.</li>
- * <ul>
- * <li>Window commands: The window commands control a caption window which is addressable area being
- *                  with in the Safe title area. (CWX, CLW, DSW, HDW, TGW, DLW, SWA, DFX)</li>
- * <li>Pen commands: Th pen commands control text style and location. (SPA, SPC, SPL)</li>
- * <li>Job commands: The job commands make a delay and recover from the delay. (DLY, DLC, RST)</li>
- * </ul>
- * <li>G0 - same as printable ASCII character set except music note character.</li>
- * <li>G1 - same as ISO 8859-1 Latin 1 character set.</li>
- * </ul>
- * <p>Most of the extended code groups are being skipped.
  *
+ * <ul>
+ *   <li>C0 - contains modified ASCII control codes. It is not intended by CEA-708 but Korea TTA
+ *       standard for ATSC CC uses P16 character heavily, which is unclear entity in CEA-708 doc,
+ *       even for the alphanumeric characters instead of ASCII characters.
+ *   <li>C1 - contains the caption commands. There are 3 categories of a caption command.
+ *       <ul>
+ *         <li>Window commands: The window commands control a caption window which is addressable
+ *             area being with in the Safe title area. (CWX, CLW, DSW, HDW, TGW, DLW, SWA, DFX)
+ *         <li>Pen commands: Th pen commands control text style and location. (SPA, SPC, SPL)
+ *         <li>Job commands: The job commands make a delay and recover from the delay. (DLY, DLC,
+ *             RST)
+ *       </ul>
+ *   <li>G0 - same as printable ASCII character set except music note character.
+ *   <li>G1 - same as ISO 8859-1 Latin 1 character set.
+ * </ul>
+ *
+ * <p>Most of the extended code groups are being skipped.
  */
 public class Cea708Parser {
     private static final String TAG = "Cea708Parser";
@@ -113,8 +113,8 @@ public class Cea708Parser {
 
     // According to CEA-708B, the maximum value of closed caption bandwidth is 9600bps.
     private static final int MAX_ALLOCATED_SIZE = 9600 / 8;
-    private static final String MUSIC_NOTE_CHAR = new String(
-            "\u266B".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+    private static final String MUSIC_NOTE_CHAR =
+            new String("\u266B".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
     // The following values are denoting the type of closed caption data.
     // See CEA-708B section 4.4.1.
@@ -143,44 +143,58 @@ public class Cea708Parser {
     private boolean mFirstServiceNumberDiscovered;
 
     // Assign a dummy listener in order to avoid null checks.
-    private OnCea708ParserListener mListener = new OnCea708ParserListener() {
-        @Override
-        public void emitEvent(CaptionEvent event) {
-            // do nothing
-        }
+    private OnCea708ParserListener mListener =
+            new OnCea708ParserListener() {
+                @Override
+                public void emitEvent(CaptionEvent event) {
+                    // do nothing
+                }
 
-        @Override
-        public void discoverServiceNumber(int serviceNumber) {
-            // do nothing
-        }
-    };
+                @Override
+                public void discoverServiceNumber(int serviceNumber) {
+                    // do nothing
+                }
+            };
 
     /**
-     * {@link Cea708Parser} emits caption event of three different types.
-     * {@link OnCea708ParserListener#emitEvent} is invoked with the parameter
-     * {@link CaptionEvent} to pass all the results to an observer of the decoding process.
+     * {@link Cea708Parser} emits caption event of three different types. {@link
+     * OnCea708ParserListener#emitEvent} is invoked with the parameter {@link CaptionEvent} to pass
+     * all the results to an observer of the decoding process.
      *
-     * <p>{@link CaptionEvent#type} determines the type of the result and
-     * {@link CaptionEvent#obj} contains the output value of a caption event.
-     * The observer must do the casting to the corresponding type.
+     * <p>{@link CaptionEvent#type} determines the type of the result and {@link CaptionEvent#obj}
+     * contains the output value of a caption event. The observer must do the casting to the
+     * corresponding type.
      *
-     * <ul><li>{@code CAPTION_EMIT_TYPE_BUFFER}: Passes a caption text buffer to a observer.
-     * {@code obj} must be of {@link String}.</li>
-     *
-     * <li>{@code CAPTION_EMIT_TYPE_CONTROL}: Passes a caption character control code to a observer.
-     * {@code obj} must be of {@link Character}.</li>
-     *
-     * <li>{@code CAPTION_EMIT_TYPE_CLEAR_COMMAND}: Passes a clear command to a observer.
-     * {@code obj} must be {@code NULL}.</li></ul>
+     * <ul>
+     *   <li>{@code CAPTION_EMIT_TYPE_BUFFER}: Passes a caption text buffer to a observer. {@code
+     *       obj} must be of {@link String}.
+     *   <li>{@code CAPTION_EMIT_TYPE_CONTROL}: Passes a caption character control code to a
+     *       observer. {@code obj} must be of {@link Character}.
+     *   <li>{@code CAPTION_EMIT_TYPE_CLEAR_COMMAND}: Passes a clear command to a observer. {@code
+     *       obj} must be {@code NULL}.
+     * </ul>
      */
-    @IntDef({CAPTION_EMIT_TYPE_BUFFER, CAPTION_EMIT_TYPE_CONTROL, CAPTION_EMIT_TYPE_COMMAND_CWX,
-        CAPTION_EMIT_TYPE_COMMAND_CLW, CAPTION_EMIT_TYPE_COMMAND_DSW, CAPTION_EMIT_TYPE_COMMAND_HDW,
-        CAPTION_EMIT_TYPE_COMMAND_TGW, CAPTION_EMIT_TYPE_COMMAND_DLW, CAPTION_EMIT_TYPE_COMMAND_DLY,
-        CAPTION_EMIT_TYPE_COMMAND_DLC, CAPTION_EMIT_TYPE_COMMAND_RST, CAPTION_EMIT_TYPE_COMMAND_SPA,
-        CAPTION_EMIT_TYPE_COMMAND_SPC, CAPTION_EMIT_TYPE_COMMAND_SPL, CAPTION_EMIT_TYPE_COMMAND_SWA,
-        CAPTION_EMIT_TYPE_COMMAND_DFX})
+    @IntDef({
+        CAPTION_EMIT_TYPE_BUFFER,
+        CAPTION_EMIT_TYPE_CONTROL,
+        CAPTION_EMIT_TYPE_COMMAND_CWX,
+        CAPTION_EMIT_TYPE_COMMAND_CLW,
+        CAPTION_EMIT_TYPE_COMMAND_DSW,
+        CAPTION_EMIT_TYPE_COMMAND_HDW,
+        CAPTION_EMIT_TYPE_COMMAND_TGW,
+        CAPTION_EMIT_TYPE_COMMAND_DLW,
+        CAPTION_EMIT_TYPE_COMMAND_DLY,
+        CAPTION_EMIT_TYPE_COMMAND_DLC,
+        CAPTION_EMIT_TYPE_COMMAND_RST,
+        CAPTION_EMIT_TYPE_COMMAND_SPA,
+        CAPTION_EMIT_TYPE_COMMAND_SPC,
+        CAPTION_EMIT_TYPE_COMMAND_SPL,
+        CAPTION_EMIT_TYPE_COMMAND_SWA,
+        CAPTION_EMIT_TYPE_COMMAND_DFX
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CaptionEmitType {}
+
     public static final int CAPTION_EMIT_TYPE_BUFFER = 1;
     public static final int CAPTION_EMIT_TYPE_CONTROL = 2;
     public static final int CAPTION_EMIT_TYPE_COMMAND_CWX = 3;
@@ -200,6 +214,7 @@ public class Cea708Parser {
 
     public interface OnCea708ParserListener {
         void emitEvent(CaptionEvent event);
+
         void discoverServiceNumber(int serviceNumber);
     }
 
@@ -337,7 +352,8 @@ public class Cea708Parser {
             // bytes sent with the same service number during a discovery period.
             // The viewer in most TV sets chooses between CC1, CC2, CC3, CC4 to view different
             // language captions. Therefore, only CC1, CC2, CC3, CC4 are allowed to be reported.
-            if (blockSize > 0 && serviceNumber >= DISCOVERY_CC_SERVICE_NUMBER_START
+            if (blockSize > 0
+                    && serviceNumber >= DISCOVERY_CC_SERVICE_NUMBER_START
                     && serviceNumber <= DISCOVERY_CC_SERVICE_NUMBER_END) {
                 mDiscoveredNumBytes.put(
                         serviceNumber, blockSize + mDiscoveredNumBytes.get(serviceNumber, 0));
@@ -411,9 +427,7 @@ public class Cea708Parser {
                     if (data[pos] == 0) {
                         mBuffer.append((char) data[pos + 1]);
                     } else {
-                        String value = new String(
-                                Arrays.copyOfRange(data, pos, pos + 2),
-                                "EUC-KR");
+                        String value = new String(Arrays.copyOfRange(data, pos, pos + 2), "EUC-KR");
                         mBuffer.append(value);
                     }
                 } catch (UnsupportedEncodingException e) {
@@ -466,203 +480,265 @@ public class Cea708Parser {
             case Cea708Data.CODE_C1_CW4:
             case Cea708Data.CODE_C1_CW5:
             case Cea708Data.CODE_C1_CW6:
-            case Cea708Data.CODE_C1_CW7: {
-                // SetCurrentWindow0-7
-                int windowId = mCommand - Cea708Data.CODE_C1_CW0;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_CWX, windowId));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand CWX windowId: %d", windowId));
+            case Cea708Data.CODE_C1_CW7:
+                {
+                    // SetCurrentWindow0-7
+                    int windowId = mCommand - Cea708Data.CODE_C1_CW0;
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_CWX, windowId));
+                    if (DEBUG) {
+                        Log.d(TAG, String.format("CaptionCommand CWX windowId: %d", windowId));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_CLW: {
-                // ClearWindows
-                int windowBitmap = data[pos] & 0xff;
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_CLW, windowBitmap));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand CLW windowBitmap: %d", windowBitmap));
+            case Cea708Data.CODE_C1_CLW:
+                {
+                    // ClearWindows
+                    int windowBitmap = data[pos] & 0xff;
+                    ++pos;
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_CLW, windowBitmap));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format("CaptionCommand CLW windowBitmap: %d", windowBitmap));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_DSW: {
-                // DisplayWindows
-                int windowBitmap = data[pos] & 0xff;
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DSW, windowBitmap));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand DSW windowBitmap: %d", windowBitmap));
+            case Cea708Data.CODE_C1_DSW:
+                {
+                    // DisplayWindows
+                    int windowBitmap = data[pos] & 0xff;
+                    ++pos;
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DSW, windowBitmap));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format("CaptionCommand DSW windowBitmap: %d", windowBitmap));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_HDW: {
-                // HideWindows
-                int windowBitmap = data[pos] & 0xff;
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_HDW, windowBitmap));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand HDW windowBitmap: %d", windowBitmap));
+            case Cea708Data.CODE_C1_HDW:
+                {
+                    // HideWindows
+                    int windowBitmap = data[pos] & 0xff;
+                    ++pos;
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_HDW, windowBitmap));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format("CaptionCommand HDW windowBitmap: %d", windowBitmap));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_TGW: {
-                // ToggleWindows
-                int windowBitmap = data[pos] & 0xff;
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_TGW, windowBitmap));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand TGW windowBitmap: %d", windowBitmap));
+            case Cea708Data.CODE_C1_TGW:
+                {
+                    // ToggleWindows
+                    int windowBitmap = data[pos] & 0xff;
+                    ++pos;
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_TGW, windowBitmap));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format("CaptionCommand TGW windowBitmap: %d", windowBitmap));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_DLW: {
-                // DeleteWindows
-                int windowBitmap = data[pos] & 0xff;
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DLW, windowBitmap));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand DLW windowBitmap: %d", windowBitmap));
+            case Cea708Data.CODE_C1_DLW:
+                {
+                    // DeleteWindows
+                    int windowBitmap = data[pos] & 0xff;
+                    ++pos;
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DLW, windowBitmap));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format("CaptionCommand DLW windowBitmap: %d", windowBitmap));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_DLY: {
-                // Delay
-                int tenthsOfSeconds = data[pos] & 0xff;
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DLY, tenthsOfSeconds));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand DLY %d tenths of seconds",
-                            tenthsOfSeconds));
+            case Cea708Data.CODE_C1_DLY:
+                {
+                    // Delay
+                    int tenthsOfSeconds = data[pos] & 0xff;
+                    ++pos;
+                    emitCaptionEvent(
+                            new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DLY, tenthsOfSeconds));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "CaptionCommand DLY %d tenths of seconds",
+                                        tenthsOfSeconds));
+                    }
+                    break;
                 }
-                break;
-            }
-            case Cea708Data.CODE_C1_DLC: {
-                // DelayCancel
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DLC, null));
-                if (DEBUG) {
-                    Log.d(TAG, "CaptionCommand DLC");
+            case Cea708Data.CODE_C1_DLC:
+                {
+                    // DelayCancel
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DLC, null));
+                    if (DEBUG) {
+                        Log.d(TAG, "CaptionCommand DLC");
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_RST: {
-                // Reset
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_RST, null));
-                if (DEBUG) {
-                    Log.d(TAG, "CaptionCommand RST");
+            case Cea708Data.CODE_C1_RST:
+                {
+                    // Reset
+                    emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_RST, null));
+                    if (DEBUG) {
+                        Log.d(TAG, "CaptionCommand RST");
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_SPA: {
-                // SetPenAttributes
-                int textTag = (data[pos] & 0xf0) >> 4;
-                int penSize = data[pos] & 0x03;
-                int penOffset = (data[pos] & 0x0c) >> 2;
-                boolean italic = (data[pos + 1] & 0x80) != 0;
-                boolean underline = (data[pos + 1] & 0x40) != 0;
-                int edgeType = (data[pos + 1] & 0x38) >> 3;
-                int fontTag = data[pos + 1] & 0x7;
-                pos += 2;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_SPA,
-                        new CaptionPenAttr(penSize, penOffset, textTag, fontTag, edgeType,
-                                underline, italic)));
-                if (DEBUG) {
-                    Log.d(TAG, String.format(
-                            "CaptionCommand SPA penSize: %d, penOffset: %d, textTag: %d, "
-                                    + "fontTag: %d, edgeType: %d, underline: %s, italic: %s",
-                            penSize, penOffset, textTag, fontTag, edgeType, underline, italic));
+            case Cea708Data.CODE_C1_SPA:
+                {
+                    // SetPenAttributes
+                    int textTag = (data[pos] & 0xf0) >> 4;
+                    int penSize = data[pos] & 0x03;
+                    int penOffset = (data[pos] & 0x0c) >> 2;
+                    boolean italic = (data[pos + 1] & 0x80) != 0;
+                    boolean underline = (data[pos + 1] & 0x40) != 0;
+                    int edgeType = (data[pos + 1] & 0x38) >> 3;
+                    int fontTag = data[pos + 1] & 0x7;
+                    pos += 2;
+                    emitCaptionEvent(
+                            new CaptionEvent(
+                                    CAPTION_EMIT_TYPE_COMMAND_SPA,
+                                    new CaptionPenAttr(
+                                            penSize, penOffset, textTag, fontTag, edgeType,
+                                            underline, italic)));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "CaptionCommand SPA penSize: %d, penOffset: %d, textTag: %d, "
+                                                + "fontTag: %d, edgeType: %d, underline: %s, italic: %s",
+                                        penSize, penOffset, textTag, fontTag, edgeType, underline,
+                                        italic));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_SPC: {
-                // SetPenColor
-                int opacity = (data[pos] & 0xc0) >> 6;
-                int red = (data[pos] & 0x30) >> 4;
-                int green = (data[pos] & 0x0c) >> 2;
-                int blue = data[pos] & 0x03;
-                CaptionColor foregroundColor = new CaptionColor(opacity, red, green, blue);
-                ++pos;
-                opacity = (data[pos] & 0xc0) >> 6;
-                red = (data[pos] & 0x30) >> 4;
-                green = (data[pos] & 0x0c) >> 2;
-                blue = data[pos] & 0x03;
-                CaptionColor backgroundColor = new CaptionColor(opacity, red, green, blue);
-                ++pos;
-                red = (data[pos] & 0x30) >> 4;
-                green = (data[pos] & 0x0c) >> 2;
-                blue = data[pos] & 0x03;
-                CaptionColor edgeColor = new CaptionColor(
-                        CaptionColor.OPACITY_SOLID, red, green, blue);
-                ++pos;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_SPC,
-                        new CaptionPenColor(foregroundColor, backgroundColor, edgeColor)));
-                if (DEBUG) {
-                    Log.d(TAG, String.format(
-                            "CaptionCommand SPC foregroundColor %s backgroundColor %s edgeColor %s",
-                            foregroundColor, backgroundColor, edgeColor));
+            case Cea708Data.CODE_C1_SPC:
+                {
+                    // SetPenColor
+                    int opacity = (data[pos] & 0xc0) >> 6;
+                    int red = (data[pos] & 0x30) >> 4;
+                    int green = (data[pos] & 0x0c) >> 2;
+                    int blue = data[pos] & 0x03;
+                    CaptionColor foregroundColor = new CaptionColor(opacity, red, green, blue);
+                    ++pos;
+                    opacity = (data[pos] & 0xc0) >> 6;
+                    red = (data[pos] & 0x30) >> 4;
+                    green = (data[pos] & 0x0c) >> 2;
+                    blue = data[pos] & 0x03;
+                    CaptionColor backgroundColor = new CaptionColor(opacity, red, green, blue);
+                    ++pos;
+                    red = (data[pos] & 0x30) >> 4;
+                    green = (data[pos] & 0x0c) >> 2;
+                    blue = data[pos] & 0x03;
+                    CaptionColor edgeColor =
+                            new CaptionColor(CaptionColor.OPACITY_SOLID, red, green, blue);
+                    ++pos;
+                    emitCaptionEvent(
+                            new CaptionEvent(
+                                    CAPTION_EMIT_TYPE_COMMAND_SPC,
+                                    new CaptionPenColor(
+                                            foregroundColor, backgroundColor, edgeColor)));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "CaptionCommand SPC foregroundColor %s backgroundColor %s edgeColor %s",
+                                        foregroundColor, backgroundColor, edgeColor));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_SPL: {
-                // SetPenLocation
-                // column is normally 0-31 for 4:3 formats, and 0-41 for 16:9 formats
-                int row = data[pos] & 0x0f;
-                int column = data[pos + 1] & 0x3f;
-                pos += 2;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_SPL,
-                        new CaptionPenLocation(row, column)));
-                if (DEBUG) {
-                    Log.d(TAG, String.format("CaptionCommand SPL row: %d, column: %d",
-                            row, column));
+            case Cea708Data.CODE_C1_SPL:
+                {
+                    // SetPenLocation
+                    // column is normally 0-31 for 4:3 formats, and 0-41 for 16:9 formats
+                    int row = data[pos] & 0x0f;
+                    int column = data[pos + 1] & 0x3f;
+                    pos += 2;
+                    emitCaptionEvent(
+                            new CaptionEvent(
+                                    CAPTION_EMIT_TYPE_COMMAND_SPL,
+                                    new CaptionPenLocation(row, column)));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "CaptionCommand SPL row: %d, column: %d", row, column));
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case Cea708Data.CODE_C1_SWA: {
-                // SetWindowAttributes
-                int opacity = (data[pos] & 0xc0) >> 6;
-                int red = (data[pos] & 0x30) >> 4;
-                int green = (data[pos] & 0x0c) >> 2;
-                int blue = data[pos] & 0x03;
-                CaptionColor fillColor = new CaptionColor(opacity, red, green, blue);
-                int borderType = (data[pos + 1] & 0xc0) >> 6 | (data[pos + 2] & 0x80) >> 5;
-                red = (data[pos + 1] & 0x30) >> 4;
-                green = (data[pos + 1] & 0x0c) >> 2;
-                blue = data[pos + 1] & 0x03;
-                CaptionColor borderColor = new CaptionColor(
-                        CaptionColor.OPACITY_SOLID, red, green, blue);
-                boolean wordWrap = (data[pos + 2] & 0x40) != 0;
-                int printDirection = (data[pos + 2] & 0x30) >> 4;
-                int scrollDirection = (data[pos + 2] & 0x0c) >> 2;
-                int justify = (data[pos + 2] & 0x03);
-                int effectSpeed = (data[pos + 3] & 0xf0) >> 4;
-                int effectDirection = (data[pos + 3] & 0x0c) >> 2;
-                int displayEffect = data[pos + 3] & 0x3;
-                pos += 4;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_SWA,
-                        new CaptionWindowAttr(fillColor, borderColor, borderType, wordWrap,
-                                printDirection, scrollDirection, justify,
-                                effectDirection, effectSpeed, displayEffect)));
-                if (DEBUG) {
-                    Log.d(TAG, String.format(
-                            "CaptionCommand SWA fillColor: %s, borderColor: %s, borderType: %d"
-                                    + "wordWrap: %s, printDirection: %d, scrollDirection: %d, "
-                                    + "justify: %s, effectDirection: %d, effectSpeed: %d, "
-                                    + "displayEffect: %d",
-                            fillColor, borderColor, borderType, wordWrap, printDirection,
-                            scrollDirection, justify, effectDirection, effectSpeed, displayEffect));
+            case Cea708Data.CODE_C1_SWA:
+                {
+                    // SetWindowAttributes
+                    int opacity = (data[pos] & 0xc0) >> 6;
+                    int red = (data[pos] & 0x30) >> 4;
+                    int green = (data[pos] & 0x0c) >> 2;
+                    int blue = data[pos] & 0x03;
+                    CaptionColor fillColor = new CaptionColor(opacity, red, green, blue);
+                    int borderType = (data[pos + 1] & 0xc0) >> 6 | (data[pos + 2] & 0x80) >> 5;
+                    red = (data[pos + 1] & 0x30) >> 4;
+                    green = (data[pos + 1] & 0x0c) >> 2;
+                    blue = data[pos + 1] & 0x03;
+                    CaptionColor borderColor =
+                            new CaptionColor(CaptionColor.OPACITY_SOLID, red, green, blue);
+                    boolean wordWrap = (data[pos + 2] & 0x40) != 0;
+                    int printDirection = (data[pos + 2] & 0x30) >> 4;
+                    int scrollDirection = (data[pos + 2] & 0x0c) >> 2;
+                    int justify = (data[pos + 2] & 0x03);
+                    int effectSpeed = (data[pos + 3] & 0xf0) >> 4;
+                    int effectDirection = (data[pos + 3] & 0x0c) >> 2;
+                    int displayEffect = data[pos + 3] & 0x3;
+                    pos += 4;
+                    emitCaptionEvent(
+                            new CaptionEvent(
+                                    CAPTION_EMIT_TYPE_COMMAND_SWA,
+                                    new CaptionWindowAttr(
+                                            fillColor,
+                                            borderColor,
+                                            borderType,
+                                            wordWrap,
+                                            printDirection,
+                                            scrollDirection,
+                                            justify,
+                                            effectDirection,
+                                            effectSpeed,
+                                            displayEffect)));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "CaptionCommand SWA fillColor: %s, borderColor: %s, borderType: %d"
+                                                + "wordWrap: %s, printDirection: %d, scrollDirection: %d, "
+                                                + "justify: %s, effectDirection: %d, effectSpeed: %d, "
+                                                + "displayEffect: %d",
+                                        fillColor,
+                                        borderColor,
+                                        borderType,
+                                        wordWrap,
+                                        printDirection,
+                                        scrollDirection,
+                                        justify,
+                                        effectDirection,
+                                        effectSpeed,
+                                        displayEffect));
+                    }
+                    break;
                 }
-                break;
-            }
 
             case Cea708Data.CODE_C1_DF0:
             case Cea708Data.CODE_C1_DF1:
@@ -671,39 +747,65 @@ public class Cea708Parser {
             case Cea708Data.CODE_C1_DF4:
             case Cea708Data.CODE_C1_DF5:
             case Cea708Data.CODE_C1_DF6:
-            case Cea708Data.CODE_C1_DF7: {
-                // DefineWindow0-7
-                int windowId = mCommand - Cea708Data.CODE_C1_DF0;
-                boolean visible = (data[pos] & 0x20) != 0;
-                boolean rowLock = (data[pos] & 0x10) != 0;
-                boolean columnLock = (data[pos] & 0x08) != 0;
-                int priority = data[pos] & 0x07;
-                boolean relativePositioning = (data[pos + 1] & 0x80) != 0;
-                int anchorVertical = data[pos + 1] & 0x7f;
-                int anchorHorizontal = data[pos + 2] & 0xff;
-                int anchorId = (data[pos + 3] & 0xf0) >> 4;
-                int rowCount = data[pos + 3] & 0x0f;
-                int columnCount = data[pos + 4] & 0x3f;
-                int windowStyle = (data[pos + 5] & 0x38) >> 3;
-                int penStyle = data[pos + 5] & 0x07;
-                pos += 6;
-                emitCaptionEvent(new CaptionEvent(CAPTION_EMIT_TYPE_COMMAND_DFX,
-                        new CaptionWindow(windowId, visible, rowLock, columnLock, priority,
-                                relativePositioning, anchorVertical, anchorHorizontal, anchorId,
-                                rowCount, columnCount, penStyle, windowStyle)));
-                if (DEBUG) {
-                    Log.d(TAG, String.format(
-                            "CaptionCommand DFx windowId: %d, priority: %d, columnLock: %s, "
-                                    + "rowLock: %s, visible: %s, anchorVertical: %d, "
-                                    + "relativePositioning: %s, anchorHorizontal: %d, "
-                                    + "rowCount: %d, anchorId: %d, columnCount: %d, penStyle: %d, "
-                                    + "windowStyle: %d",
-                            windowId, priority, columnLock, rowLock, visible, anchorVertical,
-                            relativePositioning, anchorHorizontal, rowCount, anchorId, columnCount,
-                            penStyle, windowStyle));
+            case Cea708Data.CODE_C1_DF7:
+                {
+                    // DefineWindow0-7
+                    int windowId = mCommand - Cea708Data.CODE_C1_DF0;
+                    boolean visible = (data[pos] & 0x20) != 0;
+                    boolean rowLock = (data[pos] & 0x10) != 0;
+                    boolean columnLock = (data[pos] & 0x08) != 0;
+                    int priority = data[pos] & 0x07;
+                    boolean relativePositioning = (data[pos + 1] & 0x80) != 0;
+                    int anchorVertical = data[pos + 1] & 0x7f;
+                    int anchorHorizontal = data[pos + 2] & 0xff;
+                    int anchorId = (data[pos + 3] & 0xf0) >> 4;
+                    int rowCount = data[pos + 3] & 0x0f;
+                    int columnCount = data[pos + 4] & 0x3f;
+                    int windowStyle = (data[pos + 5] & 0x38) >> 3;
+                    int penStyle = data[pos + 5] & 0x07;
+                    pos += 6;
+                    emitCaptionEvent(
+                            new CaptionEvent(
+                                    CAPTION_EMIT_TYPE_COMMAND_DFX,
+                                    new CaptionWindow(
+                                            windowId,
+                                            visible,
+                                            rowLock,
+                                            columnLock,
+                                            priority,
+                                            relativePositioning,
+                                            anchorVertical,
+                                            anchorHorizontal,
+                                            anchorId,
+                                            rowCount,
+                                            columnCount,
+                                            penStyle,
+                                            windowStyle)));
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                String.format(
+                                        "CaptionCommand DFx windowId: %d, priority: %d, columnLock: %s, "
+                                                + "rowLock: %s, visible: %s, anchorVertical: %d, "
+                                                + "relativePositioning: %s, anchorHorizontal: %d, "
+                                                + "rowCount: %d, anchorId: %d, columnCount: %d, penStyle: %d, "
+                                                + "windowStyle: %d",
+                                        windowId,
+                                        priority,
+                                        columnLock,
+                                        rowLock,
+                                        visible,
+                                        anchorVertical,
+                                        relativePositioning,
+                                        anchorHorizontal,
+                                        rowCount,
+                                        anchorId,
+                                        columnCount,
+                                        penStyle,
+                                        windowStyle));
+                    }
+                    break;
                 }
-                break;
-            }
 
             default:
                 break;
@@ -748,7 +850,7 @@ public class Cea708Parser {
             pos = parseG2(data, pos);
         } else if (mCommand >= Cea708Data.CODE_G3_RANGE_START
                 && mCommand <= Cea708Data.CODE_G3_RANGE_END) {
-            pos = parseG3(data ,pos);
+            pos = parseG3(data, pos);
         }
         return pos;
     }

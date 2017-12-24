@@ -17,14 +17,11 @@
 package com.android.tv.util;
 
 import android.support.annotation.NonNull;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * A thread factory that creates threads with a suffix.
- */
+/** A thread factory that creates threads with a suffix. */
 public class NamedThreadFactory implements ThreadFactory {
     private final AtomicInteger mCount = new AtomicInteger(0);
     private final ThreadFactory mDefaultThreadFactory;

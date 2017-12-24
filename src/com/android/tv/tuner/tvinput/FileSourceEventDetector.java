@@ -19,7 +19,6 @@ package com.android.tv.tuner.tvinput;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-
 import com.android.tv.tuner.data.PsiData.PatItem;
 import com.android.tv.tuner.data.PsiData.PmtItem;
 import com.android.tv.tuner.data.PsipData.EitItem;
@@ -31,7 +30,6 @@ import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.android.tv.tuner.source.FileTsStreamer;
 import com.android.tv.tuner.ts.TsParser;
 import com.android.tv.tuner.tvinput.EventDetector.EventListener;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,8 +38,8 @@ import java.util.Set;
 /**
  * PSIP event detector for a file source.
  *
- * <p>Uses {@link TsParser} to analyze input MPEG-2 transport stream, detects and reports
- * various PSIP-related events via {@link TsParser.TsOutputListener}.
+ * <p>Uses {@link TsParser} to analyze input MPEG-2 transport stream, detects and reports various
+ * PSIP-related events via {@link TsParser.TsOutputListener}.
  */
 public class FileSourceEventDetector {
     private static final String TAG = "FileSourceEventDetector";
@@ -69,7 +67,7 @@ public class FileSourceEventDetector {
      *
      * @param provider MPEG-2 transport stream source.
      * @param programNumber The program number if this is for handling tune request. For scanning
-     *            purpose, supply {@link #ALL_PROGRAM_NUMBERS}.
+     *     purpose, supply {@link #ALL_PROGRAM_NUMBERS}.
      */
     public void start(FileTsStreamer.StreamProvider provider, int programNumber) {
         mStreamProvider = provider;
@@ -104,146 +102,158 @@ public class FileSourceEventDetector {
         mStreamProvider.addPidFilter(pid);
     }
 
-    private final TsParser.TsOutputListener mTsOutputListener = new TsParser.TsOutputListener() {
-        @Override
-        public void onPatDetected(List<PatItem> items) {
-            for (PatItem i : items) {
-                if (mProgramNumber == ALL_PROGRAM_NUMBERS || mProgramNumber == i.getProgramNo()) {
-                    mStreamProvider.addPidFilter(i.getPmtPid());
+    private final TsParser.TsOutputListener mTsOutputListener =
+            new TsParser.TsOutputListener() {
+                @Override
+                public void onPatDetected(List<PatItem> items) {
+                    for (PatItem i : items) {
+                        if (mProgramNumber == ALL_PROGRAM_NUMBERS
+                                || mProgramNumber == i.getProgramNo()) {
+                            mStreamProvider.addPidFilter(i.getPmtPid());
+                        }
+                    }
                 }
-            }
-        }
 
-        @Override
-        public void onEitPidDetected(int pid) {
-            startListening(pid);
-        }
-
-        @Override
-        public void onEitItemParsed(VctItem channel, List<EitItem> items) {
-            TunerChannel tunerChannel = mChannelMap.get(channel.getProgramNumber());
-            if (DEBUG) {
-                Log.d(TAG, "onEitItemParsed tunerChannel:" + tunerChannel + " "
-                        + channel.getProgramNumber());
-            }
-            int channelSourceId = channel.getSourceId();
-
-            // Source id 0 is useful for cases where a cable operator wishes to define a channel for
-            // which no EPG data is currently available.
-            // We don't handle such a case.
-            if (channelSourceId == 0) {
-                return;
-            }
-
-            // If at least a one caption track have been found in EIT items for the given channel,
-            // we starts to interpret the zero tracks as a clearance of the caption tracks.
-            boolean captionTracksFound = mEitCaptionTracksFound.get(channelSourceId);
-            for (EitItem item : items) {
-                if (captionTracksFound) {
-                    break;
+                @Override
+                public void onEitPidDetected(int pid) {
+                    startListening(pid);
                 }
-                List<AtscCaptionTrack> captionTracks = item.getCaptionTracks();
-                if (captionTracks != null && !captionTracks.isEmpty()) {
-                    captionTracksFound = true;
+
+                @Override
+                public void onEitItemParsed(VctItem channel, List<EitItem> items) {
+                    TunerChannel tunerChannel = mChannelMap.get(channel.getProgramNumber());
+                    if (DEBUG) {
+                        Log.d(
+                                TAG,
+                                "onEitItemParsed tunerChannel:"
+                                        + tunerChannel
+                                        + " "
+                                        + channel.getProgramNumber());
+                    }
+                    int channelSourceId = channel.getSourceId();
+
+                    // Source id 0 is useful for cases where a cable operator wishes to define a
+                    // channel for
+                    // which no EPG data is currently available.
+                    // We don't handle such a case.
+                    if (channelSourceId == 0) {
+                        return;
+                    }
+
+                    // If at least a one caption track have been found in EIT items for the given
+                    // channel,
+                    // we starts to interpret the zero tracks as a clearance of the caption tracks.
+                    boolean captionTracksFound = mEitCaptionTracksFound.get(channelSourceId);
+                    for (EitItem item : items) {
+                        if (captionTracksFound) {
+                            break;
+                        }
+                        List<AtscCaptionTrack> captionTracks = item.getCaptionTracks();
+                        if (captionTracks != null && !captionTracks.isEmpty()) {
+                            captionTracksFound = true;
+                        }
+                    }
+                    mEitCaptionTracksFound.put(channelSourceId, captionTracksFound);
+                    if (captionTracksFound) {
+                        for (EitItem item : items) {
+                            item.setHasCaptionTrack();
+                        }
+                    }
+                    if (tunerChannel != null && mEventListener != null) {
+                        mEventListener.onEventDetected(tunerChannel, items);
+                    }
                 }
-            }
-            mEitCaptionTracksFound.put(channelSourceId, captionTracksFound);
-            if (captionTracksFound) {
-                for (EitItem item : items) {
-                    item.setHasCaptionTrack();
+
+                @Override
+                public void onEttPidDetected(int pid) {
+                    startListening(pid);
                 }
-            }
-            if (tunerChannel != null && mEventListener != null) {
-                mEventListener.onEventDetected(tunerChannel, items);
-            }
-        }
 
-        @Override
-        public void onEttPidDetected(int pid) {
-            startListening(pid);
-        }
-
-        @Override
-        public void onAllVctItemsParsed() {
-            // do nothing.
-        }
-
-        @Override
-        public void onVctItemParsed(VctItem channel, List<PmtItem> pmtItems) {
-            if (DEBUG) {
-                Log.d(TAG, "onVctItemParsed VCT " + channel);
-                Log.d(TAG, "                PMT " + pmtItems);
-            }
-
-            // Merges the audio and caption tracks located in PMT items into the tracks of the given
-            // tuner channel.
-            TunerChannel tunerChannel = TunerChannel.forFile(channel, pmtItems);
-            List<AtscAudioTrack> audioTracks = new ArrayList<>();
-            List<AtscCaptionTrack> captionTracks = new ArrayList<>();
-            for (PmtItem pmtItem : pmtItems) {
-                if (pmtItem.getAudioTracks() != null) {
-                    audioTracks.addAll(pmtItem.getAudioTracks());
+                @Override
+                public void onAllVctItemsParsed() {
+                    // do nothing.
                 }
-                if (pmtItem.getCaptionTracks() != null) {
-                    captionTracks.addAll(pmtItem.getCaptionTracks());
+
+                @Override
+                public void onVctItemParsed(VctItem channel, List<PmtItem> pmtItems) {
+                    if (DEBUG) {
+                        Log.d(TAG, "onVctItemParsed VCT " + channel);
+                        Log.d(TAG, "                PMT " + pmtItems);
+                    }
+
+                    // Merges the audio and caption tracks located in PMT items into the tracks of
+                    // the given
+                    // tuner channel.
+                    TunerChannel tunerChannel = TunerChannel.forFile(channel, pmtItems);
+                    List<AtscAudioTrack> audioTracks = new ArrayList<>();
+                    List<AtscCaptionTrack> captionTracks = new ArrayList<>();
+                    for (PmtItem pmtItem : pmtItems) {
+                        if (pmtItem.getAudioTracks() != null) {
+                            audioTracks.addAll(pmtItem.getAudioTracks());
+                        }
+                        if (pmtItem.getCaptionTracks() != null) {
+                            captionTracks.addAll(pmtItem.getCaptionTracks());
+                        }
+                    }
+                    int channelProgramNumber = channel.getProgramNumber();
+
+                    // If at least a one caption track have been found in VCT items for the given
+                    // channel,
+                    // we starts to interpret the zero tracks as a clearance of the caption tracks.
+                    boolean captionTracksFound =
+                            mVctCaptionTracksFound.get(channelProgramNumber)
+                                    || !captionTracks.isEmpty();
+                    mVctCaptionTracksFound.put(channelProgramNumber, captionTracksFound);
+                    if (captionTracksFound) {
+                        tunerChannel.setHasCaptionTrack();
+                    }
+                    tunerChannel.setFilepath(mStreamProvider.getFilepath());
+                    tunerChannel.setAudioTracks(audioTracks);
+                    tunerChannel.setCaptionTracks(captionTracks);
+
+                    mChannelMap.put(tunerChannel.getProgramNumber(), tunerChannel);
+                    boolean found = mVctProgramNumberSet.contains(channelProgramNumber);
+                    if (!found) {
+                        mVctProgramNumberSet.add(channelProgramNumber);
+                    }
+                    if (mEventListener != null) {
+                        mEventListener.onChannelDetected(tunerChannel, !found);
+                    }
                 }
-            }
-            int channelProgramNumber = channel.getProgramNumber();
 
-            // If at least a one caption track have been found in VCT items for the given channel,
-            // we starts to interpret the zero tracks as a clearance of the caption tracks.
-            boolean captionTracksFound = mVctCaptionTracksFound.get(channelProgramNumber)
-                    || !captionTracks.isEmpty();
-            mVctCaptionTracksFound.put(channelProgramNumber, captionTracksFound);
-            if (captionTracksFound) {
-                tunerChannel.setHasCaptionTrack();
-            }
-            tunerChannel.setFilepath(mStreamProvider.getFilepath());
-            tunerChannel.setAudioTracks(audioTracks);
-            tunerChannel.setCaptionTracks(captionTracks);
+                @Override
+                public void onSdtItemParsed(SdtItem channel, List<PmtItem> pmtItems) {
+                    if (DEBUG) {
+                        Log.d(TAG, "onSdtItemParsed SDT " + channel);
+                        Log.d(TAG, "                PMT " + pmtItems);
+                    }
 
-            mChannelMap.put(tunerChannel.getProgramNumber(), tunerChannel);
-            boolean found = mVctProgramNumberSet.contains(channelProgramNumber);
-            if (!found) {
-                mVctProgramNumberSet.add(channelProgramNumber);
-            }
-            if (mEventListener != null) {
-                mEventListener.onChannelDetected(tunerChannel, !found);
-            }
-        }
-
-        @Override
-        public void onSdtItemParsed(SdtItem channel, List<PmtItem> pmtItems) {
-            if (DEBUG) {
-                Log.d(TAG, "onSdtItemParsed SDT " + channel);
-                Log.d(TAG, "                PMT " + pmtItems);
-            }
-
-            // Merges the audio and caption tracks located in PMT items into the tracks of the given
-            // tuner channel.
-            TunerChannel tunerChannel = TunerChannel.forDvbFile(channel, pmtItems);
-            List<AtscAudioTrack> audioTracks = new ArrayList<>();
-            List<AtscCaptionTrack> captionTracks = new ArrayList<>();
-            for (PmtItem pmtItem : pmtItems) {
-                if (pmtItem.getAudioTracks() != null) {
-                    audioTracks.addAll(pmtItem.getAudioTracks());
+                    // Merges the audio and caption tracks located in PMT items into the tracks of
+                    // the given
+                    // tuner channel.
+                    TunerChannel tunerChannel = TunerChannel.forDvbFile(channel, pmtItems);
+                    List<AtscAudioTrack> audioTracks = new ArrayList<>();
+                    List<AtscCaptionTrack> captionTracks = new ArrayList<>();
+                    for (PmtItem pmtItem : pmtItems) {
+                        if (pmtItem.getAudioTracks() != null) {
+                            audioTracks.addAll(pmtItem.getAudioTracks());
+                        }
+                        if (pmtItem.getCaptionTracks() != null) {
+                            captionTracks.addAll(pmtItem.getCaptionTracks());
+                        }
+                    }
+                    int channelProgramNumber = channel.getServiceId();
+                    tunerChannel.setFilepath(mStreamProvider.getFilepath());
+                    tunerChannel.setAudioTracks(audioTracks);
+                    tunerChannel.setCaptionTracks(captionTracks);
+                    mChannelMap.put(tunerChannel.getProgramNumber(), tunerChannel);
+                    boolean found = mSdtProgramNumberSet.contains(channelProgramNumber);
+                    if (!found) {
+                        mSdtProgramNumberSet.add(channelProgramNumber);
+                    }
+                    if (mEventListener != null) {
+                        mEventListener.onChannelDetected(tunerChannel, !found);
+                    }
                 }
-                if (pmtItem.getCaptionTracks() != null) {
-                    captionTracks.addAll(pmtItem.getCaptionTracks());
-                }
-            }
-            int channelProgramNumber = channel.getServiceId();
-            tunerChannel.setFilepath(mStreamProvider.getFilepath());
-            tunerChannel.setAudioTracks(audioTracks);
-            tunerChannel.setCaptionTracks(captionTracks);
-            mChannelMap.put(tunerChannel.getProgramNumber(), tunerChannel);
-            boolean found = mSdtProgramNumberSet.contains(channelProgramNumber);
-            if (!found) {
-                mSdtProgramNumberSet.add(channelProgramNumber);
-            }
-            if (mEventListener != null) {
-                mEventListener.onChannelDetected(tunerChannel, !found);
-            }
-        }
-    };
+            };
 }

@@ -24,7 +24,6 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Direction;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
 import com.android.tv.tests.ui.LiveChannelsTestCase;
@@ -45,8 +44,8 @@ public class CustomizeChannelListFragmentTest extends LiveChannelsTestCase {
         pressKeysForChannel(com.android.tv.testing.testinput.TvTestInputConstants.CH_2);
         // Wait until KeypadChannelSwitchView closes.
         assertWaitForCondition(mDevice, Until.hasObject(Constants.CHANNEL_BANNER));
-        mBySettingsSidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_settings);
+        mBySettingsSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_settings);
     }
 
     private void assertShrunkenTvView(boolean shrunkenExpected) {
@@ -65,8 +64,9 @@ public class CustomizeChannelListFragmentTest extends LiveChannelsTestCase {
         mSidePanelHelper.assertNavigateToItem(
                 R.string.settings_channel_source_item_customize_channels);
         mDevice.pressDPadCenter();
-        BySelector bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_edit_channels_for_an_input);
+        BySelector bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(
+                        R.string.side_panel_title_edit_channels_for_an_input);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         assertShrunkenTvView(true);
 
@@ -79,8 +79,9 @@ public class CustomizeChannelListFragmentTest extends LiveChannelsTestCase {
 
         // Back to customize channel list fragment
         mDevice.pressBack();
-        bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_edit_channels_for_an_input);
+        bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(
+                        R.string.side_panel_title_edit_channels_for_an_input);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         assertShrunkenTvView(true);
 
@@ -97,8 +98,9 @@ public class CustomizeChannelListFragmentTest extends LiveChannelsTestCase {
         mSidePanelHelper.assertNavigateToItem(
                 R.string.settings_channel_source_item_customize_channels);
         mDevice.pressDPadCenter();
-        BySelector bySidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_edit_channels_for_an_input);
+        BySelector bySidePanel =
+                mSidePanelHelper.bySidePanelTitled(
+                        R.string.side_panel_title_edit_channels_for_an_input);
         assertWaitForCondition(mDevice, Until.hasObject(bySidePanel));
         assertShrunkenTvView(true);
 
@@ -110,7 +112,9 @@ public class CustomizeChannelListFragmentTest extends LiveChannelsTestCase {
         assertShrunkenTvView(true);
 
         // Wait for time-out to return to the main menu.
-        assertWaitForCondition(mDevice, Until.gone(bySidePanel),
+        assertWaitForCondition(
+                mDevice,
+                Until.gone(bySidePanel),
                 mTargetResources.getInteger(R.integer.side_panel_show_duration));
         assertShrunkenTvView(false);
     }

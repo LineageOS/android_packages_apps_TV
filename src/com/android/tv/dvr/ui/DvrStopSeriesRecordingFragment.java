@@ -25,7 +25,6 @@ import android.support.v17.leanback.widget.GuidedAction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
@@ -33,17 +32,12 @@ import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A fragment which asks the user to stop series recording.
- */
+/** A fragment which asks the user to stop series recording. */
 public class DvrStopSeriesRecordingFragment extends DvrGuidedStepFragment {
-    /**
-     * Key for the series recording to be stopped.
-     */
+    /** Key for the series recording to be stopped. */
     public static final String KEY_SERIES_RECORDING = "key_series_recoridng";
 
     private static final int ACTION_STOP_SERIES_RECORDING = 1;
@@ -51,7 +45,8 @@ public class DvrStopSeriesRecordingFragment extends DvrGuidedStepFragment {
     private SeriesRecording mSeriesRecording;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mSeriesRecording = getArguments().getParcelable(KEY_SERIES_RECORDING);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -68,13 +63,15 @@ public class DvrStopSeriesRecordingFragment extends DvrGuidedStepFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        actions.add(new GuidedAction.Builder(activity)
-                .id(ACTION_STOP_SERIES_RECORDING)
-                .title(R.string.dvr_series_schedules_stop_dialog_action_stop)
-                .build());
-        actions.add(new GuidedAction.Builder(activity)
-                .clickAction(GuidedAction.ACTION_ID_CANCEL)
-                .build());
+        actions.add(
+                new GuidedAction.Builder(activity)
+                        .id(ACTION_STOP_SERIES_RECORDING)
+                        .title(R.string.dvr_series_schedules_stop_dialog_action_stop)
+                        .build());
+        actions.add(
+                new GuidedAction.Builder(activity)
+                        .clickAction(GuidedAction.ACTION_ID_CANCEL)
+                        .build());
     }
 
     @Override
@@ -96,8 +93,10 @@ public class DvrStopSeriesRecordingFragment extends DvrGuidedStepFragment {
             if (!toDelete.isEmpty()) {
                 dvrManager.forceRemoveScheduledRecording(ScheduledRecording.toArray(toDelete));
             }
-            dvrManager.updateSeriesRecording(SeriesRecording.buildFrom(mSeriesRecording)
-                    .setState(SeriesRecording.STATE_SERIES_STOPPED).build());
+            dvrManager.updateSeriesRecording(
+                    SeriesRecording.buildFrom(mSeriesRecording)
+                            .setState(SeriesRecording.STATE_SERIES_STOPPED)
+                            .build());
         }
         dismissDialog();
     }

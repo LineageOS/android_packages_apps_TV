@@ -23,7 +23,6 @@ import android.os.Build;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
-
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.dvr.DvrDataManagerInMemoryImpl;
@@ -31,18 +30,14 @@ import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.testing.dvr.RecordingTestUtils;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * Tests for {@link ScheduledProgramReaper}.
- */
+/** Tests for {@link ScheduledProgramReaper}. */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class ScheduledProgramReaperTest {
@@ -80,58 +75,62 @@ public class ScheduledProgramReaperTest {
     @Test
     public void testRun_oneRecordingsTomorrow() {
         ScheduledRecording recording = addNewScheduledRecordingForTomorrow();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
         mReaper.run();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
     }
 
     @Test
     public void testRun_oneRecordingsStarted() {
         ScheduledRecording recording = addNewScheduledRecordingForTomorrow();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
         mFakeClock.increment(TimeUnit.DAYS);
         mReaper.run();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
     }
 
     @Test
     public void testRun_oneRecordingsFinished() {
         ScheduledRecording recording = addNewScheduledRecordingForTomorrow();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
         mFakeClock.increment(TimeUnit.DAYS);
         mFakeClock.increment(TimeUnit.MINUTES, 2);
         mReaper.run();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
     }
 
     @Test
     public void testRun_oneRecordingsExpired() {
         ScheduledRecording recording = addNewScheduledRecordingForTomorrow();
-        MoreAsserts
-                .assertContentsInAnyOrder(mDvrDataManager.getAllScheduledRecordings(), recording);
+        MoreAsserts.assertContentsInAnyOrder(
+                mDvrDataManager.getAllScheduledRecordings(), recording);
         mFakeClock.increment(TimeUnit.DAYS, 1 + ScheduledProgramReaper.DAYS);
         mFakeClock.increment(TimeUnit.MILLISECONDS, DURATION);
         // After the cutoff and enough so we can see on the clock
         mFakeClock.increment(TimeUnit.SECONDS, 1);
 
         mReaper.run();
-        assertTrue("Recordings after reaper at " + com.android.tv.util.Utils
-                        .toIsoDateTimeString(mFakeClock.currentTimeMillis()),
+        assertTrue(
+                "Recordings after reaper at "
+                        + com.android.tv.util.Utils.toIsoDateTimeString(
+                                mFakeClock.currentTimeMillis()),
                 mDvrDataManager.getAllScheduledRecordings().isEmpty());
     }
 
     private ScheduledRecording addNewScheduledRecordingForTomorrow() {
         long startTime = mFakeClock.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
-        ScheduledRecording recording = RecordingTestUtils.createTestRecordingWithPeriod(INPUT_ID,
-                CHANNEL_ID, startTime, startTime + DURATION);
+        ScheduledRecording recording =
+                RecordingTestUtils.createTestRecordingWithPeriod(
+                        INPUT_ID, CHANNEL_ID, startTime, startTime + DURATION);
         return mDvrDataManager.addScheduledRecordingInternal(
                 ScheduledRecording.buildFrom(recording)
-                        .setState(ScheduledRecording.STATE_RECORDING_FINISHED).build());
+                        .setState(ScheduledRecording.STATE_RECORDING_FINISHED)
+                        .build());
     }
 }

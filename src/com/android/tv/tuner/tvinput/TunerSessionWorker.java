@@ -42,9 +42,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Surface;
 import android.view.accessibility.CaptioningManager;
-
-import com.google.android.exoplayer.audio.AudioCapabilities;
-import com.google.android.exoplayer.ExoPlayer;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.customization.TvCustomizationManager;
@@ -58,18 +55,19 @@ import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
 import com.android.tv.tuner.data.nano.Track.AtscAudioTrack;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
+import com.android.tv.tuner.exoplayer.MpegTsPlayer;
 import com.android.tv.tuner.exoplayer.MpegTsRendererBuilder;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager.StorageManager;
 import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
-import com.android.tv.tuner.exoplayer.MpegTsPlayer;
 import com.android.tv.tuner.exoplayer.buffer.TrickplayStorageManager;
 import com.android.tv.tuner.exoplayer.ffmpeg.FfmpegDecoderClient;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
 import com.android.tv.tuner.util.StatusTextUtils;
 import com.android.tv.tuner.util.SystemPropertiesProxy;
-
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.audio.AudioCapabilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -79,20 +77,24 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@link TunerSessionWorker} implements a handler thread which processes TV input jobs
- * such as handling {@link ExoPlayer}, managing a tuner device, trickplay, and so on.
+ * {@link TunerSessionWorker} implements a handler thread which processes TV input jobs such as
+ * handling {@link ExoPlayer}, managing a tuner device, trickplay, and so on.
  */
 @WorkerThread
-public class TunerSessionWorker implements PlaybackBufferListener,
-        MpegTsPlayer.VideoEventListener, MpegTsPlayer.Listener, EventDetector.EventListener,
-        ChannelDataManager.ProgramInfoListener, Handler.Callback {
+public class TunerSessionWorker
+        implements PlaybackBufferListener,
+                MpegTsPlayer.VideoEventListener,
+                MpegTsPlayer.Listener,
+                EventDetector.EventListener,
+                ChannelDataManager.ProgramInfoListener,
+                Handler.Callback {
     private static final String TAG = "TunerSessionWorker";
     private static final boolean DEBUG = false;
     private static final boolean ENABLE_PROFILER = true;
     private static final String PLAY_FROM_CHANNEL = "channel";
     private static final String MAX_BUFFER_SIZE_KEY = "tv.tuner.buffersize_mbytes";
-    private static final int MAX_BUFFER_SIZE_DEF = 2 * 1024;  // 2GB
-    private static final int MIN_BUFFER_SIZE_DEF = 256;  // 256MB
+    private static final int MAX_BUFFER_SIZE_DEF = 2 * 1024; // 2GB
+    private static final int MIN_BUFFER_SIZE_DEF = 256; // 256MB
 
     // Public messages
     public static final int MSG_SELECT_TRACK = 1;
@@ -214,8 +216,8 @@ public class TunerSessionWorker implements PlaybackBufferListener,
     private boolean mReleaseRequested; // Guarded by mReleaseLock
     private final Object mReleaseLock = new Object();
 
-    public TunerSessionWorker(Context context, ChannelDataManager channelDataManager,
-                TunerSession tunerSession) {
+    public TunerSessionWorker(
+            Context context, ChannelDataManager channelDataManager, TunerSession tunerSession) {
         if (DEBUG) Log.d(TAG, "TunerSessionWorker created");
         mContext = context;
 
@@ -240,11 +242,11 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         mMaxTrickplayBufferSizeMb =
                 SystemPropertiesProxy.getInt(MAX_BUFFER_SIZE_KEY, MAX_BUFFER_SIZE_DEF);
         mTrickplayModeCustomization = TvCustomizationManager.getTrickplayMode(context);
-        if (mTrickplayModeCustomization ==
-                TvCustomizationManager.TRICKPLAY_MODE_USE_EXTERNAL_STORAGE) {
+        if (mTrickplayModeCustomization
+                == TvCustomizationManager.TRICKPLAY_MODE_USE_EXTERNAL_STORAGE) {
             boolean useExternalStorage =
-                    Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) &&
-                    Environment.isExternalStorageRemovable();
+                    Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                            && Environment.isExternalStorageRemovable();
             mTrickplayBufferDir = useExternalStorage ? context.getExternalCacheDir() : null;
         } else if (mTrickplayModeCustomization == TvCustomizationManager.TRICKPLAY_MODE_ENABLED) {
             mTrickplayBufferDir = context.getCacheDir();
@@ -286,9 +288,7 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         sendMessage(MSG_STOP_TUNE);
     }
 
-    /**
-     * Sets {@link Surface}.
-     */
+    /** Sets {@link Surface}. */
     @MainThread
     public void setSurface(Surface surface) {
         if (surface != null && !surface.isValid()) {
@@ -301,9 +301,7 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         mHandler.sendEmptyMessage(MSG_SET_SURFACE);
     }
 
-    /**
-     * Sets volume.
-     */
+    /** Sets volume. */
     @MainThread
     public void setStreamVolume(float volume) {
         // mVolume is kept even when tune is called right after. But, messages can be deleted by
@@ -313,9 +311,7 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         mHandler.sendEmptyMessage(MSG_SET_STREAM_VOLUME);
     }
 
-    /**
-     * Sets if caption is enabled or disabled.
-     */
+    /** Sets if caption is enabled or disabled. */
     @MainThread
     public void setCaptionEnabled(boolean captionEnabled) {
         // mCaptionEnabled is kept even when tune is called right after. But, messages can be
@@ -334,18 +330,16 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         return mBufferStartTimeMs;
     }
 
-
     private String getRecordingPath() {
         return Uri.parse(mRecordingId).getPath();
     }
 
     private Long getDurationForRecording(String recordingId) {
         DvrStorageManager storageManager =
-                    new DvrStorageManager(new File(getRecordingPath()), false);
-        List<BufferManager.TrackFormat> trackFormatList =
-                    storageManager.readTrackInfoFiles(false);
+                new DvrStorageManager(new File(getRecordingPath()), false);
+        List<BufferManager.TrackFormat> trackFormatList = storageManager.readTrackInfoFiles(false);
         if (trackFormatList.isEmpty()) {
-                trackFormatList = storageManager.readTrackInfoFiles(true);
+            trackFormatList = storageManager.readTrackInfoFiles(true);
         }
         if (!trackFormatList.isEmpty()) {
             BufferManager.TrackFormat trackFormat = trackFormatList.get(0);
@@ -361,16 +355,23 @@ public class TunerSessionWorker implements PlaybackBufferListener,
     public long getCurrentPosition() {
         // TODO: More precise time may be necessary.
         MpegTsPlayer mpegTsPlayer = mPlayer;
-        long currentTime = mpegTsPlayer != null
-                ? mRecordStartTimeMs + mpegTsPlayer.getCurrentPosition() : mRecordStartTimeMs;
+        long currentTime =
+                mpegTsPlayer != null
+                        ? mRecordStartTimeMs + mpegTsPlayer.getCurrentPosition()
+                        : mRecordStartTimeMs;
         if (mChannel == null && mPlayerState == ExoPlayer.STATE_ENDED) {
             currentTime = mRecordingDuration + mRecordStartTimeMs;
         }
         if (DEBUG) {
             long systemCurrentTime = System.currentTimeMillis();
-            Log.d(TAG, "currentTime = " + currentTime
-                    + " ; System.currentTimeMillis() = " + systemCurrentTime
-                    + " ; diff = " + (currentTime - systemCurrentTime));
+            Log.d(
+                    TAG,
+                    "currentTime = "
+                            + currentTime
+                            + " ; System.currentTimeMillis() = "
+                            + systemCurrentTime
+                            + " ; diff = "
+                            + (currentTime - systemCurrentTime));
         }
         return currentTime;
     }
@@ -440,8 +441,9 @@ public class TunerSessionWorker implements PlaybackBufferListener,
     public void onError(Exception e) {
         if (TunerPreferences.getStoreTsStream(mContext)) {
             // Crash intentionally to capture the error causing TS file.
-            Log.e(TAG, "Crash intentionally to capture the error causing TS file. "
-                    + e.getMessage());
+            Log.e(
+                    TAG,
+                    "Crash intentionally to capture the error causing TS file. " + e.getMessage());
             SoftPreconditions.checkState(false);
         }
         // There maybe some errors that finally raise ExoPlaybackException and will be handled here.
@@ -506,8 +508,7 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             return;
         }
         Log.i(TAG, "AC3 audio cannot be played due to device limitation");
-        mSession.sendUiMessage(
-                TunerSession.MSG_UI_SHOW_AUDIO_UNPLAYABLE);
+        mSession.sendUiMessage(TunerSession.MSG_UI_SHOW_AUDIO_UNPLAYABLE);
     }
 
     // MpegTsPlayer.VideoEventListener
@@ -626,7 +627,7 @@ public class TunerSessionWorker implements PlaybackBufferListener,
 
     private RecordedProgram getRecordedProgram(Uri recordedUri) {
         ContentResolver resolver = mContext.getContentResolver();
-        try(Cursor c = resolver.query(recordedUri, RecordedProgram.PROJECTION, null, null, null)) {
+        try (Cursor c = resolver.query(recordedUri, RecordedProgram.PROJECTION, null, null, null)) {
             if (c != null) {
                 RecordedProgram result = RecordedProgram.onQuery(c);
                 if (DEBUG) {
@@ -655,460 +656,514 @@ public class TunerSessionWorker implements PlaybackBufferListener,
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
-            case MSG_TUNE: {
-                if (DEBUG) Log.d(TAG, "MSG_TUNE");
+            case MSG_TUNE:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_TUNE");
 
-                // When sequential tuning messages arrived, it skips middle tuning messages in order
-                // to change to the last requested channel quickly.
-                if (mHandler.hasMessages(MSG_TUNE)) {
-                    return true;
-                }
-                notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_TUNING);
-                if (!mIsActiveSession) {
-                    // Wait until release is finished if there is a pending release.
-                    try {
-                        while (!sActiveSessionSemaphore.tryAcquire(
-                                RELEASE_WAIT_INTERVAL_MS, TimeUnit.MILLISECONDS)) {
-                            synchronized (mReleaseLock) {
-                                if (mReleaseRequested) {
-                                    return true;
+                    // When sequential tuning messages arrived, it skips middle tuning messages in
+                    // order
+                    // to change to the last requested channel quickly.
+                    if (mHandler.hasMessages(MSG_TUNE)) {
+                        return true;
+                    }
+                    notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_TUNING);
+                    if (!mIsActiveSession) {
+                        // Wait until release is finished if there is a pending release.
+                        try {
+                            while (!sActiveSessionSemaphore.tryAcquire(
+                                    RELEASE_WAIT_INTERVAL_MS, TimeUnit.MILLISECONDS)) {
+                                synchronized (mReleaseLock) {
+                                    if (mReleaseRequested) {
+                                        return true;
+                                    }
                                 }
                             }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                         }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    synchronized (mReleaseLock) {
-                        if (mReleaseRequested) {
-                            sActiveSessionSemaphore.release();
-                            return true;
+                        synchronized (mReleaseLock) {
+                            if (mReleaseRequested) {
+                                sActiveSessionSemaphore.release();
+                                return true;
+                            }
                         }
+                        mIsActiveSession = true;
                     }
-                    mIsActiveSession = true;
+                    Uri channelUri = (Uri) msg.obj;
+                    String recording = null;
+                    long channelId = parseChannel(channelUri);
+                    TunerChannel channel =
+                            (channelId == -1) ? null : mChannelDataManager.getChannel(channelId);
+                    if (channelId == -1) {
+                        recording = parseRecording(channelUri);
+                    }
+                    if (channel == null && recording == null) {
+                        Log.w(TAG, "onTune() is failed. Can't find channel for " + channelUri);
+                        stopTune();
+                        notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN);
+                        return true;
+                    }
+                    clearCallbacksAndMessagesSafely();
+                    mChannelDataManager.removeAllCallbacksAndMessages();
+                    if (channel != null) {
+                        mChannelDataManager.requestProgramsData(channel);
+                    }
+                    prepareTune(channel, recording);
+                    // TODO: Need to refactor. notifyContentAllowed() should not be called if
+                    // parental
+                    // control is turned on.
+                    mSession.notifyContentAllowed();
+                    resetTvTracks();
+                    resetPlayback();
+                    mHandler.sendEmptyMessageDelayed(
+                            MSG_RESCHEDULE_PROGRAMS, RESCHEDULE_PROGRAMS_INITIAL_DELAY_MS);
+                    return true;
                 }
-                Uri channelUri = (Uri) msg.obj;
-                String recording = null;
-                long channelId = parseChannel(channelUri);
-                TunerChannel channel = (channelId == -1) ? null
-                        : mChannelDataManager.getChannel(channelId);
-                if (channelId == -1) {
-                    recording = parseRecording(channelUri);
-                }
-                if (channel == null && recording == null) {
-                    Log.w(TAG, "onTune() is failed. Can't find channel for " + channelUri);
-                    stopTune();
+            case MSG_STOP_TUNE:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_STOP_TUNE");
+                    mChannel = null;
+                    stopPlayback(true);
+                    stopCaptionTrack();
+                    resetTvTracks();
                     notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN);
                     return true;
                 }
-                clearCallbacksAndMessagesSafely();
-                mChannelDataManager.removeAllCallbacksAndMessages();
-                if (channel != null) {
-                    mChannelDataManager.requestProgramsData(channel);
-                }
-                prepareTune(channel, recording);
-                // TODO: Need to refactor. notifyContentAllowed() should not be called if parental
-                // control is turned on.
-                mSession.notifyContentAllowed();
-                resetTvTracks();
-                resetPlayback();
-                mHandler.sendEmptyMessageDelayed(MSG_RESCHEDULE_PROGRAMS,
-                        RESCHEDULE_PROGRAMS_INITIAL_DELAY_MS);
-                return true;
-            }
-            case MSG_STOP_TUNE: {
-                if (DEBUG) Log.d(TAG, "MSG_STOP_TUNE");
-                mChannel = null;
-                stopPlayback(true);
-                stopCaptionTrack();
-                resetTvTracks();
-                notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN);
-                return true;
-            }
-            case MSG_RELEASE: {
-                if (DEBUG) Log.d(TAG, "MSG_RELEASE");
-                mHandler.removeCallbacksAndMessages(null);
-                stopPlayback(true);
-                stopCaptionTrack();
-                mSourceManager.release();
-                mHandler.getLooper().quitSafely();
-                if (mIsActiveSession) {
-                    sActiveSessionSemaphore.release();
-                }
-                return true;
-            }
-            case MSG_RETRY_PLAYBACK: {
-                if (System.identityHashCode(mPlayer) == (int) msg.obj) {
-                    Log.i(TAG, "Retrying the playback for channel: " + mChannel);
-                    mHandler.removeMessages(MSG_RETRY_PLAYBACK);
-                    // When there is a request of retrying playback, don't reuse TunerHal.
-                    mSourceManager.setKeepTuneStatus(false);
-                    mRetryCount++;
-                    if (DEBUG) {
-                        Log.d(TAG, "MSG_RETRY_PLAYBACK " + mRetryCount);
+            case MSG_RELEASE:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_RELEASE");
+                    mHandler.removeCallbacksAndMessages(null);
+                    stopPlayback(true);
+                    stopCaptionTrack();
+                    mSourceManager.release();
+                    mHandler.getLooper().quitSafely();
+                    if (mIsActiveSession) {
+                        sActiveSessionSemaphore.release();
                     }
-                    mChannelDataManager.removeAllCallbacksAndMessages();
-                    if (mRetryCount <= MAX_IMMEDIATE_RETRY_COUNT) {
-                        resetPlayback();
-                    } else {
-                        // When it reaches this point, it may be due to an error that occurred in
-                        // the tuner device. Calling stopPlayback() resets the tuner device
-                        // to recover from the error.
-                        stopPlayback(false);
-                        stopCaptionTrack();
-
-                        notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL);
-                        Log.i(TAG, "Notify weak signal since fail to retry playback");
-
-                        // After MAX_IMMEDIATE_RETRY_COUNT, give some delay of an empirically chosen
-                        // value before recovering the playback.
-                        mHandler.sendEmptyMessageDelayed(MSG_RESET_PLAYBACK,
-                                RECOVER_STOPPED_PLAYBACK_PERIOD_MS);
-                    }
-                }
-                return true;
-            }
-            case MSG_RESET_PLAYBACK: {
-                if (DEBUG) Log.d(TAG, "MSG_RESET_PLAYBACK");
-                mChannelDataManager.removeAllCallbacksAndMessages();
-                resetPlayback();
-                return true;
-            }
-            case MSG_START_PLAYBACK: {
-                if (DEBUG) Log.d(TAG, "MSG_START_PLAYBACK");
-                if (mChannel != null || mRecordingId != null) {
-                    startPlayback((int) msg.obj);
-                }
-                return true;
-            }
-            case MSG_UPDATE_PROGRAM: {
-                if (mChannel != null) {
-                    EitItem program = (EitItem) msg.obj;
-                    updateTvTracks(program, false);
-                    mHandler.sendEmptyMessage(MSG_PARENTAL_CONTROLS);
-                }
-                return true;
-            }
-            case MSG_SCHEDULE_OF_PROGRAMS: {
-                mHandler.removeMessages(MSG_UPDATE_PROGRAM);
-                Pair<TunerChannel, List<EitItem>> pair =
-                        (Pair<TunerChannel, List<EitItem>>) msg.obj;
-                TunerChannel channel = pair.first;
-                if (mChannel == null) {
                     return true;
                 }
-                if (mChannel != null && mChannel.compareTo(channel) != 0) {
-                    return true;
-                }
-                mPrograms = pair.second;
-                EitItem currentProgram = getCurrentProgram();
-                if (currentProgram == null) {
-                    mProgram = null;
-                }
-                long currentTimeMs = getCurrentPosition();
-                if (mPrograms != null) {
-                    for (EitItem item : mPrograms) {
-                        if (currentProgram != null && currentProgram.compareTo(item) == 0) {
-                            if (DEBUG) {
-                                Log.d(TAG, "Update current TvTracks " + item);
-                            }
-                            if (mProgram != null && mProgram.compareTo(item) == 0) {
-                                continue;
-                            }
-                            mProgram = item;
-                            updateTvTracks(item, false);
-                        } else if (item.getStartTimeUtcMillis() > currentTimeMs) {
-                            if (DEBUG) {
-                                Log.d(TAG, "Update next TvTracks " + item + " "
-                                        + (item.getStartTimeUtcMillis() - currentTimeMs));
-                            }
-                            mHandler.sendMessageDelayed(
-                                    mHandler.obtainMessage(MSG_UPDATE_PROGRAM, item),
-                                    item.getStartTimeUtcMillis() - currentTimeMs);
+            case MSG_RETRY_PLAYBACK:
+                {
+                    if (System.identityHashCode(mPlayer) == (int) msg.obj) {
+                        Log.i(TAG, "Retrying the playback for channel: " + mChannel);
+                        mHandler.removeMessages(MSG_RETRY_PLAYBACK);
+                        // When there is a request of retrying playback, don't reuse TunerHal.
+                        mSourceManager.setKeepTuneStatus(false);
+                        mRetryCount++;
+                        if (DEBUG) {
+                            Log.d(TAG, "MSG_RETRY_PLAYBACK " + mRetryCount);
+                        }
+                        mChannelDataManager.removeAllCallbacksAndMessages();
+                        if (mRetryCount <= MAX_IMMEDIATE_RETRY_COUNT) {
+                            resetPlayback();
+                        } else {
+                            // When it reaches this point, it may be due to an error that occurred
+                            // in
+                            // the tuner device. Calling stopPlayback() resets the tuner device
+                            // to recover from the error.
+                            stopPlayback(false);
+                            stopCaptionTrack();
+
+                            notifyVideoUnavailable(
+                                    TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL);
+                            Log.i(TAG, "Notify weak signal since fail to retry playback");
+
+                            // After MAX_IMMEDIATE_RETRY_COUNT, give some delay of an empirically
+                            // chosen
+                            // value before recovering the playback.
+                            mHandler.sendEmptyMessageDelayed(
+                                    MSG_RESET_PLAYBACK, RECOVER_STOPPED_PLAYBACK_PERIOD_MS);
                         }
                     }
+                    return true;
                 }
-                mHandler.sendEmptyMessage(MSG_PARENTAL_CONTROLS);
-                return true;
-            }
-            case MSG_UPDATE_CHANNEL_INFO: {
-                TunerChannel channel = (TunerChannel) msg.obj;
-                if (mChannel != null && mChannel.compareTo(channel) == 0) {
-                    updateChannelInfo(channel);
+            case MSG_RESET_PLAYBACK:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_RESET_PLAYBACK");
+                    mChannelDataManager.removeAllCallbacksAndMessages();
+                    resetPlayback();
+                    return true;
                 }
-                return true;
-            }
-            case MSG_PROGRAM_DATA_RESULT: {
-                TunerChannel channel = (TunerChannel) ((Pair) msg.obj).first;
+            case MSG_START_PLAYBACK:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_START_PLAYBACK");
+                    if (mChannel != null || mRecordingId != null) {
+                        startPlayback((int) msg.obj);
+                    }
+                    return true;
+                }
+            case MSG_UPDATE_PROGRAM:
+                {
+                    if (mChannel != null) {
+                        EitItem program = (EitItem) msg.obj;
+                        updateTvTracks(program, false);
+                        mHandler.sendEmptyMessage(MSG_PARENTAL_CONTROLS);
+                    }
+                    return true;
+                }
+            case MSG_SCHEDULE_OF_PROGRAMS:
+                {
+                    mHandler.removeMessages(MSG_UPDATE_PROGRAM);
+                    Pair<TunerChannel, List<EitItem>> pair =
+                            (Pair<TunerChannel, List<EitItem>>) msg.obj;
+                    TunerChannel channel = pair.first;
+                    if (mChannel == null) {
+                        return true;
+                    }
+                    if (mChannel != null && mChannel.compareTo(channel) != 0) {
+                        return true;
+                    }
+                    mPrograms = pair.second;
+                    EitItem currentProgram = getCurrentProgram();
+                    if (currentProgram == null) {
+                        mProgram = null;
+                    }
+                    long currentTimeMs = getCurrentPosition();
+                    if (mPrograms != null) {
+                        for (EitItem item : mPrograms) {
+                            if (currentProgram != null && currentProgram.compareTo(item) == 0) {
+                                if (DEBUG) {
+                                    Log.d(TAG, "Update current TvTracks " + item);
+                                }
+                                if (mProgram != null && mProgram.compareTo(item) == 0) {
+                                    continue;
+                                }
+                                mProgram = item;
+                                updateTvTracks(item, false);
+                            } else if (item.getStartTimeUtcMillis() > currentTimeMs) {
+                                if (DEBUG) {
+                                    Log.d(
+                                            TAG,
+                                            "Update next TvTracks "
+                                                    + item
+                                                    + " "
+                                                    + (item.getStartTimeUtcMillis()
+                                                            - currentTimeMs));
+                                }
+                                mHandler.sendMessageDelayed(
+                                        mHandler.obtainMessage(MSG_UPDATE_PROGRAM, item),
+                                        item.getStartTimeUtcMillis() - currentTimeMs);
+                            }
+                        }
+                    }
+                    mHandler.sendEmptyMessage(MSG_PARENTAL_CONTROLS);
+                    return true;
+                }
+            case MSG_UPDATE_CHANNEL_INFO:
+                {
+                    TunerChannel channel = (TunerChannel) msg.obj;
+                    if (mChannel != null && mChannel.compareTo(channel) == 0) {
+                        updateChannelInfo(channel);
+                    }
+                    return true;
+                }
+            case MSG_PROGRAM_DATA_RESULT:
+                {
+                    TunerChannel channel = (TunerChannel) ((Pair) msg.obj).first;
 
-                // If there already exists, skip it since real-time data is a top priority,
-                if (mChannel != null && mChannel.compareTo(channel) == 0
-                        && mPrograms == null && mProgram == null) {
-                    sendMessage(MSG_SCHEDULE_OF_PROGRAMS, msg.obj);
-                }
-                return true;
-            }
-            case MSG_TRICKPLAY_BY_SEEK: {
-                if (mPlayer == null) {
+                    // If there already exists, skip it since real-time data is a top priority,
+                    if (mChannel != null
+                            && mChannel.compareTo(channel) == 0
+                            && mPrograms == null
+                            && mProgram == null) {
+                        sendMessage(MSG_SCHEDULE_OF_PROGRAMS, msg.obj);
+                    }
                     return true;
                 }
-                doTrickplayBySeek(msg.arg1);
-                return true;
-            }
-            case MSG_SMOOTH_TRICKPLAY_MONITOR: {
-                if (mPlayer == null) {
-                    return true;
-                }
-                long systemCurrentTime = System.currentTimeMillis();
-                long position = getCurrentPosition();
-                if (mRecordingId == null) {
-                    // Checks if the position exceeds the upper bound when forwarding,
-                    // or exceed the lower bound when rewinding.
-                    // If the direction is not checked, there can be some issues.
-                    // (See b/29939781 for more details.)
-                    if ((position > systemCurrentTime && mPlaybackParams.getSpeed() > 0L)
-                            || (position < mBufferStartTimeMs && mPlaybackParams.getSpeed() < 0L)) {
-                        doTimeShiftResume();
+            case MSG_TRICKPLAY_BY_SEEK:
+                {
+                    if (mPlayer == null) {
                         return true;
                     }
-                } else {
-                    if (position > mRecordingDuration || position < 0) {
-                        doTimeShiftPause();
+                    doTrickplayBySeek(msg.arg1);
+                    return true;
+                }
+            case MSG_SMOOTH_TRICKPLAY_MONITOR:
+                {
+                    if (mPlayer == null) {
                         return true;
                     }
-                }
-                mHandler.sendEmptyMessageDelayed(MSG_SMOOTH_TRICKPLAY_MONITOR,
-                        TRICKPLAY_MONITOR_INTERVAL_MS);
-                return true;
-            }
-            case MSG_RESCHEDULE_PROGRAMS: {
-                if (mHandler.hasMessages(MSG_SCHEDULE_OF_PROGRAMS)) {
-                    mHandler.sendEmptyMessage(MSG_RESCHEDULE_PROGRAMS);
-                } else {
-                    doReschedulePrograms();
-                }
-                return true;
-            }
-            case MSG_PARENTAL_CONTROLS: {
-                doParentalControls();
-                mHandler.removeMessages(MSG_PARENTAL_CONTROLS);
-                mHandler.sendEmptyMessageDelayed(MSG_PARENTAL_CONTROLS,
-                        PARENTAL_CONTROLS_INTERVAL_MS);
-                return true;
-            }
-            case MSG_UNBLOCKED_RATING: {
-                mUnblockedContentRating = (TvContentRating) msg.obj;
-                doParentalControls();
-                mHandler.removeMessages(MSG_PARENTAL_CONTROLS);
-                mHandler.sendEmptyMessageDelayed(MSG_PARENTAL_CONTROLS,
-                        PARENTAL_CONTROLS_INTERVAL_MS);
-                return true;
-            }
-            case MSG_DISCOVER_CAPTION_SERVICE_NUMBER: {
-                int serviceNumber = (int) msg.obj;
-                doDiscoverCaptionServiceNumber(serviceNumber);
-                return true;
-            }
-            case MSG_SELECT_TRACK: {
-                if (mChannel != null || mRecordingId != null) {
-                    doSelectTrack(msg.arg1, (String) msg.obj);
-                }
-                return true;
-            }
-            case MSG_UPDATE_CAPTION_TRACK: {
-                if (mCaptionEnabled) {
-                    startCaptionTrack();
-                } else {
-                    stopCaptionTrack();
-                }
-                return true;
-            }
-            case MSG_TIMESHIFT_PAUSE: {
-                if (DEBUG) Log.d(TAG, "MSG_TIMESHIFT_PAUSE");
-                if (mPlayer == null) {
-                    return true;
-                }
-                setTrickplayEnabledIfNeeded();
-                doTimeShiftPause();
-                return true;
-            }
-            case MSG_TIMESHIFT_RESUME: {
-                if (DEBUG) Log.d(TAG, "MSG_TIMESHIFT_RESUME");
-                if (mPlayer == null) {
-                    return true;
-                }
-                setTrickplayEnabledIfNeeded();
-                doTimeShiftResume();
-                return true;
-            }
-            case MSG_TIMESHIFT_SEEK_TO: {
-                long position = (long) msg.obj;
-                if (DEBUG) Log.d(TAG, "MSG_TIMESHIFT_SEEK_TO (position=" + position + ")");
-                if (mPlayer == null) {
-                    return true;
-                }
-                setTrickplayEnabledIfNeeded();
-                doTimeShiftSeekTo(position);
-                return true;
-            }
-            case MSG_TIMESHIFT_SET_PLAYBACKPARAMS: {
-                if (mPlayer == null) {
-                    return true;
-                }
-                setTrickplayEnabledIfNeeded();
-                doTimeShiftSetPlaybackParams((PlaybackParams) msg.obj);
-                return true;
-            }
-            case MSG_AUDIO_CAPABILITIES_CHANGED: {
-                AudioCapabilities capabilities = (AudioCapabilities) msg.obj;
-                if (DEBUG) {
-                    Log.d(TAG, "MSG_AUDIO_CAPABILITIES_CHANGED " + capabilities);
-                }
-                if (capabilities == null) {
-                    return true;
-                }
-                if (!capabilities.equals(mAudioCapabilities)) {
-                    // HDMI supported encodings are changed. restart player.
-                    mAudioCapabilities = capabilities;
-                    resetPlayback();
-                }
-                return true;
-            }
-            case MSG_SET_STREAM_VOLUME: {
-                if (mPlayer != null && mPlayer.isPlaying()) {
-                    mPlayer.setVolume(mVolume);
-                }
-                return true;
-            }
-            case MSG_TUNER_PREFERENCES_CHANGED: {
-                mHandler.removeMessages(MSG_TUNER_PREFERENCES_CHANGED);
-                @TrickplaySetting int trickplaySetting =
-                        TunerPreferences.getTrickplaySetting(mContext);
-                if (trickplaySetting != mTrickplaySetting) {
-                    boolean wasTrcikplayEnabled =
-                        mTrickplaySetting != TunerPreferences.TRICKPLAY_SETTING_DISABLED;
-                    boolean isTrickplayEnabled =
-                        trickplaySetting != TunerPreferences.TRICKPLAY_SETTING_DISABLED;
-                    mTrickplaySetting = trickplaySetting;
-                    if (isTrickplayEnabled != wasTrcikplayEnabled) {
-                        sendMessage(MSG_RESET_PLAYBACK, System.identityHashCode(mPlayer));
+                    long systemCurrentTime = System.currentTimeMillis();
+                    long position = getCurrentPosition();
+                    if (mRecordingId == null) {
+                        // Checks if the position exceeds the upper bound when forwarding,
+                        // or exceed the lower bound when rewinding.
+                        // If the direction is not checked, there can be some issues.
+                        // (See b/29939781 for more details.)
+                        if ((position > systemCurrentTime && mPlaybackParams.getSpeed() > 0L)
+                                || (position < mBufferStartTimeMs
+                                        && mPlaybackParams.getSpeed() < 0L)) {
+                            doTimeShiftResume();
+                            return true;
+                        }
+                    } else {
+                        if (position > mRecordingDuration || position < 0) {
+                            doTimeShiftPause();
+                            return true;
+                        }
                     }
-                }
-                return true;
-            }
-            case MSG_BUFFER_START_TIME_CHANGED: {
-                if (mPlayer == null) {
+                    mHandler.sendEmptyMessageDelayed(
+                            MSG_SMOOTH_TRICKPLAY_MONITOR, TRICKPLAY_MONITOR_INTERVAL_MS);
                     return true;
                 }
-                mBufferStartTimeMs = (long) msg.obj;
-                if (!hasEnoughBackwardBuffer()
-                        && (!mPlayer.isPlaying() || mPlaybackParams.getSpeed() < 1.0f)) {
-                    mPlayer.setPlayWhenReady(true);
-                    mPlayer.setAudioTrackAndClosedCaption(true);
-                    mPlaybackParams.setSpeed(1.0f);
-                }
-                return true;
-            }
-            case MSG_BUFFER_STATE_CHANGED: {
-                boolean available = (boolean) msg.obj;
-                mSession.notifyTimeShiftStatusChanged(available
-                        ? TvInputManager.TIME_SHIFT_STATUS_AVAILABLE
-                        : TvInputManager.TIME_SHIFT_STATUS_UNAVAILABLE);
-                return true;
-            }
-            case MSG_CHECK_SIGNAL: {
-                if (mChannel == null || mPlayer == null) {
+            case MSG_RESCHEDULE_PROGRAMS:
+                {
+                    if (mHandler.hasMessages(MSG_SCHEDULE_OF_PROGRAMS)) {
+                        mHandler.sendEmptyMessage(MSG_RESCHEDULE_PROGRAMS);
+                    } else {
+                        doReschedulePrograms();
+                    }
                     return true;
                 }
-                TsDataSource source = mPlayer.getDataSource();
-                long limitInBytes = source != null ? source.getBufferedPosition() : 0L;
-                if (TunerDebug.ENABLED) {
-                    TunerDebug.calculateDiff();
-                    mSession.sendUiMessage(TunerSession.MSG_UI_SET_STATUS_TEXT,
-                            Html.fromHtml(
-                                    StatusTextUtils.getStatusWarningInHTML(
-                                            (limitInBytes - mLastLimitInBytes)
-                                                    / TS_PACKET_SIZE,
-                                            TunerDebug.getVideoFrameDrop(),
-                                            TunerDebug.getBytesInQueue(),
-                                            TunerDebug.getAudioPositionUs(),
-                                            TunerDebug.getAudioPositionUsRate(),
-                                            TunerDebug.getAudioPtsUs(),
-                                            TunerDebug.getAudioPtsUsRate(),
-                                            TunerDebug.getVideoPtsUs(),
-                                            TunerDebug.getVideoPtsUsRate()
-                                    )));
+            case MSG_PARENTAL_CONTROLS:
+                {
+                    doParentalControls();
+                    mHandler.removeMessages(MSG_PARENTAL_CONTROLS);
+                    mHandler.sendEmptyMessageDelayed(
+                            MSG_PARENTAL_CONTROLS, PARENTAL_CONTROLS_INTERVAL_MS);
+                    return true;
                 }
-                mSession.sendUiMessage(TunerSession.MSG_UI_HIDE_MESSAGE);
-                long currentTime = SystemClock.elapsedRealtime();
-                long bufferingTimeMs = mBufferingStartTimeMs != INVALID_TIME
-                        ? currentTime - mBufferingStartTimeMs : mBufferingStartTimeMs;
-                long preparingTimeMs = mPreparingStartTimeMs != INVALID_TIME
-                        ? currentTime - mPreparingStartTimeMs : mPreparingStartTimeMs;
-                boolean isBufferingTooLong =
-                        bufferingTimeMs > PLAYBACK_STATE_CHANGED_WAITING_THRESHOLD_MS;
-                boolean isPreparingTooLong =
-                        preparingTimeMs > PLAYBACK_STATE_CHANGED_WAITING_THRESHOLD_MS;
-                boolean isWeakSignal = source != null
-                        && mChannel.getType() != Channel.TYPE_FILE
-                        && (isBufferingTooLong || isPreparingTooLong);
-                if (isWeakSignal && !mReportedWeakSignal) {
-                    if (!mHandler.hasMessages(MSG_RETRY_PLAYBACK)) {
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_RETRY_PLAYBACK,
-                                System.identityHashCode(mPlayer)), PLAYBACK_RETRY_DELAY_MS);
+            case MSG_UNBLOCKED_RATING:
+                {
+                    mUnblockedContentRating = (TvContentRating) msg.obj;
+                    doParentalControls();
+                    mHandler.removeMessages(MSG_PARENTAL_CONTROLS);
+                    mHandler.sendEmptyMessageDelayed(
+                            MSG_PARENTAL_CONTROLS, PARENTAL_CONTROLS_INTERVAL_MS);
+                    return true;
+                }
+            case MSG_DISCOVER_CAPTION_SERVICE_NUMBER:
+                {
+                    int serviceNumber = (int) msg.obj;
+                    doDiscoverCaptionServiceNumber(serviceNumber);
+                    return true;
+                }
+            case MSG_SELECT_TRACK:
+                {
+                    if (mChannel != null || mRecordingId != null) {
+                        doSelectTrack(msg.arg1, (String) msg.obj);
                     }
-                    if (mPlayer != null) {
-                        mPlayer.setAudioTrackAndClosedCaption(false);
+                    return true;
+                }
+            case MSG_UPDATE_CAPTION_TRACK:
+                {
+                    if (mCaptionEnabled) {
+                        startCaptionTrack();
+                    } else {
+                        stopCaptionTrack();
                     }
-                    notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL);
-                    Log.i(TAG, "Notify weak signal due to signal check, " + String.format(
-                            "packetsPerSec:%d, bufferingTimeMs:%d, preparingTimeMs:%d, " +
-                                    "videoFrameDrop:%d",
-                            (limitInBytes - mLastLimitInBytes) / TS_PACKET_SIZE,
-                            bufferingTimeMs,
-                            preparingTimeMs,
-                            TunerDebug.getVideoFrameDrop()
-                    ));
-                } else if (!isWeakSignal && mReportedWeakSignal) {
-                    boolean isPlaybackStable = mReadyStartTimeMs != INVALID_TIME
-                            && currentTime - mReadyStartTimeMs
-                                    > PLAYBACK_STATE_CHANGED_WAITING_THRESHOLD_MS;
-                    if (!isPlaybackStable) {
-                        // Wait until playback becomes stable.
-                    } else if (mReportedDrawnToSurface) {
-                        mHandler.removeMessages(MSG_RETRY_PLAYBACK);
-                        notifyVideoAvailable();
+                    return true;
+                }
+            case MSG_TIMESHIFT_PAUSE:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_TIMESHIFT_PAUSE");
+                    if (mPlayer == null) {
+                        return true;
+                    }
+                    setTrickplayEnabledIfNeeded();
+                    doTimeShiftPause();
+                    return true;
+                }
+            case MSG_TIMESHIFT_RESUME:
+                {
+                    if (DEBUG) Log.d(TAG, "MSG_TIMESHIFT_RESUME");
+                    if (mPlayer == null) {
+                        return true;
+                    }
+                    setTrickplayEnabledIfNeeded();
+                    doTimeShiftResume();
+                    return true;
+                }
+            case MSG_TIMESHIFT_SEEK_TO:
+                {
+                    long position = (long) msg.obj;
+                    if (DEBUG) Log.d(TAG, "MSG_TIMESHIFT_SEEK_TO (position=" + position + ")");
+                    if (mPlayer == null) {
+                        return true;
+                    }
+                    setTrickplayEnabledIfNeeded();
+                    doTimeShiftSeekTo(position);
+                    return true;
+                }
+            case MSG_TIMESHIFT_SET_PLAYBACKPARAMS:
+                {
+                    if (mPlayer == null) {
+                        return true;
+                    }
+                    setTrickplayEnabledIfNeeded();
+                    doTimeShiftSetPlaybackParams((PlaybackParams) msg.obj);
+                    return true;
+                }
+            case MSG_AUDIO_CAPABILITIES_CHANGED:
+                {
+                    AudioCapabilities capabilities = (AudioCapabilities) msg.obj;
+                    if (DEBUG) {
+                        Log.d(TAG, "MSG_AUDIO_CAPABILITIES_CHANGED " + capabilities);
+                    }
+                    if (capabilities == null) {
+                        return true;
+                    }
+                    if (!capabilities.equals(mAudioCapabilities)) {
+                        // HDMI supported encodings are changed. restart player.
+                        mAudioCapabilities = capabilities;
+                        resetPlayback();
+                    }
+                    return true;
+                }
+            case MSG_SET_STREAM_VOLUME:
+                {
+                    if (mPlayer != null && mPlayer.isPlaying()) {
+                        mPlayer.setVolume(mVolume);
+                    }
+                    return true;
+                }
+            case MSG_TUNER_PREFERENCES_CHANGED:
+                {
+                    mHandler.removeMessages(MSG_TUNER_PREFERENCES_CHANGED);
+                    @TrickplaySetting
+                    int trickplaySetting = TunerPreferences.getTrickplaySetting(mContext);
+                    if (trickplaySetting != mTrickplaySetting) {
+                        boolean wasTrcikplayEnabled =
+                                mTrickplaySetting != TunerPreferences.TRICKPLAY_SETTING_DISABLED;
+                        boolean isTrickplayEnabled =
+                                trickplaySetting != TunerPreferences.TRICKPLAY_SETTING_DISABLED;
+                        mTrickplaySetting = trickplaySetting;
+                        if (isTrickplayEnabled != wasTrcikplayEnabled) {
+                            sendMessage(MSG_RESET_PLAYBACK, System.identityHashCode(mPlayer));
+                        }
+                    }
+                    return true;
+                }
+            case MSG_BUFFER_START_TIME_CHANGED:
+                {
+                    if (mPlayer == null) {
+                        return true;
+                    }
+                    mBufferStartTimeMs = (long) msg.obj;
+                    if (!hasEnoughBackwardBuffer()
+                            && (!mPlayer.isPlaying() || mPlaybackParams.getSpeed() < 1.0f)) {
+                        mPlayer.setPlayWhenReady(true);
                         mPlayer.setAudioTrackAndClosedCaption(true);
+                        mPlaybackParams.setSpeed(1.0f);
                     }
+                    return true;
                 }
-                mLastLimitInBytes = limitInBytes;
-                mHandler.sendEmptyMessageDelayed(MSG_CHECK_SIGNAL, CHECK_NO_SIGNAL_PERIOD_MS);
-                return true;
-            }
-            case MSG_SET_SURFACE: {
-                if (mPlayer != null) {
-                    mPlayer.setSurface(mSurface);
-                } else {
-                    // TODO: Since surface is dynamically set, we can remove the dependency of
-                    // playback start on mSurface nullity.
-                    resetPlayback();
+            case MSG_BUFFER_STATE_CHANGED:
+                {
+                    boolean available = (boolean) msg.obj;
+                    mSession.notifyTimeShiftStatusChanged(
+                            available
+                                    ? TvInputManager.TIME_SHIFT_STATUS_AVAILABLE
+                                    : TvInputManager.TIME_SHIFT_STATUS_UNAVAILABLE);
+                    return true;
                 }
-                return true;
-            }
-            case MSG_NOTIFY_AUDIO_TRACK_UPDATED: {
-                notifyAudioTracksUpdated();
-                return true;
-            }
-            default: {
-                Log.w(TAG, "Unhandled message code: " + msg.what);
-                return false;
-            }
+            case MSG_CHECK_SIGNAL:
+                {
+                    if (mChannel == null || mPlayer == null) {
+                        return true;
+                    }
+                    TsDataSource source = mPlayer.getDataSource();
+                    long limitInBytes = source != null ? source.getBufferedPosition() : 0L;
+                    if (TunerDebug.ENABLED) {
+                        TunerDebug.calculateDiff();
+                        mSession.sendUiMessage(
+                                TunerSession.MSG_UI_SET_STATUS_TEXT,
+                                Html.fromHtml(
+                                        StatusTextUtils.getStatusWarningInHTML(
+                                                (limitInBytes - mLastLimitInBytes) / TS_PACKET_SIZE,
+                                                TunerDebug.getVideoFrameDrop(),
+                                                TunerDebug.getBytesInQueue(),
+                                                TunerDebug.getAudioPositionUs(),
+                                                TunerDebug.getAudioPositionUsRate(),
+                                                TunerDebug.getAudioPtsUs(),
+                                                TunerDebug.getAudioPtsUsRate(),
+                                                TunerDebug.getVideoPtsUs(),
+                                                TunerDebug.getVideoPtsUsRate())));
+                    }
+                    mSession.sendUiMessage(TunerSession.MSG_UI_HIDE_MESSAGE);
+                    long currentTime = SystemClock.elapsedRealtime();
+                    long bufferingTimeMs =
+                            mBufferingStartTimeMs != INVALID_TIME
+                                    ? currentTime - mBufferingStartTimeMs
+                                    : mBufferingStartTimeMs;
+                    long preparingTimeMs =
+                            mPreparingStartTimeMs != INVALID_TIME
+                                    ? currentTime - mPreparingStartTimeMs
+                                    : mPreparingStartTimeMs;
+                    boolean isBufferingTooLong =
+                            bufferingTimeMs > PLAYBACK_STATE_CHANGED_WAITING_THRESHOLD_MS;
+                    boolean isPreparingTooLong =
+                            preparingTimeMs > PLAYBACK_STATE_CHANGED_WAITING_THRESHOLD_MS;
+                    boolean isWeakSignal =
+                            source != null
+                                    && mChannel.getType() != Channel.TYPE_FILE
+                                    && (isBufferingTooLong || isPreparingTooLong);
+                    if (isWeakSignal && !mReportedWeakSignal) {
+                        if (!mHandler.hasMessages(MSG_RETRY_PLAYBACK)) {
+                            mHandler.sendMessageDelayed(
+                                    mHandler.obtainMessage(
+                                            MSG_RETRY_PLAYBACK, System.identityHashCode(mPlayer)),
+                                    PLAYBACK_RETRY_DELAY_MS);
+                        }
+                        if (mPlayer != null) {
+                            mPlayer.setAudioTrackAndClosedCaption(false);
+                        }
+                        notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL);
+                        Log.i(
+                                TAG,
+                                "Notify weak signal due to signal check, "
+                                        + String.format(
+                                                "packetsPerSec:%d, bufferingTimeMs:%d, preparingTimeMs:%d, "
+                                                        + "videoFrameDrop:%d",
+                                                (limitInBytes - mLastLimitInBytes) / TS_PACKET_SIZE,
+                                                bufferingTimeMs,
+                                                preparingTimeMs,
+                                                TunerDebug.getVideoFrameDrop()));
+                    } else if (!isWeakSignal && mReportedWeakSignal) {
+                        boolean isPlaybackStable =
+                                mReadyStartTimeMs != INVALID_TIME
+                                        && currentTime - mReadyStartTimeMs
+                                                > PLAYBACK_STATE_CHANGED_WAITING_THRESHOLD_MS;
+                        if (!isPlaybackStable) {
+                            // Wait until playback becomes stable.
+                        } else if (mReportedDrawnToSurface) {
+                            mHandler.removeMessages(MSG_RETRY_PLAYBACK);
+                            notifyVideoAvailable();
+                            mPlayer.setAudioTrackAndClosedCaption(true);
+                        }
+                    }
+                    mLastLimitInBytes = limitInBytes;
+                    mHandler.sendEmptyMessageDelayed(MSG_CHECK_SIGNAL, CHECK_NO_SIGNAL_PERIOD_MS);
+                    return true;
+                }
+            case MSG_SET_SURFACE:
+                {
+                    if (mPlayer != null) {
+                        mPlayer.setSurface(mSurface);
+                    } else {
+                        // TODO: Since surface is dynamically set, we can remove the dependency of
+                        // playback start on mSurface nullity.
+                        resetPlayback();
+                    }
+                    return true;
+                }
+            case MSG_NOTIFY_AUDIO_TRACK_UPDATED:
+                {
+                    notifyAudioTracksUpdated();
+                    return true;
+                }
+            default:
+                {
+                    Log.w(TAG, "Unhandled message code: " + msg.what);
+                    return false;
+                }
         }
     }
 
     // Private methods
     private void doSelectTrack(int type, String trackId) {
-        int numTrackId = trackId != null
-                ? Integer.parseInt(trackId.substring(TRACK_PREFIX_SIZE)) : -1;
+        int numTrackId =
+                trackId != null ? Integer.parseInt(trackId.substring(TRACK_PREFIX_SIZE)) : -1;
         if (type == TvTrackInfo.TYPE_AUDIO) {
             if (trackId == null) {
                 return;
@@ -1138,14 +1193,13 @@ public class TunerSessionWorker implements PlaybackBufferListener,
     }
 
     private void setTrickplayEnabledIfNeeded() {
-        if (mChannel == null ||
-                mTrickplayModeCustomization != TvCustomizationManager.TRICKPLAY_MODE_ENABLED) {
+        if (mChannel == null
+                || mTrickplayModeCustomization != TvCustomizationManager.TRICKPLAY_MODE_ENABLED) {
             return;
         }
         if (mTrickplaySetting == TunerPreferences.TRICKPLAY_SETTING_NOT_SET) {
             mTrickplaySetting = TunerPreferences.TRICKPLAY_SETTING_ENABLED;
-            TunerPreferences.setTrickplaySetting(
-                    mContext, mTrickplaySetting);
+            TunerPreferences.setTrickplaySetting(mContext, mTrickplaySetting);
         }
     }
 
@@ -1171,18 +1225,26 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             StorageManager storageManager =
                     new DvrStorageManager(new File(getRecordingPath()), false);
             bufferManager = new BufferManager(storageManager);
-            updateCaptionTracks(((DvrStorageManager)storageManager).readCaptionInfoFiles());
+            updateCaptionTracks(((DvrStorageManager) storageManager).readCaptionInfoFiles());
         } else if (!mTrickplayDisabledByStorageIssue
                 && mTrickplaySetting != TunerPreferences.TRICKPLAY_SETTING_DISABLED
                 && mMaxTrickplayBufferSizeMb >= MIN_BUFFER_SIZE_DEF) {
-            bufferManager = new BufferManager(new TrickplayStorageManager(mContext,
-                    mTrickplayBufferDir, 1024L * 1024 * mMaxTrickplayBufferSizeMb));
+            bufferManager =
+                    new BufferManager(
+                            new TrickplayStorageManager(
+                                    mContext,
+                                    mTrickplayBufferDir,
+                                    1024L * 1024 * mMaxTrickplayBufferSizeMb));
         } else {
             Log.w(TAG, "Trickplay is disabled.");
         }
-        MpegTsPlayer player = new MpegTsPlayer(
-                new MpegTsRendererBuilder(mContext, bufferManager, this),
-                mHandler, mSourceManager, capabilities, this);
+        MpegTsPlayer player =
+                new MpegTsPlayer(
+                        new MpegTsRendererBuilder(mContext, bufferManager, this),
+                        mHandler,
+                        mSourceManager,
+                        capabilities,
+                        this);
         Log.i(TAG, "Passthrough AC3 renderer");
         if (DEBUG) Log.d(TAG, "ExoPlayer created");
         return player;
@@ -1190,8 +1252,7 @@ public class TunerSessionWorker implements PlaybackBufferListener,
 
     private void startCaptionTrack() {
         if (mCaptionEnabled && mCaptionTrack != null) {
-            mSession.sendUiMessage(
-                    TunerSession.MSG_UI_START_CAPTION_TRACK, mCaptionTrack);
+            mSession.sendUiMessage(TunerSession.MSG_UI_START_CAPTION_TRACK, mCaptionTrack);
             if (mPlayer != null) {
                 mPlayer.setCaptionServiceNumber(mCaptionTrack.serviceNumber);
             }
@@ -1220,10 +1281,13 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             }
             List<AtscAudioTrack> audioTracks = tvTracksInterface.getAudioTracks();
             List<AtscCaptionTrack> captionTracks = tvTracksInterface.getCaptionTracks();
-            // According to ATSC A/69 chapter 6.9, both PMT and EIT should have descriptors for audio
-            // tracks, but in real world, we see some bogus audio track info in EIT, so, we trust audio
+            // According to ATSC A/69 chapter 6.9, both PMT and EIT should have descriptors for
+            // audio
+            // tracks, but in real world, we see some bogus audio track info in EIT, so, we trust
+            // audio
             // track info in PMT more and use info in EIT only when we have nothing.
-            if (audioTracks != null && !audioTracks.isEmpty()
+            if (audioTracks != null
+                    && !audioTracks.isEmpty()
                     && (mChannel == null || mChannel.getAudioTracks() == null || fromPmt)) {
                 updateAudioTracks(audioTracks);
             }
@@ -1249,8 +1313,11 @@ public class TunerSessionWorker implements PlaybackBufferListener,
 
     private void updateVideoTrack(int width, int height) {
         removeTvTracks(TvTrackInfo.TYPE_VIDEO);
-        mTvTracks.add(new TvTrackInfo.Builder(TvTrackInfo.TYPE_VIDEO, VIDEO_TRACK_ID)
-                .setVideoWidth(width).setVideoHeight(height).build());
+        mTvTracks.add(
+                new TvTrackInfo.Builder(TvTrackInfo.TYPE_VIDEO, VIDEO_TRACK_ID)
+                        .setVideoWidth(width)
+                        .setVideoHeight(height)
+                        .build());
         mSession.notifyTracksChanged(mTvTracks);
         mSession.notifyTrackSelected(TvTrackInfo.TYPE_VIDEO, VIDEO_TRACK_ID);
     }
@@ -1284,16 +1351,22 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             com.google.android.exoplayer.MediaFormat infoFromPlayer =
                     mPlayer.getTrackFormat(MpegTsPlayer.TRACK_TYPE_AUDIO, i);
             AtscAudioTrack infoFromEit = mAudioTrackMap.get(i);
-            AtscAudioTrack infoFromVct = (mChannel != null
-                    && mChannel.getAudioTracks().size() == mAudioTrackMap.size()
-                    && i < mChannel.getAudioTracks().size())
-                    ? mChannel.getAudioTracks().get(i) : null;
-            String language = !TextUtils.isEmpty(infoFromPlayer.language) ? infoFromPlayer.language
-                    : (infoFromEit != null && infoFromEit.language != null) ? infoFromEit.language
-                            : (infoFromVct != null && infoFromVct.language != null)
-                                    ? infoFromVct.language : null;
-            TvTrackInfo.Builder builder = new TvTrackInfo.Builder(
-                    TvTrackInfo.TYPE_AUDIO, AUDIO_TRACK_PREFIX + i);
+            AtscAudioTrack infoFromVct =
+                    (mChannel != null
+                                    && mChannel.getAudioTracks().size() == mAudioTrackMap.size()
+                                    && i < mChannel.getAudioTracks().size())
+                            ? mChannel.getAudioTracks().get(i)
+                            : null;
+            String language =
+                    !TextUtils.isEmpty(infoFromPlayer.language)
+                            ? infoFromPlayer.language
+                            : (infoFromEit != null && infoFromEit.language != null)
+                                    ? infoFromEit.language
+                                    : (infoFromVct != null && infoFromVct.language != null)
+                                            ? infoFromVct.language
+                                            : null;
+            TvTrackInfo.Builder builder =
+                    new TvTrackInfo.Builder(TvTrackInfo.TYPE_AUDIO, AUDIO_TRACK_PREFIX + i);
             builder.setLanguage(language);
             builder.setAudioChannelCount(infoFromPlayer.channelCount);
             builder.setAudioSampleRate(infoFromPlayer.sampleRate);
@@ -1319,7 +1392,8 @@ public class TunerSessionWorker implements PlaybackBufferListener,
                 // The service number of the caption service is used for track id of a subtitle.
                 // Later, when a subtitle is chosen, track id will be passed on to TsParser.
                 TvTrackInfo.Builder builder =
-                        new TvTrackInfo.Builder(TvTrackInfo.TYPE_SUBTITLE,
+                        new TvTrackInfo.Builder(
+                                TvTrackInfo.TYPE_SUBTITLE,
                                 SUBTITLE_TRACK_PREFIX + captionTrack.serviceNumber);
                 builder.setLanguage(language);
                 mTvTracks.add(builder.build());
@@ -1331,9 +1405,13 @@ public class TunerSessionWorker implements PlaybackBufferListener,
 
     private void updateChannelInfo(TunerChannel channel) {
         if (DEBUG) {
-            Log.d(TAG, String.format("Channel Info (old) videoPid: %d audioPid: %d " +
-                    "audioSize: %d", mChannel.getVideoPid(), mChannel.getAudioPid(),
-                    mChannel.getAudioPids().size()));
+            Log.d(
+                    TAG,
+                    String.format(
+                            "Channel Info (old) videoPid: %d audioPid: %d " + "audioSize: %d",
+                            mChannel.getVideoPid(),
+                            mChannel.getAudioPid(),
+                            mChannel.getAudioPids().size()));
         }
 
         // The list of the audio tracks resided in a channel is often changed depending on a
@@ -1356,19 +1434,22 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             }
         }
         mChannel.selectAudioTrack(index);
-        mSession.notifyTrackSelected(TvTrackInfo.TYPE_AUDIO,
-                index == -1 ? null : AUDIO_TRACK_PREFIX + index);
+        mSession.notifyTrackSelected(
+                TvTrackInfo.TYPE_AUDIO, index == -1 ? null : AUDIO_TRACK_PREFIX + index);
 
         // Reset playback if there is a change in the listening streaming PIDs.
-        if (oldVideoPid != mChannel.getVideoPid()
-                || oldAudioPid != mChannel.getAudioPid()) {
+        if (oldVideoPid != mChannel.getVideoPid() || oldAudioPid != mChannel.getAudioPid()) {
             // TODO: Implement a switching between tracks more smoothly.
             resetPlayback();
         }
         if (DEBUG) {
-            Log.d(TAG, String.format("Channel Info (new) videoPid: %d audioPid: %d " +
-                    " audioSize: %d", mChannel.getVideoPid(), mChannel.getAudioPid(),
-                    mChannel.getAudioPids().size()));
+            Log.d(
+                    TAG,
+                    String.format(
+                            "Channel Info (new) videoPid: %d audioPid: %d " + " audioSize: %d",
+                            mChannel.getVideoPid(),
+                            mChannel.getAudioPid(),
+                            mChannel.getAudioPids().size()));
         }
     }
 
@@ -1405,8 +1486,9 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN);
             return;
         }
-        if (mChannel != null && ((mChannel.hasAudio() && !mPlayer.hasAudio())
-                || (mChannel.hasVideo() && !mPlayer.hasVideo()))
+        if (mChannel != null
+                && ((mChannel.hasAudio() && !mPlayer.hasAudio())
+                        || (mChannel.hasVideo() && !mPlayer.hasVideo()))
                 && mChannel.getType() != Channel.TYPE_NETWORK) {
             // If the channel is from network, skip this part since the video and audio tracks
             // information for channels from network are more reliable in the extractor. Otherwise,
@@ -1441,8 +1523,10 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         MpegTsPlayer player = createPlayer(mAudioCapabilities);
         player.setCaptionServiceNumber(Cea708Data.EMPTY_SERVICE_NUMBER);
         player.setVideoEventListener(this);
-        player.setCaptionServiceNumber(mCaptionTrack != null ?
-                mCaptionTrack.serviceNumber : Cea708Data.EMPTY_SERVICE_NUMBER);
+        player.setCaptionServiceNumber(
+                mCaptionTrack != null
+                        ? mCaptionTrack.serviceNumber
+                        : Cea708Data.EMPTY_SERVICE_NUMBER);
         if (!player.prepare(mContext, mChannel, mHasSoftwareAudioDecoder, this)) {
             mSourceManager.setKeepTuneStatus(false);
             player.release();
@@ -1451,8 +1535,10 @@ public class TunerSessionWorker implements PlaybackBufferListener,
                 // case, retry playback immediately may not help.
                 notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL);
                 Log.i(TAG, "Notify weak signal due to player preparation failure");
-                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_RETRY_PLAYBACK,
-                        System.identityHashCode(mPlayer)), PLAYBACK_RETRY_DELAY_MS);
+                mHandler.sendMessageDelayed(
+                        mHandler.obtainMessage(
+                                MSG_RETRY_PLAYBACK, System.identityHashCode(mPlayer)),
+                        PLAYBACK_RETRY_DELAY_MS);
             }
         } else {
             mPlayer = player;
@@ -1500,8 +1586,8 @@ public class TunerSessionWorker implements PlaybackBufferListener,
 
     private void doReschedulePrograms() {
         long currentPositionMs = getCurrentPosition();
-        long forwardDifference = Math.abs(currentPositionMs - mLastPositionMs
-                - RESCHEDULE_PROGRAMS_INTERVAL_MS);
+        long forwardDifference =
+                Math.abs(currentPositionMs - mLastPositionMs - RESCHEDULE_PROGRAMS_INTERVAL_MS);
         mLastPositionMs = currentPositionMs;
 
         // A gap is measured as the time difference between previous and next current position
@@ -1510,20 +1596,23 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         // channel should be rescheduled to new playback timeline.
         if (forwardDifference > RESCHEDULE_PROGRAMS_TOLERANCE_MS) {
             if (DEBUG) {
-                Log.d(TAG, "reschedule programs size:"
-                        + (mPrograms != null ? mPrograms.size() : 0) + " current program: "
-                        + getCurrentProgram());
+                Log.d(
+                        TAG,
+                        "reschedule programs size:"
+                                + (mPrograms != null ? mPrograms.size() : 0)
+                                + " current program: "
+                                + getCurrentProgram());
             }
             mHandler.obtainMessage(MSG_SCHEDULE_OF_PROGRAMS, new Pair<>(mChannel, mPrograms))
                     .sendToTarget();
         }
         mHandler.removeMessages(MSG_RESCHEDULE_PROGRAMS);
-        mHandler.sendEmptyMessageDelayed(MSG_RESCHEDULE_PROGRAMS,
-                RESCHEDULE_PROGRAMS_INTERVAL_MS);
+        mHandler.sendEmptyMessageDelayed(MSG_RESCHEDULE_PROGRAMS, RESCHEDULE_PROGRAMS_INTERVAL_MS);
     }
 
     private int getTrickPlaySeekIntervalMs() {
-        return Math.max(EXPECTED_KEY_FRAME_INTERVAL_MS / (int) Math.abs(mPlaybackParams.getSpeed()),
+        return Math.max(
+                EXPECTED_KEY_FRAME_INTERVAL_MS / (int) Math.abs(mPlaybackParams.getSpeed()),
                 MIN_TRICKPLAY_SEEK_INTERVAL_MS);
     }
 
@@ -1562,8 +1651,8 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             delayForNextSeek = MIN_TRICKPLAY_SEEK_INTERVAL_MS;
         }
         seekPositionMs += mPlaybackParams.getSpeed() * delayForNextSeek;
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(
-                MSG_TRICKPLAY_BY_SEEK, seekPositionMs, 0), delayForNextSeek);
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(MSG_TRICKPLAY_BY_SEEK, seekPositionMs, 0), delayForNextSeek);
     }
 
     private void doTimeShiftPause() {
@@ -1605,17 +1694,21 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             mHandler.removeMessages(MSG_TRICKPLAY_BY_SEEK);
             mPlayer.setAudioTrackAndClosedCaption(false);
             mPlayer.startSmoothTrickplay(mPlaybackParams);
-            mHandler.sendEmptyMessageDelayed(MSG_SMOOTH_TRICKPLAY_MONITOR,
-                    TRICKPLAY_MONITOR_INTERVAL_MS);
+            mHandler.sendEmptyMessageDelayed(
+                    MSG_SMOOTH_TRICKPLAY_MONITOR, TRICKPLAY_MONITOR_INTERVAL_MS);
         } else {
             mHandler.removeMessages(MSG_SMOOTH_TRICKPLAY_MONITOR);
             if (!mHandler.hasMessages(MSG_TRICKPLAY_BY_SEEK)) {
                 mPlayer.setAudioTrackAndClosedCaption(false);
                 mPlayer.setPlayWhenReady(false);
                 // Initiate trickplay
-                mHandler.sendMessage(mHandler.obtainMessage(MSG_TRICKPLAY_BY_SEEK,
-                        (int) (mPlayer.getCurrentPosition()
-                                + speed * getTrickPlaySeekIntervalMs()), 0));
+                mHandler.sendMessage(
+                        mHandler.obtainMessage(
+                                MSG_TRICKPLAY_BY_SEEK,
+                                (int)
+                                        (mPlayer.getCurrentPosition()
+                                                + speed * getTrickPlaySeekIntervalMs()),
+                                0));
             }
         }
     }
@@ -1627,8 +1720,9 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         if (mChannel.getType() == Channel.TYPE_FILE) {
             // For the playback from the local file, we use the first one from the given program.
             EitItem first = mPrograms.get(0);
-            if (first != null && (mProgram == null
-                    || first.getStartTimeUtcMillis() < mProgram.getStartTimeUtcMillis())) {
+            if (first != null
+                    && (mProgram == null
+                            || first.getStartTimeUtcMillis() < mProgram.getStartTimeUtcMillis())) {
                 return first;
             }
             return null;
@@ -1649,8 +1743,10 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             TvContentRating blockContentRating = getContentRatingOfCurrentProgramBlocked();
             if (DEBUG) {
                 if (blockContentRating != null) {
-                    Log.d(TAG, "Check parental controls: blocked by content rating - "
-                            + blockContentRating);
+                    Log.d(
+                            TAG,
+                            "Check parental controls: blocked by content rating - "
+                                    + blockContentRating);
                 } else {
                     Log.d(TAG, "Check parental controls: available");
                 }
@@ -1672,8 +1768,11 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             captionTrack.wideAspectRatio = false;
             captionTrack.easyReader = false;
             mCaptionTrackMap.put(serviceNumber, captionTrack);
-            mTvTracks.add(new TvTrackInfo.Builder(TvTrackInfo.TYPE_SUBTITLE,
-                    SUBTITLE_TRACK_PREFIX + serviceNumber).build());
+            mTvTracks.add(
+                    new TvTrackInfo.Builder(
+                                    TvTrackInfo.TYPE_SUBTITLE,
+                                    SUBTITLE_TRACK_PREFIX + serviceNumber)
+                            .build());
             mSession.notifyTracksChanged(mTvTracks);
         }
     }
@@ -1683,22 +1782,21 @@ public class TunerSessionWorker implements PlaybackBufferListener,
         if (currentProgram == null) {
             return null;
         }
-        TvContentRating[] ratings = mTvContentRatingCache
-                .getRatings(currentProgram.getContentRating());
+        TvContentRating[] ratings =
+                mTvContentRatingCache.getRatings(currentProgram.getContentRating());
         if (ratings == null || ratings.length == 0) {
             ratings = new TvContentRating[] {TvContentRating.UNRATED};
         }
         for (TvContentRating rating : ratings) {
-            if (!Objects.equals(mUnblockedContentRating, rating) && mTvInputManager
-                    .isRatingBlocked(rating)) {
+            if (!Objects.equals(mUnblockedContentRating, rating)
+                    && mTvInputManager.isRatingBlocked(rating)) {
                 return rating;
             }
         }
         return null;
     }
 
-    private void updateChannelBlockStatus(boolean channelBlocked,
-            TvContentRating contentRating) {
+    private void updateChannelBlockStatus(boolean channelBlocked, TvContentRating contentRating) {
         if (mChannelBlocked == channelBlocked) {
             return;
         }
@@ -1715,8 +1813,8 @@ public class TunerSessionWorker implements PlaybackBufferListener,
             clearCallbacksAndMessagesSafely();
             resetPlayback();
             mSession.notifyContentAllowed();
-            mHandler.sendEmptyMessageDelayed(MSG_RESCHEDULE_PROGRAMS,
-                    RESCHEDULE_PROGRAMS_INITIAL_DELAY_MS);
+            mHandler.sendEmptyMessageDelayed(
+                    MSG_RESCHEDULE_PROGRAMS, RESCHEDULE_PROGRAMS_INITIAL_DELAY_MS);
             mHandler.removeMessages(MSG_CHECK_SIGNAL);
             mHandler.sendEmptyMessageDelayed(MSG_CHECK_SIGNAL, CHECK_NO_SIGNAL_INITIAL_DELAY_MS);
         }

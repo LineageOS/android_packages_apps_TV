@@ -32,9 +32,7 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.util.AccountHelper;
 import com.android.tv.util.TvInputManagerHelper;
 
-/**
- * Interface with getters for application scoped singletons.
- */
+/** Interface with getters for application scoped singletons. */
 public interface ApplicationSingletons {
 
     Analytics getAnalytics();

@@ -34,7 +34,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.InputSessionManager;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
@@ -46,19 +45,15 @@ import com.android.tv.testing.FakeClock;
 import com.android.tv.testing.dvr.RecordingTestUtils;
 import com.android.tv.util.Clock;
 import com.android.tv.util.TestUtils;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-/**
- * Tests for {@link InputTaskScheduler}.
- */
+/** Tests for {@link InputTaskScheduler}. */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class InputTaskSchedulerTest {
@@ -88,40 +83,57 @@ public class InputTaskSchedulerTest {
         MockitoAnnotations.initMocks(this);
         mFakeClock = FakeClock.createWithCurrentTime();
         TvInputInfo input = createTvInputInfo(TUNER_COUNT_ONE);
-        mScheduler = new InputTaskScheduler(getContext(), input, Looper.myLooper(),
-                mChannelDataManager, mDvrManager, mDataManager, mSessionManager, mFakeClock,
-                new RecordingTaskFactory() {
-                    @Override
-                    public RecordingTask createRecordingTask(ScheduledRecording scheduledRecording,
-                            Channel channel, DvrManager dvrManager,
-                            InputSessionManager sessionManager, WritableDvrDataManager dataManager,
-                            Clock clock) {
-                        RecordingTask task = mock(RecordingTask.class);
-                        when(task.getPriority()).thenReturn(scheduledRecording.getPriority());
-                        when(task.getEndTimeMs()).thenReturn(scheduledRecording.getEndTimeMs());
-                        mRecordingTasks.add(task);
-                        return task;
-                    }
-                });
+        mScheduler =
+                new InputTaskScheduler(
+                        getContext(),
+                        input,
+                        Looper.myLooper(),
+                        mChannelDataManager,
+                        mDvrManager,
+                        mDataManager,
+                        mSessionManager,
+                        mFakeClock,
+                        new RecordingTaskFactory() {
+                            @Override
+                            public RecordingTask createRecordingTask(
+                                    ScheduledRecording scheduledRecording,
+                                    Channel channel,
+                                    DvrManager dvrManager,
+                                    InputSessionManager sessionManager,
+                                    WritableDvrDataManager dataManager,
+                                    Clock clock) {
+                                RecordingTask task = mock(RecordingTask.class);
+                                when(task.getPriority())
+                                        .thenReturn(scheduledRecording.getPriority());
+                                when(task.getEndTimeMs())
+                                        .thenReturn(scheduledRecording.getEndTimeMs());
+                                mRecordingTasks.add(task);
+                                return task;
+                            }
+                        });
     }
 
     @Test
     public void testAddSchedule_past() {
-        ScheduledRecording r = RecordingTestUtils.createTestRecordingWithPeriod(INPUT_ID,
-                CHANNEL_ID, 0L, 1L);
+        ScheduledRecording r =
+                RecordingTestUtils.createTestRecordingWithPeriod(INPUT_ID, CHANNEL_ID, 0L, 1L);
         when(mDataManager.getScheduledRecording(anyLong())).thenReturn(r);
         mScheduler.handleAddSchedule(r);
         mScheduler.handleBuildSchedule();
         verify(mDataManager, timeout((int) LISTENER_TIMEOUT_MS).times(1))
-                .changeState(any(ScheduledRecording.class),
+                .changeState(
+                        any(ScheduledRecording.class),
                         eq(ScheduledRecording.STATE_RECORDING_FAILED));
     }
 
     @Test
     public void testAddSchedule_start() {
-        mScheduler.handleAddSchedule(RecordingTestUtils.createTestRecordingWithPeriod(INPUT_ID,
-                CHANNEL_ID, mFakeClock.currentTimeMillis(),
-                mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)));
+        mScheduler.handleAddSchedule(
+                RecordingTestUtils.createTestRecordingWithPeriod(
+                        INPUT_ID,
+                        CHANNEL_ID,
+                        mFakeClock.currentTimeMillis(),
+                        mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)));
         mScheduler.handleBuildSchedule();
         verify(mRecordingTasks.get(0), timeout((int) LISTENER_TIMEOUT_MS).times(1)).start();
     }
@@ -132,14 +144,14 @@ public class InputTaskSchedulerTest {
         long endTimeMs = startTimeMs + TimeUnit.SECONDS.toMillis(1);
         long id = 0;
         mScheduler.handleAddSchedule(
-                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(++id, CHANNEL_ID,
-                        LOW_PRIORITY, startTimeMs, endTimeMs));
+                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(
+                        ++id, CHANNEL_ID, LOW_PRIORITY, startTimeMs, endTimeMs));
         mScheduler.handleBuildSchedule();
         startTimeMs = endTimeMs;
         endTimeMs = startTimeMs + TimeUnit.SECONDS.toMillis(1);
         mScheduler.handleAddSchedule(
-                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(++id, CHANNEL_ID,
-                        HIGH_PRIORITY, startTimeMs, endTimeMs));
+                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(
+                        ++id, CHANNEL_ID, HIGH_PRIORITY, startTimeMs, endTimeMs));
         mScheduler.handleBuildSchedule();
         verify(mRecordingTasks.get(0), timeout((int) LISTENER_TIMEOUT_MS).times(1)).start();
         // The first schedule should not be stopped because the second one should wait for the end
@@ -153,17 +165,17 @@ public class InputTaskSchedulerTest {
         long startTimeMs = mFakeClock.currentTimeMillis();
         long endTimeMs = startTimeMs + TimeUnit.SECONDS.toMillis(1);
         long id = 0;
-        when(mDataManager.getScheduledRecording(anyLong())).thenReturn(ScheduledRecording
-                .builder(INPUT_ID, CHANNEL_ID, 0L, 0L).build());
+        when(mDataManager.getScheduledRecording(anyLong()))
+                .thenReturn(ScheduledRecording.builder(INPUT_ID, CHANNEL_ID, 0L, 0L).build());
         mScheduler.handleAddSchedule(
-                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(++id, CHANNEL_ID,
-                        HIGH_PRIORITY, startTimeMs, endTimeMs));
+                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(
+                        ++id, CHANNEL_ID, HIGH_PRIORITY, startTimeMs, endTimeMs));
         mScheduler.handleBuildSchedule();
         startTimeMs = endTimeMs;
         endTimeMs = startTimeMs + TimeUnit.SECONDS.toMillis(1);
         mScheduler.handleAddSchedule(
-                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(++id, CHANNEL_ID,
-                        LOW_PRIORITY, startTimeMs, endTimeMs));
+                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(
+                        ++id, CHANNEL_ID, LOW_PRIORITY, startTimeMs, endTimeMs));
         mScheduler.handleBuildSchedule();
         verify(mRecordingTasks.get(0), timeout((int) LISTENER_TIMEOUT_MS).times(1)).start();
         SystemClock.sleep(LISTENER_TIMEOUT_MS);
@@ -171,7 +183,8 @@ public class InputTaskSchedulerTest {
         // The second schedule should not fail because it can starts after the first one finishes.
         SystemClock.sleep(LISTENER_TIMEOUT_MS);
         verify(mDataManager, never())
-                .changeState(any(ScheduledRecording.class),
+                .changeState(
+                        any(ScheduledRecording.class),
                         eq(ScheduledRecording.STATE_RECORDING_FAILED));
     }
 
@@ -183,14 +196,14 @@ public class InputTaskSchedulerTest {
         long endTimeMs = startTimeMs + TimeUnit.SECONDS.toMillis(1);
         long id = 0;
         mScheduler.handleAddSchedule(
-                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(++id, CHANNEL_ID,
-                        LOW_PRIORITY, startTimeMs, endTimeMs));
+                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(
+                        ++id, CHANNEL_ID, LOW_PRIORITY, startTimeMs, endTimeMs));
         mScheduler.handleBuildSchedule();
         startTimeMs = endTimeMs;
         endTimeMs = startTimeMs + TimeUnit.SECONDS.toMillis(1);
         mScheduler.handleAddSchedule(
-                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(++id, CHANNEL_ID,
-                        HIGH_PRIORITY, startTimeMs, endTimeMs));
+                RecordingTestUtils.createTestRecordingWithIdAndPriorityAndPeriod(
+                        ++id, CHANNEL_ID, HIGH_PRIORITY, startTimeMs, endTimeMs));
         mScheduler.handleBuildSchedule();
         verify(mRecordingTasks.get(0), timeout((int) LISTENER_TIMEOUT_MS).times(1)).start();
         SystemClock.sleep(LISTENER_TIMEOUT_MS);
@@ -202,9 +215,12 @@ public class InputTaskSchedulerTest {
 
     @Test
     public void testUpdateSchedule_noCancel() {
-        ScheduledRecording r = RecordingTestUtils.createTestRecordingWithPeriod(INPUT_ID,
-                CHANNEL_ID, mFakeClock.currentTimeMillis(),
-                mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+        ScheduledRecording r =
+                RecordingTestUtils.createTestRecordingWithPeriod(
+                        INPUT_ID,
+                        CHANNEL_ID,
+                        mFakeClock.currentTimeMillis(),
+                        mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
         mScheduler.handleAddSchedule(r);
         mScheduler.handleBuildSchedule();
         mScheduler.handleUpdateSchedule(r);
@@ -214,14 +230,18 @@ public class InputTaskSchedulerTest {
 
     @Test
     public void testUpdateSchedule_cancel() {
-        ScheduledRecording r = RecordingTestUtils.createTestRecordingWithPeriod(INPUT_ID,
-                CHANNEL_ID, mFakeClock.currentTimeMillis(),
-                mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(2));
+        ScheduledRecording r =
+                RecordingTestUtils.createTestRecordingWithPeriod(
+                        INPUT_ID,
+                        CHANNEL_ID,
+                        mFakeClock.currentTimeMillis(),
+                        mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(2));
         mScheduler.handleAddSchedule(r);
         mScheduler.handleBuildSchedule();
-        mScheduler.handleUpdateSchedule(ScheduledRecording.buildFrom(r)
-                .setStartTimeMs(mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1))
-                .build());
+        mScheduler.handleUpdateSchedule(
+                ScheduledRecording.buildFrom(r)
+                        .setStartTimeMs(mFakeClock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1))
+                        .build());
         verify(mRecordingTasks.get(0), timeout((int) LISTENER_TIMEOUT_MS).times(1)).cancel();
     }
 

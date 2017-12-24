@@ -18,13 +18,10 @@ package com.android.tv.recommendation;
 
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
-
 import com.android.tv.TvApplication;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
-import com.android.tv.util.Utils;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 

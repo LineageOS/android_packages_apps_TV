@@ -17,52 +17,45 @@
 package com.android.tv.common;
 
 import android.media.tv.TvInputInfo;
-import android.os.Build;
 
-/**
- * Constants for common use in TV app and tests.
- */
+/** Constants for common use in TV app and tests. */
 public final class TvCommonConstants {
-    /**
-     * A constant for the key of the extra data for the app linking intent.
-     */
+    /** A constant for the key of the extra data for the app linking intent. */
     public static final String EXTRA_APP_LINK_CHANNEL_URI = "app_link_channel_uri";
 
     /**
-     * An intent action to launch setup activity of a TV input. The intent should include
-     * TV input ID in the value of {@link EXTRA_INPUT_ID}. Optionally, given the value of
-     * {@link EXTRA_ACTIVITY_AFTER_COMPLETION}, the activity will be launched after the setup
-     * activity successfully finishes.
+     * An intent action to launch setup activity of a TV input. The intent should include TV input
+     * ID in the value of {@link EXTRA_INPUT_ID}. Optionally, given the value of {@link
+     * EXTRA_ACTIVITY_AFTER_COMPLETION}, the activity will be launched after the setup activity
+     * successfully finishes.
      */
     public static final String INTENT_ACTION_INPUT_SETUP =
             "com.android.tv.action.LAUNCH_INPUT_SETUP";
 
     /**
-     * A constant of the key to indicate a TV input ID for the intent action
-     * {@link INTENT_ACTION_INPUT_SETUP}.
+     * A constant of the key to indicate a TV input ID for the intent action {@link
+     * INTENT_ACTION_INPUT_SETUP}.
      *
      * <p>Value type: String
      */
     public static final String EXTRA_INPUT_ID = TvInputInfo.EXTRA_INPUT_ID;
 
     /**
-     * A constant of the key for intent to launch actual TV input setup activity used with
-     * {@link INTENT_ACTION_INPUT_SETUP}.
+     * A constant of the key for intent to launch actual TV input setup activity used with {@link
+     * INTENT_ACTION_INPUT_SETUP}.
      *
      * <p>Value type: Intent (Parcelable)
      */
-    public static final String EXTRA_SETUP_INTENT =
-            "com.android.tv.extra.SETUP_INTENT";
+    public static final String EXTRA_SETUP_INTENT = "com.android.tv.extra.SETUP_INTENT";
 
     /**
-     * A constant of the key to indicate an Activity launch intent for the intent action
-     * {@link INTENT_ACTION_INPUT_SETUP}.
+     * A constant of the key to indicate an Activity launch intent for the intent action {@link
+     * INTENT_ACTION_INPUT_SETUP}.
      *
      * <p>Value type: Intent (Parcelable)
      */
     public static final String EXTRA_ACTIVITY_AFTER_COMPLETION =
             "com.android.tv.intent.extra.ACTIVITY_AFTER_COMPLETION";
 
-    private TvCommonConstants() {
-    }
+    private TvCommonConstants() {}
 }

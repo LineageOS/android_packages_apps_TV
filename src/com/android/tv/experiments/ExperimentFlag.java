@@ -18,9 +18,7 @@ package com.android.tv.experiments;
 
 import android.support.annotation.VisibleForTesting;
 
-/**
- * Experiments return values based on user, device and other criteria.
- */
+/** Experiments return values based on user, device and other criteria. */
 public final class ExperimentFlag<T> {
 
     private static boolean sAllowOverrides = false;
@@ -31,10 +29,8 @@ public final class ExperimentFlag<T> {
     }
 
     /** Returns a boolean experiment */
-    public static ExperimentFlag<Boolean> createFlag(
-            boolean defaultValue) {
-        return new ExperimentFlag<>(
-                defaultValue);
+    public static ExperimentFlag<Boolean> createFlag(boolean defaultValue) {
+        return new ExperimentFlag<>(defaultValue);
     }
 
     private final T mDefaultValue;
@@ -42,8 +38,7 @@ public final class ExperimentFlag<T> {
     private T mOverrideValue = null;
     private boolean mOverridden = false;
 
-    private ExperimentFlag(
-            T defaultValue) {
+    private ExperimentFlag(T defaultValue) {
         mDefaultValue = defaultValue;
     }
 
@@ -64,7 +59,4 @@ public final class ExperimentFlag<T> {
     public void resetOverride() {
         mOverridden = false;
     }
-
-
-
 }

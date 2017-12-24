@@ -23,7 +23,6 @@ import android.content.res.Resources;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
 import android.test.InstrumentationTestCase;
-
 import com.android.tv.testing.ChannelInfo;
 import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TestInputControlConnection;
@@ -34,9 +33,7 @@ import com.android.tv.testing.uihelper.MenuHelper;
 import com.android.tv.testing.uihelper.SidePanelHelper;
 import com.android.tv.testing.uihelper.UiDeviceUtils;
 
-/**
- * Base test case for LiveChannel UI tests.
- */
+/** Base test case for LiveChannel UI tests. */
 public abstract class LiveChannelsTestCase extends InstrumentationTestCase {
     protected final TestInputControlConnection mConnection = new TestInputControlConnection();
 
@@ -50,8 +47,8 @@ public abstract class LiveChannelsTestCase extends InstrumentationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Context context = getInstrumentation().getContext();
-        context.bindService(TestInputControlUtils.createIntent(), mConnection,
-                Context.BIND_AUTO_CREATE);
+        context.bindService(
+                TestInputControlUtils.createIntent(), mConnection, Context.BIND_AUTO_CREATE);
         mDevice = UiDevice.getInstance(getInstrumentation());
         mTargetResources = getInstrumentation().getTargetContext().getResources();
         mMenuHelper = new MenuHelper(mDevice, mTargetResources);
@@ -69,8 +66,9 @@ public abstract class LiveChannelsTestCase extends InstrumentationTestCase {
         // Clear any side panel, menu, ...
         // Scene container should not be checked here because pressing the BACK key in some scenes
         // might launch the home screen.
-        if (mDevice.hasObject(Constants.SIDE_PANEL) || mDevice.hasObject(Constants.MENU) || mDevice
-                .hasObject(Constants.PROGRAM_GUIDE)) {
+        if (mDevice.hasObject(Constants.SIDE_PANEL)
+                || mDevice.hasObject(Constants.MENU)
+                || mDevice.hasObject(Constants.PROGRAM_GUIDE)) {
             mDevice.pressBack();
         }
         // To destroy the activity to make sure next test case's activity launch check works well.
@@ -79,8 +77,7 @@ public abstract class LiveChannelsTestCase extends InstrumentationTestCase {
     }
 
     /**
-     * Send the keys for the channel number of {@code channel} and press the DPAD
-     * center.
+     * Send the keys for the channel number of {@code channel} and press the DPAD center.
      *
      * <p>Usually this will tune to the given channel.
      */
@@ -93,7 +90,7 @@ public abstract class LiveChannelsTestCase extends InstrumentationTestCase {
     /**
      * Update the channel state to {@code data} then tune to that channel.
      *
-     * @param data    the state to update the channel with.
+     * @param data the state to update the channel with.
      * @param channel the channel to tune to
      */
     protected void updateThenTune(ChannelStateData data, ChannelInfo channel) {

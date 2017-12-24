@@ -23,22 +23,17 @@ import android.media.tv.TvTrackInfo;
 import android.os.SystemClock;
 import android.support.test.filters.MediumTest;
 import android.text.TextUtils;
-
 import com.android.tv.BaseMainActivityTestCase;
 import com.android.tv.testing.Constants;
 import com.android.tv.testing.testinput.ChannelState;
 import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TvTestInputConstants;
-
+import java.util.Collections;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * Tests for {@link TvOptionsRowAdapter}.
- */
+/** Tests for {@link TvOptionsRowAdapter}. */
 @MediumTest
 public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
     private static final int WAIT_TRACK_EVENT_TIMEOUT_MS = 300;
@@ -56,12 +51,14 @@ public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
         waitUntilAudioTracksHaveSize(1);
         waitUntilAudioTrackSelected(ChannelState.DEFAULT.getSelectedAudioTrackId());
         // update should be called on the main thread to avoid the multi-thread problem.
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mTvOptionsRowAdapter.update();
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mTvOptionsRowAdapter.update();
+                            }
+                        });
     }
 
     @Test
@@ -74,8 +71,8 @@ public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
 
         boolean result = mTvOptionsRowAdapter.updateMultiAudioAction();
         assertEquals("update Action had change", true, result);
-        assertEquals("Multi Audio enabled", true,
-                MenuAction.SELECT_AUDIO_LANGUAGE_ACTION.isEnabled());
+        assertEquals(
+                "Multi Audio enabled", true, MenuAction.SELECT_AUDIO_LANGUAGE_ACTION.isEnabled());
     }
 
     @Test
@@ -91,8 +88,8 @@ public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
 
         boolean result = mTvOptionsRowAdapter.updateMultiAudioAction();
         assertEquals("update Action had change", true, result);
-        assertEquals("Multi Audio enabled", false,
-                MenuAction.SELECT_AUDIO_LANGUAGE_ACTION.isEnabled());
+        assertEquals(
+                "Multi Audio enabled", false, MenuAction.SELECT_AUDIO_LANGUAGE_ACTION.isEnabled());
     }
 
     @Test
@@ -109,8 +106,8 @@ public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
 
         boolean result = mTvOptionsRowAdapter.updateMultiAudioAction();
         assertEquals("update Action had change", true, result);
-        assertEquals("Multi Audio enabled", false,
-                MenuAction.SELECT_AUDIO_LANGUAGE_ACTION.isEnabled());
+        assertEquals(
+                "Multi Audio enabled", false, MenuAction.SELECT_AUDIO_LANGUAGE_ACTION.isEnabled());
     }
 
     private void waitUntilAudioTracksHaveSize(int expected) {
@@ -135,8 +132,13 @@ public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
             }
             SystemClock.sleep(TRACK_CHECK_INTERVAL_MS);
         }
-        fail("Waited for " + WAIT_TRACK_EVENT_TIMEOUT_MS + " milliseconds for track size to be "
-                + expected + " but was " + size);
+        fail(
+                "Waited for "
+                        + WAIT_TRACK_EVENT_TIMEOUT_MS
+                        + " milliseconds for track size to be "
+                        + expected
+                        + " but was "
+                        + size);
     }
 
     private void waitUntilAudioTrackSelected(String trackId) {
@@ -158,7 +160,12 @@ public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
             }
             SystemClock.sleep(TRACK_CHECK_INTERVAL_MS);
         }
-        fail("Waited for " + WAIT_TRACK_EVENT_TIMEOUT_MS + " milliseconds for track ID to be "
-                + trackId + " but was " + selectedTrackId);
+        fail(
+                "Waited for "
+                        + WAIT_TRACK_EVENT_TIMEOUT_MS
+                        + " milliseconds for track ID to be "
+                        + trackId
+                        + " but was "
+                        + selectedTrackId);
     }
 }

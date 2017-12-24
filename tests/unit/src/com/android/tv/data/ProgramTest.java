@@ -25,18 +25,13 @@ import android.media.tv.TvContentRating;
 import android.media.tv.TvContract.Programs.Genres;
 import android.os.Parcel;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.data.Program.CriticScore;
-
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Test;
 
-/**
- * Tests for {@link Program}.
- */
+/** Tests for {@link Program}. */
 @SmallTest
 public class ProgramTest {
     private static final int NOT_FOUND_GENRE = 987;
@@ -53,9 +48,7 @@ public class ProgramTest {
 
     @Test
     public void testNoGenres() {
-        Program program = new Program.Builder()
-                .setCanonicalGenres("")
-                .build();
+        Program program = new Program.Builder().setCanonicalGenres("").build();
         assertNullCanonicalGenres(program);
         assertHasGenre(program, NOT_FOUND_GENRE, false);
         assertHasGenre(program, FAMILY_GENRE_ID, false);
@@ -65,9 +58,7 @@ public class ProgramTest {
 
     @Test
     public void testFamilyGenre() {
-        Program program = new Program.Builder()
-                .setCanonicalGenres(FAMILY_KIDS)
-                .build();
+        Program program = new Program.Builder().setCanonicalGenres(FAMILY_KIDS).build();
         assertCanonicalGenres(program, FAMILY_KIDS);
         assertHasGenre(program, NOT_FOUND_GENRE, false);
         assertHasGenre(program, FAMILY_GENRE_ID, true);
@@ -77,9 +68,8 @@ public class ProgramTest {
 
     @Test
     public void testFamilyComedyGenre() {
-        Program program = new Program.Builder()
-                .setCanonicalGenres(FAMILY_KIDS + ", " + COMEDY)
-                .build();
+        Program program =
+                new Program.Builder().setCanonicalGenres(FAMILY_KIDS + ", " + COMEDY).build();
         assertCanonicalGenres(program, FAMILY_KIDS, COMEDY);
         assertHasGenre(program, NOT_FOUND_GENRE, false);
         assertHasGenre(program, FAMILY_GENRE_ID, true);
@@ -89,9 +79,7 @@ public class ProgramTest {
 
     @Test
     public void testOtherGenre() {
-        Program program = new Program.Builder()
-                .setCanonicalGenres("other")
-                .build();
+        Program program = new Program.Builder().setCanonicalGenres("other").build();
         assertCanonicalGenres(program);
         assertHasGenre(program, NOT_FOUND_GENRE, false);
         assertHasGenre(program, FAMILY_GENRE_ID, false);
@@ -107,29 +95,30 @@ public class ProgramTest {
         TvContentRating[] ratings = new TvContentRating[2];
         ratings[0] = TvContentRating.unflattenFromString("1/2/3");
         ratings[1] = TvContentRating.unflattenFromString("4/5/6");
-        Program p = new Program.Builder()
-                .setId(1)
-                .setPackageName("2")
-                .setChannelId(3)
-                .setTitle("4")
-                .setSeriesId("5")
-                .setEpisodeTitle("6")
-                .setSeasonNumber("7")
-                .setSeasonTitle("8")
-                .setEpisodeNumber("9")
-                .setStartTimeUtcMillis(10)
-                .setEndTimeUtcMillis(11)
-                .setDescription("12")
-                .setLongDescription("12-long")
-                .setVideoWidth(13)
-                .setVideoHeight(14)
-                .setCriticScores(criticScores)
-                .setPosterArtUri("15")
-                .setThumbnailUri("16")
-                .setCanonicalGenres(Genres.encode(Genres.SPORTS, Genres.SHOPPING))
-                .setContentRatings(ratings)
-                .setRecordingProhibited(true)
-                .build();
+        Program p =
+                new Program.Builder()
+                        .setId(1)
+                        .setPackageName("2")
+                        .setChannelId(3)
+                        .setTitle("4")
+                        .setSeriesId("5")
+                        .setEpisodeTitle("6")
+                        .setSeasonNumber("7")
+                        .setSeasonTitle("8")
+                        .setEpisodeNumber("9")
+                        .setStartTimeUtcMillis(10)
+                        .setEndTimeUtcMillis(11)
+                        .setDescription("12")
+                        .setLongDescription("12-long")
+                        .setVideoWidth(13)
+                        .setVideoHeight(14)
+                        .setCriticScores(criticScores)
+                        .setPosterArtUri("15")
+                        .setThumbnailUri("16")
+                        .setCanonicalGenres(Genres.encode(Genres.SPORTS, Genres.SHOPPING))
+                        .setContentRatings(ratings)
+                        .setRecordingProhibited(true)
+                        .build();
         Parcel p1 = Parcel.obtain();
         Parcel p2 = Parcel.obtain();
         try {
@@ -147,13 +136,13 @@ public class ProgramTest {
 
     @Test
     public void testParcelableWithCriticScore() {
-        Program program = new Program.Builder()
-                .setTitle("MyTitle")
-                .addCriticScore(new CriticScore(
-                        "default source",
-                        "5/10",
-                        "https://testurl/testimage.jpg"))
-                .build();
+        Program program =
+                new Program.Builder()
+                        .setTitle("MyTitle")
+                        .addCriticScore(
+                                new CriticScore(
+                                        "default source", "5/10", "https://testurl/testimage.jpg"))
+                        .build();
         Parcel parcel = Parcel.obtain();
         program.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -162,7 +151,8 @@ public class ProgramTest {
         assertNotNull(programFromParcel.getCriticScores());
         assertEquals(programFromParcel.getCriticScores().get(0).source, "default source");
         assertEquals(programFromParcel.getCriticScores().get(0).score, "5/10");
-        assertEquals(programFromParcel.getCriticScores().get(0).logoUrl,
+        assertEquals(
+                programFromParcel.getCriticScores().get(0).logoUrl,
                 "https://testurl/testimage.jpg");
     }
 
@@ -172,7 +162,9 @@ public class ProgramTest {
     }
 
     private static void assertCanonicalGenres(Program program, String... expected) {
-        assertEquals("canonical genres", Arrays.asList(expected),
+        assertEquals(
+                "canonical genres",
+                Arrays.asList(expected),
                 Arrays.asList(program.getCanonicalGenres()));
     }
 

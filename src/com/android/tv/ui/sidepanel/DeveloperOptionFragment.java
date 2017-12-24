@@ -16,27 +16,15 @@
 
 package com.android.tv.ui.sidepanel;
 
-import android.accounts.Account;
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
-import com.android.tv.common.BuildConfig;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.data.epg.EpgFetcher;
-import com.android.tv.experiments.Experiments;
 import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.util.Utils;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Options for developers only
- */
+/** Options for developers only */
 public class DeveloperOptionFragment extends SideFragment {
     private static final String TAG = "DeveloperOptionFragment";
     private static final String TRACKER_LABEL = "debug options";
@@ -55,36 +43,40 @@ public class DeveloperOptionFragment extends SideFragment {
     protected List<Item> getItemList() {
         List<Item> items = new ArrayList<>();
         if (CommonFeatures.DVR.isEnabled(getContext())) {
-            items.add(new ActionItem(getString(R.string.dev_item_dvr_history)) {
-                @Override
-                protected void onSelected() {
-                    getMainActivity().getOverlayManager().showDvrHistoryDialog();
-                }
-            });
+            items.add(
+                    new ActionItem(getString(R.string.dev_item_dvr_history)) {
+                        @Override
+                        protected void onSelected() {
+                            getMainActivity().getOverlayManager().showDvrHistoryDialog();
+                        }
+                    });
         }
         if (Utils.isDeveloper()) {
-            items.add(new ActionItem(getString(R.string.dev_item_watch_history)) {
-                @Override
-                protected void onSelected() {
-                    getMainActivity().getOverlayManager().showRecentlyWatchedDialog();
-                }
-            });
+            items.add(
+                    new ActionItem(getString(R.string.dev_item_watch_history)) {
+                        @Override
+                        protected void onSelected() {
+                            getMainActivity().getOverlayManager().showRecentlyWatchedDialog();
+                        }
+                    });
         }
-        items.add(new SwitchItem(getString(R.string.dev_item_store_ts_on),
-                getString(R.string.dev_item_store_ts_off),
-                getString(R.string.dev_item_store_ts_description)) {
-            @Override
-            protected void onUpdate() {
-                super.onUpdate();
-                setChecked(TunerPreferences.getStoreTsStream(getContext()));
-            }
+        items.add(
+                new SwitchItem(
+                        getString(R.string.dev_item_store_ts_on),
+                        getString(R.string.dev_item_store_ts_off),
+                        getString(R.string.dev_item_store_ts_description)) {
+                    @Override
+                    protected void onUpdate() {
+                        super.onUpdate();
+                        setChecked(TunerPreferences.getStoreTsStream(getContext()));
+                    }
 
-            @Override
-            protected void onSelected() {
-                super.onSelected();
-                TunerPreferences.setStoreTsStream(getContext(), isChecked());
-            }
-        });
+                    @Override
+                    protected void onSelected() {
+                        super.onSelected();
+                        TunerPreferences.setStoreTsStream(getContext(), isChecked());
+                    }
+                });
         if (Utils.isDeveloper()) {
             items.add(
                     new ActionItem(getString(R.string.dev_item_show_performance_monitor_log)) {
@@ -98,5 +90,4 @@ public class DeveloperOptionFragment extends SideFragment {
         }
         return items;
     }
-
 }

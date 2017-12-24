@@ -19,18 +19,16 @@ package com.android.tv.tuner.exoplayer.buffer;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-
 import com.google.android.exoplayer.SampleHolder;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
 /**
- * {@link SampleChunk} stores samples into file and makes them available for read.
- * Stored file = { Header, Sample } * N
- * Header = sample size : int, sample flag : int, sample PTS in micro second : long
+ * {@link SampleChunk} stores samples into file and makes them available for read. Stored file = {
+ * Header, Sample } * N Header = sample size : int, sample flag : int, sample PTS in micro second :
+ * long
  */
 public class SampleChunk {
     private static final String TAG = "SampleChunk";
@@ -52,32 +50,25 @@ public class SampleChunk {
     private boolean mIsReading;
     private boolean mIsWriting;
 
-    /**
-     * A callback for chunks being committed to permanent storage.
-     */
-    public static abstract class ChunkCallback {
+    /** A callback for chunks being committed to permanent storage. */
+    public abstract static class ChunkCallback {
 
         /**
          * Notifies when writing a SampleChunk is completed.
          *
          * @param chunk SampleChunk which is written completely
          */
-        public void onChunkWrite(SampleChunk chunk) {
-
-        }
+        public void onChunkWrite(SampleChunk chunk) {}
 
         /**
          * Notifies when a SampleChunk is deleted.
          *
          * @param chunk SampleChunk which is deleted from storage
          */
-        public void onChunkDelete(SampleChunk chunk) {
-        }
+        public void onChunkDelete(SampleChunk chunk) {}
     }
 
-    /**
-     * A class for SampleChunk creation.
-     */
+    /** A class for SampleChunk creation. */
     public static class SampleChunkCreator {
 
         /**
@@ -88,15 +79,18 @@ public class SampleChunk {
          * @param startPositionUs the start position of the earliest sample to be stored
          * @param chunkCallback for total storage usage change notification
          */
-        SampleChunk createSampleChunk(SamplePool samplePool, File file,
-                long startPositionUs, ChunkCallback chunkCallback) {
-            return new SampleChunk(samplePool, file, startPositionUs, System.currentTimeMillis(),
-                    chunkCallback);
+        SampleChunk createSampleChunk(
+                SamplePool samplePool,
+                File file,
+                long startPositionUs,
+                ChunkCallback chunkCallback) {
+            return new SampleChunk(
+                    samplePool, file, startPositionUs, System.currentTimeMillis(), chunkCallback);
         }
 
         /**
-         * Returns a newly created SampleChunk which is backed by an existing file.
-         * Created SampleChunk is read-only.
+         * Returns a newly created SampleChunk which is backed by an existing file. Created
+         * SampleChunk is read-only.
          *
          * @param samplePool sample allocator
          * @param bufferDir the directory where the file to read is located
@@ -106,12 +100,16 @@ public class SampleChunk {
          * @param prev the previous SampleChunk just before the newly created SampleChunk
          * @throws IOException
          */
-        SampleChunk loadSampleChunkFromFile(SamplePool samplePool, File bufferDir,
-                String filename, long startPositionUs, ChunkCallback chunkCallback,
-                SampleChunk prev) throws IOException {
+        SampleChunk loadSampleChunkFromFile(
+                SamplePool samplePool,
+                File bufferDir,
+                String filename,
+                long startPositionUs,
+                ChunkCallback chunkCallback,
+                SampleChunk prev)
+                throws IOException {
             File file = new File(bufferDir, filename);
-            SampleChunk chunk =
-                    new SampleChunk(samplePool, file, startPositionUs, chunkCallback);
+            SampleChunk chunk = new SampleChunk(samplePool, file, startPositionUs, chunkCallback);
             if (prev != null) {
                 prev.mNextChunk = chunk;
             }
@@ -120,8 +118,8 @@ public class SampleChunk {
     }
 
     /**
-     * Handles I/O for SampleChunk.
-     * Maintains current SampleChunk and the current offset for next I/O operation.
+     * Handles I/O for SampleChunk. Maintains current SampleChunk and the current offset for next
+     * I/O operation.
      */
     static class IoState {
         private SampleChunk mChunk;
@@ -131,16 +129,12 @@ public class SampleChunk {
             return chunk == mChunk && mCurrentOffset == offset;
         }
 
-        /**
-         * Returns whether read I/O operation is finished.
-         */
+        /** Returns whether read I/O operation is finished. */
         boolean isReadFinished() {
             return mChunk == null;
         }
 
-        /**
-         * Returns the start position of the current SampleChunk
-         */
+        /** Returns the start position of the current SampleChunk */
         long getStartPositionUs() {
             return mChunk == null ? 0 : mChunk.getStartPositionUs();
         }
@@ -175,7 +169,7 @@ public class SampleChunk {
          * @param chunk the new SampleChunk to write samples afterwards
          * @throws IOException
          */
-        void openWrite(SampleChunk chunk) throws IOException{
+        void openWrite(SampleChunk chunk) throws IOException {
             if (mChunk != null) {
                 mChunk.closeWrite(chunk);
             }
@@ -215,12 +209,11 @@ public class SampleChunk {
          * Writes a sample.
          *
          * @param sample to write
-         * @param nextChunk if this is {@code null} writes at the current SampleChunk,
-         *             otherwise close current SampleChunk and writes at this
+         * @param nextChunk if this is {@code null} writes at the current SampleChunk, otherwise
+         *     close current SampleChunk and writes at this
          * @throws IOException
          */
-        void write(SampleHolder sample, SampleChunk nextChunk)
-                throws IOException {
+        void write(SampleHolder sample, SampleChunk nextChunk) throws IOException {
             if (nextChunk != null) {
                 if (mChunk == null || mChunk.mNextChunk != null) {
                     throw new IllegalStateException("Requested write for wrong SampleChunk");
@@ -244,16 +237,12 @@ public class SampleChunk {
             }
         }
 
-        /**
-         * Returns the current SampleChunk for subsequent I/O operation.
-         */
+        /** Returns the current SampleChunk for subsequent I/O operation. */
         SampleChunk getChunk() {
             return mChunk;
         }
 
-        /**
-         * Returns the current offset of the current SampleChunk for subsequent I/O operation.
-         */
+        /** Returns the current offset of the current SampleChunk for subsequent I/O operation. */
         long getOffset() {
             return mCurrentOffset;
         }
@@ -262,8 +251,8 @@ public class SampleChunk {
          * Releases SampleChunk. the SampleChunk will not be used anymore.
          *
          * @param chunk to release
-         * @param delete {@code true} when the backed file needs to be deleted,
-         *        {@code false} otherwise.
+         * @param delete {@code true} when the backed file needs to be deleted, {@code false}
+         *     otherwise.
          */
         static void release(SampleChunk chunk, boolean delete) {
             chunk.release(delete);
@@ -271,8 +260,12 @@ public class SampleChunk {
     }
 
     @VisibleForTesting
-    protected SampleChunk(SamplePool samplePool, File file, long startPositionUs,
-            long createdTimeMs, ChunkCallback chunkCallback) {
+    protected SampleChunk(
+            SamplePool samplePool,
+            File file,
+            long startPositionUs,
+            long createdTimeMs,
+            ChunkCallback chunkCallback) {
         mStartPositionUs = startPositionUs;
         mCreatedTimeMs = createdTimeMs;
         mSamplePool = samplePool;
@@ -281,8 +274,9 @@ public class SampleChunk {
     }
 
     // Constructor of SampleChunk which is backed by the given existing file.
-    private SampleChunk(SamplePool samplePool, File file, long startPositionUs,
-            ChunkCallback chunkCallback) throws IOException {
+    private SampleChunk(
+            SamplePool samplePool, File file, long startPositionUs, ChunkCallback chunkCallback)
+            throws IOException {
         mStartPositionUs = startPositionUs;
         mCreatedTimeMs = mStartPositionUs / 1000;
         mSamplePool = samplePool;
@@ -311,8 +305,8 @@ public class SampleChunk {
         }
         if (!mIsWriting) {
             if (mIsReading) {
-                throw new IllegalStateException("Write is requested for "
-                        + "an already opened SampleChunk");
+                throw new IllegalStateException(
+                        "Write is requested for " + "an already opened SampleChunk");
             }
             mAccessFile = new RandomAccessFile(mFile, "rw");
             mIsWriting = true;
@@ -331,15 +325,14 @@ public class SampleChunk {
         }
     }
 
-    private void closeRead() throws IOException{
+    private void closeRead() throws IOException {
         if (mIsReading) {
             mIsReading = false;
             CloseAccessFileIfNeeded();
         }
     }
 
-    private void closeWrite(SampleChunk nextChunk)
-            throws IOException {
+    private void closeWrite(SampleChunk nextChunk) throws IOException {
         if (mIsWriting) {
             mNextChunk = nextChunk;
             mIsWriting = false;
@@ -374,16 +367,20 @@ public class SampleChunk {
         sample.flags = mAccessFile.readInt();
         sample.timeUs = mAccessFile.readLong();
         sample.clearData();
-        sample.data.put(mAccessFile.getChannel().map(FileChannel.MapMode.READ_ONLY,
-                offset + SAMPLE_HEADER_LENGTH, sample.size));
+        sample.data.put(
+                mAccessFile
+                        .getChannel()
+                        .map(
+                                FileChannel.MapMode.READ_ONLY,
+                                offset + SAMPLE_HEADER_LENGTH,
+                                sample.size));
         offset += sample.size + SAMPLE_HEADER_LENGTH;
         state.mCurrentOffset = offset;
         return sample;
     }
 
     @VisibleForTesting
-    protected void write(SampleHolder sample, IoState state)
-            throws IOException {
+    protected void write(SampleHolder sample, IoState state) throws IOException {
         if (mAccessFile == null || mNextChunk != null || !state.equals(this, mWriteOffset)) {
             throw new IllegalStateException("Requested write for wrong SampleChunk");
         }
@@ -414,23 +411,17 @@ public class SampleChunk {
         }
     }
 
-    /**
-     * Returns the start position.
-     */
+    /** Returns the start position. */
     public long getStartPositionUs() {
         return mStartPositionUs;
     }
 
-    /**
-     * Returns the creation time.
-     */
+    /** Returns the creation time. */
     public long getCreatedTimeMs() {
         return mCreatedTimeMs;
     }
 
-    /**
-     * Returns the current size.
-     */
+    /** Returns the current size. */
     public long getSize() {
         return mWriteOffset;
     }

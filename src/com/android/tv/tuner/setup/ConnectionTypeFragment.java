@@ -20,18 +20,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
-
-import com.android.tv.common.BuildConfig;
 import com.android.tv.common.ui.setup.SetupGuidedStepFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.tuner.R;
-
 import java.util.List;
-import java.util.TimeZone;
 
-/**
- * A fragment for connection type selection.
- */
+/** A fragment for connection type selection. */
 public class ConnectionTypeFragment extends SetupMultiPaneFragment {
     public static final String ACTION_CATEGORY =
             "com.android.tv.tuner.setup.ConnectionTypeFragment";
@@ -74,22 +68,25 @@ public class ConnectionTypeFragment extends SetupMultiPaneFragment {
         @NonNull
         @Override
         public Guidance onCreateGuidance(Bundle savedInstanceState) {
-            return new Guidance(getString(R.string.ut_connection_title),
+            return new Guidance(
+                    getString(R.string.ut_connection_title),
                     getString(R.string.ut_connection_description),
-                    getString(R.string.ut_setup_breadcrumb), null);
+                    getString(R.string.ut_setup_breadcrumb),
+                    null);
         }
 
         @Override
-        public void onCreateActions(@NonNull List<GuidedAction> actions,
-                Bundle savedInstanceState) {
+        public void onCreateActions(
+                @NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
             String[] choices = getResources().getStringArray(R.array.ut_connection_choices);
             int length = choices.length - 1;
             int startOffset = 0;
             for (int i = 0; i < length; ++i) {
-                actions.add(new GuidedAction.Builder(getActivity())
-                        .id(startOffset + i)
-                        .title(choices[i])
-                        .build());
+                actions.add(
+                        new GuidedAction.Builder(getActivity())
+                                .id(startOffset + i)
+                                .title(choices[i])
+                                .build());
             }
         }
 

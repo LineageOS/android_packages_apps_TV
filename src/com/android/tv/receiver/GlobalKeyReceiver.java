@@ -23,12 +23,9 @@ import android.os.AsyncTask;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
-
 import com.android.tv.TvApplication;
 
-/**
- * Handles global keys.
- */
+/** Handles global keys. */
 public class GlobalKeyReceiver extends BroadcastReceiver {
     private static final boolean DEBUG = false;
     private static final String TAG = "GlobalKeyReceiver";
@@ -55,8 +52,11 @@ public class GlobalKeyReceiver extends BroadcastReceiver {
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
-                    return Settings.Secure.getInt(appContext.getContentResolver(),
-                            SETTINGS_USER_SETUP_COMPLETE, 0) != 0;
+                    return Settings.Secure.getInt(
+                                    appContext.getContentResolver(),
+                                    SETTINGS_USER_SETUP_COMPLETE,
+                                    0)
+                            != 0;
                 }
 
                 @Override

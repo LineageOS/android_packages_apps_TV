@@ -17,7 +17,6 @@
 package com.android.tv.testing;
 
 import com.android.tv.util.Clock;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,21 +26,16 @@ import java.util.concurrent.TimeUnit;
  * {@link #sleep(long)} is called.
  */
 public class FakeClock implements Clock {
-    /**
-     * Creates a fake clock with the time set to now and the boot time set to now - 100,000.
-     */
+    /** Creates a fake clock with the time set to now and the boot time set to now - 100,000. */
     public static FakeClock createWithCurrentTime() {
         long now = System.currentTimeMillis();
         return new FakeClock(now, now - 100_000);
     }
 
-    /**
-     * Creates a fake clock with the time set to zero.
-     */
+    /** Creates a fake clock with the time set to zero. */
     public static FakeClock createWithTimeOne() {
         return new FakeClock(1L, 0L);
     }
-
 
     private long mCurrentTimeMillis;
 
@@ -95,9 +89,7 @@ public class FakeClock implements Clock {
         return mCurrentTimeMillis - mBootTimeMillis;
     }
 
-    /**
-     * Sleep does not block it just updates the current time.
-     */
+    /** Sleep does not block it just updates the current time. */
     @Override
     public void sleep(long ms) {
         // TODO: implement blocking if needed.

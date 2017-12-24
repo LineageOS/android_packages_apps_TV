@@ -16,37 +16,32 @@
 
 package com.android.tv.tuner.exoplayer.audio;
 
-import com.android.tv.common.SoftPreconditions;
-
 import android.os.SystemClock;
+import com.android.tv.common.SoftPreconditions;
 
 /**
  * Copy of {@link com.google.android.exoplayer.MediaClock}.
- * <p>
- * A simple clock for tracking the progression of media time. The clock can be started, stopped and
- * its time can be set and retrieved. When started, this clock is based on
- * {@link SystemClock#elapsedRealtime()}.
+ *
+ * <p>A simple clock for tracking the progression of media time. The clock can be started, stopped
+ * and its time can be set and retrieved. When started, this clock is based on {@link
+ * SystemClock#elapsedRealtime()}.
  */
 /* package */ class AudioClock {
     private boolean mStarted;
 
-    /**
-     * The media time when the clock was last set or stopped.
-     */
+    /** The media time when the clock was last set or stopped. */
     private long mPositionUs;
 
     /**
-     * The difference between {@link SystemClock#elapsedRealtime()} and {@link #mPositionUs}
-     * when the clock was last set or mStarted.
+     * The difference between {@link SystemClock#elapsedRealtime()} and {@link #mPositionUs} when
+     * the clock was last set or mStarted.
      */
     private long mDeltaUs;
 
     private float mPlaybackSpeed = 1.0f;
     private long mDeltaUpdatedTimeUs;
 
-    /**
-     * Starts the clock. Does nothing if the clock is already started.
-     */
+    /** Starts the clock. Does nothing if the clock is already started. */
     public void start() {
         if (!mStarted) {
             mStarted = true;
@@ -55,9 +50,7 @@ import android.os.SystemClock;
         }
     }
 
-    /**
-     * Stops the clock. Does nothing if the clock is already stopped.
-     */
+    /** Stops the clock. Does nothing if the clock is already stopped. */
     public void stop() {
         if (mStarted) {
             mPositionUs = elapsedRealtimeMinus(mDeltaUs);
@@ -65,25 +58,21 @@ import android.os.SystemClock;
         }
     }
 
-    /**
-     * @param timeUs The position to set in microseconds.
-     */
+    /** @param timeUs The position to set in microseconds. */
     public void setPositionUs(long timeUs) {
         this.mPositionUs = timeUs;
         mDeltaUs = elapsedRealtimeMinus(timeUs);
         mDeltaUpdatedTimeUs = SystemClock.elapsedRealtime() * 1000;
     }
 
-    /**
-     * @return The current position in microseconds.
-     */
+    /** @return The current position in microseconds. */
     public long getPositionUs() {
         if (!mStarted) {
             return mPositionUs;
         }
         if (mPlaybackSpeed != 1.0f) {
-            long elapsedTimeFromPlaybackSpeedChanged = SystemClock.elapsedRealtime() * 1000
-                    - mDeltaUpdatedTimeUs;
+            long elapsedTimeFromPlaybackSpeedChanged =
+                    SystemClock.elapsedRealtime() * 1000 - mDeltaUpdatedTimeUs;
             return elapsedRealtimeMinus(mDeltaUs)
                     + (long) ((mPlaybackSpeed - 1.0f) * elapsedTimeFromPlaybackSpeedChanged);
         } else {
@@ -91,9 +80,7 @@ import android.os.SystemClock;
         }
     }
 
-    /**
-     * Sets playback speed. {@code speed} should be positive.
-     */
+    /** Sets playback speed. {@code speed} should be positive. */
     public void setPlaybackSpeed(float speed) {
         SoftPreconditions.checkState(speed > 0);
         mDeltaUs = elapsedRealtimeMinus(getPositionUs());

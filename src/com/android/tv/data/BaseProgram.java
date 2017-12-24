@@ -20,14 +20,12 @@ import android.content.Context;
 import android.media.tv.TvContentRating;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import com.android.tv.R;
-
 import java.util.Comparator;
 
 /**
- * Base class for {@link com.android.tv.data.Program} and
- * {@link com.android.tv.dvr.data.RecordedProgram}.
+ * Base class for {@link com.android.tv.data.Program} and {@link
+ * com.android.tv.dvr.data.RecordedProgram}.
  */
 public abstract class BaseProgram {
     /**
@@ -35,8 +33,7 @@ public abstract class BaseProgram {
      * If a program's season or episode number is null, it will be consider "smaller" than programs
      * with season or episode numbers.
      */
-    public static final Comparator<BaseProgram> EPISODE_COMPARATOR =
-            new EpisodeComparator(false);
+    public static final Comparator<BaseProgram> EPISODE_COMPARATOR = new EpisodeComparator(false);
 
     /**
      * Comparator used to compare {@link BaseProgram} according to its season and episodes number
@@ -58,8 +55,7 @@ public abstract class BaseProgram {
             if (lhs == rhs) {
                 return 0;
             }
-            int seasonNumberCompare =
-                    numberCompare(lhs.getSeasonNumber(), rhs.getSeasonNumber());
+            int seasonNumberCompare = numberCompare(lhs.getSeasonNumber(), rhs.getSeasonNumber());
             if (seasonNumberCompare != 0) {
                 return mReversedSeason ? -seasonNumberCompare : seasonNumberCompare;
             } else {
@@ -68,9 +64,7 @@ public abstract class BaseProgram {
         }
     }
 
-    /**
-     * Compares two strings represent season numbers or episode numbers of programs.
-     */
+    /** Compares two strings represent season numbers or episode numbers of programs. */
     public static int numberCompare(String s1, String s2) {
         if (s1 == s2) {
             return 0;
@@ -88,120 +82,86 @@ public abstract class BaseProgram {
         }
     }
 
-    /**
-     * Returns ID of the program.
-     */
-    abstract public long getId();
+    /** Returns ID of the program. */
+    public abstract long getId();
 
-    /**
-     * Returns the title of the program.
-     */
-    abstract public String getTitle();
+    /** Returns the title of the program. */
+    public abstract String getTitle();
 
-    /**
-     * Returns the episode title.
-     */
-    abstract public String getEpisodeTitle();
+    /** Returns the episode title. */
+    public abstract String getEpisodeTitle();
 
-    /**
-     * Returns the displayed title of the program episode.
-     */
+    /** Returns the displayed title of the program episode. */
     public String getEpisodeDisplayTitle(Context context) {
         if (!TextUtils.isEmpty(getEpisodeNumber())) {
             String episodeTitle = getEpisodeTitle() == null ? "" : getEpisodeTitle();
             if (TextUtils.equals(getSeasonNumber(), "0")) {
                 // Do not show "S0: ".
-                return String.format(context.getResources().getString(
-                        R.string.display_episode_title_format_no_season_number),
-                        getEpisodeNumber(), episodeTitle);
+                return String.format(
+                        context.getResources()
+                                .getString(R.string.display_episode_title_format_no_season_number),
+                        getEpisodeNumber(),
+                        episodeTitle);
             } else {
-                return String.format(context.getResources().getString(
-                        R.string.display_episode_title_format),
-                        getSeasonNumber(), getEpisodeNumber(), episodeTitle);
+                return String.format(
+                        context.getResources().getString(R.string.display_episode_title_format),
+                        getSeasonNumber(),
+                        getEpisodeNumber(),
+                        episodeTitle);
             }
         }
         return getEpisodeTitle();
     }
 
-    /**
-     * Returns the description of the program.
-     */
-    abstract public String getDescription();
+    /** Returns the description of the program. */
+    public abstract String getDescription();
 
-    /**
-     * Returns the long description of the program.
-     */
-    abstract public String getLongDescription();
+    /** Returns the long description of the program. */
+    public abstract String getLongDescription();
 
-    /**
-     * Returns the start time of the program in Milliseconds.
-     */
-    abstract public long getStartTimeUtcMillis();
+    /** Returns the start time of the program in Milliseconds. */
+    public abstract long getStartTimeUtcMillis();
 
-    /**
-     * Returns the end time of the program in Milliseconds.
-     */
-    abstract public long getEndTimeUtcMillis();
+    /** Returns the end time of the program in Milliseconds. */
+    public abstract long getEndTimeUtcMillis();
 
-    /**
-     * Returns the duration of the program in Milliseconds.
-     */
-    abstract public long getDurationMillis();
+    /** Returns the duration of the program in Milliseconds. */
+    public abstract long getDurationMillis();
 
-    /**
-     * Returns the series ID.
-     */
-    abstract public String getSeriesId();
+    /** Returns the series ID. */
+    public abstract String getSeriesId();
 
-    /**
-     * Returns the season number.
-     */
-    abstract public String getSeasonNumber();
+    /** Returns the season number. */
+    public abstract String getSeasonNumber();
 
-    /**
-     * Returns the episode number.
-     */
-    abstract public String getEpisodeNumber();
+    /** Returns the episode number. */
+    public abstract String getEpisodeNumber();
 
-    /**
-     * Returns URI of the program's poster.
-     */
-    abstract public String getPosterArtUri();
+    /** Returns URI of the program's poster. */
+    public abstract String getPosterArtUri();
 
-    /**
-     * Returns URI of the program's thumbnail.
-     */
-    abstract public String getThumbnailUri();
+    /** Returns URI of the program's thumbnail. */
+    public abstract String getThumbnailUri();
 
-    /**
-     * Returns the array of the ID's of the canonical genres.
-     */
-    abstract public int[] getCanonicalGenreIds();
+    /** Returns the array of the ID's of the canonical genres. */
+    public abstract int[] getCanonicalGenreIds();
 
     /** Returns the array of content ratings. */
     @Nullable
-    abstract public TvContentRating[] getContentRatings();
+    public abstract TvContentRating[] getContentRatings();
 
-    /**
-     * Returns channel's ID of the program.
-     */
-    abstract public long getChannelId();
+    /** Returns channel's ID of the program. */
+    public abstract long getChannelId();
 
-    /**
-     * Returns if the program is valid.
-     */
-    abstract public boolean isValid();
+    /** Returns if the program is valid. */
+    public abstract boolean isValid();
 
-    /**
-     * Checks whether the program is episodic or not.
-     */
+    /** Checks whether the program is episodic or not. */
     public boolean isEpisodic() {
         return getSeriesId() != null;
     }
 
-    /**
-     * Generates the series ID for the other inputs than the tuner TV input.
-     */
+    /** Generates the series ID for the other inputs than the tuner TV input. */
     public static String generateSeriesId(String packageName, String title) {
         return packageName + "/" + title;
     }

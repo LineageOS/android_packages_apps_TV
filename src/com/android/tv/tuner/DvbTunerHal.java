@@ -20,14 +20,11 @@ import android.content.Context;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import com.android.tv.tuner.DvbDeviceAccessor.DvbDeviceInfoWrapper;
-
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * A class to handle a hardware Linux DVB API supported tuner device.
- */
+/** A class to handle a hardware Linux DVB API supported tuner device. */
 public class DvbTunerHal extends TunerHal {
 
     private static final Object sLock = new Object();
@@ -133,8 +130,9 @@ public class DvbTunerHal extends TunerHal {
     @Override
     protected int openDvbFrontEndFd() {
         if (mDvbDeviceInfo != null) {
-            ParcelFileDescriptor descriptor = mDvbDeviceAccessor.openDvbDevice(
-                    mDvbDeviceInfo, DvbDeviceAccessor.DVB_DEVICE_FRONTEND);
+            ParcelFileDescriptor descriptor =
+                    mDvbDeviceAccessor.openDvbDevice(
+                            mDvbDeviceInfo, DvbDeviceAccessor.DVB_DEVICE_FRONTEND);
             if (descriptor != null) {
                 return descriptor.detachFd();
             }
@@ -145,8 +143,9 @@ public class DvbTunerHal extends TunerHal {
     @Override
     protected int openDvbDemuxFd() {
         if (mDvbDeviceInfo != null) {
-            ParcelFileDescriptor descriptor = mDvbDeviceAccessor.openDvbDevice(
-                    mDvbDeviceInfo, DvbDeviceAccessor.DVB_DEVICE_DEMUX);
+            ParcelFileDescriptor descriptor =
+                    mDvbDeviceAccessor.openDvbDevice(
+                            mDvbDeviceInfo, DvbDeviceAccessor.DVB_DEVICE_DEMUX);
             if (descriptor != null) {
                 return descriptor.detachFd();
             }
@@ -157,8 +156,9 @@ public class DvbTunerHal extends TunerHal {
     @Override
     protected int openDvbDvrFd() {
         if (mDvbDeviceInfo != null) {
-            ParcelFileDescriptor descriptor = mDvbDeviceAccessor.openDvbDevice(
-                    mDvbDeviceInfo, DvbDeviceAccessor.DVB_DEVICE_DVR);
+            ParcelFileDescriptor descriptor =
+                    mDvbDeviceAccessor.openDvbDevice(
+                            mDvbDeviceInfo, DvbDeviceAccessor.DVB_DEVICE_DVR);
             if (descriptor != null) {
                 return descriptor.detachFd();
             }
@@ -166,9 +166,7 @@ public class DvbTunerHal extends TunerHal {
         return -1;
     }
 
-    /**
-    * Gets the number of USB tuner devices currently present.
-    */
+    /** Gets the number of USB tuner devices currently present. */
     public static int getNumberOfDevices(Context context) {
         try {
             return (new DvbDeviceAccessor(context)).getNumOfDvbDevices();

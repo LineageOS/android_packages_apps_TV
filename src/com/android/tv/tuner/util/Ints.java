@@ -3,9 +3,7 @@ package com.android.tv.tuner.util;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Static utility methods pertaining to int primitives. (Referred Guava's Ints class)
- */
+/** Static utility methods pertaining to int primitives. (Referred Guava's Ints class) */
 public class Ints {
     private Ints() {}
 

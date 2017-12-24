@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.v17.leanback.widget.HorizontalGridView;
 import android.util.Log;
-
 import com.android.tv.ChannelTuner;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
@@ -41,7 +40,6 @@ import com.android.tv.menu.MenuRowFactory.TvOptionsRow;
 import com.android.tv.ui.TunableTvView;
 import com.android.tv.util.DurationTimer;
 import com.android.tv.util.ViewCache;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -49,19 +47,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A class which controls the menu.
- */
+/** A class which controls the menu. */
 public class Menu {
     private static final String TAG = "Menu";
     private static final boolean DEBUG = false;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({REASON_NONE, REASON_GUIDE, REASON_PLAY_CONTROLS_PLAY, REASON_PLAY_CONTROLS_PAUSE,
-        REASON_PLAY_CONTROLS_PLAY_PAUSE, REASON_PLAY_CONTROLS_REWIND,
-        REASON_PLAY_CONTROLS_FAST_FORWARD, REASON_PLAY_CONTROLS_JUMP_TO_PREVIOUS,
-        REASON_PLAY_CONTROLS_JUMP_TO_NEXT})
+    @IntDef({
+        REASON_NONE,
+        REASON_GUIDE,
+        REASON_PLAY_CONTROLS_PLAY,
+        REASON_PLAY_CONTROLS_PAUSE,
+        REASON_PLAY_CONTROLS_PLAY_PAUSE,
+        REASON_PLAY_CONTROLS_REWIND,
+        REASON_PLAY_CONTROLS_FAST_FORWARD,
+        REASON_PLAY_CONTROLS_JUMP_TO_PREVIOUS,
+        REASON_PLAY_CONTROLS_JUMP_TO_NEXT
+    })
     public @interface MenuShowReason {}
+
     public static final int REASON_NONE = 0;
     public static final int REASON_GUIDE = 1;
     public static final int REASON_PLAY_CONTROLS_PLAY = 2;
@@ -73,6 +77,7 @@ public class Menu {
     public static final int REASON_PLAY_CONTROLS_JUMP_TO_NEXT = 8;
 
     private static final List<String> sRowIdListForReason = new ArrayList<>();
+
     static {
         sRowIdListForReason.add(null); // REASON_NONE
         sRowIdListForReason.add(ChannelsRow.ID); // REASON_GUIDE
@@ -86,6 +91,7 @@ public class Menu {
     }
 
     private static final Map<Integer, Integer> PRELOAD_VIEW_IDS = new HashMap<>();
+
     static {
         PRELOAD_VIEW_IDS.put(R.layout.menu_card_guide, 1);
         PRELOAD_VIEW_IDS.put(R.layout.menu_card_setup, 1);
@@ -116,13 +122,20 @@ public class Menu {
     private boolean mAnimationDisabledForTest;
 
     @VisibleForTesting
-    Menu(Context context, IMenuView menuView, MenuRowFactory menuRowFactory,
+    Menu(
+            Context context,
+            IMenuView menuView,
+            MenuRowFactory menuRowFactory,
             OnMenuVisibilityChangeListener onMenuVisibilityChangeListener) {
         this(context, null, null, menuView, menuRowFactory, onMenuVisibilityChangeListener);
     }
 
-    public Menu(Context context, TunableTvView tvView, TvOptionsManager optionsManager,
-            IMenuView menuView, MenuRowFactory menuRowFactory,
+    public Menu(
+            Context context,
+            TunableTvView tvView,
+            TvOptionsManager optionsManager,
+            IMenuView menuView,
+            MenuRowFactory menuRowFactory,
             OnMenuVisibilityChangeListener onMenuVisibilityChangeListener) {
         mContext = context;
         mMenuView = menuView;
@@ -134,12 +147,13 @@ public class Menu {
         mShowAnimator = AnimatorInflater.loadAnimator(context, R.animator.menu_enter);
         mShowAnimator.setTarget(mMenuView);
         mHideAnimator = AnimatorInflater.loadAnimator(context, R.animator.menu_exit);
-        mHideAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                hideInternal();
-            }
-        });
+        mHideAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        hideInternal();
+                    }
+                });
         mHideAnimator.setTarget(mMenuView);
         // Build menu rows
         addMenuRow(menuRowFactory.createMenuRow(this, PlayControlsRow.class));
@@ -163,9 +177,7 @@ public class Menu {
         }
     }
 
-    /**
-     * Call this method to end the lifetime of the menu.
-     */
+    /** Call this method to end the lifetime of the menu. */
     public void release() {
         mMenuUpdater.release();
         for (MenuRow row : mMenuRows) {
@@ -174,9 +186,7 @@ public class Menu {
         mHandler.removeCallbacksAndMessages(null);
     }
 
-    /**
-     * Preloads the item view used for the menu.
-     */
+    /** Preloads the item view used for the menu. */
     public void preloadItemViews() {
         HorizontalGridView fakeParent = new HorizontalGridView(mContext);
         for (int id : PRELOAD_VIEW_IDS.keySet()) {
@@ -201,20 +211,23 @@ public class Menu {
             mOnMenuVisibilityChangeListener.onMenuVisibilityChange(true);
         }
         String rowIdToSelect = sRowIdListForReason.get(reason);
-        mMenuView.onShow(reason, rowIdToSelect, mAnimationDisabledForTest ? null : new Runnable() {
-            @Override
-            public void run() {
-                if (isActive()) {
-                    mShowAnimator.start();
-                }
-            }
-        });
+        mMenuView.onShow(
+                reason,
+                rowIdToSelect,
+                mAnimationDisabledForTest
+                        ? null
+                        : new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isActive()) {
+                                    mShowAnimator.start();
+                                }
+                            }
+                        });
         scheduleHide();
     }
 
-    /**
-     * Closes the menu.
-     */
+    /** Closes the menu. */
     public void hide(boolean withAnimation) {
         if (mShowAnimator.isStarted()) {
             mShowAnimator.cancel();
@@ -246,9 +259,7 @@ public class Menu {
         }
     }
 
-    /**
-     * Schedules to hide the menu in some seconds.
-     */
+    /** Schedules to hide the menu in some seconds. */
     public void scheduleHide() {
         mHandler.removeMessages(MSG_HIDE_MENU);
         if (!mKeepVisible) {
@@ -257,10 +268,10 @@ public class Menu {
     }
 
     /**
-     * Called when the caller wants the main menu to be kept visible or not.
-     * If {@code keepVisible} is set to {@code true}, the hide schedule doesn't close the main menu,
-     * but calling {@link #hide} still hides it.
-     * If {@code keepVisible} is set to {@code false}, the hide schedule works as usual.
+     * Called when the caller wants the main menu to be kept visible or not. If {@code keepVisible}
+     * is set to {@code true}, the hide schedule doesn't close the main menu, but calling {@link
+     * #hide} still hides it. If {@code keepVisible} is set to {@code false}, the hide schedule
+     * works as usual.
      */
     public void setKeepVisible(boolean keepVisible) {
         mKeepVisible = keepVisible;
@@ -276,9 +287,7 @@ public class Menu {
         return mHandler.hasMessages(MSG_HIDE_MENU);
     }
 
-    /**
-     * Returns {@code true} if the menu is open and not hiding.
-     */
+    /** Returns {@code true} if the menu is open and not hiding. */
     public boolean isActive() {
         return mMenuView.isVisible() && !mHideAnimator.isStarted();
     }
@@ -303,9 +312,7 @@ public class Menu {
         return mMenuView.update(rowId, isActive());
     }
 
-    /**
-     * This method is called when channels are changed.
-     */
+    /** This method is called when channels are changed. */
     public void onRecentChannelsChanged() {
         if (DEBUG) Log.d(TAG, "onRecentChannelsChanged");
         for (MenuRow row : mMenuRows) {
@@ -313,9 +320,7 @@ public class Menu {
         }
     }
 
-    /**
-     * This method is called when the stream information is changed.
-     */
+    /** This method is called when the stream information is changed. */
     public void onStreamInfoChanged() {
         if (DEBUG) Log.d(TAG, "update options row in main menu");
         mMenuUpdater.onStreamInfoChanged();
@@ -329,13 +334,9 @@ public class Menu {
         mAnimationDisabledForTest = true;
     }
 
-    /**
-     * A listener which receives the notification when the menu is visible/invisible.
-     */
-    public static abstract class OnMenuVisibilityChangeListener {
-        /**
-         * Called when the menu becomes visible/invisible.
-         */
+    /** A listener which receives the notification when the menu is visible/invisible. */
+    public abstract static class OnMenuVisibilityChangeListener {
+        /** Called when the menu becomes visible/invisible. */
         public abstract void onMenuVisibilityChange(boolean visible);
     }
 

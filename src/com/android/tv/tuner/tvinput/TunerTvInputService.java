@@ -23,22 +23,18 @@ import android.content.Context;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputService;
 import android.util.Log;
-
-import com.google.android.exoplayer.audio.AudioCapabilities;
-import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.android.tv.TvApplication;
 import com.android.tv.common.feature.CommonFeatures;
-
+import com.google.android.exoplayer.audio.AudioCapabilities;
+import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
-/**
- * {@link TunerTvInputService} serves TV channels coming from a tuner device.
- */
+/** {@link TunerTvInputService} serves TV channels coming from a tuner device. */
 public class TunerTvInputService extends TvInputService
-        implements AudioCapabilitiesReceiver.Listener{
+        implements AudioCapabilitiesReceiver.Listener {
     private static final String TAG = "TunerTvInputService";
     private static final boolean DEBUG = false;
 
@@ -70,9 +66,13 @@ public class TunerTvInputService extends TvInputService
             if (pendingJob != null) {
                 // storage cleaning job is already scheduled.
             } else {
-                JobInfo job = new JobInfo.Builder(DVR_STORAGE_CLEANUP_JOB_ID,
-                        new ComponentName(this, TunerStorageCleanUpService.class))
-                        .setPersisted(true).setPeriodic(TimeUnit.DAYS.toMillis(1)).build();
+                JobInfo job =
+                        new JobInfo.Builder(
+                                        DVR_STORAGE_CLEANUP_JOB_ID,
+                                        new ComponentName(this, TunerStorageCleanUpService.class))
+                                .setPersisted(true)
+                                .setPeriodic(TimeUnit.DAYS.toMillis(1))
+                                .build();
                 jobScheduler.schedule(job);
             }
         }

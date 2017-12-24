@@ -17,7 +17,6 @@
 package com.android.tv.common.feature;
 
 import android.content.Context;
-
 import com.android.tv.common.BooleanSystemProperty;
 
 /**
@@ -31,7 +30,7 @@ public final class PropertyFeature implements Feature {
     /**
      * Create System Property backed feature.
      *
-     * @param key the system property key.  Length must be <= 31 characters.
+     * @param key the system property key. Length must be <= 31 characters.
      * @param defaultValue the value to return if the property is undefined or empty.
      */
     public PropertyFeature(String key, boolean defaultValue) {
@@ -39,8 +38,11 @@ public final class PropertyFeature implements Feature {
             // Since Features are initialized at startup and the keys are static go ahead and kill
             // the application.
             throw new IllegalArgumentException(
-                    "Property keys have a max length of 31 characters but '" + key + "' is " + key
-                            .length() + " characters.");
+                    "Property keys have a max length of 31 characters but '"
+                            + key
+                            + "' is "
+                            + key.length()
+                            + " characters.");
         }
         mProperty = new BooleanSystemProperty(key, defaultValue);
     }

@@ -22,22 +22,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
-
 import com.android.tv.common.ui.setup.SetupGuidedStepFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.TunerPreferences;
-import com.android.tv.tuner.util.TunerInputInfoUtils;
-
 import java.util.List;
 
-/**
- * A fragment for initial screen.
- */
+/** A fragment for initial screen. */
 public class ScanResultFragment extends SetupMultiPaneFragment {
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.tuner.setup.ScanResultFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.ScanResultFragment";
 
     @Override
     protected SetupGuidedStepFragment onCreateContentFragment() {
@@ -71,10 +65,16 @@ public class ScanResultFragment extends SetupMultiPaneFragment {
             String breadcrumb;
             if (mChannelCountOnPreference > 0) {
                 Resources res = getResources();
-                title = res.getQuantityString(R.plurals.ut_result_found_title,
-                        mChannelCountOnPreference, mChannelCountOnPreference);
-                description = res.getQuantityString(R.plurals.ut_result_found_description,
-                        mChannelCountOnPreference, mChannelCountOnPreference);
+                title =
+                        res.getQuantityString(
+                                R.plurals.ut_result_found_title,
+                                mChannelCountOnPreference,
+                                mChannelCountOnPreference);
+                description =
+                        res.getQuantityString(
+                                R.plurals.ut_result_found_description,
+                                mChannelCountOnPreference,
+                                mChannelCountOnPreference);
                 breadcrumb = null;
             } else {
                 Bundle args = getArguments();
@@ -97,8 +97,8 @@ public class ScanResultFragment extends SetupMultiPaneFragment {
         }
 
         @Override
-        public void onCreateActions(@NonNull List<GuidedAction> actions,
-                Bundle savedInstanceState) {
+        public void onCreateActions(
+                @NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
             String[] choices;
             int doneActionIndex;
             if (mChannelCountOnPreference > 0) {
@@ -110,11 +110,17 @@ public class ScanResultFragment extends SetupMultiPaneFragment {
             }
             for (int i = 0; i < choices.length; ++i) {
                 if (i == doneActionIndex) {
-                    actions.add(new GuidedAction.Builder(getActivity()).id(ACTION_DONE)
-                            .title(choices[i]).build());
+                    actions.add(
+                            new GuidedAction.Builder(getActivity())
+                                    .id(ACTION_DONE)
+                                    .title(choices[i])
+                                    .build());
                 } else {
-                    actions.add(new GuidedAction.Builder(getActivity()).id(i).title(choices[i])
-                            .build());
+                    actions.add(
+                            new GuidedAction.Builder(getActivity())
+                                    .id(i)
+                                    .title(choices[i])
+                                    .build());
                 }
             }
         }

@@ -20,7 +20,6 @@ import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertWaitForCondi
 
 import android.support.test.filters.SmallTest;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
 
@@ -33,8 +32,9 @@ public class ChannelBannerViewTest extends LiveChannelsTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mLiveChannelsHelper.assertAppStarted();
-        mShowDurationMillis = mTargetResources.getInteger(R.integer.channel_banner_show_duration)
-                + Constants.MAX_SHOW_DELAY_MILLIS;
+        mShowDurationMillis =
+                mTargetResources.getInteger(R.integer.channel_banner_show_duration)
+                        + Constants.MAX_SHOW_DELAY_MILLIS;
     }
 
     public void testChannelBannerAppearDisappear() {

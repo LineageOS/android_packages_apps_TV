@@ -19,7 +19,6 @@ package com.android.tv.menu;
 import android.content.Context;
 import android.media.tv.TvTrackInfo;
 import android.support.annotation.VisibleForTesting;
-
 import com.android.tv.Features;
 import com.android.tv.TvOptionsManager;
 import com.android.tv.customization.CustomAction;
@@ -30,7 +29,6 @@ import com.android.tv.ui.sidepanel.DeveloperOptionFragment;
 import com.android.tv.ui.sidepanel.DisplayModeFragment;
 import com.android.tv.ui.sidepanel.MultiAudioFragment;
 import com.android.tv.util.Utils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +85,8 @@ public class TvOptionsRowAdapter extends CustomizableOptionsRowAdapter {
 
     private boolean updatePipAction() {
         if (containsItem(MenuAction.SYSTEMWIDE_PIP_ACTION)) {
-            return MenuAction.setEnabled(MenuAction.SYSTEMWIDE_PIP_ACTION,
+            return MenuAction.setEnabled(
+                    MenuAction.SYSTEMWIDE_PIP_ACTION,
                     !getMainActivity().isScreenBlockedByResourceConflictOrParentalControl());
         }
         return false;
@@ -103,41 +102,50 @@ public class TvOptionsRowAdapter extends CustomizableOptionsRowAdapter {
 
     private boolean updateDisplayModeAction() {
         TvViewUiManager uiManager = getMainActivity().getTvViewUiManager();
-        boolean enabled = uiManager.isDisplayModeAvailable(DisplayMode.MODE_FULL)
-                || uiManager.isDisplayModeAvailable(DisplayMode.MODE_ZOOM);
+        boolean enabled =
+                uiManager.isDisplayModeAvailable(DisplayMode.MODE_FULL)
+                        || uiManager.isDisplayModeAvailable(DisplayMode.MODE_ZOOM);
         // Use "|" operator for non-short-circuit evaluation.
         return MenuAction.setEnabled(MenuAction.SELECT_DISPLAY_MODE_ACTION, enabled)
                 | updateActionDescription(MenuAction.SELECT_DISPLAY_MODE_ACTION);
     }
 
     private boolean updateActionDescription(MenuAction action) {
-        return MenuAction.setActionDescription(action,
-                getMainActivity().getTvOptionsManager().getOptionString(action.getType()));
+        return MenuAction.setActionDescription(
+                action, getMainActivity().getTvOptionsManager().getOptionString(action.getType()));
     }
 
     @Override
     protected void executeBaseAction(int type) {
         switch (type) {
             case TvOptionsManager.OPTION_CLOSED_CAPTIONS:
-                getMainActivity().getOverlayManager().getSideFragmentManager()
+                getMainActivity()
+                        .getOverlayManager()
+                        .getSideFragmentManager()
                         .show(new ClosedCaptionFragment());
                 break;
             case TvOptionsManager.OPTION_DISPLAY_MODE:
-                getMainActivity().getOverlayManager().getSideFragmentManager()
+                getMainActivity()
+                        .getOverlayManager()
+                        .getSideFragmentManager()
                         .show(new DisplayModeFragment());
                 break;
             case TvOptionsManager.OPTION_SYSTEMWIDE_PIP:
                 getMainActivity().enterPictureInPictureMode();
                 break;
             case TvOptionsManager.OPTION_MULTI_AUDIO:
-                getMainActivity().getOverlayManager().getSideFragmentManager()
+                getMainActivity()
+                        .getOverlayManager()
+                        .getSideFragmentManager()
                         .show(new MultiAudioFragment());
                 break;
             case TvOptionsManager.OPTION_MORE_CHANNELS:
                 getMainActivity().showMerchantCollection();
                 break;
             case TvOptionsManager.OPTION_DEVELOPER:
-                getMainActivity().getOverlayManager().getSideFragmentManager()
+                getMainActivity()
+                        .getOverlayManager()
+                        .getSideFragmentManager()
                         .show(new DeveloperOptionFragment());
                 break;
             case TvOptionsManager.OPTION_SETTINGS:

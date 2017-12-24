@@ -20,28 +20,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
- * A class only for help developers.
- */
+/** A class only for help developers. */
 public class Debug {
     /**
-     * A threshold of start up time, when the start up time of Live TV is more than it,
-     * a warning will show to the developer.
+     * A threshold of start up time, when the start up time of Live TV is more than it, a warning
+     * will show to the developer.
      */
     public static final long TIME_START_UP_DURATION_THRESHOLD = TimeUnit.SECONDS.toMillis(6);
-    /**
-     * Tag for measuring start up time of Live TV.
-     */
+    /** Tag for measuring start up time of Live TV. */
     public static final String TAG_START_UP_TIMER = "start_up_timer";
 
-    /**
-     * A global map for duration timers.
-     */
-    private final static Map<String, DurationTimer> sTimerMap = new HashMap<>();
+    /** A global map for duration timers. */
+    private static final Map<String, DurationTimer> sTimerMap = new HashMap<>();
 
-    /**
-     * Returns the global duration timer by tag.
-     */
+    /** Returns the global duration timer by tag. */
     public static DurationTimer getTimer(String tag) {
         if (sTimerMap.get(tag) != null) {
             return sTimerMap.get(tag);
@@ -51,9 +43,7 @@ public class Debug {
         return timer;
     }
 
-    /**
-     * Removes the global duration timer by tag.
-     */
+    /** Removes the global duration timer by tag. */
     public static DurationTimer removeTimer(String tag) {
         return sTimerMap.remove(tag);
     }

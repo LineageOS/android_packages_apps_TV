@@ -19,9 +19,6 @@ package com.android.tv.tuner.source;
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
-
-import com.google.android.exoplayer.C;
-import com.google.android.exoplayer.upstream.DataSpec;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.TunerHal;
@@ -29,21 +26,20 @@ import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.tvinput.EventDetector;
 import com.android.tv.tuner.tvinput.EventDetector.EventListener;
-
+import com.google.android.exoplayer.C;
+import com.google.android.exoplayer.upstream.DataSpec;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Provides MPEG-2 TS stream sources for channel playing from an underlying tuner device.
- */
+/** Provides MPEG-2 TS stream sources for channel playing from an underlying tuner device. */
 public class TunerTsStreamer implements TsStreamer {
     private static final String TAG = "TunerTsStreamer";
 
     private static final int MIN_READ_UNIT = 1500;
     private static final int READ_BUFFER_SIZE = MIN_READ_UNIT * 10; // ~15KB
-    private static final int CIRCULAR_BUFFER_SIZE = MIN_READ_UNIT * 20000;  // ~ 30MB
+    private static final int CIRCULAR_BUFFER_SIZE = MIN_READ_UNIT * 20000; // ~ 30MB
     private static final int TS_PACKET_SIZE = 188;
 
     private static final int READ_TIMEOUT_MS = 5000; // 5 secs.
@@ -100,20 +96,24 @@ public class TunerTsStreamer implements TsStreamer {
         }
 
         @Override
-        public void close() {
-        }
+        public void close() {}
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
-            int ret = mTsStreamer.readAt(mStartBufferedPosition + mLastReadPosition.get(), buffer,
-                    offset, readLength);
+            int ret =
+                    mTsStreamer.readAt(
+                            mStartBufferedPosition + mLastReadPosition.get(),
+                            buffer,
+                            offset,
+                            readLength);
             if (ret > 0) {
                 mLastReadPosition.addAndGet(ret);
             } else if (ret == READ_ERROR_BUFFER_OVERWRITTEN) {
                 long currentPosition = mStartBufferedPosition + mLastReadPosition.get();
                 long endPosition = mTsStreamer.getBufferedPosition();
-                long diff = ((endPosition - currentPosition + TS_PACKET_SIZE - 1) / TS_PACKET_SIZE)
-                        * TS_PACKET_SIZE;
+                long diff =
+                        ((endPosition - currentPosition + TS_PACKET_SIZE - 1) / TS_PACKET_SIZE)
+                                * TS_PACKET_SIZE;
                 Log.w(TAG, "Demux position jump by overwritten buffer: " + diff);
                 mStartBufferedPosition = currentPosition + diff;
                 mLastReadPosition.set(0);
@@ -124,6 +124,7 @@ public class TunerTsStreamer implements TsStreamer {
     }
     /**
      * Creates {@link TsStreamer} for playing or recording the specified channel.
+     *
      * @param tunerHal the HAL for tuner device
      * @param eventListener the listener for channel & program information
      */
@@ -133,8 +134,10 @@ public class TunerTsStreamer implements TsStreamer {
         if (eventListener != null) {
             mEventDetector.registerListener(eventListener);
         }
-        mTsStreamWriter = context != null && TunerPreferences.getStoreTsStream(context) ?
-                new TsStreamWriter(context) : null;
+        mTsStreamWriter =
+                context != null && TunerPreferences.getStoreTsStream(context)
+                        ? new TsStreamWriter(context)
+                        : null;
     }
 
     public TunerTsStreamer(TunerHal tunerHal, EventListener eventListener) {
@@ -143,11 +146,10 @@ public class TunerTsStreamer implements TsStreamer {
 
     @Override
     public boolean startStream(TunerChannel channel) {
-        if (mTunerHal.tune(channel.getFrequency(), channel.getModulation(),
-                channel.getDisplayNumber(false))) {
+        if (mTunerHal.tune(
+                channel.getFrequency(), channel.getModulation(), channel.getDisplayNumber(false))) {
             if (channel.hasVideo()) {
-                mTunerHal.addPidFilter(channel.getVideoPid(),
-                        TunerHal.FILTER_TYPE_VIDEO);
+                mTunerHal.addPidFilter(channel.getVideoPid(), TunerHal.FILTER_TYPE_VIDEO);
             }
             boolean audioFilterSet = false;
             for (Integer audioPid : channel.getAudioPids()) {
@@ -160,10 +162,11 @@ public class TunerTsStreamer implements TsStreamer {
                     mTunerHal.addPidFilter(audioPid, TunerHal.FILTER_TYPE_OTHER);
                 }
             }
-            mTunerHal.addPidFilter(channel.getPcrPid(),
-                    TunerHal.FILTER_TYPE_PCR);
+            mTunerHal.addPidFilter(channel.getPcrPid(), TunerHal.FILTER_TYPE_PCR);
             if (mEventDetector != null) {
-                mEventDetector.startDetecting(channel.getFrequency(), channel.getModulation(),
+                mEventDetector.startDetecting(
+                        channel.getFrequency(),
+                        channel.getModulation(),
                         channel.getProgramNumber());
             }
             mChannel = channel;
@@ -242,8 +245,9 @@ public class TunerTsStreamer implements TsStreamer {
     }
 
     /**
-     * Returns incomplete channel lists which was scanned so far. Incomplete channel means
-     * the channel whose channel information is not complete or is not well-formed.
+     * Returns incomplete channel lists which was scanned so far. Incomplete channel means the
+     * channel whose channel information is not complete or is not well-formed.
+     *
      * @return {@link List} of {@link TunerChannel}
      */
     public List<TunerChannel> getMalFormedChannels() {
@@ -252,6 +256,7 @@ public class TunerTsStreamer implements TsStreamer {
 
     /**
      * Returns the current {@link TunerHal} which provides MPEG-TS stream for TunerTsStreamer.
+     *
      * @return {@link TunerHal}
      */
     public TunerHal getTunerHal() {
@@ -260,6 +265,7 @@ public class TunerTsStreamer implements TsStreamer {
 
     /**
      * Returns the current tuned channel for TunerTsStreamer.
+     *
      * @return {@link TunerChannel}
      */
     public TunerChannel getChannel() {
@@ -268,6 +274,7 @@ public class TunerTsStreamer implements TsStreamer {
 
     /**
      * Returns the current buffered position from tuner.
+     *
      * @return the current buffered position
      */
     public long getBufferedPosition() {
@@ -348,10 +355,14 @@ public class TunerTsStreamer implements TsStreamer {
                     if (posInBuffer + bytesToCopyInFirstPass > mCircularBuffer.length) {
                         bytesToCopyInFirstPass = mCircularBuffer.length - posInBuffer;
                     }
-                    System.arraycopy(dataBuffer, 0, mCircularBuffer, posInBuffer,
-                            bytesToCopyInFirstPass);
+                    System.arraycopy(
+                            dataBuffer, 0, mCircularBuffer, posInBuffer, bytesToCopyInFirstPass);
                     if (bytesToCopyInFirstPass < bytesWritten) {
-                        System.arraycopy(dataBuffer, bytesToCopyInFirstPass, mCircularBuffer, 0,
+                        System.arraycopy(
+                                dataBuffer,
+                                bytesToCopyInFirstPass,
+                                mCircularBuffer,
+                                0,
                                 bytesWritten - bytesToCopyInFirstPass);
                     }
                     mBytesFetched += bytesWritten;
@@ -365,6 +376,7 @@ public class TunerTsStreamer implements TsStreamer {
 
     /**
      * Reads data from internal buffer.
+     *
      * @param pos the position to read from
      * @param buffer to read
      * @param offset start position of the read buffer
@@ -397,8 +409,8 @@ public class TunerTsStreamer implements TsStreamer {
                 int firstLength = (startPos > endPos ? CIRCULAR_BUFFER_SIZE : endPos) - startPos;
                 System.arraycopy(mCircularBuffer, startPos, buffer, offset, firstLength);
                 if (firstLength < amount) {
-                    System.arraycopy(mCircularBuffer, 0, buffer, offset + firstLength,
-                            amount - firstLength);
+                    System.arraycopy(
+                            mCircularBuffer, 0, buffer, offset + firstLength, amount - firstLength);
                 }
                 mCircularBufferMonitor.notifyAll();
                 return amount;

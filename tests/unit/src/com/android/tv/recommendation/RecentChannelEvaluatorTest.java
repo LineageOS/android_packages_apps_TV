@@ -19,17 +19,13 @@ package com.android.tv.recommendation;
 import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
-
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 
-/**
- * Unit tests for {@link RecentChannelEvaluator}.
- */
+/** Unit tests for {@link RecentChannelEvaluator}. */
 @SmallTest
 public class RecentChannelEvaluatorTest extends EvaluatorTestCase<RecentChannelEvaluator> {
     private static final int DEFAULT_NUMBER_OF_CHANNELS = 4;
@@ -49,14 +45,16 @@ public class RecentChannelEvaluatorTest extends EvaluatorTestCase<RecentChannelE
         long channelId = addChannel().getId();
         notifyChannelAndWatchLogLoaded();
 
-        assertEqualScores(Recommender.Evaluator.NOT_RECOMMENDED,
-                mEvaluator.evaluateChannel(channelId));
+        assertEqualScores(
+                Recommender.Evaluator.NOT_RECOMMENDED, mEvaluator.evaluateChannel(channelId));
     }
 
     @Test
     public void testOneChannelWithRandomWatchLogs() {
         addChannel();
-        addRandomWatchLogs(DEFAULT_WATCH_START_TIME_MS, DEFAULT_WATCH_END_TIME_MS,
+        addRandomWatchLogs(
+                DEFAULT_WATCH_START_TIME_MS,
+                DEFAULT_WATCH_END_TIME_MS,
                 DEFAULT_MAX_WATCH_DURATION_MS);
         notifyChannelAndWatchLogLoaded();
 
@@ -70,15 +68,17 @@ public class RecentChannelEvaluatorTest extends EvaluatorTestCase<RecentChannelE
 
         List<Long> channelIdList = getChannelIdListSorted();
         for (long channelId : channelIdList) {
-            assertEqualScores(Recommender.Evaluator.NOT_RECOMMENDED,
-                    mEvaluator.evaluateChannel(channelId));
+            assertEqualScores(
+                    Recommender.Evaluator.NOT_RECOMMENDED, mEvaluator.evaluateChannel(channelId));
         }
     }
 
     @Test
     public void testMultiChannelsWithRandomWatchLogs() {
         addChannels(DEFAULT_NUMBER_OF_CHANNELS);
-        addRandomWatchLogs(DEFAULT_WATCH_START_TIME_MS, DEFAULT_WATCH_END_TIME_MS,
+        addRandomWatchLogs(
+                DEFAULT_WATCH_START_TIME_MS,
+                DEFAULT_WATCH_END_TIME_MS,
                 DEFAULT_MAX_WATCH_DURATION_MS);
         notifyChannelAndWatchLogLoaded();
 
@@ -111,7 +111,9 @@ public class RecentChannelEvaluatorTest extends EvaluatorTestCase<RecentChannelE
     @Test
     public void testScoreIncreasesWithNewWatchLog() {
         addChannels(DEFAULT_NUMBER_OF_CHANNELS);
-        addRandomWatchLogs(DEFAULT_WATCH_START_TIME_MS, DEFAULT_WATCH_END_TIME_MS,
+        addRandomWatchLogs(
+                DEFAULT_WATCH_START_TIME_MS,
+                DEFAULT_WATCH_END_TIME_MS,
                 DEFAULT_MAX_WATCH_DURATION_MS);
         notifyChannelAndWatchLogLoaded();
 
@@ -132,7 +134,9 @@ public class RecentChannelEvaluatorTest extends EvaluatorTestCase<RecentChannelE
     @Test
     public void testScoreDecreasesWithIncrementOfWatchedLogUpdatedTime() {
         addChannels(DEFAULT_NUMBER_OF_CHANNELS);
-        addRandomWatchLogs(DEFAULT_WATCH_START_TIME_MS, DEFAULT_WATCH_END_TIME_MS,
+        addRandomWatchLogs(
+                DEFAULT_WATCH_START_TIME_MS,
+                DEFAULT_WATCH_END_TIME_MS,
                 DEFAULT_MAX_WATCH_DURATION_MS);
         notifyChannelAndWatchLogLoaded();
 

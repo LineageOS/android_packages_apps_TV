@@ -18,13 +18,12 @@ package com.android.tv.tuner.cc;
 
 import android.content.Context;
 import android.util.AttributeSet;
-
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.android.tv.tuner.layout.ScaledLayout;
 
 /**
- * Layout containing the safe title area that helps the closed captions look more prominent.
- * This is required by CEA-708B.
+ * Layout containing the safe title area that helps the closed captions look more prominent. This is
+ * required by CEA-708B.
  */
 public class CaptionLayout extends ScaledLayout {
     // The safe title area has 10% margins of the screen.
@@ -47,13 +46,15 @@ public class CaptionLayout extends ScaledLayout {
     public CaptionLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mSafeTitleAreaLayout = new ScaledLayout(context);
-        addView(mSafeTitleAreaLayout, new ScaledLayoutParams(
-                SAFE_TITLE_AREA_SCALE_START_X, SAFE_TITLE_AREA_SCALE_END_X,
-                SAFE_TITLE_AREA_SCALE_START_Y, SAFE_TITLE_AREA_SCALE_END_Y));
+        addView(
+                mSafeTitleAreaLayout,
+                new ScaledLayoutParams(
+                        SAFE_TITLE_AREA_SCALE_START_X, SAFE_TITLE_AREA_SCALE_END_X,
+                        SAFE_TITLE_AREA_SCALE_START_Y, SAFE_TITLE_AREA_SCALE_END_Y));
     }
 
-    public void addOrUpdateViewToSafeTitleArea(CaptionWindowLayout captionWindowLayout,
-            ScaledLayoutParams scaledLayoutParams) {
+    public void addOrUpdateViewToSafeTitleArea(
+            CaptionWindowLayout captionWindowLayout, ScaledLayoutParams scaledLayoutParams) {
         int index = mSafeTitleAreaLayout.indexOfChild(captionWindowLayout);
         if (index < 0) {
             mSafeTitleAreaLayout.addView(captionWindowLayout, scaledLayoutParams);

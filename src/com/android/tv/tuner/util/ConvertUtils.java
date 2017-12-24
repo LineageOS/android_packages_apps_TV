@@ -16,14 +16,12 @@
 
 package com.android.tv.tuner.util;
 
-/**
- * Utility class for converting date and time.
- */
+/** Utility class for converting date and time. */
 public class ConvertUtils {
     // Time diff between 1.1.1970 00:00:00 and 6.1.1980 00:00:00
     private static final long DIFF_BETWEEN_UNIX_EPOCH_AND_GPS = 315964800;
 
-    private ConvertUtils() { }
+    private ConvertUtils() {}
 
     public static long convertGPSTimeToUnixEpoch(long gpsTime) {
         return gpsTime + DIFF_BETWEEN_UNIX_EPOCH_AND_GPS;

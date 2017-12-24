@@ -23,18 +23,15 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.Looper;
 import android.support.test.filters.MediumTest;
-
 import com.android.tv.data.WatchedHistoryManager.WatchedRecord;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Test for {@link com.android.tv.data.WatchedHistoryManagerTest}
- * <p>
- * This is a medium test because it load files which accessing SharedPreferences.
+ *
+ * <p>This is a medium test because it load files which accessing SharedPreferences.
  */
 @MediumTest
 public class WatchedHistoryManagerTest {
@@ -104,7 +101,8 @@ public class WatchedHistoryManagerTest {
         }
         // Since the WatchedHistory is a circular queue, the value for 0 and maxHistorySize
         // are same.
-        assertEquals(mWatchedHistoryManager.getRecordFromSharedPreferences(0),
+        assertEquals(
+                mWatchedHistoryManager.getRecordFromSharedPreferences(0),
                 mWatchedHistoryManager.getRecordFromSharedPreferences(MAX_HISTORY_SIZE));
     }
 
@@ -122,8 +120,8 @@ public class WatchedHistoryManagerTest {
         long time = System.currentTimeMillis();
         long duration = TimeUnit.MINUTES.toMillis(10);
         WatchedRecord record = new WatchedRecord(fakeId, time, duration);
-        WatchedRecord sameRecord = mWatchedHistoryManager.decode(
-                mWatchedHistoryManager.encode(record));
+        WatchedRecord sameRecord =
+                mWatchedHistoryManager.decode(mWatchedHistoryManager.encode(record));
         assertEquals(record, sameRecord);
     }
 
@@ -136,6 +134,6 @@ public class WatchedHistoryManagerTest {
         }
 
         @Override
-        public void onNewRecordAdded(WatchedRecord watchedRecord) { }
+        public void onNewRecordAdded(WatchedRecord watchedRecord) {}
     }
 }

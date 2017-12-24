@@ -16,12 +16,8 @@
 
 package com.android.tv.config;
 
-/**
- * Static list of config keys.
- */
+/** Static list of config keys. */
 public final class ConfigKeys {
 
-
-    private ConfigKeys() {
-    }
+    private ConfigKeys() {}
 }

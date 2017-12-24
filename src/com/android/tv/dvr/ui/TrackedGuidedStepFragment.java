@@ -19,7 +19,6 @@ package com.android.tv.dvr.ui;
 import android.content.Context;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidedAction;
-
 import com.android.tv.TvApplication;
 import com.android.tv.analytics.Tracker;
 

@@ -19,10 +19,8 @@ package com.android.tv.tuner.exoplayer.buffer;
 import android.media.MediaFormat;
 import android.util.Log;
 import android.util.Pair;
-
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.google.protobuf.nano.MessageNano;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -36,9 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-/**
- * Manages DVR storage.
- */
+/** Manages DVR storage. */
 public class DvrStorageManager implements BufferManager.StorageManager {
     private static final String TAG = "DvrStorageManager";
 
@@ -118,7 +114,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
         if (len <= 0) {
             return null;
         }
-        byte [] strBytes = new byte[len];
+        byte[] strBytes = new byte[len];
         in.readFully(strBytes);
         return new String(strBytes, StandardCharsets.UTF_8);
     }
@@ -147,7 +143,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
         if (len <= 0) {
             return null;
         }
-        byte [] bytes = new byte[len];
+        byte[] bytes = new byte[len];
         in.readFully(bytes);
         ByteBuffer buffer = ByteBuffer.allocate(len);
         buffer.put(bytes);
@@ -170,8 +166,9 @@ public class DvrStorageManager implements BufferManager.StorageManager {
         int index = 0;
         boolean trackNotFound = false;
         do {
-            String fileName = (isAudio ? META_FILE_TYPE_AUDIO : META_FILE_TYPE_VIDEO)
-                    + ((index == 0) ? META_FILE_SUFFIX : (index + META_FILE_SUFFIX));
+            String fileName =
+                    (isAudio ? META_FILE_TYPE_AUDIO : META_FILE_TYPE_VIDEO)
+                            + ((index == 0) ? META_FILE_SUFFIX : (index + META_FILE_SUFFIX));
             File file = new File(getBufferDir(), fileName);
             try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
                 String name = readString(in);
@@ -195,7 +192,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
                 trackNotFound = true;
             }
             index++;
-        } while(!trackNotFound);
+        } while (!trackNotFound);
         return trackFormatList;
     }
 
@@ -209,8 +206,9 @@ public class DvrStorageManager implements BufferManager.StorageManager {
         int index = 0;
         boolean trackNotFound = false;
         do {
-            String fileName = META_FILE_TYPE_CAPTION +
-                    ((index == 0) ? META_FILE_SUFFIX : (index + META_FILE_SUFFIX));
+            String fileName =
+                    META_FILE_TYPE_CAPTION
+                            + ((index == 0) ? META_FILE_SUFFIX : (index + META_FILE_SUFFIX));
             File file = new File(getBufferDir(), fileName);
             try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
                 byte[] data = new byte[(int) file.length()];
@@ -220,7 +218,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
                 trackNotFound = true;
             }
             index++;
-        } while(!trackNotFound);
+        } while (!trackNotFound);
         return tracks;
     }
 
@@ -259,7 +257,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
         if (file.exists()) {
             return readNewIndexFile(file);
         } else {
-            return readOldIndexFile(new File(getBufferDir(),trackId + IDX_FILE_SUFFIX));
+            return readOldIndexFile(new File(getBufferDir(), trackId + IDX_FILE_SUFFIX));
         }
     }
 
@@ -291,7 +289,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
     }
 
     private void writeString(DataOutputStream out, String str) throws IOException {
-        byte [] data = str.getBytes(StandardCharsets.UTF_8);
+        byte[] data = str.getBytes(StandardCharsets.UTF_8);
         out.writeInt(data.length);
         if (data.length > 0) {
             out.write(data);
@@ -308,7 +306,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
     }
 
     private void writeByteBuffer(DataOutputStream out, ByteBuffer buffer) throws IOException {
-        byte [] data = new byte[buffer.limit()];
+        byte[] data = new byte[buffer.limit()];
         buffer.get(data);
         buffer.flip();
         out.writeInt(data.length);
@@ -331,10 +329,11 @@ public class DvrStorageManager implements BufferManager.StorageManager {
     @Override
     public void writeTrackInfoFiles(List<BufferManager.TrackFormat> formatList, boolean isAudio)
             throws IOException {
-        for (int i = 0; i < formatList.size() ; ++i) {
+        for (int i = 0; i < formatList.size(); ++i) {
             BufferManager.TrackFormat trackFormat = formatList.get(i);
-            String fileName = (isAudio ? META_FILE_TYPE_AUDIO : META_FILE_TYPE_VIDEO)
-                    + ((i == 0) ? META_FILE_SUFFIX : (i + META_FILE_SUFFIX));
+            String fileName =
+                    (isAudio ? META_FILE_TYPE_AUDIO : META_FILE_TYPE_VIDEO)
+                            + ((i == 0) ? META_FILE_SUFFIX : (i + META_FILE_SUFFIX));
             File file = new File(getBufferDir(), fileName);
             try (DataOutputStream out = new DataOutputStream(new FileOutputStream(file))) {
                 writeString(out, trackFormat.trackId);
@@ -365,8 +364,8 @@ public class DvrStorageManager implements BufferManager.StorageManager {
         }
         for (int i = 0; i < tracks.size(); i++) {
             AtscCaptionTrack track = tracks.get(i);
-            String fileName = META_FILE_TYPE_CAPTION +
-                    ((i == 0) ? META_FILE_SUFFIX : (i + META_FILE_SUFFIX));
+            String fileName =
+                    META_FILE_TYPE_CAPTION + ((i == 0) ? META_FILE_SUFFIX : (i + META_FILE_SUFFIX));
             File file = new File(getBufferDir(), fileName);
             try (DataOutputStream out = new DataOutputStream(new FileOutputStream(file))) {
                 out.write(MessageNano.toByteArray(track));
@@ -379,7 +378,7 @@ public class DvrStorageManager implements BufferManager.StorageManager {
     @Override
     public void writeIndexFile(String trackName, SortedMap<Long, Pair<SampleChunk, Integer>> index)
             throws IOException {
-        File indexFile  = new File(getBufferDir(), trackName + IDX_FILE_SUFFIX_V2);
+        File indexFile = new File(getBufferDir(), trackName + IDX_FILE_SUFFIX_V2);
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(indexFile))) {
             out.writeLong(index.size());
             for (Map.Entry<Long, Pair<SampleChunk, Integer>> entry : index.entrySet()) {

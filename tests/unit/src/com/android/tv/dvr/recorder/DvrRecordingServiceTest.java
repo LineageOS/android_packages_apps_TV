@@ -16,24 +16,16 @@
 
 package com.android.tv.dvr.recorder;
 
-import static org.mockito.Mockito.verify;
-
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
 import android.test.ServiceTestCase;
-
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.TestableFeature;
-
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-/**
- * Tests for {@link DvrRecordingService}.
- */
+/** Tests for {@link DvrRecordingService}. */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class DvrRecordingServiceTest

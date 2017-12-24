@@ -29,7 +29,6 @@ import android.support.v17.leanback.widget.TitleViewAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
@@ -45,19 +44,19 @@ import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.SortedArrayAdapter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * {@link BrowseFragment} for DVR functions.
- */
-public class DvrBrowseFragment extends BrowseFragment implements
-        RecordedProgramListener, ScheduledRecordingListener, SeriesRecordingListener,
-        OnDvrScheduleLoadFinishedListener, OnRecordedProgramLoadFinishedListener {
+/** {@link BrowseFragment} for DVR functions. */
+public class DvrBrowseFragment extends BrowseFragment
+        implements RecordedProgramListener,
+                ScheduledRecordingListener,
+                SeriesRecordingListener,
+                OnDvrScheduleLoadFinishedListener,
+                OnRecordedProgramLoadFinishedListener {
     private static final String TAG = "DvrBrowseFragment";
     private static final boolean DEBUG = false;
 
@@ -98,66 +97,71 @@ public class DvrBrowseFragment extends BrowseFragment implements
                 }
             };
 
-    private final Comparator<Object> RECORDED_PROGRAM_COMPARATOR = new Comparator<Object>() {
-        @Override
-        public int compare(Object lhs, Object rhs) {
-            if (lhs instanceof SeriesRecording) {
-                lhs = mSeriesId2LatestProgram.get(((SeriesRecording) lhs).getSeriesId());
-            }
-            if (rhs instanceof SeriesRecording) {
-                rhs = mSeriesId2LatestProgram.get(((SeriesRecording) rhs).getSeriesId());
-            }
-            if (lhs instanceof RecordedProgram) {
-                if (rhs instanceof RecordedProgram) {
-                    return RecordedProgram.START_TIME_THEN_ID_COMPARATOR.reversed()
-                            .compare((RecordedProgram) lhs, (RecordedProgram) rhs);
-                } else {
-                    return -1;
+    private final Comparator<Object> RECORDED_PROGRAM_COMPARATOR =
+            new Comparator<Object>() {
+                @Override
+                public int compare(Object lhs, Object rhs) {
+                    if (lhs instanceof SeriesRecording) {
+                        lhs = mSeriesId2LatestProgram.get(((SeriesRecording) lhs).getSeriesId());
+                    }
+                    if (rhs instanceof SeriesRecording) {
+                        rhs = mSeriesId2LatestProgram.get(((SeriesRecording) rhs).getSeriesId());
+                    }
+                    if (lhs instanceof RecordedProgram) {
+                        if (rhs instanceof RecordedProgram) {
+                            return RecordedProgram.START_TIME_THEN_ID_COMPARATOR
+                                    .reversed()
+                                    .compare((RecordedProgram) lhs, (RecordedProgram) rhs);
+                        } else {
+                            return -1;
+                        }
+                    } else if (rhs instanceof RecordedProgram) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
                 }
-            } else if (rhs instanceof RecordedProgram) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-    };
+            };
 
-    private static final Comparator<Object> SCHEDULE_COMPARATOR = new Comparator<Object>() {
-        @Override
-        public int compare(Object lhs, Object rhs) {
-            if (lhs instanceof ScheduledRecording) {
-                if (rhs instanceof ScheduledRecording) {
-                    return ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
-                            .compare((ScheduledRecording) lhs, (ScheduledRecording) rhs);
-                } else {
-                    return -1;
+    private static final Comparator<Object> SCHEDULE_COMPARATOR =
+            new Comparator<Object>() {
+                @Override
+                public int compare(Object lhs, Object rhs) {
+                    if (lhs instanceof ScheduledRecording) {
+                        if (rhs instanceof ScheduledRecording) {
+                            return ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
+                                    .compare((ScheduledRecording) lhs, (ScheduledRecording) rhs);
+                        } else {
+                            return -1;
+                        }
+                    } else if (rhs instanceof ScheduledRecording) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
                 }
-            } else if (rhs instanceof ScheduledRecording) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-    };
+            };
 
     private final DvrScheduleManager.OnConflictStateChangeListener mOnConflictStateChangeListener =
             new DvrScheduleManager.OnConflictStateChangeListener() {
-        @Override
-        public void onConflictStateChange(boolean conflict, ScheduledRecording... schedules) {
-            if (mScheduleAdapter != null) {
-                for (ScheduledRecording schedule : schedules) {
-                    onScheduledRecordingConflictStatusChanged(schedule);
+                @Override
+                public void onConflictStateChange(
+                        boolean conflict, ScheduledRecording... schedules) {
+                    if (mScheduleAdapter != null) {
+                        for (ScheduledRecording schedule : schedules) {
+                            onScheduledRecordingConflictStatusChanged(schedule);
+                        }
+                    }
                 }
-            }
-        }
-    };
+            };
 
-    private final Runnable mUpdateRowsRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateRows();
-        }
-    };
+    private final Runnable mUpdateRowsRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    updateRows();
+                }
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,13 +171,17 @@ public class DvrBrowseFragment extends BrowseFragment implements
         ApplicationSingletons singletons = TvApplication.getSingletons(context);
         mDvrDataManager = singletons.getDvrDataManager();
         mDvrScheudleManager = singletons.getDvrScheduleManager();
-        mPresenterSelector = new ClassPresenterSelector()
-                .addClassPresenter(ScheduledRecording.class,
-                        new ScheduledRecordingPresenter(context))
-                .addClassPresenter(RecordedProgram.class, new RecordedProgramPresenter(context))
-                .addClassPresenter(SeriesRecording.class, new SeriesRecordingPresenter(context))
-                .addClassPresenter(FullScheduleCardHolder.class,
-                        new FullSchedulesCardPresenter(context));
+        mPresenterSelector =
+                new ClassPresenterSelector()
+                        .addClassPresenter(
+                                ScheduledRecording.class, new ScheduledRecordingPresenter(context))
+                        .addClassPresenter(
+                                RecordedProgram.class, new RecordedProgramPresenter(context))
+                        .addClassPresenter(
+                                SeriesRecording.class, new SeriesRecordingPresenter(context))
+                        .addClassPresenter(
+                                FullScheduleCardHolder.class,
+                                new FullSchedulesCardPresenter(context));
         mGenreLabels = new ArrayList<>(Arrays.asList(GenreItems.getLabels(context)));
         mGenreLabels.add(getString(R.string.dvr_main_others));
         prepareUiElements();
@@ -195,7 +203,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
 
     @Override
     public void onDestroyView() {
-        getView().getViewTreeObserver()
+        getView()
+                .getViewTreeObserver()
                 .removeOnGlobalFocusChangeListener(mOnGlobalFocusChangeListener);
         super.onDestroyView();
     }
@@ -376,15 +385,20 @@ public class DvrBrowseFragment extends BrowseFragment implements
                 handleRecordedProgramAdded(recordedProgram, false);
             }
             // Series Recordings. Series recordings should be added after recorded programs, because
-            // we build series recordings' latest program information while adding recorded programs.
+            // we build series recordings' latest program information while adding recorded
+            // programs.
             List<SeriesRecording> recordings = mDvrDataManager.getSeriesRecordings();
             handleSeriesRecordingsAdded(recordings);
-            mRecentRow = new ListRow(new HeaderItem(
-                    getString(R.string.dvr_main_recent)), mRecentAdapter);
-            mScheduledRow = new ListRow(new HeaderItem(
-                    getString(R.string.dvr_main_scheduled)), mScheduleAdapter);
-            mSeriesRow = new ListRow(new HeaderItem(
-                    getString(R.string.dvr_main_series)), mSeriesAdapter);
+            mRecentRow =
+                    new ListRow(
+                            new HeaderItem(getString(R.string.dvr_main_recent)), mRecentAdapter);
+            mScheduledRow =
+                    new ListRow(
+                            new HeaderItem(getString(R.string.dvr_main_scheduled)),
+                            mScheduleAdapter);
+            mSeriesRow =
+                    new ListRow(
+                            new HeaderItem(getString(R.string.dvr_main_series)), mSeriesAdapter);
             mRowsAdapter.add(mScheduledRow);
             updateRows();
             // Initialize listeners
@@ -398,16 +412,18 @@ public class DvrBrowseFragment extends BrowseFragment implements
         return false;
     }
 
-    private void handleRecordedProgramAdded(RecordedProgram recordedProgram,
-            boolean updateSeriesRecording) {
+    private void handleRecordedProgramAdded(
+            RecordedProgram recordedProgram, boolean updateSeriesRecording) {
         mRecentAdapter.add(recordedProgram);
         String seriesId = recordedProgram.getSeriesId();
         SeriesRecording seriesRecording = null;
         if (seriesId != null) {
             seriesRecording = mDvrDataManager.getSeriesRecording(seriesId);
             RecordedProgram latestProgram = mSeriesId2LatestProgram.get(seriesId);
-            if (latestProgram == null || RecordedProgram.START_TIME_THEN_ID_COMPARATOR
-                    .compare(latestProgram, recordedProgram) < 0) {
+            if (latestProgram == null
+                    || RecordedProgram.START_TIME_THEN_ID_COMPARATOR.compare(
+                                    latestProgram, recordedProgram)
+                            < 0) {
                 mSeriesId2LatestProgram.put(seriesId, recordedProgram);
                 if (updateSeriesRecording && seriesRecording != null) {
                     onSeriesRecordingChanged(seriesRecording);
@@ -415,8 +431,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
             }
         }
         if (seriesRecording == null) {
-            for (RecordedProgramAdapter adapter
-                    : getGenreAdapters(recordedProgram.getCanonicalGenres())) {
+            for (RecordedProgramAdapter adapter :
+                    getGenreAdapters(recordedProgram.getCanonicalGenres())) {
                 adapter.add(recordedProgram);
             }
         }
@@ -436,8 +452,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
                 }
             }
         }
-        for (RecordedProgramAdapter adapter
-                : getGenreAdapters(recordedProgram.getCanonicalGenres())) {
+        for (RecordedProgramAdapter adapter :
+                getGenreAdapters(recordedProgram.getCanonicalGenres())) {
             adapter.remove(recordedProgram);
         }
     }
@@ -449,8 +465,10 @@ public class DvrBrowseFragment extends BrowseFragment implements
         if (seriesId != null) {
             seriesRecording = mDvrDataManager.getSeriesRecording(seriesId);
             RecordedProgram latestProgram = mSeriesId2LatestProgram.get(seriesId);
-            if (latestProgram == null || RecordedProgram.START_TIME_THEN_ID_COMPARATOR
-                    .compare(latestProgram, recordedProgram) <= 0) {
+            if (latestProgram == null
+                    || RecordedProgram.START_TIME_THEN_ID_COMPARATOR.compare(
+                                    latestProgram, recordedProgram)
+                            <= 0) {
                 mSeriesId2LatestProgram.put(seriesId, recordedProgram);
                 if (seriesRecording != null) {
                     onSeriesRecordingChanged(seriesRecording);
@@ -463,8 +481,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
             }
         }
         if (seriesRecording == null) {
-            updateGenreAdapters(getGenreAdapters(
-                    recordedProgram.getCanonicalGenres()), recordedProgram);
+            updateGenreAdapters(
+                    getGenreAdapters(recordedProgram.getCanonicalGenres()), recordedProgram);
         } else {
             updateGenreAdapters(new ArrayList<>(), recordedProgram);
         }
@@ -474,8 +492,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
         for (SeriesRecording seriesRecording : seriesRecordings) {
             mSeriesAdapter.add(seriesRecording);
             if (mSeriesId2LatestProgram.get(seriesRecording.getSeriesId()) != null) {
-                for (RecordedProgramAdapter adapter
-                        : getGenreAdapters(seriesRecording.getCanonicalGenreIds())) {
+                for (RecordedProgramAdapter adapter :
+                        getGenreAdapters(seriesRecording.getCanonicalGenreIds())) {
                     adapter.add(seriesRecording);
                 }
             }
@@ -485,8 +503,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
     private void handleSeriesRecordingsRemoved(List<SeriesRecording> seriesRecordings) {
         for (SeriesRecording seriesRecording : seriesRecordings) {
             mSeriesAdapter.remove(seriesRecording);
-            for (RecordedProgramAdapter adapter
-                    : getGenreAdapters(seriesRecording.getCanonicalGenreIds())) {
+            for (RecordedProgramAdapter adapter :
+                    getGenreAdapters(seriesRecording.getCanonicalGenreIds())) {
                 adapter.remove(seriesRecording);
             }
         }
@@ -496,8 +514,8 @@ public class DvrBrowseFragment extends BrowseFragment implements
         for (SeriesRecording seriesRecording : seriesRecordings) {
             mSeriesAdapter.change(seriesRecording);
             if (mSeriesId2LatestProgram.get(seriesRecording.getSeriesId()) != null) {
-                updateGenreAdapters(getGenreAdapters(
-                        seriesRecording.getCanonicalGenreIds()), seriesRecording);
+                updateGenreAdapters(
+                        getGenreAdapters(seriesRecording.getCanonicalGenreIds()), seriesRecording);
             } else {
                 // Remove series recording from all genre rows if it has no recorded program
                 updateGenreAdapters(new ArrayList<>(), seriesRecording);
@@ -512,7 +530,7 @@ public class DvrBrowseFragment extends BrowseFragment implements
         } else {
             for (String genre : genres) {
                 int genreId = GenreItems.getId(genre);
-                if(genreId >= mGenreAdapters.length) {
+                if (genreId >= mGenreAdapters.length) {
                     Log.d(TAG, "Wrong Genre ID: " + genreId);
                 } else {
                     result.add(mGenreAdapters[genreId]);
@@ -528,7 +546,7 @@ public class DvrBrowseFragment extends BrowseFragment implements
             result.add(mGenreAdapters[mGenreAdapters.length - 1]);
         } else {
             for (int genreId : genreIds) {
-                if(genreId >= mGenreAdapters.length) {
+                if (genreId >= mGenreAdapters.length) {
                     Log.d(TAG, "Wrong Genre ID: " + genreId);
                 } else {
                     result.add(mGenreAdapters[genreId]);
@@ -554,7 +572,7 @@ public class DvrBrowseFragment extends BrowseFragment implements
     }
 
     private void updateRows() {
-        int visibleRowsCount = 1;  // Schedule's Row will never be empty
+        int visibleRowsCount = 1; // Schedule's Row will never be empty
         if (mRecentAdapter.isEmpty()) {
             mRowsAdapter.remove(mRecentRow);
         } else {
@@ -597,8 +615,9 @@ public class DvrBrowseFragment extends BrowseFragment implements
         RecordedProgram latestProgram = null;
         for (RecordedProgram program :
                 mDvrDataManager.getRecordedPrograms(seriesRecording.getId())) {
-            if (latestProgram == null || RecordedProgram
-                    .START_TIME_THEN_ID_COMPARATOR.compare(latestProgram, program) < 0) {
+            if (latestProgram == null
+                    || RecordedProgram.START_TIME_THEN_ID_COMPARATOR.compare(latestProgram, program)
+                            < 0) {
                 latestProgram = program;
             }
         }
@@ -622,17 +641,19 @@ public class DvrBrowseFragment extends BrowseFragment implements
 
     private class SeriesAdapter extends SortedArrayAdapter<SeriesRecording> {
         SeriesAdapter() {
-            super(mPresenterSelector, new Comparator<SeriesRecording>() {
-                @Override
-                public int compare(SeriesRecording lhs, SeriesRecording rhs) {
-                    if (lhs.isStopped() && !rhs.isStopped()) {
-                        return 1;
-                    } else if (!lhs.isStopped() && rhs.isStopped()) {
-                        return -1;
-                    }
-                    return SeriesRecording.PRIORITY_COMPARATOR.compare(lhs, rhs);
-                }
-            });
+            super(
+                    mPresenterSelector,
+                    new Comparator<SeriesRecording>() {
+                        @Override
+                        public int compare(SeriesRecording lhs, SeriesRecording rhs) {
+                            if (lhs.isStopped() && !rhs.isStopped()) {
+                                return 1;
+                            } else if (!lhs.isStopped() && rhs.isStopped()) {
+                                return -1;
+                            }
+                            return SeriesRecording.PRIORITY_COMPARATOR.compare(lhs, rhs);
+                        }
+                    });
         }
 
         @Override

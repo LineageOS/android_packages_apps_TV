@@ -26,20 +26,17 @@ import com.android.tv.common.BuildConfig;
  * <p>This file is maintained by hand.
  */
 public final class Experiments {
-    public static final ExperimentFlag<Boolean> CLOUD_EPG = createFlag(
-            true);
+    public static final ExperimentFlag<Boolean> CLOUD_EPG = createFlag(true);
 
-    public static final ExperimentFlag<Boolean> ENABLE_UNRATED_CONTENT_SETTINGS =
-            createFlag(
-                    false);
+    public static final ExperimentFlag<Boolean> ENABLE_UNRATED_CONTENT_SETTINGS = createFlag(false);
 
     /**
      * Allow developer features such as the dev menu and other aids.
      *
      * <p>These features are available to select users(aka fishfooders) on production builds.
      */
-    public static final ExperimentFlag<Boolean> ENABLE_DEVELOPER_FEATURES = createFlag(
-            BuildConfig.ENG);
+    public static final ExperimentFlag<Boolean> ENABLE_DEVELOPER_FEATURES =
+            createFlag(BuildConfig.ENG);
 
     private Experiments() {}
 }

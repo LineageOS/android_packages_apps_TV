@@ -25,7 +25,6 @@ import static com.android.tv.TimeShiftManager.TIME_SHIFT_ACTION_ID_REWIND;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.MediumTest;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -85,19 +84,36 @@ public class TimeShiftManagerTest extends BaseMainActivityTestCase {
         mTimeShiftManager.enableAction(TIME_SHIFT_ACTION_ID_JUMP_TO_NEXT, enabled);
     }
 
-    private void assertActionState(boolean playEnabled, boolean pauseEnabled, boolean rewindEnabled,
-            boolean fastForwardEnabled, boolean jumpToPreviousEnabled, boolean jumpToNextEnabled) {
-        assertEquals("Play Action", playEnabled,
+    private void assertActionState(
+            boolean playEnabled,
+            boolean pauseEnabled,
+            boolean rewindEnabled,
+            boolean fastForwardEnabled,
+            boolean jumpToPreviousEnabled,
+            boolean jumpToNextEnabled) {
+        assertEquals(
+                "Play Action",
+                playEnabled,
                 mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_PLAY));
-        assertEquals("Pause Action", pauseEnabled,
+        assertEquals(
+                "Pause Action",
+                pauseEnabled,
                 mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_PAUSE));
-        assertEquals("Rewind Action", rewindEnabled,
+        assertEquals(
+                "Rewind Action",
+                rewindEnabled,
                 mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_REWIND));
-        assertEquals("Fast Forward Action", fastForwardEnabled,
+        assertEquals(
+                "Fast Forward Action",
+                fastForwardEnabled,
                 mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_FAST_FORWARD));
-        assertEquals("Jump To Previous Action", jumpToPreviousEnabled,
+        assertEquals(
+                "Jump To Previous Action",
+                jumpToPreviousEnabled,
                 mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_JUMP_TO_PREVIOUS));
-        assertEquals("Jump To Next Action", jumpToNextEnabled,
+        assertEquals(
+                "Jump To Next Action",
+                jumpToNextEnabled,
                 mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_JUMP_TO_NEXT));
     }
 }

@@ -17,11 +17,10 @@ package com.google.android.exoplayer2.ext.ffmpeg;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import com.android.tv.common.SoftPreconditions;
 import com.google.android.exoplayer2.decoder.DecoderInputBuffer;
 import com.google.android.exoplayer2.decoder.SimpleOutputBuffer;
 import com.google.android.exoplayer2.util.MimeTypes;
-import com.android.tv.common.SoftPreconditions;
-
 import java.nio.ByteBuffer;
 
 /**

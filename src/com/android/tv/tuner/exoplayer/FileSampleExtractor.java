@@ -16,25 +16,23 @@
 
 package com.android.tv.tuner.exoplayer;
 
+import android.os.Handler;
+import com.android.tv.tuner.exoplayer.buffer.BufferManager;
+import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer;
+import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.MediaFormatHolder;
 import com.google.android.exoplayer.MediaFormatUtil;
 import com.google.android.exoplayer.SampleHolder;
-import com.android.tv.tuner.exoplayer.buffer.BufferManager;
-import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
-
-import android.os.Handler;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class that plays a recorded stream without using {@link android.media.MediaExtractor},
- * since all samples are extracted and stored to the permanent storage already.
+ * A class that plays a recorded stream without using {@link android.media.MediaExtractor}, since
+ * all samples are extracted and stored to the permanent storage already.
  */
-public class FileSampleExtractor implements SampleExtractor{
+public class FileSampleExtractor implements SampleExtractor {
     private static final String TAG = "FileSampleExtractor";
     private static final boolean DEBUG = false;
 
@@ -46,8 +44,7 @@ public class FileSampleExtractor implements SampleExtractor{
     private final PlaybackBufferListener mBufferListener;
     private BufferManager.SampleBuffer mSampleBuffer;
 
-    public FileSampleExtractor(
-            BufferManager bufferManager, PlaybackBufferListener bufferListener) {
+    public FileSampleExtractor(BufferManager bufferManager, PlaybackBufferListener bufferListener) {
         mBufferManager = bufferManager;
         mBufferListener = bufferListener;
         mTrackCount = -1;
@@ -72,8 +69,12 @@ public class FileSampleExtractor implements SampleExtractor{
             ids.add(trackFormat.trackId);
             mTrackFormats.add(MediaFormatUtil.createMediaFormat(trackFormat.format));
         }
-        mSampleBuffer = new RecordingSampleBuffer(mBufferManager, mBufferListener, true,
-                RecordingSampleBuffer.BUFFER_REASON_RECORDED_PLAYBACK);
+        mSampleBuffer =
+                new RecordingSampleBuffer(
+                        mBufferManager,
+                        mBufferListener,
+                        true,
+                        RecordingSampleBuffer.BUFFER_REASON_RECORDED_PLAYBACK);
         mSampleBuffer.init(ids, mTrackFormats);
         return true;
     }
@@ -134,5 +135,5 @@ public class FileSampleExtractor implements SampleExtractor{
     }
 
     @Override
-    public void setOnCompletionListener(OnCompletionListener listener, Handler handler) { }
+    public void setOnCompletionListener(OnCompletionListener listener, Handler handler) {}
 }

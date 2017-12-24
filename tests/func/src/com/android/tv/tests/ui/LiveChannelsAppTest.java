@@ -22,16 +22,13 @@ import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertWaitForCondi
 import android.support.test.filters.LargeTest;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TvTestInputConstants;
 import com.android.tv.testing.uihelper.Constants;
 import com.android.tv.testing.uihelper.DialogHelper;
 
-/**
- * Basic tests for the LiveChannels app.
- */
+/** Basic tests for the LiveChannels app. */
 @LargeTest
 public class LiveChannelsAppTest extends LiveChannelsTestCase {
     private BySelector mBySettingsSidePanel;
@@ -42,14 +39,15 @@ public class LiveChannelsAppTest extends LiveChannelsTestCase {
         mLiveChannelsHelper.assertAppStarted();
         pressKeysForChannel(TvTestInputConstants.CH_1_DEFAULT_DONT_MODIFY);
         getInstrumentation().waitForIdleSync();
-        mBySettingsSidePanel = mSidePanelHelper.bySidePanelTitled(
-                R.string.side_panel_title_settings);
+        mBySettingsSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_settings);
     }
 
     public void testSettingsCancel() {
         mMenuHelper.assertPressOptionsSettings();
-        BySelector byChannelSourcesSidePanel = mSidePanelHelper
-                .bySidePanelTitled(R.string.settings_channel_source_item_customize_channels);
+        BySelector byChannelSourcesSidePanel =
+                mSidePanelHelper.bySidePanelTitled(
+                        R.string.settings_channel_source_item_customize_channels);
         assertWaitForCondition(mDevice, Until.hasObject(byChannelSourcesSidePanel));
         mDevice.pressBack();
         assertWaitForCondition(mDevice, Until.gone(byChannelSourcesSidePanel));
@@ -58,8 +56,8 @@ public class LiveChannelsAppTest extends LiveChannelsTestCase {
 
     public void testClosedCaptionsCancel() {
         mMenuHelper.assertPressOptionsClosedCaptions();
-        BySelector byClosedCaptionSidePanel = mSidePanelHelper
-                .bySidePanelTitled(R.string.side_panel_title_closed_caption);
+        BySelector byClosedCaptionSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_closed_caption);
         assertWaitForCondition(mDevice, Until.hasObject(byClosedCaptionSidePanel));
         mDevice.pressBack();
         assertWaitForCondition(mDevice, Until.gone(byClosedCaptionSidePanel));
@@ -69,13 +67,12 @@ public class LiveChannelsAppTest extends LiveChannelsTestCase {
     public void testDisplayModeCancel() {
         ChannelStateData data = new ChannelStateData();
         data.mTvTrackInfos.add(com.android.tv.testing.Constants.SVGA_VIDEO_TRACK);
-        data.mSelectedVideoTrackId = com.android.tv.testing.Constants.SVGA_VIDEO_TRACK
-                .getId();
+        data.mSelectedVideoTrackId = com.android.tv.testing.Constants.SVGA_VIDEO_TRACK.getId();
         updateThenTune(data, TvTestInputConstants.CH_2);
 
         mMenuHelper.assertPressOptionsDisplayMode();
-        BySelector byDisplayModeSidePanel = mSidePanelHelper
-                .bySidePanelTitled(R.string.side_panel_title_display_mode);
+        BySelector byDisplayModeSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_display_mode);
         assertWaitForCondition(mDevice, Until.hasObject(byDisplayModeSidePanel));
         mDevice.pressBack();
         assertWaitForCondition(mDevice, Until.gone(byDisplayModeSidePanel));
@@ -95,8 +92,8 @@ public class LiveChannelsAppTest extends LiveChannelsTestCase {
         updateThenTune(data, TvTestInputConstants.CH_2);
 
         mMenuHelper.assertPressOptionsMultiAudio();
-        BySelector byMultiAudioSidePanel = mSidePanelHelper
-                .bySidePanelTitled(R.string.side_panel_title_multi_audio);
+        BySelector byMultiAudioSidePanel =
+                mSidePanelHelper.bySidePanelTitled(R.string.side_panel_title_multi_audio);
         assertWaitForCondition(mDevice, Until.hasObject(byMultiAudioSidePanel));
         mDevice.pressBack();
         assertWaitForCondition(mDevice, Until.gone(byMultiAudioSidePanel));

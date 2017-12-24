@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.support.test.rule.ActivityTestRule;
 import android.text.TextUtils;
-
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.testing.ChannelInfo;
@@ -29,15 +28,11 @@ import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TestInputControlConnection;
 import com.android.tv.testing.testinput.TestInputControlUtils;
 import com.android.tv.testing.testinput.TvTestInputConstants;
-
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 
-import java.util.List;
-
-/**
- * Base TestCase for tests that need a {@link MainActivity}.
- */
+/** Base TestCase for tests that need a {@link MainActivity}. */
 public abstract class BaseMainActivityTestCase {
     private static final String TAG = "BaseMainActivityTest";
     private static final int CHANNEL_LOADING_CHECK_INTERVAL_MS = 10;
@@ -54,8 +49,11 @@ public abstract class BaseMainActivityTestCase {
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         // TODO: ensure the SampleInputs are setup.
-        getInstrumentation().getTargetContext()
-                .bindService(TestInputControlUtils.createIntent(), mConnection,
+        getInstrumentation()
+                .getTargetContext()
+                .bindService(
+                        TestInputControlUtils.createIntent(),
+                        mConnection,
                         Context.BIND_AUTO_CREATE);
     }
 
@@ -73,17 +71,17 @@ public abstract class BaseMainActivityTestCase {
      */
     protected void tuneToChannel(final Channel channel) {
         // Run on UI thread so views can be modified
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mActivity.tuneToChannel(channel);
-            }
-        });
+        getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mActivity.tuneToChannel(channel);
+                            }
+                        });
     }
 
-    /**
-     * Sleep until  @{@link ChannelDataManager#isDbLoadFinished()} is true.
-     */
+    /** Sleep until @{@link ChannelDataManager#isDbLoadFinished()} is true. */
     protected void waitUntilChannelLoadingFinish() {
         ChannelDataManager channelDataManager = mActivity.getChannelDataManager();
         while (!channelDataManager.isDbLoadFinished()) {
@@ -102,9 +100,7 @@ public abstract class BaseMainActivityTestCase {
         tuneToChannel(c);
     }
 
-    /**
-     * Tune to channel.
-     */
+    /** Tune to channel. */
     protected void tuneToChannel(ChannelInfo channel) {
         tuneToChannel(channel.name);
     }
@@ -112,13 +108,14 @@ public abstract class BaseMainActivityTestCase {
     /**
      * Update the channel state to {@code data} then tune to that channel.
      *
-     * @param data    the state to update the channel with.
+     * @param data the state to update the channel with.
      * @param channel the channel to tune to
      */
     protected void updateThenTune(ChannelStateData data, ChannelInfo channel) {
         if (channel.equals(TvTestInputConstants.CH_1_DEFAULT_DONT_MODIFY)) {
             throw new IllegalArgumentException(
-                    "By convention " + TvTestInputConstants.CH_1_DEFAULT_DONT_MODIFY.name
+                    "By convention "
+                            + TvTestInputConstants.CH_1_DEFAULT_DONT_MODIFY.name
                             + " should not be modified.");
         }
         mConnection.updateChannelState(channel, data);
@@ -128,7 +125,7 @@ public abstract class BaseMainActivityTestCase {
     private Channel findChannelWithName(String displayName) {
         waitUntilChannelLoadingFinish();
         Channel channel = null;
-        List <Channel> channelList = mActivity.getChannelDataManager().getChannelList();
+        List<Channel> channelList = mActivity.getChannelDataManager().getChannelList();
         for (Channel c : channelList) {
             if (TextUtils.equals(c.getDisplayName(), displayName)) {
                 channel = c;

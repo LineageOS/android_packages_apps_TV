@@ -18,7 +18,6 @@ package com.android.tv.util;
 
 import android.net.TrafficStats;
 import android.support.annotation.NonNull;
-
 import java.util.concurrent.Executor;
 
 /** Constants for tagging network traffic in the Live channels app. */

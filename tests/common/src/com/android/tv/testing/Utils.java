@@ -26,9 +26,7 @@ import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.net.Uri;
 import android.util.Log;
-
 import com.android.tv.common.TvCommonUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,7 +43,7 @@ import java.util.Random;
  * @see TvCommonUtils#isRunningInTest
  */
 public final class Utils {
-    private static final String TAG ="Utils";
+    private static final String TAG = "Utils";
 
     private static final long DEFAULT_RANDOM_SEED = getSeed();
 
@@ -55,10 +53,12 @@ public final class Utils {
         }
         Resources res = context.getResources();
         return new Uri.Builder()
-            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-            .authority(res.getResourcePackageName(resId))
-            .path(res.getResourceTypeName(resId))
-            .appendPath(res.getResourceEntryName(resId)).build().toString();
+                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                .authority(res.getResourcePackageName(resId))
+                .path(res.getResourceTypeName(resId))
+                .appendPath(res.getResourceEntryName(resId))
+                .build()
+                .toString();
     }
 
     public static void copy(InputStream is, OutputStream os) throws IOException {
@@ -91,8 +91,8 @@ public final class Utils {
     }
 
     /**
-     * Return the Random class which is needed to make random data for testing.
-     * Default seed of the random is today's date.
+     * Return the Random class which is needed to make random data for testing. Default seed of the
+     * random is today's date.
      */
     public static Random createTestRandom() {
         return new Random(DEFAULT_RANDOM_SEED);
@@ -108,13 +108,10 @@ public final class Utils {
 
     private Utils() {}
 
-    /**
-     * Checks whether TvActivity is enabled or not.
-     */
+    /** Checks whether TvActivity is enabled or not. */
     public static boolean isTvActivityEnabled(Context context) {
         PackageManager pm = context.getPackageManager();
-        ComponentName name = new ComponentName("com.android.tv",
-                "com.android.tv.TvActivity");
+        ComponentName name = new ComponentName("com.android.tv", "com.android.tv.TvActivity");
         int enabled = pm.getComponentEnabledSetting(name);
         return enabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 || enabled == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;

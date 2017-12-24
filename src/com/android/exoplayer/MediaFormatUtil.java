@@ -16,9 +16,7 @@
 package com.google.android.exoplayer;
 
 import android.support.annotation.Nullable;
-
 import com.google.android.exoplayer.util.MimeTypes;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -26,9 +24,9 @@ import java.util.ArrayList;
 public class MediaFormatUtil {
 
     /**
-     * Creates {@link MediaFormat} from {@link android.media.MediaFormat}.
-     * Since {@link com.google.android.exoplayer.TrackRenderer} uses {@link MediaFormat},
-     * {@link android.media.MediaFormat} should be converted to be used with ExoPlayer.
+     * Creates {@link MediaFormat} from {@link android.media.MediaFormat}. Since {@link
+     * com.google.android.exoplayer.TrackRenderer} uses {@link MediaFormat}, {@link
+     * android.media.MediaFormat} should be converted to be used with ExoPlayer.
      */
     public static MediaFormat createMediaFormat(android.media.MediaFormat format) {
         String mimeType = format.getString(android.media.MediaFormat.KEY_MIME);
@@ -51,15 +49,36 @@ public class MediaFormatUtil {
             initializationData.add(data);
             buffer.flip();
         }
-        long durationUs = format.containsKey(android.media.MediaFormat.KEY_DURATION)
-                ? format.getLong(android.media.MediaFormat.KEY_DURATION) : C.UNKNOWN_TIME_US;
-        int pcmEncoding = MimeTypes.AUDIO_RAW.equals(mimeType) ? C.ENCODING_PCM_16BIT
-                : MediaFormat.NO_VALUE;
-        MediaFormat mediaFormat = new MediaFormat(null, mimeType, MediaFormat.NO_VALUE,
-                maxInputSize, durationUs, width, height, rotationDegrees, MediaFormat.NO_VALUE,
-                channelCount, sampleRate, language, MediaFormat.OFFSET_SAMPLE_RELATIVE,
-                initializationData, false, MediaFormat.NO_VALUE, MediaFormat.NO_VALUE, pcmEncoding,
-                encoderDelay, encoderPadding, null, MediaFormat.NO_VALUE);
+        long durationUs =
+                format.containsKey(android.media.MediaFormat.KEY_DURATION)
+                        ? format.getLong(android.media.MediaFormat.KEY_DURATION)
+                        : C.UNKNOWN_TIME_US;
+        int pcmEncoding =
+                MimeTypes.AUDIO_RAW.equals(mimeType) ? C.ENCODING_PCM_16BIT : MediaFormat.NO_VALUE;
+        MediaFormat mediaFormat =
+                new MediaFormat(
+                        null,
+                        mimeType,
+                        MediaFormat.NO_VALUE,
+                        maxInputSize,
+                        durationUs,
+                        width,
+                        height,
+                        rotationDegrees,
+                        MediaFormat.NO_VALUE,
+                        channelCount,
+                        sampleRate,
+                        language,
+                        MediaFormat.OFFSET_SAMPLE_RELATIVE,
+                        initializationData,
+                        false,
+                        MediaFormat.NO_VALUE,
+                        MediaFormat.NO_VALUE,
+                        pcmEncoding,
+                        encoderDelay,
+                        encoderPadding,
+                        null,
+                        MediaFormat.NO_VALUE);
         mediaFormat.setFrameworkFormatV16(format);
         return mediaFormat;
     }
@@ -72,5 +91,4 @@ public class MediaFormatUtil {
     private static int getOptionalIntegerV16(android.media.MediaFormat format, String key) {
         return format.containsKey(key) ? format.getInteger(key) : MediaFormat.NO_VALUE;
     }
-
 }

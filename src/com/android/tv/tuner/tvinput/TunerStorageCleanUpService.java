@@ -25,11 +25,9 @@ import android.media.tv.TvContract;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import com.android.tv.TvApplication;
 import com.android.tv.dvr.DvrStorageStatusManager;
 import com.android.tv.util.Utils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -37,8 +35,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Creates {@link JobService} to clean up recorded program files which are not referenced
- * from database.
+ * Creates {@link JobService} to clean up recorded program files which are not referenced from
+ * database.
  */
 public class TunerStorageCleanUpService extends JobService {
     private static final String TAG = "TunerStorageCleanUpService";
@@ -69,15 +67,15 @@ public class TunerStorageCleanUpService extends JobService {
     }
 
     /**
-     * Cleans up recorded program files which are not referenced from database.
-     * Cleaning up will be done periodically.
+     * Cleans up recorded program files which are not referenced from database. Cleaning up will be
+     * done periodically.
      */
     public static class CleanUpStorageTask extends AsyncTask<JobParameters, Void, JobParameters[]> {
-        private final static String[] mProjection = {
-                TvContract.RecordedPrograms.COLUMN_PACKAGE_NAME,
-                TvContract.RecordedPrograms.COLUMN_RECORDING_DATA_URI
+        private static final String[] mProjection = {
+            TvContract.RecordedPrograms.COLUMN_PACKAGE_NAME,
+            TvContract.RecordedPrograms.COLUMN_RECORDING_DATA_URI
         };
-        private final static long ELAPSED_MILLIS_TO_DELETE = TimeUnit.DAYS.toMillis(1);
+        private static final long ELAPSED_MILLIS_TO_DELETE = TimeUnit.DAYS.toMillis(1);
 
         private final Context mContext;
         private final DvrStorageStatusManager mDvrStorageStatusManager;
@@ -99,8 +97,13 @@ public class TunerStorageCleanUpService extends JobService {
         }
 
         private Set<String> getRecordedProgramsDirs() {
-            try (Cursor c = mContentResolver.query(
-                    TvContract.RecordedPrograms.CONTENT_URI, mProjection, null, null, null)) {
+            try (Cursor c =
+                    mContentResolver.query(
+                            TvContract.RecordedPrograms.CONTENT_URI,
+                            mProjection,
+                            null,
+                            null,
+                            null)) {
                 if (c == null) {
                     return null;
                 }
@@ -113,7 +116,8 @@ public class TunerStorageCleanUpService extends JobService {
                     }
                     Uri dataUri = Uri.parse(dataUriString);
                     if (!Utils.isInBundledPackageSet(packageName)
-                            || dataUri == null || dataUri.getPath() == null
+                            || dataUri == null
+                            || dataUri.getPath() == null
                             || !ContentResolver.SCHEME_FILE.equals(dataUri.getScheme())) {
                         continue;
                     }
@@ -150,8 +154,7 @@ public class TunerStorageCleanUpService extends JobService {
                     if (!recordedProgramDirs.contains(recordingDir.getCanonicalPath())) {
                         long lastModified = recordingDir.lastModified();
                         long now = System.currentTimeMillis();
-                        if (lastModified != 0
-                                && lastModified < now - ELAPSED_MILLIS_TO_DELETE) {
+                        if (lastModified != 0 && lastModified < now - ELAPSED_MILLIS_TO_DELETE) {
                             // To prevent current recordings from being deleted,
                             // deletes recordings which was not modified for long enough time.
                             Utils.deleteDirOrFile(recordingDir);

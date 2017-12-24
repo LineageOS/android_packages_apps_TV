@@ -5,18 +5,16 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.graphics.Path;
+import android.support.v17.leanback.R;
 import android.transition.Transition;
 import android.transition.TransitionValues;
 import android.view.View;
 
-import android.support.v17.leanback.R;
-
 /**
  * This class is used by Slide and Explode to create an animator that goes from the start position
  * to the end position. It takes into account the canceled position so that it will not blink out or
- * shift suddenly when the transition is interrupted.
- * The original class is android.support.v17.leanback.transition.TranslationAnimationCreator which
- * is hidden.
+ * shift suddenly when the transition is interrupted. The original class is
+ * android.support.v17.leanback.transition.TranslationAnimationCreator which is hidden.
  */
 // Copied from android.support.v17.leanback.transition.TransltaionAnimationCreator
 class TranslationAnimationCreator {
@@ -31,11 +29,16 @@ class TranslationAnimationCreator {
      * @param endX The end translation x of view
      * @param interpolator The interpolator to use with this animator.
      * @return An animator that moves from (startX, startY) to (endX, endY) unless there was a
-     *         previous interruption, in which case it moves from the current position to (endX,
-     *         endY).
+     *     previous interruption, in which case it moves from the current position to (endX, endY).
      */
-    static Animator createAnimation(View view, TransitionValues values, int viewPosX, float startX,
-            float endX, TimeInterpolator interpolator, Transition transition) {
+    static Animator createAnimation(
+            View view,
+            TransitionValues values,
+            int viewPosX,
+            float startX,
+            float endX,
+            TimeInterpolator interpolator,
+            Transition transition) {
         float terminalX = view.getTranslationX();
         Integer startPosition = (Integer) values.view.getTag(R.id.transitionPosition);
         if (startPosition != null) {
@@ -74,8 +77,8 @@ class TranslationAnimationCreator {
         private float mPausedX;
         private final float mTerminalX;
 
-        private TransitionPositionListener(View movingView, View viewInHierarchy, int startX,
-                float terminalX) {
+        private TransitionPositionListener(
+                View movingView, View viewInHierarchy, int startX, float terminalX) {
             mMovingView = movingView;
             mViewInHierarchy = viewInHierarchy;
             mStartX = startX - Math.round(mMovingView.getTranslationX());
@@ -123,6 +126,4 @@ class TranslationAnimationCreator {
         @Override
         public void onTransitionResume(Transition transition) {}
     }
-
 }
-

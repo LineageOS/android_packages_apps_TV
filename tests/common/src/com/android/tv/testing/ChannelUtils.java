@@ -27,7 +27,6 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,16 +34,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Static helper methods for working with {@link android.media.tv.TvContract}.
- */
+/** Static helper methods for working with {@link android.media.tv.TvContract}. */
 public class ChannelUtils {
     private static final String TAG = "ChannelUtils";
     private static final boolean DEBUG = false;
 
     /**
-     * Query and return the map of (channel_id, ChannelInfo).
-     * See: {@link ChannelInfo#fromCursor(Cursor)}.
+     * Query and return the map of (channel_id, ChannelInfo). See: {@link
+     * ChannelInfo#fromCursor(Cursor)}.
      */
     @WorkerThread
     public static Map<Long, ChannelInfo> queryChannelInfoMapForTvInput(
@@ -55,8 +52,8 @@ public class ChannelUtils {
         String[] projections = new String[ChannelInfo.PROJECTION.length + 1];
         projections[0] = Channels._ID;
         System.arraycopy(ChannelInfo.PROJECTION, 0, projections, 1, ChannelInfo.PROJECTION.length);
-        try (Cursor cursor = context.getContentResolver()
-                .query(uri, projections, null, null, null)) {
+        try (Cursor cursor =
+                context.getContentResolver().query(uri, projections, null, null, null)) {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
                     map.put(cursor.getLong(0), ChannelInfo.fromCursor(cursor));
@@ -113,10 +110,10 @@ public class ChannelUtils {
             Long rowId = existingChannelsMap.get(channel.originalNetworkId);
             Uri uri;
             if (rowId == null) {
-                if (DEBUG) Log.d(TAG, "Inserting "+ channel);
+                if (DEBUG) Log.d(TAG, "Inserting " + channel);
                 uri = resolver.insert(TvContract.Channels.CONTENT_URI, values);
             } else {
-                if (DEBUG) Log.d(TAG, "Updating "+ channel);
+                if (DEBUG) Log.d(TAG, "Updating " + channel);
                 uri = TvContract.buildChannelUri(rowId);
                 resolver.update(uri, values, null, null);
                 existingChannelsMap.remove(channel.originalNetworkId);

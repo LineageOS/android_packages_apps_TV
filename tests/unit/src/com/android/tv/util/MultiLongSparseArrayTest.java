@@ -21,14 +21,10 @@ import static org.junit.Assert.assertSame;
 
 import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
-
+import java.util.Collections;
 import org.junit.Test;
 
-import java.util.Collections;
-
-/**
- * Tests for {@link MultiLongSparseArray}.
- */
+/** Tests for {@link MultiLongSparseArray}. */
 @SmallTest
 public class MultiLongSparseArrayTest {
     @Test
@@ -51,7 +47,6 @@ public class MultiLongSparseArrayTest {
         sparseArray.put(0, "bar");
         MoreAsserts.assertContentsInAnyOrder(sparseArray.get(0), "foo", "bar");
     }
-
 
     @Test
     public void testClearEmptyCache() {
@@ -76,8 +71,8 @@ public class MultiLongSparseArrayTest {
         for (int i = 0; i <= MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT + 2; i++) {
             sparseArray.remove(i, "foo");
         }
-        assertEquals(MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT,
-                sparseArray.getEmptyCacheSize());
+        assertEquals(
+                MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT, sparseArray.getEmptyCacheSize());
         sparseArray.clearEmptyCache();
         assertEquals(0, sparseArray.getEmptyCacheSize());
     }
@@ -95,13 +90,14 @@ public class MultiLongSparseArrayTest {
         for (int i = 0; i <= MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT + 2; i++) {
             sparseArray.remove(i, "foo");
         }
-        assertEquals(MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT,
-                sparseArray.getEmptyCacheSize());
+        assertEquals(
+                MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT, sparseArray.getEmptyCacheSize());
 
         // now create elements, that use the cached empty sets.
         for (int i = 0; i < MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT; i++) {
             sparseArray.put(10 + i, "bar");
-            assertEquals(MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT - i - 1,
+            assertEquals(
+                    MultiLongSparseArray.DEFAULT_MAX_EMPTIES_KEPT - i - 1,
                     sparseArray.getEmptyCacheSize());
         }
     }

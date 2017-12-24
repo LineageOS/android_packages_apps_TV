@@ -21,12 +21,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-
 import com.android.tv.TvApplication;
 
-/**
- * Signals the DVR to start recording shows <i>soon</i>.
- */
+/** Signals the DVR to start recording shows <i>soon</i>. */
 @RequiresApi(Build.VERSION_CODES.N)
 public class DvrStartRecordingReceiver extends BroadcastReceiver {
     @Override

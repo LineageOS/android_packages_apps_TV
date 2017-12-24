@@ -18,26 +18,22 @@ package com.android.tv.tuner.exoplayer;
 
 import android.net.Uri;
 import android.os.Handler;
-
+import com.android.tv.tuner.exoplayer.buffer.BufferManager;
+import com.android.tv.tuner.exoplayer.buffer.SamplePool;
+import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.MediaFormatHolder;
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.util.MimeTypes;
-import com.android.tv.tuner.exoplayer.buffer.BufferManager;
-import com.android.tv.tuner.exoplayer.buffer.SamplePool;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Extracts samples from {@link DataSource} for MPEG-TS streams.
- */
+/** Extracts samples from {@link DataSource} for MPEG-TS streams. */
 public final class MpegTsSampleExtractor implements SampleExtractor {
     public static final String MIMETYPE_TEXT_CEA_708 = "text/cea-708";
 
@@ -66,13 +62,14 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
      *
      * @param source the {@link DataSource} to extract from
      * @param bufferManager the manager for reading & writing samples backed by physical storage
-     * @param bufferListener the {@link PlaybackBufferListener}
-     *                      to notify buffer storage status change
+     * @param bufferListener the {@link PlaybackBufferListener} to notify buffer storage status
+     *     change
      */
-    public MpegTsSampleExtractor(DataSource source, BufferManager bufferManager,
-            PlaybackBufferListener bufferListener) {
-        mSampleExtractor = new ExoPlayerSampleExtractor(Uri.EMPTY, source, bufferManager,
-                bufferListener, false);
+    public MpegTsSampleExtractor(
+            DataSource source, BufferManager bufferManager, PlaybackBufferListener bufferListener) {
+        mSampleExtractor =
+                new ExoPlayerSampleExtractor(
+                        Uri.EMPTY, source, bufferManager, bufferListener, false);
         init();
     }
 
@@ -80,11 +77,11 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
      * Creates MpegTsSampleExtractor for a recorded program.
      *
      * @param bufferManager the samples provider which is stored in physical storage
-     * @param bufferListener the {@link PlaybackBufferListener}
-     *                      to notify buffer storage status change
+     * @param bufferListener the {@link PlaybackBufferListener} to notify buffer storage status
+     *     change
      */
-    public MpegTsSampleExtractor(BufferManager bufferManager,
-            PlaybackBufferListener bufferListener) {
+    public MpegTsSampleExtractor(
+            BufferManager bufferManager, PlaybackBufferListener bufferListener) {
         mSampleExtractor = new FileSampleExtractor(bufferManager, bufferListener);
         init();
     }
@@ -98,7 +95,7 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
 
     @Override
     public boolean prepare() throws IOException {
-        if(!mSampleExtractor.prepare()) {
+        if (!mSampleExtractor.prepare()) {
             return false;
         }
         List<MediaFormat> formats = mSampleExtractor.getTrackFormats();
@@ -124,8 +121,9 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
             mCea708TextTrackIndex = trackCount;
         }
         if (mCea708TextTrackIndex >= 0) {
-            mTrackFormats.add(MediaFormat.createTextFormat(null, MIMETYPE_TEXT_CEA_708, 0,
-                    mTrackFormats.get(0).durationUs, ""));
+            mTrackFormats.add(
+                    MediaFormat.createTextFormat(
+                            null, MIMETYPE_TEXT_CEA_708, 0, mTrackFormats.get(0).durationUs, ""));
         }
         return true;
     }
@@ -186,23 +184,27 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
                 return SampleSource.SAMPLE_READ;
             } else {
                 return mVideoTrackIndex < 0 || mReachedEos.get(mVideoTrackIndex)
-                        ? SampleSource.END_OF_STREAM : SampleSource.NOTHING_READ;
+                        ? SampleSource.END_OF_STREAM
+                        : SampleSource.NOTHING_READ;
             }
         }
 
         int result = mSampleExtractor.readSample(track, sampleHolder);
         switch (result) {
-            case SampleSource.END_OF_STREAM: {
-                mReachedEos.set(track, true);
-                break;
-            }
-            case SampleSource.SAMPLE_READ: {
-                if (mCea708TextTrackSelected && track == mVideoTrackIndex
-                        && sampleHolder.data != null) {
-                    mCcParser.mayParseClosedCaption(sampleHolder.data, sampleHolder.timeUs);
+            case SampleSource.END_OF_STREAM:
+                {
+                    mReachedEos.set(track, true);
+                    break;
                 }
-                break;
-            }
+            case SampleSource.SAMPLE_READ:
+                {
+                    if (mCea708TextTrackSelected
+                            && track == mVideoTrackIndex
+                            && sampleHolder.data != null) {
+                        mCcParser.mayParseClosedCaption(sampleHolder.data, sampleHolder.timeUs);
+                    }
+                    break;
+                }
         }
         return result;
     }
@@ -221,7 +223,7 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
     }
 
     @Override
-    public void setOnCompletionListener(OnCompletionListener listener, Handler handler) { }
+    public void setOnCompletionListener(OnCompletionListener listener, Handler handler) {}
 
     private abstract class CcParser {
         // Interim buffer for reduce direct access to ByteBuffer which is expensive. Using
@@ -278,8 +280,12 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
                                 && mBuffer[j + 6] == '9'
                                 && mBuffer[j + 7] == '4'
                                 && mBuffer[j + 8] == 3) {
-                            j = parseClosedCaption(buffer, i + j + PATTERN_LENGTH,
-                                    presentationTimeUs) - i;
+                            j =
+                                    parseClosedCaption(
+                                                    buffer,
+                                                    i + j + PATTERN_LENGTH,
+                                                    presentationTimeUs)
+                                            - i;
                         } else {
                             j += PATTERN_LENGTH;
                         }
@@ -307,20 +313,24 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
                 int j = 0;
                 while (j < size - PATTERN_LENGTH) {
                     // Find the start prefix code of a NAL Unit.
-                    if (mBuffer[j] == 0
-                            && mBuffer[j + 1] == 0
-                            && mBuffer[j + 2] == 1) {
+                    if (mBuffer[j] == 0 && mBuffer[j + 1] == 0 && mBuffer[j + 2] == 1) {
                         int nalType = mBuffer[j + 3] & 0x1f;
                         int payloadType = mBuffer[j + 4] & 0xff;
 
                         // ATSC closed caption data embedded in H264 private user data has NAL type
                         // 6, payload type 4, and 'GA94' user identifier for ATSC.
-                        if (nalType == 6 && payloadType == 4 && mBuffer[j + 9] == 'G'
+                        if (nalType == 6
+                                && payloadType == 4
+                                && mBuffer[j + 9] == 'G'
                                 && mBuffer[j + 10] == 'A'
                                 && mBuffer[j + 11] == '9'
                                 && mBuffer[j + 12] == '4') {
-                            j = parseClosedCaption(buffer, i + j + PATTERN_LENGTH,
-                                    presentationTimeUs) - i;
+                            j =
+                                    parseClosedCaption(
+                                                    buffer,
+                                                    i + j + PATTERN_LENGTH,
+                                                    presentationTimeUs)
+                                            - i;
                         } else {
                             j += 7;
                         }

@@ -23,14 +23,9 @@ import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
-
 import com.android.tv.data.Channel;
 import com.android.tv.recommendation.RecommendationUtils.ChannelRecordSortedMapHelper;
 import com.android.tv.testing.Utils;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.junit.Before;
+import org.junit.Test;
 
 @SmallTest
 public class RecommenderTest {
@@ -49,24 +46,27 @@ public class RecommenderTest {
             System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
     private static final long DEFAULT_MAX_WATCH_DURATION_MS = TimeUnit.HOURS.toMillis(1);
 
-    private final Comparator<Channel> CHANNEL_SORT_KEY_COMPARATOR = new Comparator<Channel>() {
-        @Override
-        public int compare(Channel lhs, Channel rhs) {
-            return mRecommender.getChannelSortKey(lhs.getId())
-                    .compareTo(mRecommender.getChannelSortKey(rhs.getId()));
-        }
-    };
-    private final Runnable START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS = new Runnable() {
-        @Override
-        public void run() {
-            // Add 4 channels in ChannelRecordMap for testing. Store the added channels to
-            // mChannels_1 ~ mChannels_4. They are sorted by channel id in increasing order.
-            mChannel_1 = mChannelRecordSortedMap.addChannel();
-            mChannel_2 = mChannelRecordSortedMap.addChannel();
-            mChannel_3 = mChannelRecordSortedMap.addChannel();
-            mChannel_4 = mChannelRecordSortedMap.addChannel();
-        }
-    };
+    private final Comparator<Channel> CHANNEL_SORT_KEY_COMPARATOR =
+            new Comparator<Channel>() {
+                @Override
+                public int compare(Channel lhs, Channel rhs) {
+                    return mRecommender
+                            .getChannelSortKey(lhs.getId())
+                            .compareTo(mRecommender.getChannelSortKey(rhs.getId()));
+                }
+            };
+    private final Runnable START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS =
+            new Runnable() {
+                @Override
+                public void run() {
+                    // Add 4 channels in ChannelRecordMap for testing. Store the added channels to
+                    // mChannels_1 ~ mChannels_4. They are sorted by channel id in increasing order.
+                    mChannel_1 = mChannelRecordSortedMap.addChannel();
+                    mChannel_2 = mChannelRecordSortedMap.addChannel();
+                    mChannel_3 = mChannelRecordSortedMap.addChannel();
+                    mChannel_4 = mChannelRecordSortedMap.addChannel();
+                }
+            };
 
     private RecommendationDataManager mDataManager;
     private Recommender mRecommender;
@@ -82,8 +82,8 @@ public class RecommenderTest {
     @Before
     public void setUp() {
         mChannelRecordSortedMap = new ChannelRecordSortedMapHelper(getContext());
-        mDataManager = RecommendationUtils
-                .createMockRecommendationDataManager(mChannelRecordSortedMap);
+        mDataManager =
+                RecommendationUtils.createMockRecommendationDataManager(mChannelRecordSortedMap);
         mChannelRecordSortedMap.resetRandom(Utils.createTestRandom());
     }
 
@@ -121,16 +121,16 @@ public class RecommenderTest {
 
         // recommendChannels must be sorted by score in decreasing order.
         // (i.e. sorted by channel ID in decreasing order in this case)
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(),
-                mChannel_4, mChannel_3, mChannel_2, mChannel_1);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
         assertEquals(0, mRecommender.recommendChannels(-5).size());
         assertEquals(0, mRecommender.recommendChannels(0).size());
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(3),
-                mChannel_4, mChannel_3, mChannel_2);
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(4),
-                mChannel_4, mChannel_3, mChannel_2, mChannel_1);
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(5),
-                mChannel_4, mChannel_3, mChannel_2, mChannel_1);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(3), mChannel_4, mChannel_3, mChannel_2);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(4), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(5), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
     }
 
     @Test
@@ -141,16 +141,16 @@ public class RecommenderTest {
 
         // recommendChannels must be sorted by score in decreasing order.
         // (i.e. sorted by channel ID in decreasing order in this case)
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(),
-                mChannel_4, mChannel_3, mChannel_2, mChannel_1);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
         assertEquals(0, mRecommender.recommendChannels(-5).size());
         assertEquals(0, mRecommender.recommendChannels(0).size());
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(3),
-                mChannel_4, mChannel_3, mChannel_2);
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(4),
-                mChannel_4, mChannel_3, mChannel_2, mChannel_1);
-        MoreAsserts.assertContentsInOrder(mRecommender.recommendChannels(5),
-                mChannel_4, mChannel_3, mChannel_2, mChannel_1);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(3), mChannel_4, mChannel_3, mChannel_2);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(4), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
+        MoreAsserts.assertContentsInOrder(
+                mRecommender.recommendChannels(5), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
     }
 
     @Test
@@ -161,16 +161,16 @@ public class RecommenderTest {
         mEvaluator.setChannelScore(mChannel_2.getId(), 1.0);
 
         // Only two channels are recommended because recommender doesn't recommend other channels.
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(),
-                mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(), mChannel_1, mChannel_2);
         assertEquals(0, mRecommender.recommendChannels(-5).size());
         assertEquals(0, mRecommender.recommendChannels(0).size());
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(3),
-                mChannel_1, mChannel_2);
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(4),
-                mChannel_1, mChannel_2);
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(5),
-                mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(3), mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(4), mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(5), mChannel_1, mChannel_2);
     }
 
     @Test
@@ -181,23 +181,23 @@ public class RecommenderTest {
         mEvaluator.setChannelScore(mChannel_2.getId(), 1.0);
 
         assertEquals(4, mRecommender.recommendChannels().size());
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels().subList(0, 2),
-                mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels().subList(0, 2), mChannel_1, mChannel_2);
 
         assertEquals(0, mRecommender.recommendChannels(-5).size());
         assertEquals(0, mRecommender.recommendChannels(0).size());
 
         assertEquals(3, mRecommender.recommendChannels(3).size());
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(3).subList(0, 2),
-                mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(3).subList(0, 2), mChannel_1, mChannel_2);
 
         assertEquals(4, mRecommender.recommendChannels(4).size());
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(4).subList(0, 2),
-                mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(4).subList(0, 2), mChannel_1, mChannel_2);
 
         assertEquals(4, mRecommender.recommendChannels(5).size());
-        MoreAsserts.assertContentsInAnyOrder(mRecommender.recommendChannels(5).subList(0, 2),
-                mChannel_1, mChannel_2);
+        MoreAsserts.assertContentsInAnyOrder(
+                mRecommender.recommendChannels(5).subList(0, 2), mChannel_1, mChannel_2);
     }
 
     @Test
@@ -224,7 +224,8 @@ public class RecommenderTest {
 
         List<Channel> expectedChannelList = mRecommender.recommendChannels(3);
         // A channel which is not recommended by the recommender has to get an invalid sort key.
-        assertEquals(Recommender.INVALID_CHANNEL_SORT_KEY,
+        assertEquals(
+                Recommender.INVALID_CHANNEL_SORT_KEY,
                 mRecommender.getChannelSortKey(mChannel_1.getId()));
 
         List<Channel> channelList = Arrays.asList(mChannel_2, mChannel_3, mChannel_4);
@@ -249,8 +250,9 @@ public class RecommenderTest {
         for (long channelId : mChannelRecordSortedMap.keySet()) {
             mEvaluator.setChannelScore(channelId, 1.0);
             // Add a log to recalculate the recommendation score.
-            assertTrue(mChannelRecordSortedMap.addWatchLog(channelId, latestWatchEndTimeMs,
-                    TimeUnit.MINUTES.toMillis(10)));
+            assertTrue(
+                    mChannelRecordSortedMap.addWatchLog(
+                            channelId, latestWatchEndTimeMs, TimeUnit.MINUTES.toMillis(10)));
             latestWatchEndTimeMs += TimeUnit.MINUTES.toMillis(10);
         }
 
@@ -261,14 +263,18 @@ public class RecommenderTest {
 
     @Test
     public void testListener_onRecommenderReady() {
-        createRecommender(true, new Runnable() {
-            @Override
-            public void run() {
-                mChannelRecordSortedMap.addChannels(DEFAULT_NUMBER_OF_CHANNELS);
-                mChannelRecordSortedMap.addRandomWatchLogs(DEFAULT_WATCH_START_TIME_MS,
-                        DEFAULT_WATCH_END_TIME_MS, DEFAULT_MAX_WATCH_DURATION_MS);
-            }
-        });
+        createRecommender(
+                true,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mChannelRecordSortedMap.addChannels(DEFAULT_NUMBER_OF_CHANNELS);
+                        mChannelRecordSortedMap.addRandomWatchLogs(
+                                DEFAULT_WATCH_START_TIME_MS,
+                                DEFAULT_WATCH_END_TIME_MS,
+                                DEFAULT_MAX_WATCH_DURATION_MS);
+                    }
+                });
 
         // After loading channels and watch logs are finished, recommender must be available to use.
         assertTrue(mOnRecommenderReady);
@@ -276,23 +282,29 @@ public class RecommenderTest {
 
     private void assertSortKeyNotInvalid(List<Channel> channelList) {
         for (Channel channel : channelList) {
-            MoreAsserts.assertNotEqual(Recommender.INVALID_CHANNEL_SORT_KEY,
+            MoreAsserts.assertNotEqual(
+                    Recommender.INVALID_CHANNEL_SORT_KEY,
                     mRecommender.getChannelSortKey(channel.getId()));
         }
     }
 
-    private void createRecommender(boolean includeRecommendedOnly,
-            Runnable startDataManagerRunnable) {
-        mRecommender = new Recommender(new Recommender.Listener() {
-            @Override
-            public void onRecommenderReady() {
-                mOnRecommenderReady = true;
-            }
-            @Override
-            public void onRecommendationChanged() {
-                mOnRecommendationChanged = true;
-            }
-        }, includeRecommendedOnly, mDataManager);
+    private void createRecommender(
+            boolean includeRecommendedOnly, Runnable startDataManagerRunnable) {
+        mRecommender =
+                new Recommender(
+                        new Recommender.Listener() {
+                            @Override
+                            public void onRecommenderReady() {
+                                mOnRecommenderReady = true;
+                            }
+
+                            @Override
+                            public void onRecommendationChanged() {
+                                mOnRecommendationChanged = true;
+                            }
+                        },
+                        includeRecommendedOnly,
+                        mDataManager);
 
         mEvaluator = new FakeEvaluator();
         mRecommender.registerEvaluator(mEvaluator);

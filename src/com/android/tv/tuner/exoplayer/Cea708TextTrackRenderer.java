@@ -17,7 +17,8 @@
 package com.android.tv.tuner.exoplayer;
 
 import android.util.Log;
-
+import com.android.tv.tuner.cc.Cea708Parser;
+import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaClock;
 import com.google.android.exoplayer.MediaFormat;
@@ -26,16 +27,11 @@ import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.util.Assertions;
-import com.android.tv.tuner.cc.Cea708Parser;
-import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
-
 import java.io.IOException;
 
-/**
- * A {@link TrackRenderer} for CEA-708 textual subtitles.
- */
-public class Cea708TextTrackRenderer extends TrackRenderer implements
-        Cea708Parser.OnCea708ParserListener {
+/** A {@link TrackRenderer} for CEA-708 textual subtitles. */
+public class Cea708TextTrackRenderer extends TrackRenderer
+        implements Cea708Parser.OnCea708ParserListener {
     private static final String TAG = "Cea708TextTrackRenderer";
     private static final boolean DEBUG = false;
 
@@ -59,7 +55,9 @@ public class Cea708TextTrackRenderer extends TrackRenderer implements
 
     public interface CcListener {
         void emitEvent(CaptionEvent captionEvent);
+
         void clearCaption();
+
         void discoverServiceNumber(int serviceNumber);
     }
 
@@ -165,8 +163,9 @@ public class Cea708TextTrackRenderer extends TrackRenderer implements
     }
 
     private boolean processOutput() {
-        return !mInputStreamEnded && mCea708Parser != null &&
-                mCea708Parser.processClosedCaptions(mPresentationTimeUs);
+        return !mInputStreamEnded
+                && mCea708Parser != null
+                && mCea708Parser.processClosedCaptions(mPresentationTimeUs);
     }
 
     private boolean feedInputBuffer() throws IOException, ExoPlaybackException {
@@ -186,32 +185,36 @@ public class Cea708TextTrackRenderer extends TrackRenderer implements
         }
         mSampleHolder.data.clear();
         mSampleHolder.size = 0;
-        int result = mSource.readData(mTrackIndex, mPresentationTimeUs,
-                mFormatHolder, mSampleHolder);
+        int result =
+                mSource.readData(mTrackIndex, mPresentationTimeUs, mFormatHolder, mSampleHolder);
         switch (result) {
-            case SampleSource.NOTHING_READ: {
-                return false;
-            }
-            case SampleSource.FORMAT_READ: {
-                if (DEBUG) {
-                    Log.i(TAG, "Format was read again");
+            case SampleSource.NOTHING_READ:
+                {
+                    return false;
                 }
-                return true;
-            }
-            case SampleSource.END_OF_STREAM: {
-                if (DEBUG) {
-                    Log.i(TAG, "End of stream from SampleSource");
+            case SampleSource.FORMAT_READ:
+                {
+                    if (DEBUG) {
+                        Log.i(TAG, "Format was read again");
+                    }
+                    return true;
                 }
-                mInputStreamEnded = true;
-                return false;
-            }
-            case SampleSource.SAMPLE_READ: {
-                mSampleHolder.data.flip();
-                if (mCea708Parser != null && !mRenderingDisabled) {
-                    mCea708Parser.parseClosedCaption(mSampleHolder.data, mSampleHolder.timeUs);
+            case SampleSource.END_OF_STREAM:
+                {
+                    if (DEBUG) {
+                        Log.i(TAG, "End of stream from SampleSource");
+                    }
+                    mInputStreamEnded = true;
+                    return false;
                 }
-                return true;
-            }
+            case SampleSource.SAMPLE_READ:
+                {
+                    mSampleHolder.data.flip();
+                    if (mCea708Parser != null && !mRenderingDisabled) {
+                        mCea708Parser.parseClosedCaption(mSampleHolder.data, mSampleHolder.timeUs);
+                    }
+                    return true;
+                }
         }
         return false;
     }

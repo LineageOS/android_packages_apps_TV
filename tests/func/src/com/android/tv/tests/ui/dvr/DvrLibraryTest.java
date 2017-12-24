@@ -25,14 +25,11 @@ import android.support.test.filters.MediumTest;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
-import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.ByResource;
 import com.android.tv.testing.uihelper.Constants;
 import com.android.tv.tests.ui.LiveChannelsTestCase;
-
 import java.util.regex.Pattern;
 
 @MediumTest
@@ -49,11 +46,15 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mRecentRow = By.hasDescendant(ByResource.text(mTargetResources, R.string.dvr_main_recent));
-        mScheduledRow = By.hasDescendant(
-                ByResource.text(mTargetResources, R.string.dvr_main_scheduled));
+        mScheduledRow =
+                By.hasDescendant(ByResource.text(mTargetResources, R.string.dvr_main_scheduled));
         mSeriesRow = By.hasDescendant(ByResource.text(mTargetResources, R.string.dvr_main_series));
-        mFullScheduleCard = By.focusable(true).hasDescendant(
-                ByResource.text(mTargetResources, R.string.dvr_full_schedule_card_view_title));
+        mFullScheduleCard =
+                By.focusable(true)
+                        .hasDescendant(
+                                ByResource.text(
+                                        mTargetResources,
+                                        R.string.dvr_full_schedule_card_view_title));
         mLiveChannelsHelper.assertAppStarted();
     }
 
@@ -81,7 +82,9 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
 
         // Empty schedules screen should be shown.
         assertHas(mDevice, Constants.DVR_SCHEDULES, true);
-        assertHas(mDevice, ByResource.text(mTargetResources, R.string.dvr_schedules_empty_state),
+        assertHas(
+                mDevice,
+                ByResource.text(mTargetResources, R.string.dvr_schedules_empty_state),
                 true);
 
         // Close the DVR library.
@@ -92,26 +95,44 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
     }
 
     public void testScheduleRecordings() {
-        BySelector newScheduleCard = By.focusable(true).hasDescendant(
-                By.textStartsWith(PROGRAM_NAME_PREFIX)).hasDescendant(By.textEndsWith("today"));
-        BySelector seriesCardWithOneSchedule = By.focusable(true).hasDescendant(
-                By.textStartsWith(PROGRAM_NAME_PREFIX)).hasDescendant(By.text(mTargetResources
-                        .getQuantityString(R.plurals.dvr_count_scheduled_recordings, 1, 1)));
-        BySelector seriesCardWithOneRecordedProgram = By.focusable(true).hasDescendant(
-                By.textStartsWith(PROGRAM_NAME_PREFIX)).hasDescendant(By.text(mTargetResources
-                        .getQuantityString(R.plurals.dvr_count_new_recordings, 1, 1)));
-        Pattern watchButton = Pattern.compile("^" + mTargetResources
-                .getString(R.string.dvr_detail_watch).toUpperCase() + "\n.*$");
+        BySelector newScheduleCard =
+                By.focusable(true)
+                        .hasDescendant(By.textStartsWith(PROGRAM_NAME_PREFIX))
+                        .hasDescendant(By.textEndsWith("today"));
+        BySelector seriesCardWithOneSchedule =
+                By.focusable(true)
+                        .hasDescendant(By.textStartsWith(PROGRAM_NAME_PREFIX))
+                        .hasDescendant(
+                                By.text(
+                                        mTargetResources.getQuantityString(
+                                                R.plurals.dvr_count_scheduled_recordings, 1, 1)));
+        BySelector seriesCardWithOneRecordedProgram =
+                By.focusable(true)
+                        .hasDescendant(By.textStartsWith(PROGRAM_NAME_PREFIX))
+                        .hasDescendant(
+                                By.text(
+                                        mTargetResources.getQuantityString(
+                                                R.plurals.dvr_count_new_recordings, 1, 1)));
+        Pattern watchButton =
+                Pattern.compile(
+                        "^"
+                                + mTargetResources
+                                        .getString(R.string.dvr_detail_watch)
+                                        .toUpperCase()
+                                + "\n.*$");
 
         mMenuHelper.showMenu();
         mMenuHelper.assertNavigateToPlayControlsRow();
         mDevice.pressDPadRight();
         mDevice.pressDPadCenter();
-        assertWaitForCondition(mDevice, Until.hasObject(
-                ByResource.text(mTargetResources, R.string.dvr_action_record_episode)));
+        assertWaitForCondition(
+                mDevice,
+                Until.hasObject(
+                        ByResource.text(mTargetResources, R.string.dvr_action_record_episode)));
         mDevice.pressDPadCenter();
-        assertWaitForCondition(mDevice, Until.gone(
-                ByResource.text(mTargetResources, R.string.dvr_action_record_episode)));
+        assertWaitForCondition(
+                mDevice,
+                Until.gone(ByResource.text(mTargetResources, R.string.dvr_action_record_episode)));
 
         mMenuHelper.assertPressDvrLibrary();
         assertWaitForCondition(mDevice, Until.hasObject(Constants.DVR_LIBRARY));
@@ -132,7 +153,9 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
         mDevice.pressDPadCenter();
         assertWaitForCondition(mDevice, Until.gone(Constants.DVR_LIBRARY));
         assertHas(mDevice, Constants.DVR_SCHEDULES, true);
-        assertHas(mDevice, ByResource.text(mTargetResources, R.string.dvr_schedules_empty_state),
+        assertHas(
+                mDevice,
+                ByResource.text(mTargetResources, R.string.dvr_schedules_empty_state),
                 false);
         assertHas(mDevice, By.textStartsWith(programName), true);
 
@@ -146,11 +169,21 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
         assertWaitUntilFocused(mDevice, seriesCardWithOneSchedule);
         mDevice.pressDPadCenter();
         assertWaitForCondition(mDevice, Until.gone(Constants.DVR_LIBRARY));
-        assertHas(mDevice, By.text(mTargetResources
-                        .getString(R.string.dvr_detail_view_schedule).toUpperCase()), true);
+        assertHas(
+                mDevice,
+                By.text(
+                        mTargetResources
+                                .getString(R.string.dvr_detail_view_schedule)
+                                .toUpperCase()),
+                true);
         assertHas(mDevice, By.text(watchButton), false);
-        assertHas(mDevice, By.text(mTargetResources
-                        .getString(R.string.dvr_detail_series_delete).toUpperCase()), false);
+        assertHas(
+                mDevice,
+                By.text(
+                        mTargetResources
+                                .getString(R.string.dvr_detail_series_delete)
+                                .toUpperCase()),
+                false);
 
         // Clicks the new schedule, the detail page should be shown with "Stop recording" button.
         mDevice.pressBack();
@@ -160,16 +193,22 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
         assertWaitUntilFocused(mDevice, newScheduleCard);
         mDevice.pressDPadCenter();
         assertWaitForCondition(mDevice, Until.gone(Constants.DVR_LIBRARY));
-        assertHas(mDevice, By.text(mTargetResources
-                .getString(R.string.dvr_detail_stop_recording).toUpperCase()), true);
+        assertHas(
+                mDevice,
+                By.text(
+                        mTargetResources
+                                .getString(R.string.dvr_detail_stop_recording)
+                                .toUpperCase()),
+                true);
 
         // Stops the recording
         mDevice.pressDPadCenter();
-        assertWaitForCondition(mDevice, Until.hasObject(
-                ByResource.text(mTargetResources, R.string.dvr_action_stop)));
+        assertWaitForCondition(
+                mDevice,
+                Until.hasObject(ByResource.text(mTargetResources, R.string.dvr_action_stop)));
         mDevice.pressDPadCenter();
-        assertWaitForCondition(mDevice, Until.gone(
-                ByResource.text(mTargetResources, R.string.dvr_action_stop)));
+        assertWaitForCondition(
+                mDevice, Until.gone(ByResource.text(mTargetResources, R.string.dvr_action_stop)));
         assertWaitForCondition(mDevice, Until.hasObject(Constants.DVR_LIBRARY));
         assertWaitUntilFocused(mDevice, mFullScheduleCard);
 
@@ -179,10 +218,20 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
         mDevice.pressDPadCenter();
         assertWaitForCondition(mDevice, Until.gone(Constants.DVR_LIBRARY));
         assertHas(mDevice, By.text(watchButton), true);
-        assertHas(mDevice, By.text(mTargetResources
-                .getString(R.string.dvr_detail_view_schedule).toUpperCase()), true);
-        assertHas(mDevice, By.text(mTargetResources
-                .getString(R.string.dvr_detail_series_delete).toUpperCase()), true);
+        assertHas(
+                mDevice,
+                By.text(
+                        mTargetResources
+                                .getString(R.string.dvr_detail_view_schedule)
+                                .toUpperCase()),
+                true);
+        assertHas(
+                mDevice,
+                By.text(
+                        mTargetResources
+                                .getString(R.string.dvr_detail_series_delete)
+                                .toUpperCase()),
+                true);
 
         // Moves to the recent row and clicks the recent recorded program.
         mDevice.pressBack();
@@ -194,15 +243,20 @@ public class DvrLibraryTest extends LiveChannelsTestCase {
         assertWaitUntilFocused(mDevice, By.focusable(true).hasDescendant(By.text(programName)));
         mDevice.pressDPadCenter();
         assertWaitForCondition(mDevice, Until.gone(Constants.DVR_LIBRARY));
-        assertHas(mDevice, By.text(mTargetResources
-                .getString(R.string.dvr_detail_watch).toUpperCase()), true);
-        assertHas(mDevice, By.text(mTargetResources
-                .getString(R.string.dvr_detail_delete).toUpperCase()), true);
+        assertHas(
+                mDevice,
+                By.text(mTargetResources.getString(R.string.dvr_detail_watch).toUpperCase()),
+                true);
+        assertHas(
+                mDevice,
+                By.text(mTargetResources.getString(R.string.dvr_detail_delete).toUpperCase()),
+                true);
 
         // Moves to the delete button and clicks to remove the recorded program.
         mDevice.pressDPadRight();
-        assertWaitUntilFocused(mDevice, By.text(mTargetResources
-                .getString(R.string.dvr_detail_delete).toUpperCase()));
+        assertWaitUntilFocused(
+                mDevice,
+                By.text(mTargetResources.getString(R.string.dvr_detail_delete).toUpperCase()));
         mDevice.pressDPadCenter();
         assertWaitForCondition(mDevice, Until.hasObject(Constants.DVR_LIBRARY));
         assertWaitUntilFocused(mDevice, mFullScheduleCard);

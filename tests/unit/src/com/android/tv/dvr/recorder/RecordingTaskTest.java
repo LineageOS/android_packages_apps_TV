@@ -33,7 +33,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.InputSessionManager;
 import com.android.tv.InputSessionManager.RecordingSession;
 import com.android.tv.common.feature.CommonFeatures;
@@ -45,18 +44,14 @@ import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.recorder.RecordingTask.State;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.testing.dvr.RecordingTestUtils;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * Tests for {@link RecordingTask}.
- */
+/** Tests for {@link RecordingTask}. */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class RecordingTaskTest {
@@ -95,20 +90,25 @@ public class RecordingTaskTest {
         ScheduledRecording r = createRecording(channel);
         RecordingTask task = createRecordingTask(r, channel);
         String inputId = channel.getInputId();
-        when(mMockSessionManager.createRecordingSession(eq(inputId), anyString(), eq(task),
-                eq(mMockHandler), anyLong())).thenReturn(mMockRecordingSession);
+        when(mMockSessionManager.createRecordingSession(
+                        eq(inputId), anyString(), eq(task), eq(mMockHandler), anyLong()))
+                .thenReturn(mMockRecordingSession);
         when(mMockHandler.sendMessageAtTime(anyObject(), anyLong())).thenReturn(true);
         assertTrue(task.handleMessage(createMessage(RecordingTask.MSG_INITIALIZE)));
         assertEquals(State.CONNECTION_PENDING, task.getState());
-        verify(mMockSessionManager).createRecordingSession(eq(inputId), anyString(), eq(task),
-                eq(mMockHandler), anyLong());
+        verify(mMockSessionManager)
+                .createRecordingSession(
+                        eq(inputId), anyString(), eq(task), eq(mMockHandler), anyLong());
         verify(mMockRecordingSession).tune(eq(inputId), eq(channel.getUri()));
         verifyNoMoreInteractions(mMockHandler, mMockRecordingSession, mMockSessionManager);
     }
 
     private static Channel createTestChannel() {
-        return new Channel.Builder().setInputId(INPUT_ID).setId(CHANNEL_ID)
-                .setDisplayName("Test Ch " + CHANNEL_ID).build();
+        return new Channel.Builder()
+                .setInputId(INPUT_ID)
+                .setId(CHANNEL_ID)
+                .setDisplayName("Test Ch " + CHANNEL_ID)
+                .build();
     }
 
     @Test
@@ -118,8 +118,9 @@ public class RecordingTaskTest {
         mDataManager.addScheduledRecording(r);
         RecordingTask task = createRecordingTask(r, channel);
         String inputId = channel.getInputId();
-        when(mMockSessionManager.createRecordingSession(eq(inputId), anyString(), eq(task),
-                eq(mMockHandler), anyLong())).thenReturn(mMockRecordingSession);
+        when(mMockSessionManager.createRecordingSession(
+                        eq(inputId), anyString(), eq(task), eq(mMockHandler), anyLong()))
+                .thenReturn(mMockRecordingSession);
         when(mMockHandler.sendMessageAtTime(anyObject(), anyLong())).thenReturn(true);
         task.handleMessage(createMessage(RecordingTask.MSG_INITIALIZE));
         task.onTuned(channel.getUri());
@@ -129,13 +130,20 @@ public class RecordingTaskTest {
     private ScheduledRecording createRecording(Channel c) {
         long startTime = mFakeClock.currentTimeMillis() + START_OFFSET_MS;
         long endTime = startTime + DURATION;
-        return RecordingTestUtils.createTestRecordingWithPeriod(c.getInputId(), c.getId(),
-                startTime, endTime);
+        return RecordingTestUtils.createTestRecordingWithPeriod(
+                c.getInputId(), c.getId(), startTime, endTime);
     }
 
     private RecordingTask createRecordingTask(ScheduledRecording r, Channel channel) {
-        RecordingTask recordingTask = new RecordingTask(getContext(), r, channel, mDvrManager,
-                mMockSessionManager, mDataManager, mFakeClock);
+        RecordingTask recordingTask =
+                new RecordingTask(
+                        getContext(),
+                        r,
+                        channel,
+                        mDvrManager,
+                        mMockSessionManager,
+                        mDataManager,
+                        mFakeClock);
         recordingTask.setHandler(mMockHandler);
         return recordingTask;
     }

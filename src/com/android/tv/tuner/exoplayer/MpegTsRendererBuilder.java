@@ -17,43 +17,45 @@
 package com.android.tv.tuner.exoplayer;
 
 import android.content.Context;
-
-import com.google.android.exoplayer.MediaCodecSelector;
-import com.google.android.exoplayer.SampleSource;
-import com.google.android.exoplayer.TrackRenderer;
-import com.google.android.exoplayer.upstream.DataSource;
 import com.android.tv.Features;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilder;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilderCallback;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.tvinput.PlaybackBufferListener;
+import com.google.android.exoplayer.MediaCodecSelector;
+import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.TrackRenderer;
+import com.google.android.exoplayer.upstream.DataSource;
 
-/**
- * Builder for renderer objects for {@link MpegTsPlayer}.
- */
+/** Builder for renderer objects for {@link MpegTsPlayer}. */
 public class MpegTsRendererBuilder implements RendererBuilder {
     private final Context mContext;
     private final BufferManager mBufferManager;
     private final PlaybackBufferListener mBufferListener;
 
-    public MpegTsRendererBuilder(Context context, BufferManager bufferManager,
-            PlaybackBufferListener bufferListener) {
+    public MpegTsRendererBuilder(
+            Context context, BufferManager bufferManager, PlaybackBufferListener bufferListener) {
         mContext = context;
         mBufferManager = bufferManager;
         mBufferListener = bufferListener;
     }
 
     @Override
-    public void buildRenderers(MpegTsPlayer mpegTsPlayer, DataSource dataSource,
-            boolean mHasSoftwareAudioDecoder, RendererBuilderCallback callback) {
+    public void buildRenderers(
+            MpegTsPlayer mpegTsPlayer,
+            DataSource dataSource,
+            boolean mHasSoftwareAudioDecoder,
+            RendererBuilderCallback callback) {
         // Build the video and audio renderers.
-        SampleExtractor extractor = dataSource == null ?
-                new MpegTsSampleExtractor(mBufferManager, mBufferListener) :
-                new MpegTsSampleExtractor(dataSource, mBufferManager, mBufferListener);
+        SampleExtractor extractor =
+                dataSource == null
+                        ? new MpegTsSampleExtractor(mBufferManager, mBufferListener)
+                        : new MpegTsSampleExtractor(dataSource, mBufferManager, mBufferListener);
         SampleSource sampleSource = new MpegTsSampleSource(extractor);
-        MpegTsVideoTrackRenderer videoRenderer = new MpegTsVideoTrackRenderer(mContext,
-                sampleSource, mpegTsPlayer.getMainHandler(), mpegTsPlayer);
+        MpegTsVideoTrackRenderer videoRenderer =
+                new MpegTsVideoTrackRenderer(
+                        mContext, sampleSource, mpegTsPlayer.getMainHandler(), mpegTsPlayer);
         // TODO: Only using MpegTsDefaultAudioTrackRenderer for A/V sync issue. We will use
         // {@link MpegTsMediaCodecAudioTrackRenderer} when we use ExoPlayer's extractor.
         TrackRenderer audioRenderer =

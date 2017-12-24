@@ -21,15 +21,11 @@ import static org.junit.Assert.assertSame;
 
 import android.graphics.Bitmap;
 import android.support.test.filters.MediumTest;
-
 import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
-
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Tests for {@link ImageCache}.
- */
+/** Tests for {@link ImageCache}. */
 @MediumTest
 public class ImageCacheTest {
     private static final Bitmap ORIG = Bitmap.createBitmap(100, 100, Bitmap.Config.RGB_565);
@@ -47,21 +43,21 @@ public class ImageCacheTest {
         mImageCache = ImageCache.newInstance(0.1f);
     }
 
-    //TODO: Empty the cache in the setup.  Try using @VisibleForTesting
+    // TODO: Empty the cache in the setup.  Try using @VisibleForTesting
 
     @Test
     public void testPutIfLarger_smaller() throws Exception {
 
-        mImageCache.putIfNeeded( INFO_50);
+        mImageCache.putIfNeeded(INFO_50);
         assertSame("before", INFO_50, mImageCache.get(KEY));
 
-        mImageCache.putIfNeeded( INFO_25);
+        mImageCache.putIfNeeded(INFO_25);
         assertSame("after", INFO_50, mImageCache.get(KEY));
     }
 
     @Test
     public void testPutIfLarger_larger() throws Exception {
-        mImageCache.putIfNeeded( INFO_50);
+        mImageCache.putIfNeeded(INFO_50);
         assertSame("before", INFO_50, mImageCache.get(KEY));
 
         mImageCache.putIfNeeded(INFO_100);
@@ -71,10 +67,10 @@ public class ImageCacheTest {
     @Test
     public void testPutIfLarger_alreadyMax() throws Exception {
 
-        mImageCache.putIfNeeded( INFO_100);
+        mImageCache.putIfNeeded(INFO_100);
         assertSame("before", INFO_100, mImageCache.get(KEY));
 
-        mImageCache.putIfNeeded( INFO_200);
+        mImageCache.putIfNeeded(INFO_200);
         assertSame("after", INFO_100, mImageCache.get(KEY));
     }
 }

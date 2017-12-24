@@ -17,16 +17,14 @@
 package com.android.tv.tuner.exoplayer.audio;
 
 import android.media.MediaFormat;
-
 import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.audio.AudioTrack;
-
 import java.nio.ByteBuffer;
 
 /**
- * {@link AudioTrack} wrapper class for trickplay operations including FF/RW.
- * FF/RW trickplay operations do not need framework {@link AudioTrack}.
- * This wrapper class will do nothing in disabled status for those operations.
+ * {@link AudioTrack} wrapper class for trickplay operations including FF/RW. FF/RW trickplay
+ * operations do not need framework {@link AudioTrack}. This wrapper class will do nothing in
+ * disabled status for those operations.
  */
 public class AudioTrackWrapper {
     private static final int PCM16_FRAME_BYTES = 2;
@@ -57,7 +55,7 @@ public class AudioTrackWrapper {
         resetSessionId();
     }
 
-    public void release()  {
+    public void release() {
         if (mAudioSessionID != AudioTrack.SESSION_ID_NOT_SET) {
             mAudioTrack.release();
         }

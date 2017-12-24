@@ -30,7 +30,6 @@ import android.os.Build;
 import android.os.Looper;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
-
 import com.android.tv.InputSessionManager;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.TestableFeature;
@@ -41,7 +40,7 @@ import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.testing.dvr.RecordingTestUtils;
 import com.android.tv.util.TvInputManagerHelper;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,11 +48,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * Tests for {@link RecordingScheduler}.
- */
+/** Tests for {@link RecordingScheduler}. */
 @SmallTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 public class SchedulerTest {
@@ -77,9 +72,17 @@ public class SchedulerTest {
         mFakeClock = FakeClock.createWithCurrentTime();
         mDataManager = new DvrDataManagerInMemoryImpl(getTargetContext(), mFakeClock);
         Mockito.when(mChannelDataManager.isDbLoadFinished()).thenReturn(true);
-        mScheduler = new RecordingScheduler(Looper.myLooper(), mDvrManager, mSessionManager, mDataManager,
-                mChannelDataManager, mInputManager, getTargetContext(), mFakeClock,
-                mMockAlarmManager);
+        mScheduler =
+                new RecordingScheduler(
+                        Looper.myLooper(),
+                        mDvrManager,
+                        mSessionManager,
+                        mDataManager,
+                        mChannelDataManager,
+                        mInputManager,
+                        getTargetContext(),
+                        mFakeClock,
+                        mMockAlarmManager);
     }
 
     @After
@@ -97,28 +100,31 @@ public class SchedulerTest {
     public void testUpdate_nextIn12Hours() {
         long now = mFakeClock.currentTimeMillis();
         long startTime = now + TimeUnit.HOURS.toMillis(12);
-        ScheduledRecording r = RecordingTestUtils
-                .createTestRecordingWithPeriod(INPUT_ID, CHANNEL_ID, startTime,
-                startTime + TimeUnit.HOURS.toMillis(1));
+        ScheduledRecording r =
+                RecordingTestUtils.createTestRecordingWithPeriod(
+                        INPUT_ID, CHANNEL_ID, startTime, startTime + TimeUnit.HOURS.toMillis(1));
         mDataManager.addScheduledRecording(r);
-        verify(mMockAlarmManager).setExactAndAllowWhileIdle(
-                eq(AlarmManager.RTC_WAKEUP),
-                eq(startTime - RecordingScheduler.MS_TO_WAKE_BEFORE_START),
-                any(PendingIntent.class));
+        verify(mMockAlarmManager)
+                .setExactAndAllowWhileIdle(
+                        eq(AlarmManager.RTC_WAKEUP),
+                        eq(startTime - RecordingScheduler.MS_TO_WAKE_BEFORE_START),
+                        any(PendingIntent.class));
         Mockito.reset(mMockAlarmManager);
         mScheduler.updateAndStartServiceIfNeeded();
-        verify(mMockAlarmManager).setExactAndAllowWhileIdle(
-                eq(AlarmManager.RTC_WAKEUP),
-                eq(startTime - RecordingScheduler.MS_TO_WAKE_BEFORE_START),
-                any(PendingIntent.class));
+        verify(mMockAlarmManager)
+                .setExactAndAllowWhileIdle(
+                        eq(AlarmManager.RTC_WAKEUP),
+                        eq(startTime - RecordingScheduler.MS_TO_WAKE_BEFORE_START),
+                        any(PendingIntent.class));
     }
 
     @Test
     public void testStartsWithin() {
         long now = mFakeClock.currentTimeMillis();
         long startTime = now + 3;
-        ScheduledRecording r = RecordingTestUtils
-                .createTestRecordingWithPeriod(INPUT_ID, CHANNEL_ID, startTime, startTime + 100);
+        ScheduledRecording r =
+                RecordingTestUtils.createTestRecordingWithPeriod(
+                        INPUT_ID, CHANNEL_ID, startTime, startTime + 100);
         assertFalse(mScheduler.startsWithin(r, 2));
         assertTrue(mScheduler.startsWithin(r, 3));
     }

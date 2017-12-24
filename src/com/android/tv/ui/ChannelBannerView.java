@@ -45,7 +45,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
@@ -63,28 +62,23 @@ import com.android.tv.util.ImageLoader.ImageLoaderCallback;
 import com.android.tv.util.ImageLoader.LoadTvInputLogoTask;
 import com.android.tv.util.Utils;
 
-/**
- * A view to render channel banner.
- */
+/** A view to render channel banner. */
 public class ChannelBannerView extends FrameLayout implements TvTransitionManager.TransitionLayout {
     private static final String TAG = "ChannelBannerView";
     private static final boolean DEBUG = false;
 
-    /**
-     * Show all information at the channel banner.
-     */
+    /** Show all information at the channel banner. */
     public static final int LOCK_NONE = 0;
 
     /**
-     * Lock program details at the channel banner.
-     * This is used when a content is locked so we don't want to show program details
-     * including program description text and poster art.
+     * Lock program details at the channel banner. This is used when a content is locked so we don't
+     * want to show program details including program description text and poster art.
      */
     public static final int LOCK_PROGRAM_DETAIL = 1;
 
     /**
-     * Lock channel information at the channel banner.
-     * This is used when a channel is locked so we only want to show input information.
+     * Lock channel information at the channel banner. This is used when a channel is locked so we
+     * only want to show input information.
      */
     public static final int LOCK_CHANNEL_INFO = 2;
 
@@ -134,18 +128,21 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     private final Animator mProgramDescriptionFadeInAnimator;
     private final Animator mProgramDescriptionFadeOutAnimator;
 
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mCurrentHeight = 0;
-            mMainActivity.getOverlayManager().hideOverlays(
-                    TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
-                    | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
-                    | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
-                    | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
-                    | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
-        }
-    };
+    private final Runnable mHideRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    mCurrentHeight = 0;
+                    mMainActivity
+                            .getOverlayManager()
+                            .hideOverlays(
+                                    TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
+                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
+                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
+                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
+                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
+                }
+            };
     private final long mShowDurationMillis;
     private final int mChannelLogoImageViewWidth;
     private final int mChannelLogoImageViewHeight;
@@ -157,22 +154,23 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     private final int mRecordingIconPadding;
     private final Interpolator mResizeInterpolator;
 
-    private final AnimatorListenerAdapter mResizeAnimatorListener = new AnimatorListenerAdapter() {
-        @Override
-        public void onAnimationStart(Animator animator) {
-            mProgramInfoUpdatePendingByResizing = false;
-        }
+    private final AnimatorListenerAdapter mResizeAnimatorListener =
+            new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+                    mProgramInfoUpdatePendingByResizing = false;
+                }
 
-        @Override
-        public void onAnimationEnd(Animator animator) {
-            mProgramDescriptionTextView.setAlpha(1f);
-            mResizeAnimator = null;
-            if (mProgramInfoUpdatePendingByResizing) {
-                mProgramInfoUpdatePendingByResizing = false;
-                updateProgramInfo(mLastUpdatedProgram);
-            }
-        }
-    };
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    mProgramDescriptionTextView.setAlpha(1f);
+                    mResizeAnimator = null;
+                    if (mProgramInfoUpdatePendingByResizing) {
+                        mProgramInfoUpdatePendingByResizing = false;
+                        updateProgramInfo(mLastUpdatedProgram);
+                    }
+                }
+            };
 
     public ChannelBannerView(Context context) {
         this(context, null);
@@ -188,47 +186,52 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
 
         mMainActivity = (MainActivity) context;
 
-        mShowDurationMillis = mResources.getInteger(
-                R.integer.channel_banner_show_duration);
-        mChannelLogoImageViewWidth = mResources.getDimensionPixelSize(
-                R.dimen.channel_banner_channel_logo_width);
-        mChannelLogoImageViewHeight = mResources.getDimensionPixelSize(
-                R.dimen.channel_banner_channel_logo_height);
-        mChannelLogoImageViewMarginStart = mResources.getDimensionPixelSize(
-                R.dimen.channel_banner_channel_logo_margin_start);
-        mProgramDescriptionTextViewWidth = mResources.getDimensionPixelSize(
-                R.dimen.channel_banner_program_description_width);
+        mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);
+        mChannelLogoImageViewWidth =
+                mResources.getDimensionPixelSize(R.dimen.channel_banner_channel_logo_width);
+        mChannelLogoImageViewHeight =
+                mResources.getDimensionPixelSize(R.dimen.channel_banner_channel_logo_height);
+        mChannelLogoImageViewMarginStart =
+                mResources.getDimensionPixelSize(R.dimen.channel_banner_channel_logo_margin_start);
+        mProgramDescriptionTextViewWidth =
+                mResources.getDimensionPixelSize(R.dimen.channel_banner_program_description_width);
         mChannelBannerTextColor = mResources.getColor(R.color.channel_banner_text_color, null);
-        mChannelBannerDimTextColor = mResources.getColor(R.color.channel_banner_dim_text_color,
-                null);
+        mChannelBannerDimTextColor =
+                mResources.getColor(R.color.channel_banner_dim_text_color, null);
         mResizeAnimDuration = mResources.getInteger(R.integer.channel_banner_fast_anim_duration);
-        mRecordingIconPadding = mResources.getDimensionPixelOffset(
-                R.dimen.channel_banner_recording_icon_padding);
+        mRecordingIconPadding =
+                mResources.getDimensionPixelOffset(R.dimen.channel_banner_recording_icon_padding);
 
-        mResizeInterpolator = AnimationUtils.loadInterpolator(context,
-                android.R.interpolator.linear_out_slow_in);
+        mResizeInterpolator =
+                AnimationUtils.loadInterpolator(context, android.R.interpolator.linear_out_slow_in);
 
-        mProgramDescriptionFadeInAnimator = AnimatorInflater.loadAnimator(mMainActivity,
-                R.animator.channel_banner_program_description_fade_in);
-        mProgramDescriptionFadeOutAnimator = AnimatorInflater.loadAnimator(mMainActivity,
-                R.animator.channel_banner_program_description_fade_out);
+        mProgramDescriptionFadeInAnimator =
+                AnimatorInflater.loadAnimator(
+                        mMainActivity, R.animator.channel_banner_program_description_fade_in);
+        mProgramDescriptionFadeOutAnimator =
+                AnimatorInflater.loadAnimator(
+                        mMainActivity, R.animator.channel_banner_program_description_fade_out);
 
         if (CommonFeatures.DVR.isEnabled(mMainActivity)) {
             mDvrManager = TvApplication.getSingletons(mMainActivity).getDvrManager();
         } else {
             mDvrManager = null;
         }
-        mContentRatingsManager = TvApplication.getSingletons(getContext())
-                .getTvInputManagerHelper().getContentRatingsManager();
+        mContentRatingsManager =
+                TvApplication.getSingletons(getContext())
+                        .getTvInputManagerHelper()
+                        .getContentRatingsManager();
 
-        mNoProgram = new Program.Builder()
-                .setTitle(context.getString(R.string.channel_banner_no_title))
-                .setDescription(EMPTY_STRING)
-                .build();
-        mLockedChannelProgram = new Program.Builder()
-                .setTitle(context.getString(R.string.channel_banner_locked_channel_title))
-                .setDescription(EMPTY_STRING)
-                .build();
+        mNoProgram =
+                new Program.Builder()
+                        .setTitle(context.getString(R.string.channel_banner_no_title))
+                        .setDescription(EMPTY_STRING)
+                        .build();
+        mLockedChannelProgram =
+                new Program.Builder()
+                        .setTitle(context.getString(R.string.channel_banner_locked_channel_title))
+                        .setDescription(EMPTY_STRING)
+                        .build();
         if (sClosedCaptionMark == null) {
             sClosedCaptionMark = context.getString(R.string.closed_caption);
         }
@@ -260,12 +263,13 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
 
         mProgramDescriptionFadeInAnimator.setTarget(mProgramDescriptionTextView);
         mProgramDescriptionFadeOutAnimator.setTarget(mProgramDescriptionTextView);
-        mProgramDescriptionFadeOutAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                mProgramDescriptionTextView.setText(mProgramDescriptionText);
-            }
-        });
+        mProgramDescriptionFadeOutAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        mProgramDescriptionTextView.setText(mProgramDescriptionText);
+                    }
+                });
     }
 
     @Override
@@ -308,7 +312,8 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
      * @throws IllegalArgumentException if lockType is invalid.
      */
     public int setLockType(int lockType) {
-        if (lockType != LOCK_NONE && lockType != LOCK_CHANNEL_INFO
+        if (lockType != LOCK_NONE
+                && lockType != LOCK_CHANNEL_INFO
                 && lockType != LOCK_PROGRAM_DETAIL) {
             throw new IllegalArgumentException("No such lock type " + lockType);
         }
@@ -330,7 +335,7 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
      * Update channel banner view.
      *
      * @param updateOnTune {@false} denotes the channel banner is updated due to other reasons than
-     *                              tuning. The channel info will not be updated in this case.
+     *     tuning. The channel info will not be updated in this case.
      */
     public void updateViews(boolean updateOnTune) {
         resetAnimationEffects();
@@ -359,14 +364,18 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     public void updateStreamInfo(StreamInfo info) {
         // Update stream information in a channel.
         if (mLockType != LOCK_CHANNEL_INFO && info != null) {
-            updateText(mClosedCaptionTextView, info.hasClosedCaption() ? sClosedCaptionMark
-                    : EMPTY_STRING);
-            updateText(mAspectRatioTextView,
+            updateText(
+                    mClosedCaptionTextView,
+                    info.hasClosedCaption() ? sClosedCaptionMark : EMPTY_STRING);
+            updateText(
+                    mAspectRatioTextView,
                     Utils.getAspectRatioString(info.getVideoDisplayAspectRatio()));
-            updateText(mResolutionTextView,
+            updateText(
+                    mResolutionTextView,
                     Utils.getVideoDefinitionLevelString(
                             mMainActivity, info.getVideoDefinitionLevel()));
-            updateText(mAudioChannelTextView,
+            updateText(
+                    mAudioChannelTextView,
                     Utils.getAudioChannelString(mMainActivity, info.getAudioChannelCount()));
         } else {
             // Channel change has been requested. But, StreamInfo hasn't been updated yet.
@@ -415,9 +424,11 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         }
         mChannelNumberTextView.setText(displayNumber);
         mChannelNameTextView.setText(displayName);
-        TvInputInfo info = mMainActivity.getTvInputManagerHelper().getTvInputInfo(
-                getCurrentInputId());
-        if (info == null || !ImageLoader.loadBitmap(createTvInputLogoLoaderCallback(info, this),
+        TvInputInfo info =
+                mMainActivity.getTvInputManagerHelper().getTvInputInfo(getCurrentInputId());
+        if (info == null
+                || !ImageLoader.loadBitmap(
+                        createTvInputLogoLoaderCallback(info, this),
                         new LoadTvInputLogoTask(getContext(), ImageCache.getInstance(), info))) {
             mTvInputLogoImageView.setVisibility(View.GONE);
             mTvInputLogoImageView.setImageDrawable(null);
@@ -425,8 +436,11 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         mChannelLogoImageView.setImageBitmap(null);
         mChannelLogoImageView.setVisibility(View.GONE);
         if (mCurrentChannel != null && mCurrentChannelLogoExists) {
-            mCurrentChannel.loadBitmap(getContext(), Channel.LOAD_IMAGE_TYPE_CHANNEL_LOGO,
-                    mChannelLogoImageViewWidth, mChannelLogoImageViewHeight,
+            mCurrentChannel.loadBitmap(
+                    getContext(),
+                    Channel.LOAD_IMAGE_TYPE_CHANNEL_LOGO,
+                    mChannelLogoImageViewWidth,
+                    mChannelLogoImageViewHeight,
                     createChannelLogoCallback(this, mCurrentChannel));
         }
     }
@@ -446,7 +460,8 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         return new ImageLoaderCallback<ChannelBannerView>(channelBannerView) {
             @Override
             public void onBitmapLoaded(ChannelBannerView channelBannerView, Bitmap bitmap) {
-                if (bitmap != null && channelBannerView.mCurrentChannel != null
+                if (bitmap != null
+                        && channelBannerView.mCurrentChannel != null
                         && info.getId().equals(channelBannerView.mCurrentChannel.getInputId())) {
                     channelBannerView.updateTvInputLogo(bitmap);
                 }
@@ -524,8 +539,9 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
 
         if (mLastUpdatedProgram == null
                 || !TextUtils.equals(program.getTitle(), mLastUpdatedProgram.getTitle())
-                || !TextUtils.equals(program.getEpisodeDisplayTitle(getContext()),
-                mLastUpdatedProgram.getEpisodeDisplayTitle(getContext()))) {
+                || !TextUtils.equals(
+                        program.getEpisodeDisplayTitle(getContext()),
+                        mLastUpdatedProgram.getEpisodeDisplayTitle(getContext()))) {
             updateProgramTextView(program);
         }
         updateProgramTimeInfo(program);
@@ -548,8 +564,9 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
                 mProgramDescriptionText = program.getDescription();
             }
             String description = mProgramDescriptionTextView.getText().toString();
-            boolean programDescriptionNeedFadeAnimation = (isProgramChanged
-                    || !description.equals(mProgramDescriptionText)) && !mUpdateOnTune;
+            boolean programDescriptionNeedFadeAnimation =
+                    (isProgramChanged || !description.equals(mProgramDescriptionText))
+                            && !mUpdateOnTune;
             updateBannerHeight(programDescriptionNeedFadeAnimation);
         } else {
             mProgramInfoUpdatePendingByResizing = true;
@@ -561,19 +578,21 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         if (program == null) {
             return;
         }
-        updateProgramTextView(program == mLockedChannelProgram, program.getTitle(),
+        updateProgramTextView(
+                program == mLockedChannelProgram,
+                program.getTitle(),
                 program.getEpisodeDisplayTitle(getContext()));
     }
 
-    private void updateProgramTextView(boolean dimText, String title,
-            String episodeDisplayTitle) {
+    private void updateProgramTextView(boolean dimText, String title, String episodeDisplayTitle) {
         mProgramTextView.setVisibility(View.VISIBLE);
         if (dimText) {
             mProgramTextView.setTextColor(mChannelBannerDimTextColor);
         } else {
             mProgramTextView.setTextColor(mChannelBannerTextColor);
         }
-        updateTextView(mProgramTextView,
+        updateTextView(
+                mProgramTextView,
                 R.dimen.channel_banner_program_large_text_size,
                 R.dimen.channel_banner_program_large_margin_top);
         if (TextUtils.isEmpty(episodeDisplayTitle)) {
@@ -582,18 +601,24 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
             String fullTitle = title + "  " + episodeDisplayTitle;
 
             SpannableString text = new SpannableString(fullTitle);
-            text.setSpan(new TextAppearanceSpan(getContext(),
-                            R.style.text_appearance_channel_banner_episode_title),
-                    fullTitle.length() - episodeDisplayTitle.length(), fullTitle.length(),
+            text.setSpan(
+                    new TextAppearanceSpan(
+                            getContext(), R.style.text_appearance_channel_banner_episode_title),
+                    fullTitle.length() - episodeDisplayTitle.length(),
+                    fullTitle.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             mProgramTextView.setText(text);
         }
-        int width = mProgramDescriptionTextViewWidth + (mCurrentChannelLogoExists ?
-                0 : mChannelLogoImageViewWidth + mChannelLogoImageViewMarginStart);
+        int width =
+                mProgramDescriptionTextViewWidth
+                        + (mCurrentChannelLogoExists
+                                ? 0
+                                : mChannelLogoImageViewWidth + mChannelLogoImageViewMarginStart);
         ViewGroup.LayoutParams lp = mProgramTextView.getLayoutParams();
         lp.width = width;
         mProgramTextView.setLayoutParams(lp);
-        mProgramTextView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+        mProgramTextView.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
         boolean oneline = (mProgramTextView.getLineCount() == 1);
@@ -602,13 +627,16 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
                     mProgramTextView,
                     R.dimen.channel_banner_program_medium_text_size,
                     R.dimen.channel_banner_program_medium_margin_top);
-            mProgramTextView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+            mProgramTextView.measure(
+                    MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             oneline = (mProgramTextView.getLineCount() == 1);
         }
-        updateTopMargin(mAnchorView, oneline
-                ? R.dimen.channel_banner_anchor_one_line_y
-                : R.dimen.channel_banner_anchor_two_line_y);
+        updateTopMargin(
+                mAnchorView,
+                oneline
+                        ? R.dimen.channel_banner_anchor_one_line_y
+                        : R.dimen.channel_banner_anchor_two_line_y);
     }
 
     private void updateProgramRatings(Program program) {
@@ -650,8 +678,8 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         if (mLockType != LOCK_CHANNEL_INFO && durationMs > 0 && startTimeMs > 0) {
             mProgramTimeTextView.setVisibility(View.VISIBLE);
             mRemainingTimeView.setVisibility(View.VISIBLE);
-            mProgramTimeTextView.setText(Utils.getDurationString(
-                    getContext(), startTimeMs, endTimeMs, true));
+            mProgramTimeTextView.setText(
+                    Utils.getDurationString(getContext(), startTimeMs, endTimeMs, true));
         } else {
             mProgramTimeTextView.setVisibility(View.GONE);
             mRemainingTimeView.setVisibility(View.GONE);
@@ -673,8 +701,10 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
             updateProgressBarAndRecIcon(program, null);
             return;
         }
-        ScheduledRecording currentRecording = (mCurrentChannel == null) ? null
-                : mDvrManager.getCurrentRecording(mCurrentChannel.getId());
+        ScheduledRecording currentRecording =
+                (mCurrentChannel == null)
+                        ? null
+                        : mDvrManager.getCurrentRecording(mCurrentChannel.getId());
         if (DEBUG) {
             Log.d(TAG, currentRecording == null ? "No Recording" : "Recording:" + currentRecording);
         }
@@ -685,22 +715,23 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         }
     }
 
-    private void updateProgressBarAndRecIcon(Program program,
-            @Nullable ScheduledRecording recording) {
+    private void updateProgressBarAndRecIcon(
+            Program program, @Nullable ScheduledRecording recording) {
         long programStartTime = program.getStartTimeUtcMillis();
         long programEndTime = program.getEndTimeUtcMillis();
         long currentPosition = mMainActivity.getCurrentPlayingPosition();
         updateRecordingIndicator(recording);
         if (recording != null) {
             // Recording now. Use recording-style progress bar.
-            mRemainingTimeView.setProgress(getProgressPercent(recording.getStartTimeMs(),
-                    programStartTime, programEndTime));
-            mRemainingTimeView.setSecondaryProgress(getProgressPercent(currentPosition,
-                    programStartTime, programEndTime));
+            mRemainingTimeView.setProgress(
+                    getProgressPercent(
+                            recording.getStartTimeMs(), programStartTime, programEndTime));
+            mRemainingTimeView.setSecondaryProgress(
+                    getProgressPercent(currentPosition, programStartTime, programEndTime));
         } else {
             // No recording is going now. Recover progress bar.
-            mRemainingTimeView.setProgress(getProgressPercent(currentPosition,
-                    programStartTime, programEndTime));
+            mRemainingTimeView.setProgress(
+                    getProgressPercent(currentPosition, programStartTime, programEndTime));
             mRemainingTimeView.setSecondaryProgress(0);
         }
     }
@@ -708,9 +739,15 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     private void updateRecordingIndicator(@Nullable ScheduledRecording recording) {
         if (recording != null) {
             if (mRemainingTimeView.getVisibility() == View.GONE) {
-                mRecordingIndicatorView.setText(mMainActivity.getResources().getString(
-                        R.string.dvr_recording_till_format, DateUtils.formatDateTime(mMainActivity,
-                                recording.getEndTimeMs(), DateUtils.FORMAT_SHOW_TIME)));
+                mRecordingIndicatorView.setText(
+                        mMainActivity
+                                .getResources()
+                                .getString(
+                                        R.string.dvr_recording_till_format,
+                                        DateUtils.formatDateTime(
+                                                mMainActivity,
+                                                recording.getEndTimeMs(),
+                                                DateUtils.FORMAT_SHOW_TIME)));
                 mRecordingIndicatorView.setCompoundDrawablePadding(mRecordingIconPadding);
             } else {
                 mRecordingIndicatorView.setText("");
@@ -725,10 +762,10 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     private boolean isCurrentProgram(ScheduledRecording recording, Program program) {
         long currentPosition = mMainActivity.getCurrentPlayingPosition();
         return (recording.getType() == ScheduledRecording.TYPE_PROGRAM
-                && recording.getProgramId() == program.getId())
+                        && recording.getProgramId() == program.getId())
                 || (recording.getType() == ScheduledRecording.TYPE_TIMED
-                && currentPosition >= recording.getStartTimeMs()
-                && currentPosition <= recording.getEndTimeMs());
+                        && currentPosition >= recording.getStartTimeMs()
+                        && currentPosition <= recording.getEndTimeMs());
     }
 
     private void setLastUpdatedProgram(Program program) {
@@ -764,18 +801,20 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
 
     private Animator createResizeAnimator(int targetHeight, boolean addFadeAnimation) {
         final ValueAnimator heightAnimator = ValueAnimator.ofInt(mCurrentHeight, targetHeight);
-        heightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int value = (Integer) animation.getAnimatedValue();
-                LayoutParams layoutParams = (LayoutParams) ChannelBannerView.this.getLayoutParams();
-                if (value != layoutParams.height) {
-                    layoutParams.height = value;
-                    ChannelBannerView.this.setLayoutParams(layoutParams);
-                }
-                mCurrentHeight = value;
-            }
-        });
+        heightAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int value = (Integer) animation.getAnimatedValue();
+                        LayoutParams layoutParams =
+                                (LayoutParams) ChannelBannerView.this.getLayoutParams();
+                        if (value != layoutParams.height) {
+                            layoutParams.height = value;
+                            ChannelBannerView.this.setLayoutParams(layoutParams);
+                        }
+                        mCurrentHeight = value;
+                    }
+                });
 
         heightAnimator.setDuration(mResizeAnimDuration);
         heightAnimator.setInterpolator(mResizeInterpolator);

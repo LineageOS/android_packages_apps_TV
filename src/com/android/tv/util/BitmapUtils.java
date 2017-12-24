@@ -29,7 +29,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -45,12 +44,14 @@ public final class BitmapUtils {
     // The value of 64K, for MARK_READ_LIMIT, is chosen to be eight times the default buffer size
     // of BufferedInputStream (8K) allowing it to double its buffers three times. Also it is a
     // fairly reasonable value, not using too much memory and being large enough for most cases.
-    private static final int MARK_READ_LIMIT = 64 * 1024;  // 64K
+    private static final int MARK_READ_LIMIT = 64 * 1024; // 64K
 
-    private static final int CONNECTION_TIMEOUT_MS_FOR_URLCONNECTION = 3000;  // 3 sec
-    private static final int READ_TIMEOUT_MS_FOR_URLCONNECTION = 10000;  // 10 sec
+    private static final int CONNECTION_TIMEOUT_MS_FOR_URLCONNECTION = 3000; // 3 sec
+    private static final int READ_TIMEOUT_MS_FOR_URLCONNECTION = 10000; // 10 sec
 
-    private BitmapUtils() { /* cannot be instantiated */ }
+    private BitmapUtils() {
+        /* cannot be instantiated */
+    }
 
     public static Bitmap scaleBitmap(Bitmap bm, int maxWidth, int maxHeight) {
         Rect rect = calculateNewSize(bm, maxWidth, maxHeight);
@@ -59,7 +60,8 @@ public final class BitmapUtils {
 
     public static Bitmap getScaledMutableBitmap(Bitmap bm, int maxWidth, int maxHeight) {
         Bitmap scaledBitmap = scaleBitmap(bm, maxWidth, maxHeight);
-        return scaledBitmap.isMutable() ? scaledBitmap
+        return scaledBitmap.isMutable()
+                ? scaledBitmap
                 : scaledBitmap.copy(Bitmap.Config.ARGB_8888, true);
     }
 
@@ -77,17 +79,17 @@ public final class BitmapUtils {
         return rect;
     }
 
-    public static ScaledBitmapInfo createScaledBitmapInfo(String id, Bitmap bm, int maxWidth,
-            int maxHeight) {
-        return new ScaledBitmapInfo(id, scaleBitmap(bm, maxWidth, maxHeight),
+    public static ScaledBitmapInfo createScaledBitmapInfo(
+            String id, Bitmap bm, int maxWidth, int maxHeight) {
+        return new ScaledBitmapInfo(
+                id,
+                scaleBitmap(bm, maxWidth, maxHeight),
                 calculateInSampleSize(bm.getWidth(), bm.getHeight(), maxWidth, maxHeight));
     }
 
-    /**
-     * Decode large sized bitmap into requested size.
-     */
-    public static ScaledBitmapInfo decodeSampledBitmapFromUriString(Context context,
-            String uriString, int reqWidth, int reqHeight) {
+    /** Decode large sized bitmap into requested size. */
+    public static ScaledBitmapInfo decodeSampledBitmapFromUriString(
+            Context context, String uriString, int reqWidth, int reqHeight) {
         if (TextUtils.isEmpty(uriString)) {
             return null;
         }
@@ -162,8 +164,8 @@ public final class BitmapUtils {
         return urlConnection;
     }
 
-    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth,
-            int reqHeight) {
+    private static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
         return calculateInSampleSize(options.outWidth, options.outHeight, reqWidth, reqHeight);
     }
 
@@ -187,7 +189,7 @@ public final class BitmapUtils {
                 closeable.close();
             } catch (IOException e) {
                 // Log and continue.
-                Log.w(TAG,"Error closing " + closeable, e);
+                Log.w(TAG, "Error closing " + closeable, e);
             }
         }
         if (urlConnection instanceof HttpURLConnection) {
@@ -195,21 +197,13 @@ public final class BitmapUtils {
         }
     }
 
-    /**
-     * A wrapper class which contains the loaded bitmap and the scaling information.
-     */
+    /** A wrapper class which contains the loaded bitmap and the scaling information. */
     public static class ScaledBitmapInfo {
-        /**
-         * The id of  bitmap,  usually this is the URI of the original.
-         */
-        @NonNull
-        public final String id;
+        /** The id of bitmap, usually this is the URI of the original. */
+        @NonNull public final String id;
 
-        /**
-         * The loaded bitmap object.
-         */
-        @NonNull
-        public final Bitmap bitmap;
+        /** The loaded bitmap object. */
+        @NonNull public final Bitmap bitmap;
 
         /**
          * The scaling factor to the original bitmap. It should be an positive integer.
@@ -222,8 +216,8 @@ public final class BitmapUtils {
          * A constructor.
          *
          * @param bitmap The loaded bitmap object.
-         * @param inSampleSize The sampling size.
-         *        See {@link android.graphics.BitmapFactory.Options#inSampleSize}
+         * @param inSampleSize The sampling size. See {@link
+         *     android.graphics.BitmapFactory.Options#inSampleSize}
          */
         public ScaledBitmapInfo(@NonNull String id, @NonNull Bitmap bitmap, int inSampleSize) {
             this.id = id;
@@ -232,10 +226,9 @@ public final class BitmapUtils {
         }
 
         /**
-         * Checks if the bitmap needs to be reloaded. The scaling is performed by power 2.
-         * The bitmap can be reloaded only if the required width or height is greater then or equal
-         * to the existing bitmap.
-         * If the full sized bitmap is already loaded, returns {@code false}.
+         * Checks if the bitmap needs to be reloaded. The scaling is performed by power 2. The
+         * bitmap can be reloaded only if the required width or height is greater then or equal to
+         * the existing bitmap. If the full sized bitmap is already loaded, returns {@code false}.
          *
          * @see android.graphics.BitmapFactory.Options#inSampleSize
          */
@@ -245,26 +238,41 @@ public final class BitmapUtils {
                 return false;
             }
             Rect size = calculateNewSize(this.bitmap, reqWidth, reqHeight);
-            boolean reload = (size.right >= bitmap.getWidth() * 2
-                    || size.bottom >= bitmap.getHeight() * 2);
+            boolean reload =
+                    (size.right >= bitmap.getWidth() * 2 || size.bottom >= bitmap.getHeight() * 2);
             if (DEBUG) {
-                Log.d(TAG, "needToReload(" + reqWidth + ", " + reqHeight + ")=" + reload
-                        + " because the new size would be " + size + " for " + this);
+                Log.d(
+                        TAG,
+                        "needToReload("
+                                + reqWidth
+                                + ", "
+                                + reqHeight
+                                + ")="
+                                + reload
+                                + " because the new size would be "
+                                + size
+                                + " for "
+                                + this);
             }
             return reload;
         }
 
-        /**
-         * Returns {@code true} if a request the size of {@code other} would need a reload.
-         */
-        public boolean needToReload(ScaledBitmapInfo other){
+        /** Returns {@code true} if a request the size of {@code other} would need a reload. */
+        public boolean needToReload(ScaledBitmapInfo other) {
             return needToReload(other.bitmap.getWidth(), other.bitmap.getHeight());
         }
 
         @Override
         public String toString() {
-            return "ScaledBitmapInfo[" + id + "](in=" + inSampleSize + ", w=" + bitmap.getWidth()
-                    + ", h=" + bitmap.getHeight() + ")";
+            return "ScaledBitmapInfo["
+                    + id
+                    + "](in="
+                    + inSampleSize
+                    + ", w="
+                    + bitmap.getWidth()
+                    + ", h="
+                    + bitmap.getHeight()
+                    + ")";
         }
     }
 

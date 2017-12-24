@@ -39,15 +39,13 @@ import android.view.accessibility.CaptioningManager;
 import android.view.accessibility.CaptioningManager.CaptionStyle;
 import android.view.accessibility.CaptioningManager.CaptioningChangeListener;
 import android.widget.RelativeLayout;
-
-import com.google.android.exoplayer.text.CaptionStyleCompat;
-import com.google.android.exoplayer.text.SubtitleView;
 import com.android.tv.tuner.data.Cea708Data.CaptionPenAttr;
 import com.android.tv.tuner.data.Cea708Data.CaptionPenColor;
 import com.android.tv.tuner.data.Cea708Data.CaptionWindow;
 import com.android.tv.tuner.data.Cea708Data.CaptionWindowAttr;
 import com.android.tv.tuner.layout.ScaledLayout;
-
+import com.google.android.exoplayer.text.CaptionStyleCompat;
+import com.google.android.exoplayer.text.SubtitleView;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -55,8 +53,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Layout which renders a caption window of CEA-708B. It contains a {@link SubtitleView} that
- * takes care of displaying the actual cc text.
+ * Layout which renders a caption window of CEA-708B. It contains a {@link SubtitleView} that takes
+ * care of displaying the actual cc text.
  */
 public class CaptionWindowLayout extends RelativeLayout implements View.OnLayoutChangeListener {
     private static final String TAG = "CaptionWindowLayout";
@@ -136,8 +134,9 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
 
         // Add a subtitle view to the layout.
         mSubtitleView = new SubtitleView(context);
-        LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params =
+                new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         addView(mSubtitleView, params);
 
         // Set the system wide cc preferences to the subtitle view.
@@ -241,12 +240,13 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
 
     /**
      * This method places the window on a given CaptionLayout along with the anchor of the window.
-     * <p>
-     * According to CEA-708B, the anchor id indicates the gravity of the window as the follows.
+     *
+     * <p>According to CEA-708B, the anchor id indicates the gravity of the window as the follows.
      * For example, A value 7 of a anchor id says that a window is align with its parent bottom and
      * is located at the center horizontally of its parent.
-     * </p>
+     *
      * <h4>Anchor id and the gravity of a window</h4>
+     *
      * <table>
      *     <tr>
      *         <th>GRAVITY</th>
@@ -273,28 +273,29 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
      *         <td>8</td>
      *     </tr>
      * </table>
-     * <p>
-     * In order to handle the gravity of a window, there are two steps. First, set the size of the
-     * window. Since the window will be positioned at {@link ScaledLayout}, the size factors are
+     *
+     * <p>In order to handle the gravity of a window, there are two steps. First, set the size of
+     * the window. Since the window will be positioned at {@link ScaledLayout}, the size factors are
      * determined in a ratio. Second, set the gravity of the window. {@link CaptionWindowLayout} is
      * inherited from {@link RelativeLayout}. Hence, we could set the gravity of its child view,
      * {@link SubtitleView}.
-     * </p>
-     * <p>
-     * The gravity of the window is also related to its size. When it should be pushed to a one of
-     * the end of the window, like LEFT, RIGHT, TOP or BOTTOM, the anchor point should be a boundary
-     * of the window. When it should be pushed in the horizontal/vertical center of its container,
-     * the horizontal/vertical center point of the window should be the same as the anchor point.
-     * </p>
+     *
+     * <p>The gravity of the window is also related to its size. When it should be pushed to a one
+     * of the end of the window, like LEFT, RIGHT, TOP or BOTTOM, the anchor point should be a
+     * boundary of the window. When it should be pushed in the horizontal/vertical center of its
+     * container, the horizontal/vertical center point of the window should be the same as the
+     * anchor point.
      *
      * @param captionLayout a given {@link CaptionLayout}, which contains a safe title area
      * @param captionWindow a given {@link CaptionWindow}, which stores the construction info of the
-     *                      window
+     *     window
      */
     public void initWindow(CaptionLayout captionLayout, CaptionWindow captionWindow) {
         if (DEBUG) {
-            Log.d(TAG, "initWindow with "
-                    + (captionLayout != null ? captionLayout.getCaptionTrack() : null));
+            Log.d(
+                    TAG,
+                    "initWindow with "
+                            + (captionLayout != null ? captionLayout.getCaptionTrack() : null));
         }
         if (mCaptionLayout != captionLayout) {
             if (mCaptionLayout != null) {
@@ -306,23 +307,35 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
         }
 
         // Both anchor vertical and horizontal indicates the position cell number of the window.
-        float scaleRow = (float) captionWindow.anchorVertical / (captionWindow.relativePositioning
-                ? ANCHOR_RELATIVE_POSITIONING_MAX : ANCHOR_VERTICAL_MAX);
-        float scaleCol = (float) captionWindow.anchorHorizontal /
-                (captionWindow.relativePositioning ? ANCHOR_RELATIVE_POSITIONING_MAX
-                        : (isWideAspectRatio()
-                                ? ANCHOR_HORIZONTAL_16_9_MAX : ANCHOR_HORIZONTAL_4_3_MAX));
+        float scaleRow =
+                (float) captionWindow.anchorVertical
+                        / (captionWindow.relativePositioning
+                                ? ANCHOR_RELATIVE_POSITIONING_MAX
+                                : ANCHOR_VERTICAL_MAX);
+        float scaleCol =
+                (float) captionWindow.anchorHorizontal
+                        / (captionWindow.relativePositioning
+                                ? ANCHOR_RELATIVE_POSITIONING_MAX
+                                : (isWideAspectRatio()
+                                        ? ANCHOR_HORIZONTAL_16_9_MAX
+                                        : ANCHOR_HORIZONTAL_4_3_MAX));
 
         // The range of scaleRow/Col need to be verified to be in [0, 1].
         // Otherwise a {@link RuntimeException} will be raised in {@link ScaledLayout}.
         if (scaleRow < 0 || scaleRow > 1) {
-            Log.i(TAG, "The vertical position of the anchor point should be at the range of 0 and 1"
-                    + " but " + scaleRow);
+            Log.i(
+                    TAG,
+                    "The vertical position of the anchor point should be at the range of 0 and 1"
+                            + " but "
+                            + scaleRow);
             scaleRow = Math.max(0, Math.min(scaleRow, 1));
         }
         if (scaleCol < 0 || scaleCol > 1) {
-            Log.i(TAG, "The horizontal position of the anchor point should be at the range of 0 and"
-                    + " 1 but " + scaleCol);
+            Log.i(
+                    TAG,
+                    "The horizontal position of the anchor point should be at the range of 0 and"
+                            + " 1 but "
+                            + scaleCol);
             scaleCol = Math.max(0, Math.min(scaleCol, 1));
         }
         int gravity = Gravity.CENTER;
@@ -356,8 +369,10 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
                 paint.setTypeface(mCaptionStyleCompat.typeface);
                 paint.setTextSize(mTextSize);
                 float maxWindowWidth = paint.measureText(widestTextBuilder.toString());
-                float halfMaxWidthScale = mCaptionLayout.getWidth() > 0
-                        ? maxWindowWidth / 2.0f / (mCaptionLayout.getWidth() * 0.8f) : 0.0f;
+                float halfMaxWidthScale =
+                        mCaptionLayout.getWidth() > 0
+                                ? maxWindowWidth / 2.0f / (mCaptionLayout.getWidth() * 0.8f)
+                                : 0.0f;
                 if (halfMaxWidthScale > 0f && halfMaxWidthScale < scaleCol) {
                     // Calculate the expected max window size based on the column count of the
                     // caption window multiplied by average alphabets char width, then align the
@@ -403,8 +418,10 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
                 scaleEndRow = scaleRow;
                 break;
         }
-        mCaptionLayout.addOrUpdateViewToSafeTitleArea(this, new ScaledLayout
-                .ScaledLayoutParams(scaleStartRow, scaleEndRow, scaleStartCol, scaleEndCol));
+        mCaptionLayout.addOrUpdateViewToSafeTitleArea(
+                this,
+                new ScaledLayout.ScaledLayoutParams(
+                        scaleStartRow, scaleEndRow, scaleStartCol, scaleEndCol));
         setCaptionWindowId(captionWindow.id);
         setRowLimit(captionWindow.rowCount);
         setGravity(gravity);
@@ -420,8 +437,16 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         int width = right - left;
         int height = bottom - top;
         if (width != mLastCaptionLayoutWidth || height != mLastCaptionLayoutHeight) {
@@ -432,13 +457,15 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
     }
 
     private boolean isKoreanLanguageTrack() {
-        return mCaptionLayout != null && mCaptionLayout.getCaptionTrack() != null
+        return mCaptionLayout != null
+                && mCaptionLayout.getCaptionTrack() != null
                 && mCaptionLayout.getCaptionTrack().language != null
                 && "KOR".compareToIgnoreCase(mCaptionLayout.getCaptionTrack().language) == 0;
     }
 
     private boolean isWideAspectRatio() {
-        return mCaptionLayout != null && mCaptionLayout.getCaptionTrack() != null
+        return mCaptionLayout != null
+                && mCaptionLayout.getCaptionTrack() != null
                 && mCaptionLayout.getCaptionTrack().wideAspectRatio;
     }
 
@@ -451,7 +478,7 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
             Charset latin1 = Charset.forName("ISO-8859-1");
             float widestCharWidth = 0f;
             for (int i = 0; i < 256; ++i) {
-                String ch = new String(new byte[]{(byte) i}, latin1);
+                String ch = new String(new byte[] {(byte) i}, latin1);
                 float charWidth = paint.measureText(ch);
                 if (widestCharWidth < charWidth) {
                     widestCharWidth = charWidth;
@@ -548,7 +575,10 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
             int length = mBuilder.length();
             mBuilder.append(text);
             for (CharacterStyle characterStyle : mCharacterStyles) {
-                mBuilder.setSpan(characterStyle, length, mBuilder.length(),
+                mBuilder.setSpan(
+                        characterStyle,
+                        length,
+                        mBuilder.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
@@ -557,8 +587,8 @@ public class CaptionWindowLayout extends RelativeLayout implements View.OnLayout
         // Truncate text not to exceed the row limit.
         // Plus one here since the range of the rows is [0, mRowLimit].
         int startRow = Math.max(0, lines.length - (mRowLimit + 1));
-        String truncatedText = TextUtils.join("\n", Arrays.copyOfRange(
-                lines, startRow, lines.length));
+        String truncatedText =
+                TextUtils.join("\n", Arrays.copyOfRange(lines, startRow, lines.length));
         mBuilder.delete(0, mBuilder.length() - truncatedText.length());
         mCurrentTextRow = lines.length - startRow - 1;
 

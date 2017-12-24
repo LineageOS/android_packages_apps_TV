@@ -18,14 +18,11 @@ package com.android.tv.dvr.ui.list;
 
 import android.os.Bundle;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
-
 import com.android.tv.R;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.list.SchedulesHeaderRowPresenter.DateHeaderRowPresenter;
 
-/**
- * A fragment to show the list of schedule recordings.
- */
+/** A fragment to show the list of schedule recordings. */
 public class DvrSchedulesFragment extends BaseDvrSchedulesFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,8 +70,8 @@ public class DvrSchedulesFragment extends BaseDvrSchedulesFragment {
         if (args != null) {
             recording = args.getParcelable(SCHEDULES_KEY_SCHEDULED_RECORDING);
         }
-        final int selectedPostion = getRowsAdapter().indexOf(
-                getRowsAdapter().findRowByScheduledRecording(recording));
+        final int selectedPostion =
+                getRowsAdapter().indexOf(getRowsAdapter().findRowByScheduledRecording(recording));
         if (selectedPostion != -1) {
             return selectedPostion;
         }

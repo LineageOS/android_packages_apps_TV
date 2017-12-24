@@ -21,7 +21,6 @@ import android.content.res.Resources;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
-
 import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.dialog.HalfSizedDialogFragment;
@@ -31,9 +30,7 @@ import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.DvrStopRecordingFragment;
 import com.android.tv.dvr.ui.DvrUiHelper;
 
-/**
- * {@link RecordingDetailsFragment} for current recording in DVR.
- */
+/** {@link RecordingDetailsFragment} for current recording in DVR. */
 public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
     private static final int ACTION_STOP_RECORDING = 1;
 
@@ -41,7 +38,7 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
     private final DvrDataManager.ScheduledRecordingListener mScheduledRecordingListener =
             new DvrDataManager.ScheduledRecordingListener() {
                 @Override
-                public void onScheduledRecordingAdded(ScheduledRecording... schedules) { }
+                public void onScheduledRecordingAdded(ScheduledRecording... schedules) {}
 
                 @Override
                 public void onScheduledRecordingRemoved(ScheduledRecording... schedules) {
@@ -58,7 +55,7 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
                     for (ScheduledRecording schedule : schedules) {
                         if (schedule.getId() == getRecording().getId()
                                 && schedule.getState()
-                                != ScheduledRecording.STATE_RECORDING_IN_PROGRESS) {
+                                        != ScheduledRecording.STATE_RECORDING_IN_PROGRESS) {
                             getActivity().finish();
                             return;
                         }
@@ -78,9 +75,13 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
         SparseArrayObjectAdapter adapter =
                 new SparseArrayObjectAdapter(new ActionPresenterSelector());
         Resources res = getResources();
-        adapter.set(ACTION_STOP_RECORDING, new Action(ACTION_STOP_RECORDING,
-                res.getString(R.string.dvr_detail_stop_recording), null,
-                res.getDrawable(R.drawable.lb_ic_stop)));
+        adapter.set(
+                ACTION_STOP_RECORDING,
+                new Action(
+                        ACTION_STOP_RECORDING,
+                        res.getString(R.string.dvr_detail_stop_recording),
+                        null,
+                        res.getDrawable(R.drawable.lb_ic_stop)));
         return adapter;
     }
 
@@ -90,7 +91,8 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
             @Override
             public void onActionClicked(Action action) {
                 if (action.getId() == ACTION_STOP_RECORDING) {
-                    DvrUiHelper.showStopRecordingDialog(getActivity(),
+                    DvrUiHelper.showStopRecordingDialog(
+                            getActivity(),
                             getRecording().getChannelId(),
                             DvrStopRecordingFragment.REASON_USER_STOP,
                             new HalfSizedDialogFragment.OnActionClickListener() {

@@ -19,15 +19,14 @@ package com.android.tv.common;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.tv.common.feature.Feature;
 
 /**
- * Simple static methods to be called at the start of your own methods to verify
- * correct arguments and state.
+ * Simple static methods to be called at the start of your own methods to verify correct arguments
+ * and state.
  *
- * <p>{@code checkXXX} methods throw exceptions when {@link BuildConfig#ENG} is true, and
- * logs a warning when it is false.
+ * <p>{@code checkXXX} methods throw exceptions when {@link BuildConfig#ENG} is true, and logs a
+ * warning when it is false.
  *
  * <p>This is based on com.android.internal.util.Preconditions.
  */
@@ -35,12 +34,11 @@ public final class SoftPreconditions {
     private static final String TAG = "SoftPreconditions";
 
     /**
-     * Throws or logs if an expression involving the parameter of the calling
-     * method is not true.
+     * Throws or logs if an expression involving the parameter of the calling method is not true.
      *
      * @param expression a boolean expression
-     * @param tag Used to identify the source of a log message.  It usually
-     *            identifies the class or activity where the log call occurs.
+     * @param tag Used to identify the source of a log message. It usually identifies the class or
+     *     activity where the log call occurs.
      * @param msg The message you would like logged.
      * @return the evaluation result of the boolean expression
      * @throws IllegalArgumentException if {@code expression} is true
@@ -53,8 +51,7 @@ public final class SoftPreconditions {
     }
 
     /**
-     * Throws or logs if an expression involving the parameter of the calling
-     * method is not true.
+     * Throws or logs if an expression involving the parameter of the calling method is not true.
      *
      * @param expression a boolean expression
      * @return the evaluation result of the boolean expression
@@ -69,8 +66,8 @@ public final class SoftPreconditions {
      * Throws or logs if an and object is null.
      *
      * @param reference an object reference
-     * @param tag Used to identify the source of a log message.  It usually
-     *            identifies the class or activity where the log call occurs.
+     * @param tag Used to identify the source of a log message. It usually identifies the class or
+     *     activity where the log call occurs.
      * @param msg The message you would like logged.
      * @return true if the object is null
      * @throws NullPointerException if {@code reference} is null
@@ -94,12 +91,12 @@ public final class SoftPreconditions {
     }
 
     /**
-     * Throws or logs if an expression involving the state of the calling
-     * instance, but not involving any parameters to the calling method is not true.
+     * Throws or logs if an expression involving the state of the calling instance, but not
+     * involving any parameters to the calling method is not true.
      *
      * @param expression a boolean expression
-     * @param tag Used to identify the source of a log message.  It usually
-     *            identifies the class or activity where the log call occurs.
+     * @param tag Used to identify the source of a log message. It usually identifies the class or
+     *     activity where the log call occurs.
      * @param msg The message you would like logged.
      * @return the evaluation result of the boolean expression
      * @throws IllegalStateException if {@code expression} is true
@@ -112,8 +109,8 @@ public final class SoftPreconditions {
     }
 
     /**
-     * Throws or logs if an expression involving the state of the calling
-     * instance, but not involving any parameters to the calling method is not true.
+     * Throws or logs if an expression involving the state of the calling instance, but not
+     * involving any parameters to the calling method is not true.
      *
      * @param expression a boolean expression
      * @return the evaluation result of the boolean expression
@@ -129,8 +126,8 @@ public final class SoftPreconditions {
      *
      * @param context an android context
      * @param feature the required feature
-     * @param tag used to identify the source of a log message.  It usually
-     *            identifies the class or activity where the log call occurs
+     * @param tag used to identify the source of a log message. It usually identifies the class or
+     *     activity where the log call occurs
      * @throws IllegalStateException if {@code feature} is not enabled
      */
     public static void checkFeatureEnabled(Context context, Feature feature, String tag) {
@@ -140,8 +137,8 @@ public final class SoftPreconditions {
     /**
      * Throws a {@link RuntimeException} if {@link BuildConfig#ENG} is true, else log a warning.
      *
-     * @param tag Used to identify the source of a log message.  It usually
-     *            identifies the class or activity where the log call occurs.
+     * @param tag Used to identify the source of a log message. It usually identifies the class or
+     *     activity where the log call occurs.
      * @param msg The message you would like logged
      * @param e The exception to wrap with a RuntimeException when thrown.
      */
@@ -166,6 +163,5 @@ public final class SoftPreconditions {
         }
     }
 
-    private SoftPreconditions() {
-    }
+    private SoftPreconditions() {}
 }

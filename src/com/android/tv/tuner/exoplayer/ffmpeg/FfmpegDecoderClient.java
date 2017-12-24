@@ -22,20 +22,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-
 import android.support.annotation.MainThread;
-import android.support.annotation.WorkerThread;
 import android.support.annotation.VisibleForTesting;
-import com.google.android.exoplayer.SampleHolder;
+import android.support.annotation.WorkerThread;
 import com.android.tv.Features;
 import com.android.tv.tuner.exoplayer.audio.AudioDecoder;
-
+import com.google.android.exoplayer.SampleHolder;
 import java.nio.ByteBuffer;
 
 /**
- * The class connects {@link FfmpegDecoderService} to decode audio samples.
- * In order to sandbox ffmpeg based decoder, {@link FfmpegDecoderService} is an isolated process
- * without any permission and connected by binder.
+ * The class connects {@link FfmpegDecoderService} to decode audio samples. In order to sandbox
+ * ffmpeg based decoder, {@link FfmpegDecoderService} is an isolated process without any permission
+ * and connected by binder.
  */
 public class FfmpegDecoderClient extends AudioDecoder {
     private static FfmpegDecoderClient sInstance;
@@ -47,36 +45,38 @@ public class FfmpegDecoderClient extends AudioDecoder {
             "com.android.tv.tuner.exoplayer.ffmpeg.IFfmpegDecoder";
     private static final long FFMPEG_SERVICE_CONNECT_TIMEOUT_MS = 500;
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = IFfmpegDecoder.Stub.asInterface(service);
-            synchronized (FfmpegDecoderClient.this) {
-                try {
-                    mIsAvailable = mService.isAvailable();
-                } catch (RemoteException e) {
+    private final ServiceConnection mConnection =
+            new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName className, IBinder service) {
+                    mService = IFfmpegDecoder.Stub.asInterface(service);
+                    synchronized (FfmpegDecoderClient.this) {
+                        try {
+                            mIsAvailable = mService.isAvailable();
+                        } catch (RemoteException e) {
+                        }
+                        FfmpegDecoderClient.this.notify();
+                    }
                 }
-                FfmpegDecoderClient.this.notify();
-            }
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            synchronized (FfmpegDecoderClient.this) {
-                sInstance.releaseLocked();
-                mIsAvailable = false;
-                mService = null;
-            }
-        }
-    };
+                @Override
+                public void onServiceDisconnected(ComponentName className) {
+                    synchronized (FfmpegDecoderClient.this) {
+                        sInstance.releaseLocked();
+                        mIsAvailable = false;
+                        mService = null;
+                    }
+                }
+            };
 
     /**
      * Connects to the decoder service for future uses.
+     *
      * @param context
      * @return {@code true} when decoder service is connected.
      */
     @MainThread
-    public synchronized static boolean connect(Context context) {
+    public static synchronized boolean connect(Context context) {
         if (Features.AC3_SOFTWARE_DECODE.isEnabled(context)) {
             if (sInstance == null) {
                 sInstance = new FfmpegDecoderClient();
@@ -96,10 +96,11 @@ public class FfmpegDecoderClient extends AudioDecoder {
 
     /**
      * Disconnects from the decoder service and release resources.
+     *
      * @param context
      */
     @MainThread
-    public synchronized static void disconnect(Context context) {
+    public static synchronized void disconnect(Context context) {
         if (sInstance != null) {
             synchronized (sInstance) {
                 sInstance.releaseLocked();
@@ -114,29 +115,26 @@ public class FfmpegDecoderClient extends AudioDecoder {
     }
 
     /**
-     * Returns whether service is available or not.
-     * Before using client, this should be used to check availability.
+     * Returns whether service is available or not. Before using client, this should be used to
+     * check availability.
      */
     @WorkerThread
-    public synchronized static boolean isAvailable() {
+    public static synchronized boolean isAvailable() {
         if (sInstance != null) {
             return sInstance.available();
         }
         return false;
     }
 
-    /**
-     * Returns an client instance.
-     */
-    public synchronized static FfmpegDecoderClient getInstance() {
+    /** Returns an client instance. */
+    public static synchronized FfmpegDecoderClient getInstance() {
         if (sInstance != null) {
             sInstance.createDecoder();
         }
         return sInstance;
     }
 
-    private FfmpegDecoderClient() {
-    }
+    private FfmpegDecoderClient() {}
 
     private synchronized boolean available() {
         if (mIsAvailable == null) {
@@ -163,7 +161,7 @@ public class FfmpegDecoderClient extends AudioDecoder {
             return;
         }
         try {
-          mService.release();
+            mService.release();
         } catch (RemoteException e) {
         }
     }
@@ -178,7 +176,7 @@ public class FfmpegDecoderClient extends AudioDecoder {
         if (mIsAvailable == null || mIsAvailable == false) {
             return;
         }
-        byte[] sampleBytes = new byte [sampleHolder.data.limit()];
+        byte[] sampleBytes = new byte[sampleHolder.data.limit()];
         sampleHolder.data.get(sampleBytes, 0, sampleBytes.length);
         try {
             mService.decode(sampleHolder.timeUs, sampleBytes);

@@ -17,26 +17,31 @@ package com.android.tv.testing;
 
 import android.media.tv.TvTrackInfo;
 
-/**
- * Constants for testing.
- */
+/** Constants for testing. */
 public final class Constants {
     public static final int FUNC_TEST_CHANNEL_COUNT = 100;
     public static final int UNIT_TEST_CHANNEL_COUNT = 4;
     public static final int JANK_TEST_CHANNEL_COUNT = 500; // TODO: increase to 1000 see b/23526997
 
-    public static final TvTrackInfo EN_STEREO_AUDIO_TRACK = new TvTrackInfo.Builder(
-            TvTrackInfo.TYPE_AUDIO, "English Stereo Audio").setLanguage("en")
-            .setAudioChannelCount(2).build();
-    public static final TvTrackInfo GENERIC_AUDIO_TRACK = new TvTrackInfo.Builder(
-            TvTrackInfo.TYPE_AUDIO, "Generic Audio").build();
+    public static final TvTrackInfo EN_STEREO_AUDIO_TRACK =
+            new TvTrackInfo.Builder(TvTrackInfo.TYPE_AUDIO, "English Stereo Audio")
+                    .setLanguage("en")
+                    .setAudioChannelCount(2)
+                    .build();
+    public static final TvTrackInfo GENERIC_AUDIO_TRACK =
+            new TvTrackInfo.Builder(TvTrackInfo.TYPE_AUDIO, "Generic Audio").build();
 
-    public static final TvTrackInfo FHD1080P50_VIDEO_TRACK = new TvTrackInfo.Builder(
-            TvTrackInfo.TYPE_VIDEO, "FHD Video").setVideoHeight(1080).setVideoWidth(1920)
-            .setVideoFrameRate(50).build();
-    public static final TvTrackInfo SVGA_VIDEO_TRACK = new TvTrackInfo.Builder(
-            TvTrackInfo.TYPE_VIDEO, "SVGA Video").setVideoHeight(600).setVideoWidth(800).build();
+    public static final TvTrackInfo FHD1080P50_VIDEO_TRACK =
+            new TvTrackInfo.Builder(TvTrackInfo.TYPE_VIDEO, "FHD Video")
+                    .setVideoHeight(1080)
+                    .setVideoWidth(1920)
+                    .setVideoFrameRate(50)
+                    .build();
+    public static final TvTrackInfo SVGA_VIDEO_TRACK =
+            new TvTrackInfo.Builder(TvTrackInfo.TYPE_VIDEO, "SVGA Video")
+                    .setVideoHeight(600)
+                    .setVideoWidth(800)
+                    .build();
 
-    private Constants() {
-    }
+    private Constants() {}
 }

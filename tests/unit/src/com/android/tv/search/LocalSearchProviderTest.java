@@ -25,12 +25,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.test.filters.SmallTest;
 import android.test.ProviderTestCase2;
-
 import com.android.tv.ApplicationSingletons;
 import com.android.tv.TvApplication;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.util.MockApplicationSingletons;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,10 +40,16 @@ import org.mockito.MockitoAnnotations;
 public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvider> {
     private static final String AUTHORITY = "com.android.tv.search";
     private static final String KEYWORD = "keyword";
-    private static final Uri BASE_SEARCH_URI = Uri.parse("content://" + AUTHORITY + "/"
-            + SearchManager.SUGGEST_URI_PATH_QUERY + "/" + KEYWORD);
-    private static final Uri WRONG_SERACH_URI = Uri.parse("content://" + AUTHORITY + "/wrong_path/"
-            + KEYWORD);
+    private static final Uri BASE_SEARCH_URI =
+            Uri.parse(
+                    "content://"
+                            + AUTHORITY
+                            + "/"
+                            + SearchManager.SUGGEST_URI_PATH_QUERY
+                            + "/"
+                            + KEYWORD);
+    private static final Uri WRONG_SERACH_URI =
+            Uri.parse("content://" + AUTHORITY + "/wrong_path/" + KEYWORD);
 
     private ApplicationSingletons mOldAppSingletons;
     MockApplicationSingletons mMockAppSingletons;
@@ -109,23 +113,26 @@ public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvid
         if (limit != null || action != null) {
             Uri.Builder builder = uri.buildUpon();
             if (limit != null) {
-                builder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT,
-                        limit.toString());
+                builder.appendQueryParameter(
+                        SearchManager.SUGGEST_PARAMETER_LIMIT, limit.toString());
             }
             if (action != null) {
-                builder.appendQueryParameter(LocalSearchProvider.SUGGEST_PARAMETER_ACTION,
-                        action.toString());
+                builder.appendQueryParameter(
+                        LocalSearchProvider.SUGGEST_PARAMETER_ACTION, action.toString());
             }
             uri = builder.build();
         }
         try (Cursor c = getProvider().query(uri, null, null, null, null)) {
             // Do nothing.
         }
-        int expectedLimit = limit == null || limit <= 0 ?
-                LocalSearchProvider.DEFAULT_SEARCH_LIMIT : limit;
-        int expectedAction = (action == null || action < SearchInterface.ACTION_TYPE_START
-                || action > SearchInterface.ACTION_TYPE_END) ?
-                LocalSearchProvider.DEFAULT_SEARCH_ACTION : action;
+        int expectedLimit =
+                limit == null || limit <= 0 ? LocalSearchProvider.DEFAULT_SEARCH_LIMIT : limit;
+        int expectedAction =
+                (action == null
+                                || action < SearchInterface.ACTION_TYPE_START
+                                || action > SearchInterface.ACTION_TYPE_END)
+                        ? LocalSearchProvider.DEFAULT_SEARCH_ACTION
+                        : action;
         verify(mMockSearchInterface).search(KEYWORD, expectedLimit, expectedAction);
         clearInvocations(mMockSearchInterface);
     }

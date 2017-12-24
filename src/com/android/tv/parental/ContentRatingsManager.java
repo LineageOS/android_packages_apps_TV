@@ -22,11 +22,9 @@ import android.media.tv.TvContentRatingSystemInfo;
 import android.media.tv.TvInputManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import com.android.tv.R;
 import com.android.tv.parental.ContentRatingSystem.Rating;
 import com.android.tv.parental.ContentRatingSystem.SubRating;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +53,7 @@ public class ContentRatingsManager {
         }
     }
 
-    /**
-     * Returns the content rating system with the give ID.
-     */
+    /** Returns the content rating system with the give ID. */
     @Nullable
     public ContentRatingSystem getContentRatingSystem(String contentRatingSystemId) {
         for (ContentRatingSystem ratingSystem : mContentRatingSystems) {
@@ -68,9 +64,7 @@ public class ContentRatingsManager {
         return null;
     }
 
-    /**
-     * Returns a new list of all content rating systems defined.
-     */
+    /** Returns a new list of all content rating systems defined. */
     public List<ContentRatingSystem> getContentRatingSystems() {
         return new ArrayList<>(mContentRatingSystems);
     }
@@ -118,8 +112,10 @@ public class ContentRatingsManager {
 
     private List<SubRating> getSubRatings(Rating rating, TvContentRating canonicalRating) {
         List<SubRating> subRatings = new ArrayList<>();
-        if (rating == null || rating.getSubRatings() == null
-                || canonicalRating == null || canonicalRating.getSubRatings() == null) {
+        if (rating == null
+                || rating.getSubRatings() == null
+                || canonicalRating == null
+                || canonicalRating.getSubRatings() == null) {
             return subRatings;
         }
         for (String subRatingString : canonicalRating.getSubRatings()) {

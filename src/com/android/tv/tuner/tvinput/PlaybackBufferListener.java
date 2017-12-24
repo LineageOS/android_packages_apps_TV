@@ -16,9 +16,7 @@
 
 package com.android.tv.tuner.tvinput;
 
-/**
- * The listener for buffer events occurred during playback.
- */
+/** The listener for buffer events occurred during playback. */
 public interface PlaybackBufferListener {
 
     /**
@@ -35,8 +33,6 @@ public interface PlaybackBufferListener {
      */
     void onBufferStateChanged(boolean available);
 
-    /**
-     * Invoked when the disk speed is too slow to write the buffers.
-     */
+    /** Invoked when the disk speed is too slow to write the buffers. */
     void onDiskTooSlow();
 }

@@ -20,21 +20,17 @@ import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertWaitForCondi
 
 import android.support.test.filters.LargeTest;
 import android.support.test.uiautomator.Until;
-
 import com.android.tv.guide.ProgramGuide;
 import com.android.tv.testing.uihelper.Constants;
 
-/**
- * Tests for {@link ProgramGuide}.
- */
+/** Tests for {@link ProgramGuide}. */
 @LargeTest
 public class ProgramGuideTest extends LiveChannelsTestCase {
 
     public void testCancel() {
         mLiveChannelsHelper.assertAppStarted();
         mMenuHelper.assertPressProgramGuide();
-        assertWaitForCondition(mDevice,
-                Until.hasObject(Constants.PROGRAM_GUIDE));
+        assertWaitForCondition(mDevice, Until.hasObject(Constants.PROGRAM_GUIDE));
         mDevice.pressBack();
         assertWaitForCondition(mDevice, Until.gone(Constants.PROGRAM_GUIDE));
         assertHas(mDevice, Constants.MENU, false);

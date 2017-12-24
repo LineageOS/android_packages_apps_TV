@@ -24,17 +24,14 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
 import android.util.Range;
-
 import com.android.tv.dvr.DvrScheduleManager.ConflictInfo;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.testing.dvr.RecordingTestUtils;
-
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Test;
 
 /** Tests for {@link DvrScheduleManager} */
 @SmallTest
@@ -54,24 +51,29 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 0L, 200L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L));
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 1));
 
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 0L, 100L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L));
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 100L, 200L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L));
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 0L, 100L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L));
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
 
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 100L, 200L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L));
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
     }
 
@@ -82,11 +84,14 @@ public class DvrScheduleManagerTest {
         List<ScheduledRecording> schedules = new ArrayList<>();
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 0));
 
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 0L, 200L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L));
         assertEquals(schedules, DvrScheduleManager.getConflictingSchedules(schedules, 0));
-        schedules.add(0, RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                ++priority, 0L, 100L));
+        schedules.add(
+                0,
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L));
         assertEquals(schedules, DvrScheduleManager.getConflictingSchedules(schedules, 0));
     }
 
@@ -96,76 +101,91 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 1));
 
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r3);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        ScheduledRecording r4 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r4 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r4);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
 
-        ScheduledRecording r5 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r5 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r5);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
 
-        ScheduledRecording r6 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 10L, 90L);
+        ScheduledRecording r6 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 10L, 90L);
         schedules.add(r6);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 3),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r4, r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 3), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 4));
 
-        ScheduledRecording r7 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 110L, 190L);
+        ScheduledRecording r7 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 110L, 190L);
         schedules.add(r7);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r5, r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 3),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r5, r4, r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 3), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 4));
 
-        ScheduledRecording r8 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 50L, 150L);
+        ScheduledRecording r8 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 50L, 150L);
         schedules.add(r8);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r7, r6, r5, r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r5, r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 3),
-                r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 4),
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1),
+                r7,
+                r6,
+                r5,
+                r4,
+                r3,
+                r2,
                 r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r5, r4, r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 3), r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 4), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 5));
     }
 
@@ -176,23 +196,26 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 1000L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 1000L);
         schedules.add(r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 1));
 
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r3);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
     }
 
@@ -202,76 +225,91 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(0, r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 1));
 
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(0, r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(0, r3);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 2));
 
-        ScheduledRecording r4 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r4 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(0, r4);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
 
-        ScheduledRecording r5 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r5 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(0, r5);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
 
-        ScheduledRecording r6 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 10L, 90L);
+        ScheduledRecording r6 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 10L, 90L);
         schedules.add(0, r6);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 3),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r4, r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 3), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 4));
 
-        ScheduledRecording r7 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 110L, 190L);
+        ScheduledRecording r7 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 110L, 190L);
         schedules.add(0, r7);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r5, r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 3),
-                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r5, r4, r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 3), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 4));
 
-        ScheduledRecording r8 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 50L, 150L);
+        ScheduledRecording r8 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 50L, 150L);
         schedules.add(0, r8);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r7, r6, r5, r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 2),
-                r5, r4, r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 3),
-                r3, r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 4),
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1),
+                r7,
+                r6,
+                r5,
+                r4,
+                r3,
+                r2,
                 r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 2), r5, r4, r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 3), r3, r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 4), r1);
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 5));
     }
 
@@ -281,16 +319,22 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(10L, 20L))), r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(110L, 120L))), r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(10L, 20L))),
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(110L, 120L))),
+                r1);
     }
 
     @Test
@@ -299,16 +343,22 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(10L, 20L))), r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(110L, 120L))), r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(10L, 20L))),
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(110L, 120L))),
+                r1);
     }
 
     @Test
@@ -317,29 +367,40 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r2);
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r3);
-        ScheduledRecording r4 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r4 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r4);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(10L, 20L))), r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(110L, 120L))), r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                Collections.singletonList(new Range<>(50L, 150L))), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(10L, 20L))),
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(110L, 120L))),
+                r2);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        schedules, 1, Collections.singletonList(new Range<>(50L, 150L))),
+                r2,
+                r1);
         List<Range<Long>> ranges = new ArrayList<>();
         ranges.add(new Range<>(10L, 20L));
         ranges.add(new Range<>(110L, 120L));
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1,
-                ranges), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1, ranges), r2, r1);
     }
 
     @Test
@@ -348,22 +409,33 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 100L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 100L);
         schedules.add(r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(
-                Collections.singletonList(
-                        ScheduledRecording.builder(INPUT_ID, ++channelId, 10L, 20L)
-                                .setPriority(++priority).build()),
-                schedules, 1), r2, r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(
-                Collections.singletonList(
-                        ScheduledRecording.builder(INPUT_ID, ++channelId, 110L, 120L)
-                                .setPriority(++priority).build()),
-                schedules, 1), r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        Collections.singletonList(
+                                ScheduledRecording.builder(INPUT_ID, ++channelId, 10L, 20L)
+                                        .setPriority(++priority)
+                                        .build()),
+                        schedules,
+                        1),
+                r2,
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        Collections.singletonList(
+                                ScheduledRecording.builder(INPUT_ID, ++channelId, 110L, 120L)
+                                        .setPriority(++priority)
+                                        .build()),
+                        schedules,
+                        1),
+                r1);
     }
 
     @Test
@@ -372,22 +444,33 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(
-                Collections.singletonList(
-                        ScheduledRecording.builder(INPUT_ID, ++channelId, 10L, 20L)
-                                .setPriority(++priority).build()),
-                schedules, 1), r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(
-                Collections.singletonList(
-                        ScheduledRecording.builder(INPUT_ID, ++channelId, 110L, 120L)
-                                .setPriority(++priority).build()),
-                schedules, 1), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        Collections.singletonList(
+                                ScheduledRecording.builder(INPUT_ID, ++channelId, 10L, 20L)
+                                        .setPriority(++priority)
+                                        .build()),
+                        schedules,
+                        1),
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        Collections.singletonList(
+                                ScheduledRecording.builder(INPUT_ID, ++channelId, 110L, 120L)
+                                        .setPriority(++priority)
+                                        .build()),
+                        schedules,
+                        1),
+                r2,
+                r1);
     }
 
     @Test
@@ -396,19 +479,25 @@ public class DvrScheduleManagerTest {
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
 
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 400L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 400L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r2);
         // Returning r1 even though r1 has the higher priority than the new one. That's because r1
         // starts at 0 and stops at 100, and the new one will be recorded successfully.
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(
-                Collections.singletonList(
-                        ScheduledRecording.builder(INPUT_ID, ++channelId, 200L, 300L)
-                                .setPriority(0).build()),
-                schedules, 1), r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(
+                        Collections.singletonList(
+                                ScheduledRecording.builder(INPUT_ID, ++channelId, 200L, 300L)
+                                        .setPriority(0)
+                                        .build()),
+                        schedules,
+                        1),
+                r1);
     }
 
     @Test
@@ -416,10 +505,12 @@ public class DvrScheduleManagerTest {
         long priority = 0;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(channelId,
-                ++priority, 0L, 200L));
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(channelId,
-                ++priority, 0L, 200L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelId, ++priority, 0L, 200L));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelId, ++priority, 0L, 200L));
         MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedules(schedules, 3));
     }
 
@@ -428,18 +519,21 @@ public class DvrScheduleManagerTest {
         long priority = 0;
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 200L, 300L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 200L, 300L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 400L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 400L);
         schedules.add(r2);
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 200L);
         schedules.add(r3);
         // r2 starts recording and fails when r3 starts. r1 is recorded successfully.
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r2);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r2);
     }
 
     @Test
@@ -447,18 +541,21 @@ public class DvrScheduleManagerTest {
         long priority = 0;
         long channelId = 0;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 200L, 400L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 200L, 400L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 100L, 300L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 100L, 300L);
         schedules.add(r2);
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r3);
         // r2 and r1 are clipped.
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedules(schedules, 1),
-                r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedules(schedules, 1), r2, r1);
     }
 
     @Test
@@ -467,10 +564,12 @@ public class DvrScheduleManagerTest {
         long priority = 0;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(channelId,
-                ++priority, 0L, 200L));
-        MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedulesForTune(INPUT_ID,
-                channelId, 0L, priority + 1, schedules, 1));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelId, ++priority, 0L, 200L));
+        MoreAsserts.assertEmpty(
+                DvrScheduleManager.getConflictingSchedulesForTune(
+                        INPUT_ID, channelId, 0L, priority + 1, schedules, 1));
     }
 
     @Test
@@ -479,10 +578,13 @@ public class DvrScheduleManagerTest {
         long priority = 0;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        schedules.add(RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(channelId,
-                ++priority, 0L, 200L));
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForTune(
-                INPUT_ID, channelId + 1, 0L, priority + 1, schedules, 1), schedules.get(0));
+        schedules.add(
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelId, ++priority, 0L, 200L));
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForTune(
+                        INPUT_ID, channelId + 1, 0L, priority + 1, schedules, 1),
+                schedules.get(0));
     }
 
     @Test
@@ -492,16 +594,21 @@ public class DvrScheduleManagerTest {
         long channelToWatch = 1;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r2);
-        MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 3));
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2), r1);
+        MoreAsserts.assertEmpty(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 3));
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2),
+                r1);
     }
 
     @Test
@@ -510,16 +617,21 @@ public class DvrScheduleManagerTest {
         long channelToWatch = 1;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                channelToWatch, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelToWatch, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r2);
-        MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2));
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1), r2);
+        MoreAsserts.assertEmpty(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2));
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1),
+                r2);
     }
 
     @Test
@@ -528,16 +640,21 @@ public class DvrScheduleManagerTest {
         long channelToWatch = 1;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                channelToWatch, ++priority, 0L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelToWatch, ++priority, 0L, 200L);
         schedules.add(r2);
-        MoreAsserts.assertEmpty(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2));
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1), r1);
+        MoreAsserts.assertEmpty(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2));
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1),
+                r1);
     }
 
     @Test
@@ -546,21 +663,31 @@ public class DvrScheduleManagerTest {
         long channelToWatch = 1;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                channelToWatch, ++priority, 0L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelToWatch, ++priority, 0L, 200L);
         schedules.add(r2);
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                channelToWatch, ++priority, 0L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelToWatch, ++priority, 0L, 200L);
         schedules.add(r3);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 3), r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2), r2);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1), r2, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 3),
+                r2);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2),
+                r2);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1),
+                r2,
+                r1);
     }
 
     @Test
@@ -569,51 +696,62 @@ public class DvrScheduleManagerTest {
         long channelToWatch = 1;
         long channelId = 1;
         List<ScheduledRecording> schedules = new ArrayList<>();
-        ScheduledRecording r1 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                channelToWatch, ++priority, 0L, 200L);
+        ScheduledRecording r1 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelToWatch, ++priority, 0L, 200L);
         schedules.add(r1);
-        ScheduledRecording r2 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                channelToWatch, ++priority, 0L, 200L);
+        ScheduledRecording r2 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        channelToWatch, ++priority, 0L, 200L);
         schedules.add(r2);
-        ScheduledRecording r3 = RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
-                ++channelId, ++priority, 0L, 200L);
+        ScheduledRecording r3 =
+                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                        ++channelId, ++priority, 0L, 200L);
         schedules.add(r3);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 3), r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2), r1);
-        MoreAsserts.assertContentsInOrder(DvrScheduleManager.getConflictingSchedulesForWatching(
-                INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1), r3, r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 3),
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 2),
+                r1);
+        MoreAsserts.assertContentsInOrder(
+                DvrScheduleManager.getConflictingSchedulesForWatching(
+                        INPUT_ID, channelToWatch, 0L, ++priority, schedules, 1),
+                r3,
+                r1);
     }
 
     @Test
     public void testPartiallyConflictingSchedules() {
         long priority = 100;
         long channelId = 0;
-        List<ScheduledRecording> schedules = new ArrayList<>(Arrays.asList(
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 0L, 400L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 0L, 200L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 200L, 500L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 400L, 600L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 700L, 800L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 600L, 900L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 800L, 900L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 800L, 900L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 750L, 850L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 300L, 450L),
-                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(++channelId,
-                        --priority, 50L, 900L)
-        ));
+        List<ScheduledRecording> schedules =
+                new ArrayList<>(
+                        Arrays.asList(
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 0L, 400L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 0L, 200L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 200L, 500L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 400L, 600L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 700L, 800L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 600L, 900L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 800L, 900L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 800L, 900L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 750L, 850L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 300L, 450L),
+                                RecordingTestUtils.createTestRecordingWithPriorityAndPeriod(
+                                        ++channelId, --priority, 50L, 900L)));
         List<ConflictInfo> conflicts = DvrScheduleManager.getConflictingSchedulesInfo(schedules, 1);
 
         assertNotInList(schedules.get(0), conflicts);

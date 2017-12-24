@@ -19,15 +19,12 @@ package com.android.tv.tuner.exoplayer.audio;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
-
 import com.google.android.exoplayer.util.MimeTypes;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Monitors the rendering position of {@link AudioTrack}.
- */
+/** Monitors the rendering position of {@link AudioTrack}. */
 public class AudioTrackMonitor {
     private static final String TAG = "AudioTrackMonitor";
     private static final boolean DEBUG = false;
@@ -98,30 +95,44 @@ public class AudioTrackMonitor {
 
     /**
      * Logs if interested events are present.
-     * <p>
-     * Periodic logging is not enabled in release mode in order to avoid verbose logging.
+     *
+     * <p>Periodic logging is not enabled in release mode in order to avoid verbose logging.
      */
     public void maybeLog() {
         long now = SystemClock.elapsedRealtime();
         if (mExpireMs != 0 && now >= mExpireMs) {
             if (DEBUG) {
-                long unitDuration = mIsMp2 ? MpegTsDefaultAudioTrackRenderer.MP2_SAMPLE_DURATION_US
-                        : MpegTsDefaultAudioTrackRenderer.AC3_SAMPLE_DURATION_US;
+                long unitDuration =
+                        mIsMp2
+                                ? MpegTsDefaultAudioTrackRenderer.MP2_SAMPLE_DURATION_US
+                                : MpegTsDefaultAudioTrackRenderer.AC3_SAMPLE_DURATION_US;
                 long sampleDuration = (mTotalCount - 1) * unitDuration / 1000;
                 long totalDuration = now - mStartMs;
                 StringBuilder ptsBuilder = new StringBuilder();
-                ptsBuilder.append("PTS received ").append(mSampleCount).append(", ")
-                        .append(totalDuration - sampleDuration).append(' ');
+                ptsBuilder
+                        .append("PTS received ")
+                        .append(mSampleCount)
+                        .append(", ")
+                        .append(totalDuration - sampleDuration)
+                        .append(' ');
 
                 for (Pair<Long, Integer> pair : mPtsList) {
-                    ptsBuilder.append('[').append(pair.first).append(':').append(pair.second)
+                    ptsBuilder
+                            .append('[')
+                            .append(pair.first)
+                            .append(':')
+                            .append(pair.second)
                             .append("], ");
                 }
                 Log.d(TAG, ptsBuilder.toString());
             }
             if (DEBUG || mCurSampleSize.size() > 1) {
-                Log.d(TAG, "PTS received sample size: "
-                        + String.valueOf(mSampleSize) + mCurSampleSize + mHeader);
+                Log.d(
+                        TAG,
+                        "PTS received sample size: "
+                                + String.valueOf(mSampleSize)
+                                + mCurSampleSize
+                                + mHeader);
             }
             flush();
         }

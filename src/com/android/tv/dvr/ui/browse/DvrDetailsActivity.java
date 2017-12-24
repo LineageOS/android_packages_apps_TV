@@ -19,7 +19,6 @@ package com.android.tv.dvr.ui.browse;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v17.leanback.app.DetailsFragment;
-
 import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
 import android.view.View;
@@ -27,13 +26,9 @@ import com.android.tv.R;
 import com.android.tv.TvApplication;
 import com.android.tv.dialog.PinDialogFragment;
 
-/**
- * Activity to show details view in DVR.
- */
+/** Activity to show details view in DVR. */
 public class DvrDetailsActivity extends Activity implements PinDialogFragment.OnPinCheckedListener {
-    /**
-     * Name of record id added to the Intent.
-     */
+    /** Name of record id added to the Intent. */
     public static final String RECORDING_ID = "record_id";
 
     /**
@@ -42,34 +37,22 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
      */
     public static final String HIDE_VIEW_SCHEDULE = "hide_view_schedule";
 
-    /**
-     * Name of details view's type added to the intent.
-     */
+    /** Name of details view's type added to the intent. */
     public static final String DETAILS_VIEW_TYPE = "details_view_type";
 
-    /**
-     * Name of shared element between activities.
-     */
+    /** Name of shared element between activities. */
     public static final String SHARED_ELEMENT_NAME = "shared_element";
 
-    /**
-     * CURRENT_RECORDING_VIEW refers to Current Recordings in DVR.
-     */
+    /** CURRENT_RECORDING_VIEW refers to Current Recordings in DVR. */
     public static final int CURRENT_RECORDING_VIEW = 1;
 
-    /**
-     * SCHEDULED_RECORDING_VIEW refers to Scheduled Recordings in DVR.
-     */
+    /** SCHEDULED_RECORDING_VIEW refers to Scheduled Recordings in DVR. */
     public static final int SCHEDULED_RECORDING_VIEW = 2;
 
-    /**
-     * RECORDED_PROGRAM_VIEW refers to Recorded programs in DVR.
-     */
+    /** RECORDED_PROGRAM_VIEW refers to Recorded programs in DVR. */
     public static final int RECORDED_PROGRAM_VIEW = 3;
 
-    /**
-     * SERIES_RECORDING_VIEW refers to series recording in DVR.
-     */
+    /** SERIES_RECORDING_VIEW refers to series recording in DVR. */
     public static final int SERIES_RECORDING_VIEW = 4;
 
     private PinDialogFragment.OnPinCheckedListener mOnPinCheckedListener;
@@ -97,8 +80,10 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
                 detailsFragment = new SeriesRecordingDetailsFragment();
             }
             detailsFragment.setArguments(args);
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.dvr_details_view_frame, detailsFragment).commit();
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.dvr_details_view_frame, detailsFragment)
+                    .commit();
         }
 
         // This is a workaround for the focus on O device
