@@ -16,7 +16,7 @@
 
 package com.android.tv.testing;
 
-import com.android.tv.util.Clock;
+import com.android.tv.common.util.Clock;
 import java.util.concurrent.TimeUnit;
 
 /**

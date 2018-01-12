@@ -16,7 +16,9 @@
 
 package com.android.tv.dvr.ui.browse;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v17.leanback.app.BrowseFragment;
@@ -29,9 +31,8 @@ import android.support.v17.leanback.widget.TitleViewAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.GenreItems;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrDataManager.OnDvrScheduleLoadFinishedListener;
@@ -51,6 +52,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /** {@link BrowseFragment} for DVR functions. */
+@TargetApi(Build.VERSION_CODES.N)
+@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public class DvrBrowseFragment extends BrowseFragment
         implements RecordedProgramListener,
                 ScheduledRecordingListener,
@@ -168,7 +171,7 @@ public class DvrBrowseFragment extends BrowseFragment
         if (DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         Context context = getContext();
-        ApplicationSingletons singletons = TvApplication.getSingletons(context);
+        TvSingletons singletons = TvSingletons.getSingletons(context);
         mDvrDataManager = singletons.getDvrDataManager();
         mDvrScheudleManager = singletons.getDvrScheduleManager();
         mPresenterSelector =

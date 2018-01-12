@@ -16,8 +16,10 @@
 
 package com.android.tv.dvr.ui;
 
+import android.annotation.TargetApi;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
@@ -25,7 +27,7 @@ import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.util.LongSparseArray;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.Program;
@@ -43,6 +45,8 @@ import java.util.List;
 import java.util.Set;
 
 /** Fragment for DVR series recording settings. */
+@TargetApi(Build.VERSION_CODES.N)
+@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public class DvrSeriesSettingsFragment extends GuidedStepFragment
         implements DvrDataManager.SeriesRecordingListener {
     private static final String TAG = "SeriesSettingsFragment";
@@ -81,7 +85,7 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
     public void onAttach(Context context) {
         super.onAttach(context);
         mBackStackCount = getFragmentManager().getBackStackEntryCount();
-        mDvrDataManager = TvApplication.getSingletons(context).getDvrDataManager();
+        mDvrDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
         mSeriesRecordingId = getArguments().getLong(DvrSeriesSettingsActivity.SERIES_RECORDING_ID);
         mSeriesRecording = mDvrDataManager.getSeriesRecording(mSeriesRecordingId);
         if (mSeriesRecording == null) {
@@ -102,7 +106,7 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
         }
         Set<Long> channelIds = new HashSet<>();
         ChannelDataManager channelDataManager =
-                TvApplication.getSingletons(context).getChannelDataManager();
+                TvSingletons.getSingletons(context).getChannelDataManager();
         for (Program program : mPrograms) {
             long channelId = program.getChannelId();
             if (channelIds.add(channelId)) {
@@ -208,7 +212,7 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
                 if (mSelectedChannelId != Channel.INVALID_ID) {
                     builder.setChannelId(mSelectedChannelId);
                 }
-                DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
+                DvrManager dvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
                 dvrManager.updateSeriesRecording(builder.build());
                 if (mCurrentProgram != null
                         && (mChannelOption == SeriesRecording.OPTION_CHANNEL_ALL
@@ -328,7 +332,7 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
                                 recordingCandidates)
                         .get(mSeriesRecordingId);
         if (!programsToSchedule.isEmpty()) {
-            TvApplication.getSingletons(getContext())
+            TvSingletons.getSingletons(getContext())
                     .getDvrManager()
                     .addScheduleToSeriesRecording(mSeriesRecording, programsToSchedule);
         }

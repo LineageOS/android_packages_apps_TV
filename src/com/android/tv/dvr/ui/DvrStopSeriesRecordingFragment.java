@@ -25,9 +25,8 @@ import android.support.v17.leanback.widget.GuidedAction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -77,7 +76,7 @@ public class DvrStopSeriesRecordingFragment extends DvrGuidedStepFragment {
     @Override
     public void onTrackedGuidedActionClicked(GuidedAction action) {
         if (action.getId() == ACTION_STOP_SERIES_RECORDING) {
-            ApplicationSingletons singletons = TvApplication.getSingletons(getContext());
+            TvSingletons singletons = TvSingletons.getSingletons(getContext());
             DvrManager dvrManager = singletons.getDvrManager();
             DvrDataManager dataManager = singletons.getDvrDataManager();
             List<ScheduledRecording> toDelete = new ArrayList<>();

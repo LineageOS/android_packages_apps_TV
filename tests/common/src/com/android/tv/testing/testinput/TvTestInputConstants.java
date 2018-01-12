@@ -15,7 +15,7 @@
  */
 package com.android.tv.testing.testinput;
 
-import com.android.tv.testing.ChannelInfo;
+import com.android.tv.testing.data.ChannelInfo;
 
 /** Constants for interacting with TvTestInput. */
 public final class TvTestInputConstants {

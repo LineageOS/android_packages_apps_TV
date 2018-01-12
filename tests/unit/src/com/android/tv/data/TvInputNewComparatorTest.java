@@ -19,6 +19,7 @@ package com.android.tv.data;
 import android.content.pm.ResolveInfo;
 import android.media.tv.TvInputInfo;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 import com.android.tv.testing.ComparatorTester;
 import com.android.tv.util.SetupUtils;
@@ -27,6 +28,7 @@ import com.android.tv.util.TvInputManagerHelper;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -34,6 +36,7 @@ import org.mockito.stubbing.Answer;
 
 /** Test for {@link TvInputNewComparator} */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class TvInputNewComparatorTest {
     @Test
     public void testComparator() throws Exception {

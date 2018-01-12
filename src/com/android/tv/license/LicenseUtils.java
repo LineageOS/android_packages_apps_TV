@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /** Utilities for showing open source licenses. */
+@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public final class LicenseUtils {
     public static final String RATING_SOURCE_FILE = "file:///android_asset/rating_sources.html";
 

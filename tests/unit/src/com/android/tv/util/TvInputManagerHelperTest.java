@@ -21,17 +21,20 @@ import static android.support.test.InstrumentationRegistry.getContext;
 import android.content.pm.ResolveInfo;
 import android.media.tv.TvInputInfo;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.testing.ComparatorTester;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /** Test for {@link TvInputManagerHelper} */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class TvInputManagerHelperTest {
     final HashMap<String, TvInputInfoWrapper> TEST_INPUT_MAP = new HashMap<>();
 

@@ -129,7 +129,7 @@
     <string name="multi_audio_unknown_language">Unknown language</string>
 
     <!-- Default string for unknown language used in "Closed Caption" options. [CHAR LIMIT=30] -->
-    <string name="closed_caption_unknown_language">Closed captions %1$d</string>
+    <string name="closed_caption_unknown_language">Closed captions <xliff:g id="unknown_language_index" example="1">%1$d</xliff:g></string>
 
     <!-- Inside "Closed captions" option side panel -->
     <eat-comment />
@@ -162,7 +162,7 @@
     <!-- Label of audio track with eight audio channels [CHAR LIMIT=30] -->
     <string name="multi_audio_channel_surround_8">7.1 surround</string>
     <!-- Label of audio track with other audio channels than 1, 2, 6, and 8 [CHAR LIMIT=30] -->
-    <string name="multi_audio_channel_suffix">%d channels</string>
+    <string name="multi_audio_channel_suffix"><xliff:g id="audio_channel_count" example="5">%d</xliff:g> channels</string>
 
     <!-- Inside "Edit Channels for a specific input" option side panel -->
     <eat-comment />
@@ -329,15 +329,6 @@
     <string name="pin_toast_wrong">That PIN was wrong. Try again.</string>
     <!-- Toast message when an user couldn't pass the PIN confirmation. [CHAR LIMIT=NONE] -->
     <string name="pin_toast_not_match">Try again, PIN doesn\'t match</string>
-
-    <!-- Title of postal/zip code input guided step fragment  [CHAR LIMIT=30] -->
-    <string name="postal_code_guidance_title">Enter your ZIP Code.</string>
-    <!-- Description of postal/zip code input guided step fragment  [CHAR LIMIT=NONE] -->
-    <string name="postal_code_guidance_description">Live TV app will use the ZIP Code to provide a complete program guide for the TV channels.</string>
-    <!-- Description of postal/zip code input edit text view to prompt users entering ZIP Code  [CHAR LIMIT=30] -->
-    <string name="postal_code_action_description">Enter your ZIP Code</string>
-    <!-- Warning message shown in description field of postal/zip code input edit text view when user enters an invalid ZIP Code and presses Done [CHAR LIMIT=30] -->
-    <string name="postal_code_invalid_warning">Invalid ZIP Code</string>
 
     <!-- menu for "Settings" option -->
     <eat-comment />
@@ -522,6 +513,13 @@
     <!-- Content text of DVR recording service's notification during updating schedules. -->
     <string name="dvr_notification_content_text_loading" translatable="false">Live TV are updating recording schedules.</string>
 
+    <!-- Default content title of tuner installing notifications. -->
+    <string name="tuner_install_notification_content_title" translatable="false">Install <xliff:g id="tuner_package" example="Tuner package">%s</xliff:g></string>
+    <!-- Default application name for tuner installing notifications. -->
+    <string name="tuner_install_default_application_name" translatable="false">Tuner Package</string>
+    <!-- Default content text of tuner installing notifications. -->
+    <string name="tuner_install_notification_content_text" translatable="false">Install tuner package to watch tuner channels.</string>
+
     <!-- EPG Search strings. -->
     <!-- Remove translatable="false" once UI is finalized -->
     <string name="search_result_no_result" translatable="false">No result</string>
@@ -533,7 +531,7 @@
     <string name="setup_sources_text">Set up your sources</string>
     <!-- Description for channel sources screen in onboarding. -->
     <string name="setup_sources_description">Live channels combines the experience of traditional TV channels with streaming channels provided by apps.
-\n\nGet started by setting up the channel sources already installed. Or browse Google Play Store for more apps that offer live channels.</string>
+\n\nGet started by setting up the channel sources already installed. Or browse the online store for more apps that offer live channels.</string>
 
     <!-- Menu item label to start DVR manager UI. -->
     <string name="channels_item_dvr">Recordings &amp; schedules</string>
@@ -754,7 +752,7 @@
     <!-- Dialog title which will be shown when the current storage is too small for DVR. -->
     <string name="dvr_error_small_sized_storage_title">DVR needs more storage</string>
     <!-- Dialog description which will be shown when the current storage is too small for DVR. -->
-    <string name="dvr_error_small_sized_storage_description">You will be able to record programs with DVR. However there is not enough storage on your device now for DVR to work. Please connect an external drive that is <xliff:g id="storage size" example="10GB">%1$d</xliff:g>GB or larger and follow the steps to format it as device storage.</string>
+    <string name="dvr_error_small_sized_storage_description">You will be able to record programs with DVR. However there is not enough storage on your device now for DVR to work. Please connect an external drive that is <xliff:g id="storage_size" example="10GB">%1$d</xliff:g>GB or larger and follow the steps to format it as device storage.</string>
     <!-- Dialog title which will be shown when there is no free space on the current storage for DVR. -->
     <string name="dvr_error_no_free_space_title">Not enough storage</string>
     <!-- Dialog description which will be shown when there is no free space on the current storage for DVR. -->

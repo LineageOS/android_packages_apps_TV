@@ -27,13 +27,15 @@ import android.preference.PreferenceManager;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
+import com.android.tv.common.util.Clock;
 import com.android.tv.data.Program;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/** The helper class for {@link com.android.tv.data.epg.EpgFetcher} */
+/** The helper class for {@link EpgFetcher} */
+@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 class EpgFetchHelper {
     private static final String TAG = "EpgFetchHelper";
     private static final boolean DEBUG = false;
@@ -64,13 +66,14 @@ class EpgFetchHelper {
      * @param fetchedPrograms the newly fetched program data.
      * @return {@code true} if new program data are successfully updated. Otherwise {@code false}.
      */
-    static boolean updateEpgData(Context context, long channelId, List<Program> fetchedPrograms) {
+    static boolean updateEpgData(
+            Context context, Clock clock, long channelId, List<Program> fetchedPrograms) {
         final int fetchedProgramsCount = fetchedPrograms.size();
         if (fetchedProgramsCount == 0) {
             return false;
         }
         boolean updated = false;
-        long startTimeMs = System.currentTimeMillis();
+        long startTimeMs = clock.currentTimeMillis();
         long endTimeMs = startTimeMs + PROGRAM_QUERY_DURATION_MS;
         List<Program> oldPrograms = queryPrograms(context, channelId, startTimeMs, endTimeMs);
         int oldProgramsIndex = 0;

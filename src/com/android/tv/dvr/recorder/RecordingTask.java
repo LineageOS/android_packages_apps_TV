@@ -33,14 +33,15 @@ import android.widget.Toast;
 import com.android.tv.InputSessionManager;
 import com.android.tv.InputSessionManager.RecordingSession;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.util.Clock;
+import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.WritableDvrDataManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.recorder.InputTaskScheduler.HandlerWrapper;
-import com.android.tv.util.Clock;
 import com.android.tv.util.Utils;
 import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
@@ -178,7 +179,7 @@ public class RecordingTask extends RecordingCallback
                     release();
                     return false;
                 default:
-                    SoftPreconditions.checkArgument(false, TAG, "unexpected message type " + msg);
+                    SoftPreconditions.checkArgument(false, TAG, "unexpected message type %s", msg);
                     break;
             }
             return true;
@@ -253,7 +254,7 @@ public class RecordingTask extends RecordingCallback
                         new Runnable() {
                             @Override
                             public void run() {
-                                if (TvApplication.getSingletons(mContext)
+                                if (TvSingletons.getSingletons(mContext)
                                         .getMainActivityWrapper()
                                         .isResumed()) {
                                     ScheduledRecording scheduledRecording =
@@ -281,7 +282,7 @@ public class RecordingTask extends RecordingCallback
                                 }
                             }
                         });
-                // Pass through
+                // fall through
             default:
                 failAndQuit();
                 break;
@@ -426,7 +427,7 @@ public class RecordingTask extends RecordingCallback
                             + " with a delay of "
                             + delay / 1000
                             + " seconds to arrive at "
-                            + Utils.toIsoDateTimeString(when));
+                            + CommonUtils.toIsoDateTimeString(when));
         }
         return mHandler.sendEmptyMessageDelayed(what, delay);
     }

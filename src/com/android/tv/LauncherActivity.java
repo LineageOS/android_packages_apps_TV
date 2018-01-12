@@ -27,15 +27,16 @@ import android.util.Log;
  * An activity to launch a new activity.
  *
  * <p>In the case when {@link MainActivity} starts a new activity using {@link
- * Activity#startActivity} or {@link Activity#startActivityForResult}, Live TV app is terminated if
- * the new activity crashes. That's because the {@link android.app.ActivityManager} terminates the
- * activity which is just below the crashed activity in the activity stack. To avoid this, we need
- * to locate an additional activity between these activities in the activity stack.
+ * Activity#startActivity} or {@link Activity#startActivityForResult}, Live TV app is
+ * terminated if the new activity crashes. That's because the {@link android.app.ActivityManager}
+ * terminates the activity which is just below the crashed activity in the activity stack. To avoid
+ * this, we need to locate an additional activity between these activities in the activity stack.
  */
 public class LauncherActivity extends Activity {
     private static final String TAG = "LauncherActivity";
 
-    public static final String ERROR_MESSAGE = "com.android.tv.LauncherActivity.ErrorMessage";
+    public static final String ERROR_MESSAGE =
+            "com.android.tv.LauncherActivity.ErrorMessage";
 
     private static final int REQUEST_CODE_DEFAULT = 0;
     private static final int REQUEST_START_ACTIVITY = 100;
@@ -50,22 +51,6 @@ public class LauncherActivity extends Activity {
         // started by calling startActivityForResult().
         baseActivity.startActivityForResult(
                 createIntent(baseActivity, intentToLaunch, false), REQUEST_CODE_DEFAULT);
-    }
-
-    /**
-     * Starts an activity by calling {@link Activity#startActivityForResult}.
-     *
-     * <p>Note: {@code requestCode} should not be 0. The value is reserved for internal use.
-     */
-    public static void startActivityForResultSafe(
-            Activity baseActivity, Intent intentToLaunch, int requestCode) {
-        if (requestCode == REQUEST_CODE_DEFAULT) {
-            throw new IllegalArgumentException("requestCode should not be 0.");
-        }
-        // To avoid the app termination when the new activity crashes, LauncherActivity should be
-        // started by calling startActivityForResult().
-        baseActivity.startActivityForResult(
-                createIntent(baseActivity, intentToLaunch, true), requestCode);
     }
 
     private static Intent createIntent(

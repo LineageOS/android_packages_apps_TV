@@ -16,6 +16,8 @@
 
 package com.android.tv.common.ui.setup;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+
 import android.os.Bundle;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
@@ -25,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.LinearLayout;
 import com.android.tv.common.R;
 
@@ -37,6 +40,8 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
      */
     public static final String KEY_THREE_PANE = "key_three_pane";
 
+    private View mContentFragment;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,10 +49,9 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
         Bundle arguments = getArguments();
         view.findViewById(android.support.v17.leanback.R.id.action_fragment_root)
                 .setPadding(0, 0, 0, 0);
+        mContentFragment = view.findViewById(android.support.v17.leanback.R.id.content_fragment);
         LinearLayout.LayoutParams guidanceLayoutParams =
-                (LinearLayout.LayoutParams)
-                        view.findViewById(android.support.v17.leanback.R.id.content_fragment)
-                                .getLayoutParams();
+                (LinearLayout.LayoutParams) mContentFragment.getLayoutParams();
         guidanceLayoutParams.weight = 0;
         if (arguments != null && arguments.getBoolean(KEY_THREE_PANE, false)) {
             // Content fragment.
@@ -95,6 +99,17 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        AccessibilityManager am =
+                (AccessibilityManager) getActivity().getSystemService(ACCESSIBILITY_SERVICE);
+        if (am.isEnabled() && am.isTouchExplorationEnabled()) {
+            mContentFragment.setFocusable(true);
+            mContentFragment.requestFocus();
+        }
+    }
+
+    @Override
     public GuidanceStylist onCreateGuidanceStylist() {
         return new GuidanceStylist() {
             @Override
@@ -111,6 +126,10 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     }
 
     protected abstract String getActionCategory();
+
+    protected View getDoneButton() {
+        return getActivity().findViewById(R.id.button_done);
+    }
 
     @Override
     public void onGuidedActionClicked(GuidedAction action) {

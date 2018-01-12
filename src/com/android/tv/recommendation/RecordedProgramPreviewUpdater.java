@@ -21,8 +21,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.ApplicationSingletons;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.PreviewDataManager;
 import com.android.tv.data.PreviewProgramContent;
 import com.android.tv.dvr.DvrDataManager;
@@ -34,10 +33,10 @@ import java.util.Set;
 
 /** Class to update the preview data for {@link RecordedProgram} */
 @RequiresApi(Build.VERSION_CODES.O)
+@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public class RecordedProgramPreviewUpdater {
     private static final String TAG = "RecordedProgramPreviewUpdater";
-    // STOPSHIP: set it to false.
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final int RECOMMENDATION_COUNT = 6;
 
@@ -58,9 +57,9 @@ public class RecordedProgramPreviewUpdater {
 
     private RecordedProgramPreviewUpdater(Context context) {
         mContext = context.getApplicationContext();
-        ApplicationSingletons applicationSingletons = TvApplication.getSingletons(mContext);
-        mPreviewDataManager = applicationSingletons.getPreviewDataManager();
-        mDvrDataManager = applicationSingletons.getDvrDataManager();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(mContext);
+        mPreviewDataManager = tvSingletons.getPreviewDataManager();
+        mDvrDataManager = tvSingletons.getDvrDataManager();
         mDvrDataManager.addRecordedProgramListener(
                 new DvrDataManager.RecordedProgramListener() {
                     @Override

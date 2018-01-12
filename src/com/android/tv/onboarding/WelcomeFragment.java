@@ -578,6 +578,8 @@ public class WelcomeFragment extends OnboardingFragment {
 
     private Animator mAnimator;
 
+    private boolean mLogoAnimationFinished;
+
     public WelcomeFragment() {
         setExitTransition(
                 new SetupAnimationHelper.TransitionBuilder()
@@ -605,7 +607,13 @@ public class WelcomeFragment extends OnboardingFragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         setLogoResourceId(R.drawable.splash_logo);
-        if (savedInstanceState != null) {
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null && mLogoAnimationFinished) {
             switch (getCurrentPageIndex()) {
                 case 0:
                     mTvContentView.setImageResource(
@@ -627,12 +635,17 @@ public class WelcomeFragment extends OnboardingFragment {
                     break;
             }
         }
-        return view;
     }
 
     @Override
     public int onProvideTheme() {
         return R.style.Theme_Leanback_Onboarding;
+    }
+
+    @Override
+    protected void onLogoAnimationFinished() {
+        super.onLogoAnimationFinished();
+        mLogoAnimationFinished = true;
     }
 
     @Override

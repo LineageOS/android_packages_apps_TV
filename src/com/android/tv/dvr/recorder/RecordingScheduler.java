@@ -31,10 +31,10 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Range;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.InputSessionManager;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ChannelDataManager.Listener;
 import com.android.tv.dvr.DvrDataManager;
@@ -43,7 +43,6 @@ import com.android.tv.dvr.DvrDataManager.ScheduledRecordingListener;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.WritableDvrDataManager;
 import com.android.tv.dvr.data.ScheduledRecording;
-import com.android.tv.util.Clock;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import java.util.Arrays;
@@ -120,10 +119,10 @@ public class RecordingScheduler extends TvInputCallback implements ScheduledReco
      */
     public static RecordingScheduler createScheduler(Context context) {
         SoftPreconditions.checkState(
-                TvApplication.getSingletons(context).getRecordingScheduler() == null);
+                TvSingletons.getSingletons(context).getRecordingScheduler() == null);
         HandlerThread handlerThread = new HandlerThread(HANDLER_THREAD_NAME);
         handlerThread.start();
-        ApplicationSingletons singletons = TvApplication.getSingletons(context);
+        TvSingletons singletons = TvSingletons.getSingletons(context);
         return new RecordingScheduler(
                 handlerThread.getLooper(),
                 singletons.getDvrManager(),

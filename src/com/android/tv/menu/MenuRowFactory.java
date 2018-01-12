@@ -21,8 +21,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.customization.CustomAction;
-import com.android.tv.customization.TvCustomizationManager;
+import com.android.tv.common.customization.CustomAction;
+import com.android.tv.common.customization.CustomizationManager;
 import com.android.tv.ui.TunableTvView;
 import java.util.List;
 
@@ -30,14 +30,14 @@ import java.util.List;
 public class MenuRowFactory {
     private final MainActivity mMainActivity;
     private final TunableTvView mTvView;
-    private final TvCustomizationManager mTvCustomizationManager;
+    private final CustomizationManager mCustomizationManager;
 
     /** A constructor. */
     public MenuRowFactory(MainActivity mainActivity, TunableTvView tvView) {
         mMainActivity = mainActivity;
         mTvView = tvView;
-        mTvCustomizationManager = new TvCustomizationManager(mainActivity);
-        mTvCustomizationManager.initialize();
+        mCustomizationManager = new CustomizationManager(mainActivity);
+        mCustomizationManager.initialize();
     }
 
     /** Creates an object corresponding to the given {@code key}. */
@@ -50,8 +50,8 @@ public class MenuRowFactory {
             return new ChannelsRow(mMainActivity, menu, mMainActivity.getProgramDataManager());
         } else if (PartnerRow.class.equals(key)) {
             List<CustomAction> customActions =
-                    mTvCustomizationManager.getCustomActions(TvCustomizationManager.ID_PARTNER_ROW);
-            String title = mTvCustomizationManager.getPartnerRowTitle();
+                    mCustomizationManager.getCustomActions(CustomizationManager.ID_PARTNER_ROW);
+            String title = mCustomizationManager.getPartnerRowTitle();
             if (customActions != null && !TextUtils.isEmpty(title)) {
                 return new PartnerRow(mMainActivity, menu, title, customActions);
             }
@@ -60,8 +60,7 @@ public class MenuRowFactory {
             return new TvOptionsRow(
                     mMainActivity,
                     menu,
-                    mTvCustomizationManager.getCustomActions(
-                            TvCustomizationManager.ID_OPTIONS_ROW));
+                    mCustomizationManager.getCustomActions(CustomizationManager.ID_OPTIONS_ROW));
         }
         return null;
     }

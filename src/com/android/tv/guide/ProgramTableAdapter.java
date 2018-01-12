@@ -16,8 +16,6 @@
 
 package com.android.tv.guide;
 
-import static com.android.tv.util.ImageLoader.ImageLoaderCallback;
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -42,6 +40,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
@@ -49,9 +48,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
-import com.android.tv.common.TvCommonUtils;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.Program.CriticScore;
@@ -63,6 +62,7 @@ import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.ui.HardwareLayerAnimatorListenerAdapter;
 import com.android.tv.util.ImageCache;
 import com.android.tv.util.ImageLoader;
+import com.android.tv.util.ImageLoader.ImageLoaderCallback;
 import com.android.tv.util.ImageLoader.LoadTvInputLogoTask;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
@@ -113,10 +113,10 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
         mContext = context;
         mAccessibilityManager =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        mTvInputManagerHelper = TvApplication.getSingletons(context).getTvInputManagerHelper();
+        mTvInputManagerHelper = TvSingletons.getSingletons(context).getTvInputManagerHelper();
         if (CommonFeatures.DVR.isEnabled(context)) {
-            mDvrManager = TvApplication.getSingletons(context).getDvrManager();
-            mDvrDataManager = TvApplication.getSingletons(context).getDvrDataManager();
+            mDvrManager = TvSingletons.getSingletons(context).getDvrManager();
+            mDvrDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
         } else {
             mDvrManager = null;
             mDvrDataManager = null;
@@ -314,7 +314,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
                 new AccessibilityManager.AccessibilityStateChangeListener() {
                     @Override
                     public void onAccessibilityStateChanged(boolean enable) {
-                        enable &= !TvCommonUtils.isRunningInTest();
+                        enable &= !CommonUtils.isRunningInTest();
                         mDetailView.setFocusable(enable);
                         mChannelHeaderView.setFocusable(enable);
                     }
@@ -368,7 +368,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
             mInputLogoView = (ImageView) mContainer.findViewById(R.id.input_logo);
 
             boolean accessibilityEnabled =
-                    mAccessibilityManager.isEnabled() && !TvCommonUtils.isRunningInTest();
+                    mAccessibilityManager.isEnabled() && !CommonUtils.isRunningInTest();
             mDetailView.setFocusable(accessibilityEnabled);
             mChannelHeaderView.setFocusable(accessibilityEnabled);
         }
@@ -448,7 +448,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
             if (newFocus == null) {
                 return;
             } // When the accessibility service is enabled, focus might be put on channel's header
-              // or
+            // or
             // detail view, besides program items.
             if (newFocus == mChannelHeaderView) {
                 mSelectedEntry = ((ProgramItemView) mProgramRow.getChildAt(0)).getTableEntry();

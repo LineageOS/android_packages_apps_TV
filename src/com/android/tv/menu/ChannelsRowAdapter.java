@@ -20,15 +20,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvInputInfo;
 import android.view.View;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.data.Channel;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.recommendation.Recommender;
-import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -102,10 +100,10 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
             Context context, Recommender recommender, int minCount, int maxCount) {
         super(context);
         mContext = context;
-        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
-        mTracker = appSingletons.getTracker();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        mTracker = tvSingletons.getTracker();
         if (CommonFeatures.DVR.isEnabled(context)) {
-            mDvrDataManager = appSingletons.getDvrDataManager();
+            mDvrDataManager = tvSingletons.getDvrDataManager();
         } else {
             mDvrDataManager = null;
         }
@@ -231,14 +229,14 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
     }
 
     private boolean needToShowSetupItem() {
-        TvInputManagerHelper inputManager =
-                TvApplication.getSingletons(mContext).getTvInputManagerHelper();
-        return SetupUtils.getInstance(mContext).hasNewInput(inputManager);
+        TvSingletons singletons = TvSingletons.getSingletons(mContext);
+        TvInputManagerHelper inputManager = singletons.getTvInputManagerHelper();
+        return singletons.getSetupUtils().hasNewInput(inputManager);
     }
 
     private boolean needToShowDvrItem() {
         TvInputManagerHelper inputManager =
-                TvApplication.getSingletons(mContext).getTvInputManagerHelper();
+                TvSingletons.getSingletons(mContext).getTvInputManagerHelper();
         if (mDvrDataManager != null) {
             for (TvInputInfo info : inputManager.getTvInputInfos(true, true)) {
                 if (info.canRecord()) {
@@ -251,7 +249,7 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
 
     private boolean needToShowAppLinkItem() {
         TvInputManagerHelper inputManager =
-                TvApplication.getSingletons(mContext).getTvInputManagerHelper();
+                TvSingletons.getSingletons(mContext).getTvInputManagerHelper();
         Channel currentChannel = getMainActivity().getCurrentChannel();
         return currentChannel != null
                 && currentChannel.getAppLinkType(mContext) != Channel.APP_LINK_TYPE_NONE

@@ -21,17 +21,19 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.hdmi.HdmiDeviceInfo;
+import android.media.tv.TvContentRatingSystemInfo;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.media.tv.TvInputManager.TvInputCallback;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
-import com.android.tv.Features;
+import com.android.tv.TvFeatures;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.TvCommonUtils;
+import com.android.tv.common.util.CommonUtils;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import java.util.ArrayList;
@@ -47,6 +49,58 @@ public class TvInputManagerHelper {
     private static final String TAG = "TvInputManagerHelper";
     private static final boolean DEBUG = false;
 
+    public interface TvInputManagerInterface {
+        TvInputInfo getTvInputInfo(String inputId);
+
+        Integer getInputState(String inputId);
+
+        void registerCallback(TvInputCallback internalCallback, Handler handler);
+
+        void unregisterCallback(TvInputCallback internalCallback);
+
+        List<TvInputInfo> getTvInputList();
+
+        List<TvContentRatingSystemInfo> getTvContentRatingSystemList();
+    }
+
+    private static final class TvInputManagerImpl implements TvInputManagerInterface {
+        private final TvInputManager delegate;
+
+        private TvInputManagerImpl(TvInputManager delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public TvInputInfo getTvInputInfo(String inputId) {
+            return delegate.getTvInputInfo(inputId);
+        }
+
+        @Override
+        public Integer getInputState(String inputId) {
+            return delegate.getInputState(inputId);
+        }
+
+        @Override
+        public void registerCallback(TvInputCallback internalCallback, Handler handler) {
+            delegate.registerCallback(internalCallback, handler);
+        }
+
+        @Override
+        public void unregisterCallback(TvInputCallback internalCallback) {
+            delegate.unregisterCallback(internalCallback);
+        }
+
+        @Override
+        public List<TvInputInfo> getTvInputList() {
+            return delegate.getTvInputList();
+        }
+
+        @Override
+        public List<TvContentRatingSystemInfo> getTvContentRatingSystemList() {
+            return delegate.getTvContentRatingSystemList();
+        }
+    }
+
     /** Types of HDMI device and bundled tuner. */
     public static final int TYPE_CEC_DEVICE = -2;
 
@@ -57,7 +111,8 @@ public class TvInputManagerHelper {
 
     private static final String PERMISSION_ACCESS_ALL_EPG_DATA =
             "com.android.providers.tv.permission.ACCESS_ALL_EPG_DATA";
-    private static final String[] mPhysicalTunerBlackList = {};
+    private static final String[] mPhysicalTunerBlackList = {
+    };
     private static final String META_LABEL_SORT_KEY = "input_sort_key";
 
     /** The default tv input priority to show. */
@@ -81,7 +136,8 @@ public class TvInputManagerHelper {
         DEFAULT_TV_INPUT_PRIORITY.add(TvInputInfo.TYPE_OTHER);
     }
 
-    private static final String[] PARTNER_TUNER_INPUT_PREFIX_BLACKLIST = {};
+    private static final String[] PARTNER_TUNER_INPUT_PREFIX_BLACKLIST = {
+    };
 
     private static final String[] TESTABLE_INPUTS = {
         "com.android.tv.testinput/.TestTvInputService"
@@ -89,7 +145,7 @@ public class TvInputManagerHelper {
 
     private final Context mContext;
     private final PackageManager mPackageManager;
-    private final TvInputManager mTvInputManager;
+    protected final TvInputManagerInterface mTvInputManager;
     private final Map<String, Integer> mInputStateMap = new HashMap<>();
     private final Map<String, TvInputInfo> mInputMap = new HashMap<>();
     private final Map<String, String> mTvInputLabels = new ArrayMap<>();
@@ -206,10 +262,23 @@ public class TvInputManagerHelper {
     private final Comparator<TvInputInfo> mTvInputInfoComparator;
 
     public TvInputManagerHelper(Context context) {
+        this(context, createTvInputManagerWrapper(context));
+    }
+
+    @Nullable
+    protected static TvInputManagerImpl createTvInputManagerWrapper(Context context) {
+        TvInputManager tvInputManager =
+                (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
+        return tvInputManager == null ? null : new TvInputManagerImpl(tvInputManager);
+    }
+
+    @VisibleForTesting
+    protected TvInputManagerHelper(
+            Context context, @Nullable TvInputManagerInterface tvInputManager) {
         mContext = context.getApplicationContext();
         mPackageManager = context.getPackageManager();
-        mTvInputManager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
-        mContentRatingsManager = new ContentRatingsManager(context);
+        mTvInputManager = tvInputManager;
+        mContentRatingsManager = new ContentRatingsManager(context, tvInputManager);
         mParentalControlSettings = new ParentalControlSettings(context);
         mTvInputInfoComparator = new InputComparatorInternal(this);
     }
@@ -320,7 +389,7 @@ public class TvInputManagerHelper {
     /** Is the input one known bundled inputs not written by OEM/SOCs. */
     public boolean isBundledInput(TvInputInfo inputInfo) {
         return inputInfo != null
-                && Utils.isInBundledPackageSet(
+                && CommonUtils.isInBundledPackageSet(
                         inputInfo.getServiceInfo().applicationInfo.packageName);
     }
 
@@ -428,9 +497,17 @@ public class TvInputManagerHelper {
         }
         return size;
     }
-
-    public int getInputState(TvInputInfo inputInfo) {
-        return getInputState(inputInfo.getId());
+    /**
+     * Returns TvInputInfo's input state.
+     *
+     * @param inputInfo
+     * @return An Integer which stands for the input state {@link
+     *     TvInputManager.INPUT_STATE_DISCONNECTED} if inputInfo is null
+     */
+    public int getInputState(@Nullable TvInputInfo inputInfo) {
+        return inputInfo == null
+                ? TvInputManager.INPUT_STATE_DISCONNECTED
+                : getInputState(inputInfo.getId());
     }
 
     public int getInputState(String inputId) {
@@ -501,14 +578,15 @@ public class TvInputManagerHelper {
     }
 
     private boolean isInBlackList(String inputId) {
-        if (Features.USE_PARTNER_INPUT_BLACKLIST.isEnabled(mContext)) {
+        if (TvFeatures.USE_PARTNER_INPUT_BLACKLIST.isEnabled(mContext)) {
             for (String disabledTunerInputPrefix : PARTNER_TUNER_INPUT_PREFIX_BLACKLIST) {
                 if (inputId.contains(disabledTunerInputPrefix)) {
                     return true;
                 }
             }
         }
-        if (TvCommonUtils.isRunningInTest()) {
+        if (CommonUtils.isRoboTest()) return false;
+        if (CommonUtils.isRunningInTest()) {
             for (String testableInput : TESTABLE_INPUTS) {
                 if (testableInput.equals(inputId)) {
                     return false;

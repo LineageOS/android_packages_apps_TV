@@ -19,7 +19,7 @@ package com.android.tv.dvr.ui.browse;
 import android.content.Context;
 import android.media.tv.TvInputManager;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.DvrWatchedPositionManager.WatchedPositionChangedListener;
 import com.android.tv.dvr.data.RecordedProgram;
@@ -95,7 +95,7 @@ public class RecordedProgramPresenter extends DvrItemPresenter<RecordedProgram> 
         mTodayString = mContext.getString(R.string.dvr_date_today);
         mYesterdayString = mContext.getString(R.string.dvr_date_yesterday);
         mDvrWatchedPositionManager =
-                TvApplication.getSingletons(mContext).getDvrWatchedPositionManager();
+                TvSingletons.getSingletons(mContext).getDvrWatchedPositionManager();
         mProgressBarColor =
                 mContext.getResources().getColor(R.color.play_controls_progress_bar_watched);
         mShowEpisodeTitle = showEpisodeTitle;

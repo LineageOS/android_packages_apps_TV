@@ -19,6 +19,7 @@ import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.text.format.DateUtils;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -26,6 +27,7 @@ import java.util.Locale;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Tests for {@link com.android.tv.util.Utils#getDurationString}.
@@ -36,6 +38,7 @@ import org.junit.Test;
  * defined in TV app, not this test.
  */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class UtilsTest_GetDurationString {
     // TODO: Mock Context so we can specify current time and locale for test.
     private Locale mLocale;
