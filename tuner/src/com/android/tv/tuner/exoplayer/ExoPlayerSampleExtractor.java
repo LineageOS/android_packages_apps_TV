@@ -385,7 +385,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                     mCurrentPosition = mDecoderInputBuffer.timeUs;
                 }
                 if (mMediaPeriod != null) {
-                    mMediaPeriod.discardBuffer(mCurrentPosition);
+                    mMediaPeriod.discardBuffer(mCurrentPosition, false);
                 }
                 try {
                     Long lastExtractedPositionUs = mLastExtractedPositionUsMap.get(track);
