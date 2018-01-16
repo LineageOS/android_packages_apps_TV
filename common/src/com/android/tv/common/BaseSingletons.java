@@ -18,17 +18,16 @@ package com.android.tv.common;
 
 import android.content.Context;
 import android.content.Intent;
-import com.android.tv.common.config.api.RemoteConfig;
+import com.android.tv.common.config.api.RemoteConfig.HasRemoteConfig;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 
-public interface BaseSingletons {
+/** Injection point for the base app */
+public interface BaseSingletons extends HasRemoteConfig {
 
     Clock getClock();
 
     RecordingStorageStatusManager getRecordingStorageStatusManager();
-
-    RemoteConfig getRemoteConfig();
 
     Intent getTunerSetupIntent(Context context);
 

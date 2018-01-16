@@ -252,7 +252,6 @@ public class ChannelTest {
 
     @Test
     public void testComparator() {
-
         TvInputManagerHelper manager = Mockito.mock(TvInputManagerHelper.class);
         Mockito.when(manager.isPartnerInput(Matchers.anyString()))
                 .thenAnswer(

@@ -24,6 +24,11 @@ package com.android.tv.common.config.api;
  */
 public interface RemoteConfig {
 
+    /** Used to inject a remote config */
+    interface HasRemoteConfig {
+        RemoteConfig getRemoteConfig();
+    }
+
     /** Notified on successful completion of a {@link #fetch)} */
     interface OnRemoteConfigUpdatedListener {
         void onRemoteConfigUpdated();
