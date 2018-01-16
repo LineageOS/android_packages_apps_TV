@@ -54,6 +54,8 @@ import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ChannelLogoFetcher;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
+
+
 import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
@@ -113,7 +115,6 @@ public class EpgFetcherImpl implements EpgFetcher {
     private final ChannelDataManager mChannelDataManager;
     private final EpgReader mEpgReader;
     private final PerformanceMonitor mPerformanceMonitor;
-    private final EpgInputWhiteList mEpgInputWhiteList;
     private FetchAsyncTask mFetchTask;
     private FetchDuringScanHandler mFetchDuringScanHandler;
     private long mEpgTimeStamp;
@@ -135,7 +136,6 @@ public class EpgFetcherImpl implements EpgFetcher {
         PerformanceMonitor performanceMonitor = tvSingletons.getPerformanceMonitor();
         EpgReader epgReader = tvSingletons.providesEpgReader().get();
         Clock clock = tvSingletons.getClock();
-        EpgInputWhiteList epgInputWhiteList = new EpgInputWhiteList(tvSingletons.getRemoteConfig());
         int routineIntervalMs =
                 (int)
                         RemoteConfigUtils.getRemoteConfig(
@@ -147,8 +147,8 @@ public class EpgFetcherImpl implements EpgFetcher {
                 epgReader,
                 performanceMonitor,
                 clock,
-                routineIntervalMs,
-                epgInputWhiteList);
+                routineIntervalMs
+                );
     }
 
     @VisibleForTesting
@@ -158,8 +158,8 @@ public class EpgFetcherImpl implements EpgFetcher {
             EpgReader epgReader,
             PerformanceMonitor performanceMonitor,
             Clock clock,
-            long routineIntervalMs,
-            EpgInputWhiteList epgInputWhiteList) {
+            long routineIntervalMs
+            ) {
         mContext = context;
         mChannelDataManager = channelDataManager;
         mEpgReader = epgReader;
@@ -169,7 +169,6 @@ public class EpgFetcherImpl implements EpgFetcher {
                 routineIntervalMs <= 0
                         ? TimeUnit.HOURS.toMillis(DEFAULT_ROUTINE_INTERVAL_HOUR)
                         : TimeUnit.HOURS.toMillis(routineIntervalMs);
-        mEpgInputWhiteList = epgInputWhiteList;
         mEpgDataExpiredTimeLimitMs = routineIntervalMs * 2;
         mFastFetchDurationSec = FAST_FETCH_DURATION_SEC + routineIntervalMs / 1000;
     }
@@ -306,6 +305,7 @@ public class EpgFetcherImpl implements EpgFetcher {
     }
 
     @MainThread
+    @Override
     public void stopFetchingJob() {
         if (DEBUG) Log.d(TAG, "Try to stop routinely fetching job...");
         if (mFetchTask != null) {
@@ -351,7 +351,6 @@ public class EpgFetcherImpl implements EpgFetcher {
             if (DEBUG) Log.d(TAG, "Cannot start routine service: scanning channels.");
             return false;
         }
-
         return true;
     }
 
@@ -511,7 +510,6 @@ public class EpgFetcherImpl implements EpgFetcher {
         return numbers.size();
     }
 
-
     @VisibleForTesting
     class FetchAsyncTask extends AsyncTask<Void, Void, Integer> {
         private final JobService mService;
@@ -539,15 +537,26 @@ public class EpgFetcherImpl implements EpgFetcher {
                 Integer builtInResult = fetchEpgForBuiltInTuner();
                 boolean anyCloudEpgFailure = false;
                 boolean anyCloudEpgSuccess = false;
-                if (builtInResult == null || builtInResult == REASON_NO_BUILT_IN_CHANNELS) {
-                    return anyCloudEpgFailure
-                            ? ((Integer) REASON_CLOUD_EPG_FAILURE)
-                            : anyCloudEpgSuccess ? null : builtInResult;
-                } else {
-                    return builtInResult;
-                }
+                return builtInResult;
             } finally {
                 TrafficStats.setThreadStatsTag(oldTag);
+            }
+        }
+
+        private Set<Channel> getExistingChannelsFor(String inputId) {
+            Set<Channel> result = new HashSet<>();
+            try (Cursor cursor =
+                    mContext.getContentResolver()
+                            .query(
+                                    TvContract.buildChannelsUriForInput(inputId),
+                                    Channel.PROJECTION,
+                                    null,
+                                    null,
+                                    null)) {
+                while (cursor.moveToNext()) {
+                    result.add(Channel.fromCursor(cursor));
+                }
+                return result;
             }
         }
 
@@ -737,6 +746,8 @@ public class EpgFetcherImpl implements EpgFetcher {
                         onFinishFetchDuringScan();
                     }
                     break;
+                default:
+                    // do nothing
             }
         }
 

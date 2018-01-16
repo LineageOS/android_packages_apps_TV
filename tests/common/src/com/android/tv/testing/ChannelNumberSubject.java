@@ -16,15 +16,12 @@
 
 package com.android.tv.testing;
 
-import static junit.framework.Assert.fail;
-
 import android.support.annotation.Nullable;
 import com.android.tv.data.ChannelNumber;
 import com.google.common.truth.ComparableSubject;
 import com.google.common.truth.FailureMetadata;
 import com.google.common.truth.Subject;
 import com.google.common.truth.Truth;
-
 
 /** Propositions for {@link ChannelNumber} subjects. */
 public final class ChannelNumberSubject
@@ -60,7 +57,8 @@ public final class ChannelNumberSubject
     }
 
     public void isEmpty() {
-        if (!getSubject().majorNumber.equals("") | !getSubject().minorNumber.equals("")
+        if (!getSubject().majorNumber.isEmpty()
+                || !getSubject().minorNumber.isEmpty()
                 || getSubject().hasDelimiter) {
             fail("isEmpty");
         }

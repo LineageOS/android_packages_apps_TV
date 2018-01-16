@@ -17,7 +17,6 @@ LOCAL_JAVA_LIBRARIES := \
     android.test.base.stubs \
     android.test.mock.stubs \
 
-
 LOCAL_INSTRUMENTATION_FOR := LiveTv
 
 LOCAL_SDK_VERSION := current

@@ -23,7 +23,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.common.BaseApplication;
+import com.android.tv.common.config.api.RemoteConfig.HasRemoteConfig;
 import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.LocationUtils;
@@ -75,7 +75,7 @@ public class CommonFeatures {
     /** Show postal code fragment before channel scan. */
     public static final Feature ENABLE_CLOUD_EPG_REGION =
             new Feature() {
-                private final String[] SUPPORTED_REGIONS = {
+                private final String[] supportedRegions = {
                 };
 
 
@@ -86,8 +86,8 @@ public class CommonFeatures {
                         return false;
                     }
                     String country = LocationUtils.getCurrentCountry(context);
-                    for (int i = 0; i < SUPPORTED_REGIONS.length; i++) {
-                        if (SUPPORTED_REGIONS[i].equalsIgnoreCase(country)) {
+                    for (int i = 0; i < supportedRegions.length; i++) {
+                        if (supportedRegions[i].equalsIgnoreCase(country)) {
                             return true;
                         }
                     }
