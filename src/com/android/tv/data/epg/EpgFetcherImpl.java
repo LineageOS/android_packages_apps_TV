@@ -147,8 +147,7 @@ public class EpgFetcherImpl implements EpgFetcher {
                 epgReader,
                 performanceMonitor,
                 clock,
-                routineIntervalMs
-                );
+                routineIntervalMs);
     }
 
     @VisibleForTesting
@@ -158,8 +157,7 @@ public class EpgFetcherImpl implements EpgFetcher {
             EpgReader epgReader,
             PerformanceMonitor performanceMonitor,
             Clock clock,
-            long routineIntervalMs
-            ) {
+            long routineIntervalMs) {
         mContext = context;
         mChannelDataManager = channelDataManager;
         mEpgReader = epgReader;

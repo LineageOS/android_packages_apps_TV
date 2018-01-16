@@ -63,9 +63,6 @@ LOCAL_AAPT_FLAGS += \
     --version-name "$(version_name_package)" \
     --version-code $(version_code_package) \
 
-#LOCAL_PROGUARD_FLAG_FILES := proguard.flags
-
-
 LOCAL_JNI_SHARED_LIBRARIES := libtunertvinput_jni
 LOCAL_AAPT_FLAGS += --extra-packages com.android.tv.tuner
 
@@ -80,7 +77,8 @@ LOCAL_MODULE_TAGS := optional
 
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
     lib-exoplayer:libs/exoplayer-r1.5.16.aar \
-    lib-exoplayer-v2-core:libs/exoplayer-core-2-SNAPHOT-20180114.aar \
+    lib-exoplayer-v2:libs/exoplayer-2.6.1.aar \
+    lib-exoplayer-v2-core:libs/exoplayer-core-2.6.1.aar \
 
 # TODO use external/jsr330
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += auto-value-jar:../../../prebuilts/tools/common/m2/repository/com/google/auto/value/auto-value/1.5.2/auto-value-1.5.2.jar
