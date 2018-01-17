@@ -17,7 +17,6 @@
 package com.android.tv.common.feature;
 
 import android.content.Context;
-import com.android.tv.common.util.CommonUtils;
 import java.util.Arrays;
 
 /** Static utilities for features. */
@@ -96,20 +95,6 @@ public class FeatureUtils {
                 @Override
                 public String toString() {
                     return "off";
-                }
-            };
-
-    /** True if running in robolectric. */
-    public static final Feature ROBOLECTRIC =
-            new Feature() {
-                @Override
-                public boolean isEnabled(Context context) {
-                    return CommonUtils.isRoboTest();
-                }
-
-                @Override
-                public String toString() {
-                    return "isRobolecteric";
                 }
             };
 

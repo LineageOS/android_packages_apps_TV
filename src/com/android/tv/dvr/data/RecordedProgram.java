@@ -30,10 +30,10 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.BaseProgram;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.InternalDataUtils;
+import com.android.tv.util.Utils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -118,7 +118,7 @@ public class RecordedProgram extends BaseProgram {
                         .setInternalProviderFlag3(cursor.getInt(index++))
                         .setInternalProviderFlag4(cursor.getInt(index++))
                         .setVersionNumber(cursor.getInt(index++));
-        if (CommonUtils.isInBundledPackageSet(builder.mPackageName)) {
+        if (Utils.isInBundledPackageSet(builder.mPackageName)) {
             InternalDataUtils.deserializeInternalProviderData(cursor.getBlob(index), builder);
         }
         return builder.build();

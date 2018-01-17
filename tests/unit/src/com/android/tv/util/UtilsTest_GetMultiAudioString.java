@@ -22,13 +22,10 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.media.tv.TvTrackInfo;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Tests for {@link com.android.tv.util.Utils#getMultiAudioString}. */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 public class UtilsTest_GetMultiAudioString {
     private static final String TRACK_ID = "test_track_id";
     private static final int AUDIO_SAMPLE_RATE = 48000;

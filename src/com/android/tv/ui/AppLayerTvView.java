@@ -21,8 +21,8 @@ import android.media.tv.TvView;
 import android.util.AttributeSet;
 import android.view.SurfaceView;
 import android.view.View;
-import com.android.tv.common.util.CommonUtils;
-import com.android.tv.common.util.Debug;
+import com.android.tv.util.Debug;
+import com.android.tv.util.Utils;
 
 /**
  * A TvView class for application layer when multiple windows are being used in the app.
@@ -53,7 +53,7 @@ public class AppLayerTvView extends TvView {
     public void onViewAdded(View child) {
         if (child instanceof SurfaceView) {
             // Note: See b/29118070 for detail.
-            ((SurfaceView) child).setSecure(!CommonUtils.isDeveloper());
+            ((SurfaceView) child).setSecure(!Utils.isDeveloper());
         }
         super.onViewAdded(child);
     }

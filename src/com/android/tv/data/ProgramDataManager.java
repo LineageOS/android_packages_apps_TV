@@ -35,8 +35,8 @@ import android.util.LongSparseArray;
 import android.util.LruCache;
 import com.android.tv.common.MemoryManageable;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.util.Clock;
 import com.android.tv.util.AsyncDbTask;
+import com.android.tv.util.Clock;
 import com.android.tv.util.MultiLongSparseArray;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
@@ -52,7 +52,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @MainThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ProgramDataManager implements MemoryManageable {
     private static final String TAG = "ProgramDataManager";
     private static final boolean DEBUG = false;

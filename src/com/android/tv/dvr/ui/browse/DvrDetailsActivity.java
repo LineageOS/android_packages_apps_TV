@@ -23,7 +23,7 @@ import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
 import android.view.View;
 import com.android.tv.R;
-import com.android.tv.Starter;
+import com.android.tv.TvApplication;
 import com.android.tv.dialog.PinDialogFragment;
 
 /** Activity to show details view in DVR. */
@@ -59,7 +59,7 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Starter.start(this);
+        TvApplication.setCurrentRunningProcess(this, true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dvr_details);
         long recordId = getIntent().getLongExtra(RECORDING_ID, -1);

@@ -25,9 +25,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -35,6 +34,7 @@ import com.android.tv.dvr.data.SeasonEpisodeNumber;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.util.AsyncDbTask.AsyncProgramQueryTask;
 import com.android.tv.util.AsyncDbTask.CursorFilter;
+import com.android.tv.util.PermissionUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,7 +91,7 @@ public abstract class EpisodicProgramLoadTask {
      */
     public EpisodicProgramLoadTask(Context context, Collection<SeriesRecording> seriesRecordings) {
         mContext = context.getApplicationContext();
-        mDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
+        mDataManager = TvApplication.getSingletons(context).getDvrDataManager();
         mSeriesRecordings.addAll(seriesRecordings);
     }
 

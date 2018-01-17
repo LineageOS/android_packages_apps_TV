@@ -16,7 +16,7 @@
 package com.android.tv.testing.testinput;
 
 import android.media.tv.TvTrackInfo;
-import com.android.tv.testing.constants.Constants;
+import com.android.tv.testing.Constants;
 import java.util.Collections;
 import java.util.List;
 

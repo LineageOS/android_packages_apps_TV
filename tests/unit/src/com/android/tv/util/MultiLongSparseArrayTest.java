@@ -20,15 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import android.test.MoreAsserts;
 import java.util.Collections;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Tests for {@link MultiLongSparseArray}. */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 public class MultiLongSparseArrayTest {
     @Test
     public void testEmpty() {

@@ -568,7 +568,7 @@ public class SeriesRecording implements Parcelable {
                 mLongDescription,
                 mSeriesId,
                 mChannelOption,
-                Arrays.hashCode(mCanonicalGenreIds),
+                mCanonicalGenreIds,
                 mPosterUri,
                 mPhotoUri,
                 mState);

@@ -22,7 +22,7 @@ import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.ui.DvrUiHelper;
 
@@ -37,7 +37,7 @@ public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment 
 
     @Override
     public void onCreate(Bundle savedInstance) {
-        mDvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
+        mDvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
         mHideViewSchedule = getArguments().getBoolean(DvrDetailsActivity.HIDE_VIEW_SCHEDULE);
         super.onCreate(savedInstance);
     }

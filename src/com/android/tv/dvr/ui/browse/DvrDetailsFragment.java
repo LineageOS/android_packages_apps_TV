@@ -37,9 +37,8 @@ import android.support.v17.leanback.widget.VerticalGridView;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.dialog.PinDialogFragment;
@@ -49,6 +48,7 @@ import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.util.ImageLoader;
 import com.android.tv.util.ToastUtils;
+import com.android.tv.util.Utils;
 import java.io.File;
 
 abstract class DvrDetailsFragment extends DetailsFragment {
@@ -195,7 +195,7 @@ abstract class DvrDetailsFragment extends DetailsFragment {
     }
 
     protected void startPlayback(RecordedProgram recordedProgram, long seekTimeMs) {
-        if (CommonUtils.isInBundledPackageSet(recordedProgram.getPackageName())
+        if (Utils.isInBundledPackageSet(recordedProgram.getPackageName())
                 && !isDataUriAccessible(recordedProgram.getDataUri())) {
             // Since cleaning RecordedProgram from forgotten storage will take some time,
             // ignore playback until cleaning is finished.
@@ -207,7 +207,7 @@ abstract class DvrDetailsFragment extends DetailsFragment {
         }
         long programId = recordedProgram.getId();
         ParentalControlSettings parental =
-                TvSingletons.getSingletons(getActivity())
+                TvApplication.getSingletons(getActivity())
                         .getTvInputManagerHelper()
                         .getParentalControlSettings();
         if (!parental.isParentalControlsEnabled()) {
@@ -215,7 +215,7 @@ abstract class DvrDetailsFragment extends DetailsFragment {
             return;
         }
         ChannelDataManager channelDataManager =
-                TvSingletons.getSingletons(getActivity()).getChannelDataManager();
+                TvApplication.getSingletons(getActivity()).getChannelDataManager();
         Channel channel = channelDataManager.getChannel(recordedProgram.getChannelId());
         if (channel != null && channel.isLocked()) {
             checkPinToPlay(recordedProgram, seekTimeMs);

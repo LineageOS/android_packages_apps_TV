@@ -24,10 +24,11 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.android.tv.TvSingletons;
+import com.android.tv.ApplicationSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.util.SharedPreferencesUtils;
+import com.android.tv.common.SharedPreferencesUtils;
 
 /**
  * Creates HDMI plug broadcast receiver, and reports AC3 passthrough capabilities to Google
@@ -60,9 +61,9 @@ public final class AudioCapabilitiesReceiver {
     public AudioCapabilitiesReceiver(
             @NonNull Context context, @Nullable OnAc3PassthroughCapabilityChangeListener listener) {
         mContext = context;
-        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
-        mAnalytics = tvSingletons.getAnalytics();
-        mTracker = tvSingletons.getTracker();
+        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
+        mAnalytics = appSingletons.getAnalytics();
+        mTracker = appSingletons.getTracker();
         mListener = listener;
     }
 

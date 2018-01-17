@@ -19,7 +19,7 @@ package com.android.tv.dialog;
 import android.app.Activity;
 import android.app.DialogFragment;
 import com.android.tv.MainActivity;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.analytics.HasTrackerLabel;
 import com.android.tv.analytics.Tracker;
 
@@ -37,7 +37,7 @@ public abstract class SafeDismissDialogFragment extends DialogFragment implement
         if (activity instanceof MainActivity) {
             mActivity = (MainActivity) activity;
         }
-        mTracker = TvSingletons.getSingletons(activity).getTracker();
+        mTracker = TvApplication.getSingletons(activity).getTracker();
         if (mDismissPending) {
             mDismissPending = false;
             dismiss();

@@ -42,8 +42,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import com.android.tv.Features;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvOptionsManager;
 import com.android.tv.data.DisplayMode;
 import com.android.tv.util.TvSettings;
@@ -93,7 +93,7 @@ public class TvViewUiManager {
                             mTvView.setLayoutParams(mTvViewFrame);
                             // Smooth PIP size change, we don't change surface size when
                             // isInPictureInPictureMode is true.
-                            if (!TvFeatures.PICTURE_IN_PICTURE.isEnabled(mContext)
+                            if (!Features.PICTURE_IN_PICTURE.isEnabled(mContext)
                                     || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                                             && !((Activity) mContext).isInPictureInPictureMode())) {
                                 mTvView.setFixedSurfaceSize(

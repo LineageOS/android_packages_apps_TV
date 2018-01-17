@@ -124,47 +124,47 @@ public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEva
         int tomorrowDayOfWeek = (todayDayOfWeek % 7) + 1;
 
         // Today 00:00 - 01:00.
-        ProgramTime programTimeToday0000to0100 =
+        ProgramTime programTimeToday0000_0100 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(todayAtHourMin(0, 0), TimeUnit.HOURS.toMillis(1)));
         assertProgramTime(
                 todayDayOfWeek,
                 hourMinuteToSec(0, 0),
                 hourMinuteToSec(1, 0),
-                programTimeToday0000to0100);
+                programTimeToday0000_0100);
 
         // Today 23:30 - 24:30.
-        ProgramTime programTimeToday2330to2430 =
+        ProgramTime programTimeToday2330_2430 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(todayAtHourMin(23, 30), TimeUnit.HOURS.toMillis(1)));
         assertProgramTime(
                 todayDayOfWeek,
                 hourMinuteToSec(23, 30),
                 hourMinuteToSec(24, 30),
-                programTimeToday2330to2430);
+                programTimeToday2330_2430);
 
         // Tomorrow 00:00 - 01:00.
-        ProgramTime programTimeTomorrow0000to0100 =
+        ProgramTime programTimeTomorrow0000_0100 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(tomorrowAtHourMin(0, 0), TimeUnit.HOURS.toMillis(1)));
         assertProgramTime(
                 tomorrowDayOfWeek,
                 hourMinuteToSec(0, 0),
                 hourMinuteToSec(1, 0),
-                programTimeTomorrow0000to0100);
+                programTimeTomorrow0000_0100);
 
         // Tomorrow 23:30 - 24:30.
-        ProgramTime programTimeTomorrow2330to2430 =
+        ProgramTime programTimeTomorrow2330_2430 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(tomorrowAtHourMin(23, 30), TimeUnit.HOURS.toMillis(1)));
         assertProgramTime(
                 tomorrowDayOfWeek,
                 hourMinuteToSec(23, 30),
                 hourMinuteToSec(24, 30),
-                programTimeTomorrow2330to2430);
+                programTimeTomorrow2330_2430);
 
         // Today 18:00 - Tomorrow 12:00.
-        ProgramTime programTimeToday1800to3600 =
+        ProgramTime programTimeToday1800_3600 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(todayAtHourMin(18, 0), TimeUnit.HOURS.toMillis(18)));
         // Maximum duration of ProgramTime is 12 hours.
@@ -173,42 +173,42 @@ public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEva
                 todayDayOfWeek,
                 hourMinuteToSec(18, 0),
                 hourMinuteToSec(30, 0),
-                programTimeToday1800to3600);
+                programTimeToday1800_3600);
     }
 
     @Test
     public void testCalculateOverlappedIntervalScore() {
         // Today 21:00 - 24:00.
-        ProgramTime programTimeToday2100to2400 =
+        ProgramTime programTimeToday2100_2400 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(todayAtHourMin(21, 0), TimeUnit.HOURS.toMillis(3)));
         // Today 22:00 - 01:00.
-        ProgramTime programTimeToday2200to0100 =
+        ProgramTime programTimeToday2200_0100 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(todayAtHourMin(22, 0), TimeUnit.HOURS.toMillis(3)));
         // Tomorrow 00:00 - 03:00.
-        ProgramTime programTimeTomorrow0000to0300 =
+        ProgramTime programTimeTomorrow0000_0300 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(tomorrowAtHourMin(0, 0), TimeUnit.HOURS.toMillis(3)));
         // Tomorrow 20:00 - Tomorrow 23:00.
-        ProgramTime programTimeTomorrow2000to2300 =
+        ProgramTime programTimeTomorrow2000_2300 =
                 ProgramTime.createFromProgram(
                         createDummyProgram(tomorrowAtHourMin(20, 0), TimeUnit.HOURS.toMillis(3)));
 
         // Check intersection time and commutative law in all cases.
         int oneHourInSec = hourMinuteToSec(1, 0);
         assertOverlappedIntervalScore(
-                2 * oneHourInSec, true, programTimeToday2100to2400, programTimeToday2200to0100);
+                2 * oneHourInSec, true, programTimeToday2100_2400, programTimeToday2200_0100);
         assertOverlappedIntervalScore(
-                0, false, programTimeToday2100to2400, programTimeTomorrow0000to0300);
+                0, false, programTimeToday2100_2400, programTimeTomorrow0000_0300);
         assertOverlappedIntervalScore(
-                2 * oneHourInSec, false, programTimeToday2100to2400, programTimeTomorrow2000to2300);
+                2 * oneHourInSec, false, programTimeToday2100_2400, programTimeTomorrow2000_2300);
         assertOverlappedIntervalScore(
-                oneHourInSec, true, programTimeToday2200to0100, programTimeTomorrow0000to0300);
+                oneHourInSec, true, programTimeToday2200_0100, programTimeTomorrow0000_0300);
         assertOverlappedIntervalScore(
-                oneHourInSec, false, programTimeToday2200to0100, programTimeTomorrow2000to2300);
+                oneHourInSec, false, programTimeToday2200_0100, programTimeTomorrow2000_2300);
         assertOverlappedIntervalScore(
-                0, false, programTimeTomorrow0000to0300, programTimeTomorrow2000to2300);
+                0, false, programTimeTomorrow0000_0300, programTimeTomorrow2000_2300);
     }
 
     @Test

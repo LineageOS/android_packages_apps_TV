@@ -26,15 +26,16 @@ import android.media.tv.TvInputInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
+import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
 import com.android.tv.SetupPassthroughActivity;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
+import com.android.tv.common.TvCommonUtils;
 import com.android.tv.common.ui.setup.SetupActivity;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
-import com.android.tv.common.util.CommonUtils;
-import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.util.OnboardingUtils;
+import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 
@@ -49,13 +50,12 @@ public class OnboardingActivity extends SetupActivity {
 
     private ChannelDataManager mChannelDataManager;
     private TvInputManagerHelper mInputManager;
-    private SetupUtils mSetupUtils;
     private final ChannelDataManager.Listener mChannelListener =
             new ChannelDataManager.Listener() {
                 @Override
                 public void onLoadFinished() {
                     mChannelDataManager.removeListener(this);
-                    mSetupUtils.markNewChannelsBrowsable();
+                    SetupUtils.getInstance(OnboardingActivity.this).markNewChannelsBrowsable();
                 }
 
                 @Override
@@ -81,15 +81,14 @@ public class OnboardingActivity extends SetupActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TvSingletons singletons = TvSingletons.getSingletons(this);
+        ApplicationSingletons singletons = TvApplication.getSingletons(this);
         mInputManager = singletons.getTvInputManagerHelper();
-        mSetupUtils = singletons.getSetupUtils();
         if (PermissionUtils.hasAccessAllEpg(this) || PermissionUtils.hasReadTvListings(this)) {
             mChannelDataManager = singletons.getChannelDataManager();
             // Make the channels of the new inputs which have been setup outside Live TV
             // browsable.
             if (mChannelDataManager.isDbLoadFinished()) {
-                mSetupUtils.markNewChannelsBrowsable();
+                SetupUtils.getInstance(this).markNewChannelsBrowsable();
             } else {
                 mChannelDataManager.addListener(mChannelListener);
             }
@@ -180,7 +179,7 @@ public class OnboardingActivity extends SetupActivity {
                                     params.getString(
                                             SetupSourcesFragment.ACTION_PARAM_KEY_INPUT_ID);
                             TvInputInfo input = mInputManager.getTvInputInfo(inputId);
-                            Intent intent = CommonUtils.createSetupIntent(input);
+                            Intent intent = TvCommonUtils.createSetupIntent(input);
                             if (intent == null) {
                                 Toast.makeText(
                                                 this,
@@ -214,7 +213,7 @@ public class OnboardingActivity extends SetupActivity {
                     case SetupMultiPaneFragment.ACTION_DONE:
                         {
                             ChannelDataManager manager =
-                                    TvSingletons.getSingletons(OnboardingActivity.this)
+                                    TvApplication.getSingletons(OnboardingActivity.this)
                                             .getChannelDataManager();
                             if (manager.getChannelCount() == 0) {
                                 finish();

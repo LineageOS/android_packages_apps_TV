@@ -17,16 +17,16 @@
 package com.android.tv.data;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.os.Looper;
 import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.data.WatchedHistoryManager.WatchedRecord;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Test for {@link com.android.tv.data.WatchedHistoryManagerTest}
@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
  * <p>This is a medium test because it load files which accessing SharedPreferences.
  */
 @MediumTest
-@RunWith(AndroidJUnit4.class)
 public class WatchedHistoryManagerTest {
     // Wait time for expected success.
     private static final int MAX_HISTORY_SIZE = 100;
@@ -54,13 +53,13 @@ public class WatchedHistoryManagerTest {
 
     private void startAndWaitForComplete() throws InterruptedException {
         mWatchedHistoryManager.start();
-        assertThat(mListener.mLoadFinished).isTrue();
+        assertTrue(mListener.mLoadFinished);
     }
 
     @Test
     public void testIsLoaded() throws InterruptedException {
         startAndWaitForComplete();
-        assertThat(mWatchedHistoryManager.isLoaded()).isTrue();
+        assertTrue(mWatchedHistoryManager.isLoaded());
     }
 
     @Test
@@ -75,10 +74,10 @@ public class WatchedHistoryManagerTest {
         WatchedRecord record = mWatchedHistoryManager.getRecord(0);
         WatchedRecord recordFromSharedPreferences =
                 mWatchedHistoryManager.getRecordFromSharedPreferences(0);
-        assertThat(fakeId).isEqualTo(record.channelId);
-        assertThat(time - duration).isEqualTo(record.watchedStartTime);
-        assertThat(duration).isEqualTo(record.duration);
-        assertThat(recordFromSharedPreferences).isEqualTo(record);
+        assertEquals(record.channelId, fakeId);
+        assertEquals(record.watchedStartTime, time - duration);
+        assertEquals(record.duration, duration);
+        assertEquals(record, recordFromSharedPreferences);
     }
 
     @Test
@@ -97,21 +96,22 @@ public class WatchedHistoryManagerTest {
             WatchedRecord record = mWatchedHistoryManager.getRecord(i);
             WatchedRecord recordFromSharedPreferences =
                     mWatchedHistoryManager.getRecordFromSharedPreferences(i);
-            assertThat(recordFromSharedPreferences).isEqualTo(record);
-            assertThat(startChannelId + size - 1 - i).isEqualTo(record.channelId);
+            assertEquals(record, recordFromSharedPreferences);
+            assertEquals(record.channelId, startChannelId + size - 1 - i);
         }
         // Since the WatchedHistory is a circular queue, the value for 0 and maxHistorySize
         // are same.
-        assertThat(mWatchedHistoryManager.getRecordFromSharedPreferences(MAX_HISTORY_SIZE))
-                .isEqualTo(mWatchedHistoryManager.getRecordFromSharedPreferences(0));
+        assertEquals(
+                mWatchedHistoryManager.getRecordFromSharedPreferences(0),
+                mWatchedHistoryManager.getRecordFromSharedPreferences(MAX_HISTORY_SIZE));
     }
 
     @Test
     public void testWatchedRecordEquals() {
-        assertThat(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(1, 2, 3))).isTrue();
-        assertThat(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(1, 2, 4))).isFalse();
-        assertThat(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(1, 4, 3))).isFalse();
-        assertThat(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(4, 2, 3))).isFalse();
+        assertTrue(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(1, 2, 3)));
+        assertFalse(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(1, 2, 4)));
+        assertFalse(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(1, 4, 3)));
+        assertFalse(new WatchedRecord(1, 2, 3).equals(new WatchedRecord(4, 2, 3)));
     }
 
     @Test
@@ -122,11 +122,10 @@ public class WatchedHistoryManagerTest {
         WatchedRecord record = new WatchedRecord(fakeId, time, duration);
         WatchedRecord sameRecord =
                 mWatchedHistoryManager.decode(mWatchedHistoryManager.encode(record));
-        assertThat(sameRecord).isEqualTo(record);
+        assertEquals(record, sameRecord);
     }
 
-    private static final class TestWatchedHistoryManagerListener
-            implements WatchedHistoryManager.Listener {
+    private class TestWatchedHistoryManagerListener implements WatchedHistoryManager.Listener {
         boolean mLoadFinished;
 
         @Override

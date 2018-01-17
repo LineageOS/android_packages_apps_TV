@@ -16,25 +16,23 @@
 
 package com.android.tv.dvr.data;
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.Range;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.provider.DvrContract.Schedules;
 import com.android.tv.util.CompositeComparator;
+import com.android.tv.util.Utils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
@@ -42,8 +40,6 @@ import java.util.Comparator;
 import java.util.Objects;
 
 /** A data class for one recording contents. */
-@TargetApi(Build.VERSION_CODES.N)
-@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public final class ScheduledRecording implements Parcelable {
     private static final String TAG = "ScheduledRecording";
 
@@ -659,7 +655,7 @@ public final class ScheduledRecording implements Parcelable {
             return mProgramTitle;
         }
         Channel channel =
-                TvSingletons.getSingletons(context).getChannelDataManager().getChannel(mChannelId);
+                TvApplication.getSingletons(context).getChannelDataManager().getChannel(mChannelId);
         return channel != null
                 ? channel.getDisplayName()
                 : context.getString(R.string.no_program_information);
@@ -673,7 +669,7 @@ public final class ScheduledRecording implements Parcelable {
             case Schedules.TYPE_PROGRAM:
                 return TYPE_PROGRAM;
             default:
-                SoftPreconditions.checkArgument(false, TAG, "Unknown recording type %s", type);
+                SoftPreconditions.checkArgument(false, TAG, "Unknown recording type " + type);
                 return TYPE_TIMED;
         }
     }
@@ -686,7 +682,7 @@ public final class ScheduledRecording implements Parcelable {
             case TYPE_PROGRAM:
                 return Schedules.TYPE_PROGRAM;
             default:
-                SoftPreconditions.checkArgument(false, TAG, "Unknown recording type %s", type);
+                SoftPreconditions.checkArgument(false, TAG, "Unknown recording type " + type);
                 return Schedules.TYPE_TIMED;
         }
     }
@@ -712,7 +708,7 @@ public final class ScheduledRecording implements Parcelable {
             case Schedules.STATE_RECORDING_CANCELED:
                 return STATE_RECORDING_CANCELED;
             default:
-                SoftPreconditions.checkArgument(false, TAG, "Unknown recording state %s", state);
+                SoftPreconditions.checkArgument(false, TAG, "Unknown recording state" + state);
                 return STATE_RECORDING_NOT_STARTED;
         }
     }
@@ -738,7 +734,7 @@ public final class ScheduledRecording implements Parcelable {
             case STATE_RECORDING_CANCELED:
                 return Schedules.STATE_RECORDING_CANCELED;
             default:
-                SoftPreconditions.checkArgument(false, TAG, "Unknown recording state %s", state);
+                SoftPreconditions.checkArgument(false, TAG, "Unknown recording state" + state);
                 return Schedules.STATE_RECORDING_NOT_STARTED;
         }
     }
@@ -769,12 +765,12 @@ public final class ScheduledRecording implements Parcelable {
                 + ",type="
                 + mType
                 + ",startTime="
-                + CommonUtils.toIsoDateTimeString(mStartTimeMs)
+                + Utils.toIsoDateTimeString(mStartTimeMs)
                 + "("
                 + mStartTimeMs
                 + ")"
                 + ",endTime="
-                + CommonUtils.toIsoDateTimeString(mEndTimeMs)
+                + Utils.toIsoDateTimeString(mEndTimeMs)
                 + "("
                 + mEndTimeMs
                 + ")"

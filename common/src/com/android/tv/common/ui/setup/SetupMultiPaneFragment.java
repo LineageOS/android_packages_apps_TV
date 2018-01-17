@@ -32,9 +32,8 @@ public abstract class SetupMultiPaneFragment extends SetupFragment {
 
     public static final int ACTION_DONE = Integer.MAX_VALUE;
     public static final int ACTION_SKIP = ACTION_DONE - 1;
-    public static final int MAX_SUBCLASSES_ID = ACTION_SKIP - 1;
 
-    public static final String CONTENT_FRAGMENT_TAG = "content_fragment";
+    private static final String CONTENT_FRAGMENT_TAG = "content_fragment";
 
     @Override
     public View onCreateView(

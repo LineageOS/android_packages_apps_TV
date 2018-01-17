@@ -19,8 +19,9 @@ package com.android.tv.dvr.ui.browse;
 import android.content.Context;
 import android.media.tv.TvInputManager;
 import android.text.TextUtils;
+import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrDataManager.RecordedProgramListener;
 import com.android.tv.dvr.DvrDataManager.ScheduledRecordingListener;
@@ -185,7 +186,7 @@ class SeriesRecordingPresenter extends DvrItemPresenter<SeriesRecording> {
 
     public SeriesRecordingPresenter(Context context) {
         super(context);
-        TvSingletons singletons = TvSingletons.getSingletons(context);
+        ApplicationSingletons singletons = TvApplication.getSingletons(context);
         mDvrDataManager = singletons.getDvrDataManager();
         mDvrManager = singletons.getDvrManager();
         mWatchedPositionManager = singletons.getDvrWatchedPositionManager();

@@ -18,10 +18,10 @@ package com.android.tv.dvr.recorder;
 
 import android.support.annotation.MainThread;
 import android.support.annotation.VisibleForTesting;
-import com.android.tv.common.util.Clock;
 import com.android.tv.dvr.WritableDvrDataManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
+import com.android.tv.util.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

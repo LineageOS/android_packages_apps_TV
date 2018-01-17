@@ -25,7 +25,7 @@ import android.support.test.filters.SmallTest;
 import android.test.MoreAsserts;
 import com.android.tv.data.Channel;
 import com.android.tv.recommendation.RecommendationUtils.ChannelRecordSortedMapHelper;
-import com.android.tv.testing.utils.Utils;
+import com.android.tv.testing.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +46,7 @@ public class RecommenderTest {
             System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
     private static final long DEFAULT_MAX_WATCH_DURATION_MS = TimeUnit.HOURS.toMillis(1);
 
-    private final Comparator<Channel> mChannelSortKeyComparator =
+    private final Comparator<Channel> CHANNEL_SORT_KEY_COMPARATOR =
             new Comparator<Channel>() {
                 @Override
                 public int compare(Channel lhs, Channel rhs) {
@@ -55,7 +55,7 @@ public class RecommenderTest {
                             .compareTo(mRecommender.getChannelSortKey(rhs.getId()));
                 }
             };
-    private final Runnable mStartDatamanagerRunnableAddFourChannels =
+    private final Runnable START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS =
             new Runnable() {
                 @Override
                 public void run() {
@@ -89,7 +89,7 @@ public class RecommenderTest {
 
     @Test
     public void testRecommendChannels_includeRecommendedOnly_allChannelsHaveNoScore() {
-        createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(true, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         // Recommender doesn't recommend any channels because all channels are not recommended.
         assertEquals(0, mRecommender.recommendChannels().size());
@@ -102,7 +102,7 @@ public class RecommenderTest {
 
     @Test
     public void testRecommendChannels_notIncludeRecommendedOnly_allChannelsHaveNoScore() {
-        createRecommender(false, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(false, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         // Recommender recommends every channel because it recommends not-recommended channels too.
         assertEquals(4, mRecommender.recommendChannels().size());
@@ -115,7 +115,7 @@ public class RecommenderTest {
 
     @Test
     public void testRecommendChannels_includeRecommendedOnly_allChannelsHaveScore() {
-        createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(true, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         setChannelScores_scoreIncreasesAsChannelIdIncreases();
 
@@ -135,7 +135,7 @@ public class RecommenderTest {
 
     @Test
     public void testRecommendChannels_notIncludeRecommendedOnly_allChannelsHaveScore() {
-        createRecommender(false, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(false, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         setChannelScores_scoreIncreasesAsChannelIdIncreases();
 
@@ -155,7 +155,7 @@ public class RecommenderTest {
 
     @Test
     public void testRecommendChannels_includeRecommendedOnly_fewChannelsHaveScore() {
-        createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(true, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         mEvaluator.setChannelScore(mChannel_1.getId(), 1.0);
         mEvaluator.setChannelScore(mChannel_2.getId(), 1.0);
@@ -175,7 +175,7 @@ public class RecommenderTest {
 
     @Test
     public void testRecommendChannels_notIncludeRecommendedOnly_fewChannelsHaveScore() {
-        createRecommender(false, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(false, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         mEvaluator.setChannelScore(mChannel_1.getId(), 1.0);
         mEvaluator.setChannelScore(mChannel_2.getId(), 1.0);
@@ -202,13 +202,13 @@ public class RecommenderTest {
 
     @Test
     public void testGetChannelSortKey_recommendAllChannels() {
-        createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(true, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         setChannelScores_scoreIncreasesAsChannelIdIncreases();
 
         List<Channel> expectedChannelList = mRecommender.recommendChannels();
         List<Channel> channelList = Arrays.asList(mChannel_1, mChannel_2, mChannel_3, mChannel_4);
-        Collections.sort(channelList, mChannelSortKeyComparator);
+        Collections.sort(channelList, CHANNEL_SORT_KEY_COMPARATOR);
 
         // Recommended channel list and channel list sorted by sort key must be the same.
         MoreAsserts.assertContentsInOrder(channelList, expectedChannelList.toArray());
@@ -218,7 +218,7 @@ public class RecommenderTest {
     @Test
     public void testGetChannelSortKey_recommendFewChannels() {
         // Test with recommending 3 channels.
-        createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(true, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
 
         setChannelScores_scoreIncreasesAsChannelIdIncreases();
 
@@ -229,7 +229,7 @@ public class RecommenderTest {
                 mRecommender.getChannelSortKey(mChannel_1.getId()));
 
         List<Channel> channelList = Arrays.asList(mChannel_2, mChannel_3, mChannel_4);
-        Collections.sort(channelList, mChannelSortKeyComparator);
+        Collections.sort(channelList, CHANNEL_SORT_KEY_COMPARATOR);
 
         MoreAsserts.assertContentsInOrder(channelList, expectedChannelList.toArray());
         assertSortKeyNotInvalid(channelList);
@@ -237,7 +237,7 @@ public class RecommenderTest {
 
     @Test
     public void testListener_onRecommendationChanged() {
-        createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
+        createRecommender(true, START_DATAMANAGER_RUNNABLE_ADD_FOUR_CHANNELS);
         // FakeEvaluator doesn't recommend a channel with empty watch log. As every channel
         // doesn't have a watch log, nothing is recommended and recommendation isn't changed.
         assertFalse(mOnRecommendationChanged);

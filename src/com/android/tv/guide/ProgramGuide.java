@@ -44,12 +44,11 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityManager;
 import com.android.tv.ChannelTuner;
+import com.android.tv.Features;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.WeakHandler;
-import com.android.tv.common.util.DurationTimer;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.ProgramDataManager;
@@ -57,6 +56,7 @@ import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.ui.HardwareLayerAnimatorListenerAdapter;
 import com.android.tv.ui.ViewUtils;
+import com.android.tv.util.DurationTimer;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
@@ -165,7 +165,6 @@ public class ProgramGuide implements ProgramGrid.ChildFocusListener {
                 }
             };
 
-    @SuppressWarnings("RestrictTo")
     public ProgramGuide(
             MainActivity activity,
             ChannelTuner channelTuner,
@@ -237,7 +236,7 @@ public class ProgramGuide implements ProgramGrid.ChildFocusListener {
         mSidePanelGridView.setWindowAlignmentOffsetPercent(
                 VerticalGridView.WINDOW_ALIGN_OFFSET_PERCENT_DISABLED);
 
-        if (TvFeatures.EPG_SEARCH.isEnabled(mActivity)) {
+        if (Features.EPG_SEARCH.isEnabled(mActivity)) {
             mSearchOrb =
                     (SearchOrbView)
                             mContainer.findViewById(R.id.program_guide_side_panel_search_orb);

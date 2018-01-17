@@ -23,7 +23,9 @@ LOCAL_MODULE_TAGS := optional
 
 include $(LOCAL_PATH)/version.mk
 
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_SRC_FILES := \
+    $(call all-java-files-under, src) \
+    $(call all-proto-files-under, proto)
 
 LOCAL_PACKAGE_NAME := LiveTv
 
@@ -38,14 +40,18 @@ LOCAL_MIN_SDK_VERSION := 23  # M
 LOCAL_USE_AAPT2 := true
 
 LOCAL_RESOURCE_DIR := \
-    $(LOCAL_PATH)/common/res \
-    $(LOCAL_PATH)/tuner/res \
     $(LOCAL_PATH)/res \
+    $(LOCAL_PATH)/usbtuner-res
+
+LOCAL_SRC_FILES += \
+    src/com/android/tv/tuner/exoplayer/ffmpeg/IFfmpegDecoder.aidl
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
-    android-support-annotations \
-    javax-annotations-jar \
-    jsr330-jar \
+    icu4j-usbtuner \
+    lib-exoplayer \
+    lib-exoplayer-v2 \
+    lib-exoplayer-v2-ext-ffmpeg \
+    android-support-annotations
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-compat \
@@ -54,8 +60,7 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v7-palette \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
-    live-tv-tuner \
-    tv-common \
+    tv-common
 
 LOCAL_JAVACFLAGS := -Xlint:deprecation -Xlint:unchecked
 
@@ -63,13 +68,32 @@ LOCAL_AAPT_FLAGS += \
     --version-name "$(version_name_package)" \
     --version-code $(version_code_package) \
 
-#LOCAL_PROGUARD_FLAG_FILES := proguard.flags
+LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
 
 LOCAL_JNI_SHARED_LIBRARIES := libtunertvinput_jni
 LOCAL_AAPT_FLAGS += --extra-packages com.android.tv.tuner
 
+LOCAL_PROTOC_OPTIMIZE_TYPE := nano
+LOCAL_PROTOC_FLAGS := --proto_path=$(LOCAL_PATH)/proto/
+
 include $(BUILD_PACKAGE)
+
+# --------------------------------------------------------------
+# Build a tiny icu4j library out of the classes necessary for the project.
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := icu4j-usbtuner
+LOCAL_MODULE_TAGS := optional
+icu4j_path := icu/icu4j
+LOCAL_SRC_FILES := \
+    $(icu4j_path)/main/classes/core/src/com/ibm/icu/text/SCSU.java \
+    $(icu4j_path)/main/classes/core/src/com/ibm/icu/text/UnicodeDecompressor.java
+LOCAL_SDK_VERSION := system_current
+
+include $(BUILD_STATIC_JAVA_LIBRARY)
+
 
 #############################################################
 # Pre-built dependency jars
@@ -79,18 +103,13 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
-    lib-exoplayer:libs/exoplayer-r1.5.16.aar \
-    lib-exoplayer-v2:libs/exoplayer-2.6.1.aar \
-    lib-exoplayer-v2-core:libs/exoplayer-core-2.6.1.aar \
-
-# TODO use external/jsr330
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += auto-value-jar:../../../prebuilts/tools/common/m2/repository/com/google/auto/value/auto-value/1.5.2/auto-value-1.5.2.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += guava-22-0-jar:../../../prebuilts/tools/common/m2/repository/com/google/guava/guava/22.0/guava-22.0.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += javax-annotations-jar:../../../prebuilts/tools/common/m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += jsr330-jar:../../../prebuilts/tools/common/m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += truth-0-36-prebuilt-jar:../../../prebuilts/tools/common/m2/repository/com/google/truth/truth/0.36/truth-0.36.jar
+    lib-exoplayer:libs/exoplayer.jar \
+    lib-exoplayer-v2:libs/exoplayer_v2.jar \
+    lib-exoplayer-v2-ext-ffmpeg:libs/exoplayer_v2_ext_ffmpeg.jar \
 
 
 include $(BUILD_MULTI_PREBUILT)
 
+
 include $(call all-makefiles-under,$(LOCAL_PATH))
+

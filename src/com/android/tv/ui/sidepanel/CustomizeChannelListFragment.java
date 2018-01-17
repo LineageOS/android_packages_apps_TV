@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.common.util.SharedPreferencesUtils;
+import com.android.tv.common.SharedPreferencesUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelNumber;
 import com.android.tv.ui.OnRepeatedKeyInterceptListener;

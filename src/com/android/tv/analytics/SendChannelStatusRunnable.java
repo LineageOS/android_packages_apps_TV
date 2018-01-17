@@ -31,8 +31,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>
  *
- * <p>This should only be started from a user activity like {@link
- * com.android.tv.MainActivity}.
+ * <p>This should only be started from a user activity like {@link com.android.tv.MainActivity}.
  */
 @MainThread
 public class SendChannelStatusRunnable implements Runnable {

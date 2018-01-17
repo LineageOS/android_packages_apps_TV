@@ -23,7 +23,7 @@ import android.content.res.Resources;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
 import android.test.InstrumentationTestCase;
-import com.android.tv.testing.data.ChannelInfo;
+import com.android.tv.testing.ChannelInfo;
 import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TestInputControlConnection;
 import com.android.tv.testing.testinput.TestInputControlUtils;
