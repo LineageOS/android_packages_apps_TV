@@ -17,18 +17,18 @@
 package com.android.tv.data;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.media.tv.TvContract.Programs.Genres;
 import android.os.Build;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Tests for {@link Channel}. */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 public class GenreItemTest {
     private static final String INVALID_GENRE = "INVALID GENRE";
 
@@ -41,17 +41,17 @@ public class GenreItemTest {
     @Test
     public void testGetCanonicalGenre() {
         int count = GenreItems.getGenreCount();
-        assertThat(GenreItems.getCanonicalGenre(GenreItems.ID_ALL_CHANNELS)).isNull();
+        assertNull(GenreItems.getCanonicalGenre(GenreItems.ID_ALL_CHANNELS));
         for (int i = 1; i < count; ++i) {
-            assertThat(GenreItems.getCanonicalGenre(i)).isNotNull();
+            assertNotNull(GenreItems.getCanonicalGenre(i));
         }
     }
 
     @Test
     public void testGetId_base() {
         int count = GenreItems.getGenreCount();
-        assertThat(GenreItems.getId(null)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
-        assertThat(GenreItems.getId(INVALID_GENRE)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
+        assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(null));
+        assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(INVALID_GENRE));
         assertInRange(GenreItems.getId(Genres.FAMILY_KIDS), 1, count - 1);
         assertInRange(GenreItems.getId(Genres.SPORTS), 1, count - 1);
         assertInRange(GenreItems.getId(Genres.SHOPPING), 1, count - 1);
@@ -68,13 +68,12 @@ public class GenreItemTest {
     @Test
     public void testGetId_lmp_mr1() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            assertThat(GenreItems.getId(Genres.ARTS)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
-            assertThat(GenreItems.getId(Genres.ENTERTAINMENT))
-                    .isEqualTo(GenreItems.ID_ALL_CHANNELS);
-            assertThat(GenreItems.getId(Genres.LIFE_STYLE)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
-            assertThat(GenreItems.getId(Genres.MUSIC)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
-            assertThat(GenreItems.getId(Genres.PREMIER)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
-            assertThat(GenreItems.getId(Genres.TECH_SCIENCE)).isEqualTo(GenreItems.ID_ALL_CHANNELS);
+            assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(Genres.ARTS));
+            assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(Genres.ENTERTAINMENT));
+            assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(Genres.LIFE_STYLE));
+            assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(Genres.MUSIC));
+            assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(Genres.PREMIER));
+            assertEquals(GenreItems.ID_ALL_CHANNELS, GenreItems.getId(Genres.TECH_SCIENCE));
         } else {
             int count = GenreItems.getGenreCount();
             assertInRange(GenreItems.getId(Genres.ARTS), 1, count - 1);
@@ -87,6 +86,6 @@ public class GenreItemTest {
     }
 
     private void assertInRange(int value, int lower, int upper) {
-        assertThat(value >= lower && value <= upper).isTrue();
+        assertTrue(value >= lower && value <= upper);
     }
 }

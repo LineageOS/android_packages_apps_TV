@@ -25,7 +25,6 @@ import java.lang.annotation.Retention;
  * Constants for performance event names.
  *
  * <p>Only constants are used to insure no PII is sent.
- *
  */
 public final class EventNames {
 

@@ -28,7 +28,6 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Range;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.data.RecordedProgram;
@@ -48,7 +47,6 @@ import java.util.concurrent.RejectedExecutionException;
  * @param <Progress> the type of the progress units published during the background computation.
  * @param <Result> the type of the result of the background computation.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public abstract class AsyncDbTask<Params, Progress, Result>
         extends AsyncTask<Params, Progress, Result> {
     private static final String TAG = "AsyncDbTask";
@@ -151,7 +149,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                     return null;
                 }
             } catch (Exception e) {
-                SoftPreconditions.warn(TAG, null, e, "Error querying " + this);
+                SoftPreconditions.warn(TAG, null, "Error querying " + this, e);
                 return null;
             }
         }

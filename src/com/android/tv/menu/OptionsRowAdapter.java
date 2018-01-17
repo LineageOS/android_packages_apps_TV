@@ -19,7 +19,7 @@ package com.android.tv.menu;
 import android.content.Context;
 import android.view.View;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.analytics.Tracker;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public abstract class OptionsRowAdapter extends ItemListRowView.ItemListAdapter<
 
     public OptionsRowAdapter(Context context) {
         super(context);
-        mTracker = TvSingletons.getSingletons(context).getTracker();
+        mTracker = TvApplication.getSingletons(context).getTracker();
     }
 
     /** Update action list and its content. */

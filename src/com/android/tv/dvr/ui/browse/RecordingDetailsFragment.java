@@ -18,7 +18,7 @@ package com.android.tv.dvr.ui.browse;
 
 import android.os.Bundle;
 import android.support.v17.leanback.app.DetailsFragment;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.data.ScheduledRecording;
 
 /** {@link DetailsFragment} for recordings in DVR. */
@@ -35,7 +35,7 @@ abstract class RecordingDetailsFragment extends DvrDetailsFragment {
     protected boolean onLoadRecordingDetails(Bundle args) {
         long scheduledRecordingId = args.getLong(DvrDetailsActivity.RECORDING_ID);
         mRecording =
-                TvSingletons.getSingletons(getContext())
+                TvApplication.getSingletons(getContext())
                         .getDvrDataManager()
                         .getScheduledRecording(scheduledRecordingId);
         return mRecording != null;

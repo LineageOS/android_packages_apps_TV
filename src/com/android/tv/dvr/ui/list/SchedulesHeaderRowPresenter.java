@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.dvr.ui.list.SchedulesHeaderRow.SeriesRecordingHeaderRow;
@@ -158,11 +158,11 @@ abstract class SchedulesHeaderRowPresenter extends RowPresenter {
                                 SeriesRecording seriesRecording =
                                         SeriesRecording.buildFrom(header.getSeriesRecording())
                                                 .setPriority(
-                                                        TvSingletons.getSingletons(getContext())
+                                                        TvApplication.getSingletons(getContext())
                                                                 .getDvrScheduleManager()
                                                                 .suggestNewSeriesPriority())
                                                 .build();
-                                TvSingletons.getSingletons(getContext())
+                                TvApplication.getSingletons(getContext())
                                         .getDvrManager()
                                         .updateSeriesRecording(seriesRecording);
                                 DvrUiHelper.startSeriesSettingsActivity(

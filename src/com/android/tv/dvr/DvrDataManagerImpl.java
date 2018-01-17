@@ -38,12 +38,9 @@ import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.Range;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.recording.RecordingStorageStatusManager;
-import com.android.tv.common.recording.RecordingStorageStatusManager.OnStorageMountChangedListener;
-import com.android.tv.common.util.Clock;
-import com.android.tv.common.util.CommonUtils;
+import com.android.tv.dvr.DvrStorageStatusManager.OnStorageMountChangedListener;
 import com.android.tv.dvr.data.IdGenerator;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -61,9 +58,11 @@ import com.android.tv.dvr.provider.DvrDbSync;
 import com.android.tv.dvr.recorder.SeriesRecordingScheduler;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.AsyncDbTask.AsyncRecordedProgramQueryTask;
+import com.android.tv.util.Clock;
 import com.android.tv.util.Filter;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.TvUriMatcher;
+import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,7 +114,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
     private boolean mRecordedProgramLoadFinished;
     private final Set<AsyncTask> mPendingTasks = new ArraySet<>();
     private DvrDbSync mDbSync;
-    private RecordingStorageStatusManager mStorageStatusManager;
+    private DvrStorageStatusManager mStorageStatusManager;
 
     private final TvInputCallback mInputCallback =
             new TvInputCallback() {
@@ -141,7 +140,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                 @Override
                 public void onStorageMountChanged(boolean storageMounted) {
                     for (TvInputInfo input : mInputManager.getTvInputInfos(true, true)) {
-                        if (CommonUtils.isBundledInput(input.getId())) {
+                        if (Utils.isBundledInput(input.getId())) {
                             if (storageMounted) {
                                 unhideInput(input.getId());
                             } else {
@@ -170,9 +169,8 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
     public DvrDataManagerImpl(Context context, Clock clock) {
         super(context, clock);
         mContext = context;
-        mInputManager = TvSingletons.getSingletons(context).getTvInputManagerHelper();
-        mStorageStatusManager =
-                TvSingletons.getSingletons(context).getRecordingStorageStatusManager();
+        mInputManager = TvApplication.getSingletons(context).getTvInputManagerHelper();
+        mStorageStatusManager = TvApplication.getSingletons(context).getDvrStorageStatusManager();
     }
 
     public void start() {
@@ -610,8 +608,9 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             SoftPreconditions.checkArgument(
                     previousSeries == null,
                     TAG,
-                    "Attempt to add series" + " recording with the duplicate series ID: %s",
-                    r.getSeriesId());
+                    "Attempt to add series"
+                            + " recording with the duplicate series ID: "
+                            + r.getSeriesId());
         }
         if (mDvrLoadFinished) {
             notifySeriesRecordingAdded(seriesRecordings);
@@ -780,14 +779,13 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             if (!SoftPreconditions.checkArgument(
                     mSeriesRecordings.containsKey(r.getId()),
                     TAG,
-                    "Non Existing Series ID: %s",
-                    r)) {
+                    "Non Existing Series ID: " + r)) {
                 continue;
             }
             SeriesRecording old1 = mSeriesRecordings.put(r.getId(), r);
             SeriesRecording old2 = mSeriesId2SeriesRecordings.put(r.getSeriesId(), r);
             SoftPreconditions.checkArgument(
-                    old1.equals(old2), TAG, "Series ID cannot be updated: %s", r);
+                    old1.equals(old2), TAG, "Series ID cannot be" + " updated: " + r);
         }
         if (mDvrLoadFinished) {
             notifySeriesRecordingChanged(seriesRecordings);
@@ -797,8 +795,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
 
     private boolean isInputAvailable(String inputId) {
         return mInputManager.hasTvInputInfo(inputId)
-                && (!CommonUtils.isBundledInput(inputId)
-                        || mStorageStatusManager.isStorageMounted());
+                && (!Utils.isBundledInput(inputId) || mStorageStatusManager.isStorageMounted());
     }
 
     private void removeDeletedSchedules(ScheduledRecording... addedSchedules) {

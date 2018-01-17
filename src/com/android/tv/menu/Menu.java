@@ -30,15 +30,15 @@ import android.support.v17.leanback.widget.HorizontalGridView;
 import android.util.Log;
 import com.android.tv.ChannelTuner;
 import com.android.tv.R;
+import com.android.tv.TvApplication;
 import com.android.tv.TvOptionsManager;
-import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
+import com.android.tv.common.TvCommonUtils;
 import com.android.tv.common.WeakHandler;
-import com.android.tv.common.util.CommonUtils;
-import com.android.tv.common.util.DurationTimer;
 import com.android.tv.menu.MenuRowFactory.PartnerRow;
 import com.android.tv.menu.MenuRowFactory.TvOptionsRow;
 import com.android.tv.ui.TunableTvView;
+import com.android.tv.util.DurationTimer;
 import com.android.tv.util.ViewCache;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -139,7 +139,7 @@ public class Menu {
             OnMenuVisibilityChangeListener onMenuVisibilityChangeListener) {
         mContext = context;
         mMenuView = menuView;
-        mTracker = TvSingletons.getSingletons(context).getTracker();
+        mTracker = TvApplication.getSingletons(context).getTracker();
         mMenuUpdater = new MenuUpdater(this, tvView, optionsManager);
         Resources res = context.getResources();
         mShowDurationMillis = res.getInteger(R.integer.menu_show_duration);
@@ -328,7 +328,7 @@ public class Menu {
 
     @VisibleForTesting
     void disableAnimationForTest() {
-        if (!CommonUtils.isRunningInTest()) {
+        if (!TvCommonUtils.isRunningInTest()) {
             throw new RuntimeException("Animation may only be enabled/disabled during tests.");
         }
         mAnimationDisabledForTest = true;

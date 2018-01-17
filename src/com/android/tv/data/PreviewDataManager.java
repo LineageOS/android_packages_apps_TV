@@ -36,7 +36,7 @@ import android.support.media.tv.PreviewProgram;
 import android.util.Log;
 import android.util.Pair;
 import com.android.tv.R;
-import com.android.tv.common.util.PermissionUtils;
+import com.android.tv.util.PermissionUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
@@ -47,22 +47,22 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /** Class to manage the preview data. */
 @TargetApi(Build.VERSION_CODES.O)
 @MainThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class PreviewDataManager {
     private static final String TAG = "PreviewDataManager";
-    private static final boolean DEBUG = false;
+    // STOPSHIP: set it to false.
+    private static final boolean DEBUG = true;
 
     /** Invalid preview channel ID. */
     public static final long INVALID_PREVIEW_CHANNEL_ID = -1;
 
-    @IntDef({TYPE_DEFAULT_PREVIEW_CHANNEL, TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL})
+    @IntDef({(int) TYPE_DEFAULT_PREVIEW_CHANNEL, (int) TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PreviewChannelType {}
 
     /** Type of default preview channel */
-    public static final int TYPE_DEFAULT_PREVIEW_CHANNEL = 1;
+    public static final long TYPE_DEFAULT_PREVIEW_CHANNEL = 1;
     /** Type of recorded program channel */
-    public static final int TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL = 2;
+    public static final long TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL = 2;
 
     private final Context mContext;
     private final ContentResolver mContentResolver;
@@ -604,8 +604,7 @@ public class PreviewDataManager {
                     .setPosterArtUri(program.getPosterArtUri())
                     .setIntentUri(program.getIntentUri())
                     .setPreviewVideoUri(program.getPreviewVideoUri())
-                    .setInternalProviderId(Long.toString(program.getId()))
-                    .setContentId(program.getIntentUri().toString());
+                    .setInternalProviderId(Long.toString(program.getId()));
             return builder.build();
         }
 

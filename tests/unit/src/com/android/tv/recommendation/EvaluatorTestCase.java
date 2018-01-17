@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 import com.android.tv.data.Channel;
 import com.android.tv.recommendation.RecommendationUtils.ChannelRecordSortedMapHelper;
 import com.android.tv.recommendation.Recommender.Evaluator;
-import com.android.tv.testing.utils.Utils;
+import com.android.tv.testing.Utils;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;

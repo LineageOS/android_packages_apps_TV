@@ -28,8 +28,8 @@ import android.support.annotation.RequiresApi;
 import android.support.media.tv.TvContractCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.Starter;
-import com.android.tv.TvSingletons;
+import com.android.tv.ApplicationSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.data.Channel;
 import com.android.tv.data.PreviewDataManager;
 import com.android.tv.data.PreviewProgramContent;
@@ -46,7 +46,8 @@ import java.util.concurrent.TimeUnit;
 @RequiresApi(Build.VERSION_CODES.O)
 public class ChannelPreviewUpdater {
     private static final String TAG = "ChannelPreviewUpdater";
-    private static final boolean DEBUG = false;
+    // STOPSHIP: set it to false.
+    private static final boolean DEBUG = true;
 
     private static final int UPATE_PREVIEW_PROGRAMS_JOB_ID = 1000001;
     private static final long ROUTINE_INTERVAL_MS = TimeUnit.MINUTES.toMillis(10);
@@ -99,10 +100,10 @@ public class ChannelPreviewUpdater {
         mRecommender.registerEvaluator(new RandomEvaluator(), 0.1, 0.1);
         mRecommender.registerEvaluator(new FavoriteChannelEvaluator(), 0.5, 0.5);
         mRecommender.registerEvaluator(new RoutineWatchEvaluator(), 1.0, 1.0);
-        TvSingletons tvSingleton = TvSingletons.getSingletons(context);
-        mPreviewDataManager = tvSingleton.getPreviewDataManager();
+        ApplicationSingletons appSingleton = TvApplication.getSingletons(context);
+        mPreviewDataManager = appSingleton.getPreviewDataManager();
         mParentalControlSettings =
-                tvSingleton.getTvInputManagerHelper().getParentalControlSettings();
+                appSingleton.getTvInputManagerHelper().getParentalControlSettings();
     }
 
     /** Starts the routine service for updating the preview programs. */
@@ -293,7 +294,7 @@ public class ChannelPreviewUpdater {
 
         @Override
         public void onCreate() {
-            Starter.start(this);
+            TvApplication.setCurrentRunningProcess(this, true);
             if (DEBUG) Log.d(TAG, "ChannelPreviewUpdateService.onCreate");
             mChannelPreviewUpdater = ChannelPreviewUpdater.getInstance(this);
         }

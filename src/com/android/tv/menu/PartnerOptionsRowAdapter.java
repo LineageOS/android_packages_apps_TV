@@ -17,7 +17,7 @@
 package com.android.tv.menu;
 
 import android.content.Context;
-import com.android.tv.common.customization.CustomAction;
+import com.android.tv.customization.CustomAction;
 import java.util.Collections;
 import java.util.List;
 

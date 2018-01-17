@@ -27,7 +27,7 @@ import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
@@ -67,9 +67,9 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
         mSeriesRecordingId =
                 getArguments().getLong(DvrSeriesDeletionActivity.SERIES_RECORDING_ID, -1);
         SoftPreconditions.checkArgument(mSeriesRecordingId != -1);
-        mDvrDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
+        mDvrDataManager = TvApplication.getSingletons(context).getDvrDataManager();
         mDvrWatchedPositionManager =
-                TvSingletons.getSingletons(context).getDvrWatchedPositionManager();
+                TvApplication.getSingletons(context).getDvrWatchedPositionManager();
         mRecordings = mDvrDataManager.getRecordedPrograms(mSeriesRecordingId);
         mOneLineActionHeight =
                 getResources()
@@ -166,7 +166,7 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
                 }
             }
             if (!idsToDelete.isEmpty()) {
-                DvrManager dvrManager = TvSingletons.getSingletons(getActivity()).getDvrManager();
+                DvrManager dvrManager = TvApplication.getSingletons(getActivity()).getDvrManager();
                 dvrManager.removeRecordedPrograms(idsToDelete);
             }
             Toast.makeText(

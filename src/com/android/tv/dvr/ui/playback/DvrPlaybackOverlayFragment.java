@@ -43,7 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.data.BaseProgram;
 import com.android.tv.dialog.PinDialogFragment;
 import com.android.tv.dvr.DvrDataManager;
@@ -116,9 +116,9 @@ public class DvrPlaybackOverlayFragment extends PlaybackFragment {
                         .getResources()
                         .getDimensionPixelOffset(
                                 R.dimen.dvr_playback_overlay_padding_top_no_secondary_row);
-        mDvrDataManager = TvSingletons.getSingletons(getActivity()).getDvrDataManager();
+        mDvrDataManager = TvApplication.getSingletons(getActivity()).getDvrDataManager();
         mContentRatingsManager =
-                TvSingletons.getSingletons(getContext())
+                TvApplication.getSingletons(getContext())
                         .getTvInputManagerHelper()
                         .getContentRatingsManager();
         if (!mDvrDataManager.isRecordedProgramLoadFinished()) {

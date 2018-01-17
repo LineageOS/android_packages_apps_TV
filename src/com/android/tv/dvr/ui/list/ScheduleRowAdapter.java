@@ -26,7 +26,7 @@ import android.text.format.DateUtils;
 import android.util.ArraySet;
 import android.util.Log;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -79,11 +79,11 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
     public void start() {
         clear();
         List<ScheduledRecording> recordingList =
-                TvSingletons.getSingletons(mContext)
+                TvApplication.getSingletons(mContext)
                         .getDvrDataManager()
                         .getNonStartedScheduledRecordings();
         recordingList.addAll(
-                TvSingletons.getSingletons(mContext).getDvrDataManager().getStartedRecordings());
+                TvApplication.getSingletons(mContext).getDvrDataManager().getStartedRecordings());
         Collections.sort(
                 recordingList, ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR);
         long deadLine = Utils.getLastMillisecondOfDay(System.currentTimeMillis());
@@ -136,7 +136,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
     /** Stops schedules row adapter. */
     public void stop() {
         mHandler.removeCallbacksAndMessages(null);
-        DvrManager dvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
+        DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
         for (int i = 0; i < size(); i++) {
             if (get(i) instanceof ScheduleRow) {
                 ScheduleRow row = (ScheduleRow) get(i);

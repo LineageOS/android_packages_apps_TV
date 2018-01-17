@@ -25,11 +25,6 @@ import com.android.tv.common.BooleanSystemProperty;
  * <p>See {@link BooleanSystemProperty} for instructions on how to set using adb.
  */
 public final class PropertyFeature implements Feature {
-
-    public static PropertyFeature create(String key, boolean defaultValue) {
-        return new PropertyFeature(key, defaultValue);
-    }
-
     private final BooleanSystemProperty mProperty;
 
     /**
@@ -38,7 +33,7 @@ public final class PropertyFeature implements Feature {
      * @param key the system property key. Length must be <= 31 characters.
      * @param defaultValue the value to return if the property is undefined or empty.
      */
-    private PropertyFeature(String key, boolean defaultValue) {
+    public PropertyFeature(String key, boolean defaultValue) {
         if (key.length() > 31) {
             // Since Features are initialized at startup and the keys are static go ahead and kill
             // the application.

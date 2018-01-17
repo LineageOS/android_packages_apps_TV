@@ -111,8 +111,7 @@ public class PlayControlsRowViewTest extends LiveChannelsTestCase {
         assertButtonHasFocus(BUTTON_ID_PLAY_PAUSE);
     }
 
-    // TODO("b/70727167"): fix tests
-    public void notestKeepPausedAfterVisitingHome() {
+    public void testKeepPausedAfterVisitingHome() {
         // Pause the playback.
         mDevice.pressKeyCode(KeyEvent.KEYCODE_MEDIA_PAUSE);
         mMenuHelper.assertWaitForMenu();

@@ -22,16 +22,13 @@ import static com.android.tv.TimeShiftManager.TIME_SHIFT_ACTION_ID_JUMP_TO_PREVI
 import static com.android.tv.TimeShiftManager.TIME_SHIFT_ACTION_ID_PAUSE;
 import static com.android.tv.TimeShiftManager.TIME_SHIFT_ACTION_ID_PLAY;
 import static com.android.tv.TimeShiftManager.TIME_SHIFT_ACTION_ID_REWIND;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 @MediumTest
-@RunWith(AndroidJUnit4.class)
 public class TimeShiftManagerTest extends BaseMainActivityTestCase {
     private TimeShiftManager mTimeShiftManager;
 
@@ -94,23 +91,29 @@ public class TimeShiftManagerTest extends BaseMainActivityTestCase {
             boolean fastForwardEnabled,
             boolean jumpToPreviousEnabled,
             boolean jumpToNextEnabled) {
-        assertWithMessage("Play Action")
-                .that(mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_PLAY))
-                .isEqualTo(playEnabled);
-        assertWithMessage("Pause Action")
-                .that(mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_PAUSE))
-                .isEqualTo(pauseEnabled);
-        assertWithMessage("Rewind Action")
-                .that(mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_REWIND))
-                .isEqualTo(rewindEnabled);
-        assertWithMessage("Fast Forward Action")
-                .that(mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_FAST_FORWARD))
-                .isEqualTo(fastForwardEnabled);
-        assertWithMessage("Jump To Previous Action")
-                .that(mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_JUMP_TO_PREVIOUS))
-                .isEqualTo(jumpToPreviousEnabled);
-        assertWithMessage("Jump To Next Action")
-                .that(mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_JUMP_TO_NEXT))
-                .isEqualTo(jumpToNextEnabled);
+        assertEquals(
+                "Play Action",
+                playEnabled,
+                mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_PLAY));
+        assertEquals(
+                "Pause Action",
+                pauseEnabled,
+                mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_PAUSE));
+        assertEquals(
+                "Rewind Action",
+                rewindEnabled,
+                mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_REWIND));
+        assertEquals(
+                "Fast Forward Action",
+                fastForwardEnabled,
+                mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_FAST_FORWARD));
+        assertEquals(
+                "Jump To Previous Action",
+                jumpToPreviousEnabled,
+                mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_JUMP_TO_PREVIOUS));
+        assertEquals(
+                "Jump To Next Action",
+                jumpToNextEnabled,
+                mTimeShiftManager.isActionEnabled(TIME_SHIFT_ACTION_ID_JUMP_TO_NEXT));
     }
 }

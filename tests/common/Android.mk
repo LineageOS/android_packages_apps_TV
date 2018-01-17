@@ -8,13 +8,8 @@ LOCAL_SRC_FILES := \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
-    android-support-test \
-    guava-22-0-jar \
-    javax-annotations-jar \
     mockito-target \
-    platform-robolectric-3.4.2-prebuilt \
-    truth-0-36-prebuilt-jar \
-    ub-uiautomator \
+    ub-uiautomator
 
 # Link tv-common as shared library to avoid the problem of initialization of the constants
 LOCAL_JAVA_LIBRARIES := tv-common
@@ -22,7 +17,7 @@ LOCAL_JAVA_LIBRARIES := tv-common
 LOCAL_INSTRUMENTATION_FOR := LiveTv
 LOCAL_MODULE := tv-test-common
 LOCAL_MODULE_TAGS := optional
-LOCAL_SDK_VERSION := system_current
+LOCAL_SDK_VERSION := current
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 LOCAL_AIDL_INCLUDES += $(LOCAL_PATH)/src

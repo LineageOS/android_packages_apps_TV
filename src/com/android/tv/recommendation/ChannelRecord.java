@@ -17,9 +17,8 @@
 package com.android.tv.recommendation;
 
 import android.content.Context;
-import android.support.annotation.GuardedBy;
 import android.support.annotation.VisibleForTesting;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
@@ -30,10 +29,7 @@ public class ChannelRecord {
     // TODO: decide the value for max history size.
     @VisibleForTesting static final int MAX_HISTORY_SIZE = 100;
     private final Context mContext;
-
-    @GuardedBy("this")
     private final Deque<WatchedProgram> mWatchHistory;
-
     private Program mCurrentProgram;
     private Channel mChannel;
     private long mTotalWatchDurationMs;
@@ -63,7 +59,7 @@ public class ChannelRecord {
         mInputRemoved = removed;
     }
 
-    public synchronized long getLastWatchEndTimeMs() {
+    public long getLastWatchEndTimeMs() {
         WatchedProgram p = mWatchHistory.peekLast();
         return (p == null) ? 0 : p.getWatchEndTimeMs();
     }
@@ -72,7 +68,7 @@ public class ChannelRecord {
         long time = System.currentTimeMillis();
         if (mCurrentProgram == null || mCurrentProgram.getEndTimeUtcMillis() < time) {
             ProgramDataManager manager =
-                    TvSingletons.getSingletons(mContext).getProgramDataManager();
+                    TvApplication.getSingletons(mContext).getProgramDataManager();
             mCurrentProgram = manager.getCurrentProgram(mChannel.getId());
         }
         return mCurrentProgram;
@@ -82,11 +78,11 @@ public class ChannelRecord {
         return mTotalWatchDurationMs;
     }
 
-    public final synchronized WatchedProgram[] getWatchHistory() {
+    public final WatchedProgram[] getWatchHistory() {
         return mWatchHistory.toArray(new WatchedProgram[mWatchHistory.size()]);
     }
 
-    public synchronized void logWatchHistory(WatchedProgram p) {
+    public void logWatchHistory(WatchedProgram p) {
         mWatchHistory.offer(p);
         mTotalWatchDurationMs += p.getWatchedDurationMs();
         if (mWatchHistory.size() > MAX_HISTORY_SIZE) {

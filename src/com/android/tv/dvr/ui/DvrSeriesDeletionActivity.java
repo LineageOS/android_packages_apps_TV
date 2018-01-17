@@ -20,7 +20,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import com.android.tv.R;
-import com.android.tv.Starter;
+import com.android.tv.TvApplication;
 
 /** Activity to show details view in DVR. */
 public class DvrSeriesDeletionActivity extends Activity {
@@ -29,7 +29,7 @@ public class DvrSeriesDeletionActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Starter.start(this);
+        TvApplication.setCurrentRunningProcess(this, true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dvr_series_settings);
         // Check savedInstanceState to prevent that activity is being showed with animation.

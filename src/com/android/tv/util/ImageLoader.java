@@ -31,7 +31,6 @@ import android.support.annotation.WorkerThread;
 import android.util.ArraySet;
 import android.util.Log;
 import com.android.tv.R;
-import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

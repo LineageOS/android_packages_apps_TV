@@ -39,12 +39,14 @@ static double currentTimeMillis() {
 
 DvbManager::DvbManager(JNIEnv *env, jobject)
         : mFeFd(-1),
+          mDemuxFd(-1),
           mDvrFd(-1),
           mPatFilterFd(-1),
           mDvbApiVersion(DVB_API_VERSION_UNDEFINED),
           mDeliverySystemType(-1),
           mFeHasLock(false),
           mHasPendingTune(false) {
+    (void) mDemuxFd; // suppress unused warning
     jclass clazz = env->FindClass(
         "com/android/tv/tuner/TunerHal");
     mOpenDvbFrontEndMethodID = env->GetMethodID(
@@ -116,13 +118,11 @@ int DvbManager::tune(JNIEnv *env, jobject thiz,
 
     if (mDvbApiVersion == DVB_API_VERSION5) {
         struct dtv_property deliverySystemProperty = {
-            .cmd = DTV_DELIVERY_SYSTEM
+            .cmd = DTV_DELIVERY_SYSTEM, .u.data = SYS_ATSC
         };
-        deliverySystemProperty.u.data = SYS_ATSC;
         struct dtv_property frequencyProperty = {
-            .cmd = DTV_FREQUENCY
+            .cmd = DTV_FREQUENCY, .u.data = static_cast<__u32>(frequency)
         };
-        frequencyProperty.u.data = static_cast<__u32>(frequency);
         struct dtv_property modulationProperty = { .cmd = DTV_MODULATION };
         if (strncmp(modulationStr, "QAM", 3) == 0) {
             modulationProperty.u.data = QAM_AUTO;

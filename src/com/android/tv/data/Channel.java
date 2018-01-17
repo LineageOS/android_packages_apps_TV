@@ -28,8 +28,7 @@ import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.common.CommonConstants;
-import com.android.tv.common.util.CommonUtils;
+import com.android.tv.common.TvCommonConstants;
 import com.android.tv.util.ImageLoader;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
@@ -125,7 +124,7 @@ public final class Channel {
         channel.mAppLinkIconUri = cursor.getString(index++);
         channel.mAppLinkPosterArtUri = cursor.getString(index++);
         channel.mAppLinkIntentUri = cursor.getString(index++);
-        if (CommonUtils.isBundledInput(channel.mInputId)) {
+        if (Utils.isBundledInput(channel.mInputId)) {
             channel.mRecordingProhibited = cursor.getInt(index++) != 0;
         }
         return channel;
@@ -626,7 +625,7 @@ public final class Channel {
                 if (intent.resolveActivityInfo(pm, 0) != null) {
                     mAppLinkIntent = intent;
                     mAppLinkIntent.putExtra(
-                            CommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
+                            TvCommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
                     mAppLinkType = APP_LINK_TYPE_CHANNEL;
                     return;
                 } else {
@@ -643,7 +642,7 @@ public final class Channel {
         mAppLinkIntent = pm.getLeanbackLaunchIntentForPackage(mPackageName);
         if (mAppLinkIntent != null) {
             mAppLinkIntent.putExtra(
-                    CommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
+                    TvCommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
             mAppLinkType = APP_LINK_TYPE_APP;
         }
     }

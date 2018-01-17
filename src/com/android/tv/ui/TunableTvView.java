@@ -57,18 +57,15 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import com.android.tv.ApplicationSingletons;
+import com.android.tv.Features;
 import com.android.tv.InputSessionManager;
 import com.android.tv.InputSessionManager.TvViewSession;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.common.util.CommonUtils;
-import com.android.tv.common.util.Debug;
-import com.android.tv.common.util.DurationTimer;
-import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
@@ -77,8 +74,11 @@ import com.android.tv.data.WatchedHistoryManager;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.recommendation.NotificationService;
+import com.android.tv.util.Debug;
+import com.android.tv.util.DurationTimer;
 import com.android.tv.util.ImageLoader;
 import com.android.tv.util.NetworkUtils;
+import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import java.lang.annotation.Retention;
@@ -362,7 +362,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
                                             getContext().startActivity(intent);
                                         }
                                     })
-                            .setNegativeButton(android.R.string.cancel, null)
+                            .setNegativeButton(android.R.string.no, null)
                             .show();
                 }
 
@@ -393,7 +393,6 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
                         case TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING:
                         case TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL:
                             mTracker.sendChannelVideoUnavailable(mCurrentChannel, reason);
-                            break;
                         default:
                             // do nothing
                     }
@@ -455,17 +454,17 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
         super(context, attrs, defStyleAttr, defStyleRes);
         inflate(getContext(), R.layout.tunable_tv_view, this);
 
-        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
         if (CommonFeatures.DVR.isEnabled(context)) {
-            mInputSessionManager = tvSingletons.getInputSessionManager();
+            mInputSessionManager = appSingletons.getInputSessionManager();
         } else {
             mInputSessionManager = null;
         }
-        mInputManager = tvSingletons.getTvInputManagerHelper();
+        mInputManager = appSingletons.getTvInputManagerHelper();
         mConnectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mCanModifyParentalControls = PermissionUtils.hasModifyParentalControls(context);
-        mTracker = tvSingletons.getTracker();
+        mTracker = appSingletons.getTracker();
         mBlockScreenType = BLOCK_SCREEN_TYPE_NORMAL;
         mBlockScreenView = (BlockScreenView) findViewById(R.id.block_screen);
         mBlockScreenView.addInfoFadeInAnimationListener(
@@ -1082,7 +1081,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     }
 
     private boolean closePipIfNeeded() {
-        if (TvFeatures.PICTURE_IN_PICTURE.isEnabled(getContext())
+        if (Features.PICTURE_IN_PICTURE.isEnabled(getContext())
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                 && ((Activity) getContext()).isInPictureInPictureMode()
                 && (mScreenBlocked
@@ -1153,7 +1152,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     }
 
     private void updateMuteStatus() {
-        // Workaround: BaseTunerTvInputService uses AC3 pass-through implementation, which disables
+        // Workaround: TunerTvInputService uses AC3 pass-through implementation, which disables
         // audio tracks to enforce the mute request. We don't want to send mute request if we are
         // not going to block the screen to prevent the video jankiness resulted by disabling audio
         // track before the playback is started. In other way, we should send unmute request before
@@ -1184,7 +1183,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     private boolean isBundledInput() {
         return mInputInfo != null
                 && mInputInfo.getType() == TvInputInfo.TYPE_TUNER
-                && CommonUtils.isBundledInput(mInputInfo.getId());
+                && Utils.isBundledInput(mInputInfo.getId());
     }
 
     /** Returns true if this view is faded out. */

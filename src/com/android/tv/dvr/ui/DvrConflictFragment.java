@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
@@ -149,7 +149,7 @@ public abstract class DvrConflictFragment extends DvrGuidedStepFragment {
     private String getScheduleTitle(ScheduledRecording schedule) {
         if (schedule.getType() == ScheduledRecording.TYPE_TIMED) {
             Channel channel =
-                    TvSingletons.getSingletons(getContext())
+                    TvApplication.getSingletons(getContext())
                             .getChannelDataManager()
                             .getChannel(schedule.getChannelId());
             if (channel != null) {
@@ -179,7 +179,7 @@ public abstract class DvrConflictFragment extends DvrGuidedStepFragment {
             List<ScheduledRecording> conflicts = null;
             if (input != null) {
                 conflicts =
-                        TvSingletons.getSingletons(getContext())
+                        TvApplication.getSingletons(getContext())
                                 .getDvrManager()
                                 .getConflictingSchedules(mProgram);
             }
@@ -227,7 +227,7 @@ public abstract class DvrConflictFragment extends DvrGuidedStepFragment {
             Bundle args = getArguments();
             long channelId = args.getLong(DvrHalfSizedDialogFragment.KEY_CHANNEL_ID);
             mChannel =
-                    TvSingletons.getSingletons(getContext())
+                    TvApplication.getSingletons(getContext())
                             .getChannelDataManager()
                             .getChannel(channelId);
             SoftPreconditions.checkArgument(mChannel != null);
@@ -238,7 +238,7 @@ public abstract class DvrConflictFragment extends DvrGuidedStepFragment {
                 mStartTimeMs = args.getLong(DvrHalfSizedDialogFragment.KEY_START_TIME_MS);
                 mEndTimeMs = args.getLong(DvrHalfSizedDialogFragment.KEY_END_TIME_MS);
                 conflicts =
-                        TvSingletons.getSingletons(getContext())
+                        TvApplication.getSingletons(getContext())
                                 .getDvrManager()
                                 .getConflictingSchedules(
                                         mChannel.getId(), mStartTimeMs, mEndTimeMs);

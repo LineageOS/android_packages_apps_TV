@@ -38,11 +38,11 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.MutableInt;
+import com.android.tv.common.SharedPreferencesUtils;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.WeakHandler;
-import com.android.tv.common.util.PermissionUtils;
-import com.android.tv.common.util.SharedPreferencesUtils;
 import com.android.tv.util.AsyncDbTask;
+import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import java.io.IOException;
@@ -62,7 +62,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * methods are called in only the main thread.
  */
 @AnyThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ChannelDataManager {
     private static final String TAG = "ChannelDataManager";
     private static final boolean DEBUG = false;

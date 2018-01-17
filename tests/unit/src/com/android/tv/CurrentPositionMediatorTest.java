@@ -18,17 +18,15 @@ package com.android.tv;
 
 import static com.android.tv.TimeShiftManager.INVALID_TIME;
 import static com.android.tv.TimeShiftManager.REQUEST_TIMEOUT_MS;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 @MediumTest
-@RunWith(AndroidJUnit4.class)
 public class CurrentPositionMediatorTest extends BaseMainActivityTestCase {
     private TimeShiftManager.CurrentPositionMediator mMediator;
 
@@ -52,12 +50,8 @@ public class CurrentPositionMediatorTest extends BaseMainActivityTestCase {
     public void testOnSeekRequested() {
         long seekToTimeMs = System.currentTimeMillis() - REQUEST_TIMEOUT_MS * 3;
         mMediator.onSeekRequested(seekToTimeMs);
-        assertWithMessage("Seek request time")
-                .that(mMediator.mSeekRequestTimeMs)
-                .isNotSameAs(INVALID_TIME);
-        assertWithMessage("Current position")
-                .that(mMediator.mCurrentPositionMs)
-                .isEqualTo(seekToTimeMs);
+        assertNotSame("Seek request time", INVALID_TIME, mMediator.mSeekRequestTimeMs);
+        assertEquals("Current position", seekToTimeMs, mMediator.mCurrentPositionMs);
     }
 
     @UiThreadTest
@@ -67,15 +61,9 @@ public class CurrentPositionMediatorTest extends BaseMainActivityTestCase {
         long newCurrentTimeMs = seekToTimeMs + REQUEST_TIMEOUT_MS;
         mMediator.onSeekRequested(seekToTimeMs);
         mMediator.onCurrentPositionChanged(newCurrentTimeMs);
-        assertWithMessage("Seek request time")
-                .that(mMediator.mSeekRequestTimeMs)
-                .isNotSameAs(INVALID_TIME);
-        assertWithMessage("Current position")
-                .that(mMediator.mCurrentPositionMs)
-                .isNotSameAs(seekToTimeMs);
-        assertWithMessage("Current position")
-                .that(mMediator.mCurrentPositionMs)
-                .isNotSameAs(newCurrentTimeMs);
+        assertNotSame("Seek request time", INVALID_TIME, mMediator.mSeekRequestTimeMs);
+        assertNotSame("Current position", seekToTimeMs, mMediator.mCurrentPositionMs);
+        assertNotSame("Current position", newCurrentTimeMs, mMediator.mCurrentPositionMs);
     }
 
     @UiThreadTest
@@ -90,11 +78,7 @@ public class CurrentPositionMediatorTest extends BaseMainActivityTestCase {
 
     private void assertCurrentPositionMediator(
             long expectedSeekRequestTimeMs, long expectedCurrentPositionMs) {
-        assertWithMessage("Seek request time")
-                .that(mMediator.mSeekRequestTimeMs)
-                .isEqualTo(expectedSeekRequestTimeMs);
-        assertWithMessage("Current position")
-                .that(mMediator.mCurrentPositionMs)
-                .isEqualTo(expectedCurrentPositionMs);
+        assertEquals("Seek request time", expectedSeekRequestTimeMs, mMediator.mSeekRequestTimeMs);
+        assertEquals("Current position", expectedCurrentPositionMs, mMediator.mCurrentPositionMs);
     }
 }

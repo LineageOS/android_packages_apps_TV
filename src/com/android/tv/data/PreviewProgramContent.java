@@ -17,18 +17,17 @@
 package com.android.tv.data;
 
 import android.content.Context;
+import android.media.tv.TvContract;
 import android.net.Uri;
-import android.support.annotation.VisibleForTesting;
-import android.support.media.tv.TvContractCompat;
 import android.text.TextUtils;
 import android.util.Pair;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.data.RecordedProgram;
 import java.util.Objects;
 
 /** A class to store the content of preview programs. */
 public class PreviewProgramContent {
-    @VisibleForTesting static final String PARAM_INPUT = "input";
+    private static final String PARAM_INPUT = "input";
 
     private long mId;
     private long mPreviewChannelId;
@@ -44,30 +43,17 @@ public class PreviewProgramContent {
     public static PreviewProgramContent createFromProgram(
             Context context, long previewChannelId, Program program) {
         Channel channel =
-                TvSingletons.getSingletons(context)
+                TvApplication.getSingletons(context)
                         .getChannelDataManager()
                         .getChannel(program.getChannelId());
-        return channel == null ? null : createFromProgram(previewChannelId, program, channel);
-    }
-
-    /** Create preview program content from {@link RecordedProgram} */
-    public static PreviewProgramContent createFromRecordedProgram(
-            Context context, long previewChannelId, RecordedProgram recordedProgram) {
-        Channel channel =
-                TvSingletons.getSingletons(context)
-                        .getChannelDataManager()
-                        .getChannel(recordedProgram.getChannelId());
-        return createFromRecordedProgram(previewChannelId, recordedProgram, channel);
-    }
-
-    @VisibleForTesting
-    static PreviewProgramContent createFromProgram(
-            long previewChannelId, Program program, Channel channel) {
+        if (channel == null) {
+            return null;
+        }
         String channelDisplayName = channel.getDisplayName();
         return new PreviewProgramContent.Builder()
                 .setId(program.getId())
                 .setPreviewChannelId(previewChannelId)
-                .setType(TvContractCompat.PreviewPrograms.TYPE_CHANNEL)
+                .setType(TvContract.PreviewPrograms.TYPE_CHANNEL)
                 .setLive(true)
                 .setTitle(program.getTitle())
                 .setDescription(
@@ -82,15 +68,22 @@ public class PreviewProgramContent {
                 .build();
     }
 
-    @VisibleForTesting
-    static PreviewProgramContent createFromRecordedProgram(
-            long previewChannelId, RecordedProgram recordedProgram, Channel channel) {
-        String channelDisplayName = channel == null ? null : channel.getDisplayName();
-        Uri recordedProgramUri = TvContractCompat.buildRecordedProgramUri(recordedProgram.getId());
+    /** Create preview program content from {@link RecordedProgram} */
+    public static PreviewProgramContent createFromRecordedProgram(
+            Context context, long previewChannelId, RecordedProgram recordedProgram) {
+        Channel channel =
+                TvApplication.getSingletons(context)
+                        .getChannelDataManager()
+                        .getChannel(recordedProgram.getChannelId());
+        String channelDisplayName = null;
+        if (channel != null) {
+            channelDisplayName = channel.getDisplayName();
+        }
+        Uri recordedProgramUri = TvContract.buildRecordedProgramUri(recordedProgram.getId());
         return new PreviewProgramContent.Builder()
                 .setId(recordedProgram.getId())
                 .setPreviewChannelId(previewChannelId)
-                .setType(TvContractCompat.PreviewPrograms.TYPE_CLIP)
+                .setType(TvContract.PreviewPrograms.TYPE_CLIP)
                 .setTitle(recordedProgram.getTitle())
                 .setDescription(channelDisplayName != null ? channelDisplayName : "")
                 .setPosterArtUri(Uri.parse(recordedProgram.getPosterArtUri()))

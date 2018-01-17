@@ -20,18 +20,15 @@ import static org.junit.Assert.assertEquals;
 
 import android.media.tv.TvTrackInfo;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.testing.ComparatorTester;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Tests for {@link com.android.tv.util.TvTrackInfoUtils}. */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 public class TvTrackInfoUtilsTest {
     private static final String UN_MATCHED_ID = "no matching ID";
 
