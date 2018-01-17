@@ -34,7 +34,7 @@ import com.android.tv.dvr.provider.DvrContract.SeriesRecordings;
 /** A data class for one recorded contents. */
 public class DvrDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DvrDatabaseHelper";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int DATABASE_VERSION = 17;
     private static final String DB_NAME = "dvr.db";

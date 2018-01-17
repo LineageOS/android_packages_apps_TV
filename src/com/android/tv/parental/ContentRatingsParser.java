@@ -33,7 +33,6 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ContentRatingsParser {
     private static final String TAG = "ContentRatingsParser";
     private static final boolean DEBUG = false;

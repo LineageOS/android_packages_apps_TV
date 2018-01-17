@@ -17,8 +17,10 @@
 package com.android.tv.data;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.database.ContentObserver;
@@ -28,15 +30,14 @@ import android.net.Uri;
 import android.os.HandlerThread;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
 import android.test.mock.MockCursor;
 import android.util.Log;
 import android.util.SparseArray;
+import com.android.tv.testing.Constants;
 import com.android.tv.testing.FakeClock;
-import com.android.tv.testing.constants.Constants;
-import com.android.tv.testing.data.ProgramInfo;
+import com.android.tv.testing.ProgramInfo;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,14 +46,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Test for {@link com.android.tv.data.ProgramDataManager} */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
-@Ignore("b/69836704")
 public class ProgramDataManagerTest {
     private static final boolean DEBUG = false;
     private static final String TAG = "ProgramDataManagerTest";
@@ -97,8 +94,7 @@ public class ProgramDataManagerTest {
 
     private void startAndWaitForComplete() throws InterruptedException {
         mProgramDataManager.start();
-        assertThat(mListener.programUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
+        assertTrue(mListener.programUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
     }
 
     /** Test for {@link ProgramInfo#getIndex} and {@link ProgramInfo#getStartTimeMs}. */
@@ -109,8 +105,8 @@ public class ProgramDataManagerTest {
             int index = stub.getIndex(mClock.currentTimeMillis(), channelId);
             long startTimeMs = stub.getStartTimeMs(index, channelId);
             ProgramInfo programAt = stub.build(InstrumentationRegistry.getContext(), index);
-            assertThat(startTimeMs).isAtMost(mClock.currentTimeMillis());
-            assertThat(mClock.currentTimeMillis()).isLessThan(startTimeMs + programAt.durationMs);
+            assertTrue(startTimeMs <= mClock.currentTimeMillis());
+            assertTrue(mClock.currentTimeMillis() < startTimeMs + programAt.durationMs);
         }
     }
 
@@ -134,11 +130,9 @@ public class ProgramDataManagerTest {
         for (long channelId = 1; channelId <= Constants.UNIT_TEST_CHANNEL_COUNT; channelId++) {
             Program currentProgram = mProgramDataManager.getCurrentProgram(channelId);
             // Test {@link ProgramDataManager#getCurrentProgram(long)}.
-            assertThat(
-                            currentProgram.getStartTimeUtcMillis() <= mClock.currentTimeMillis()
-                                    && mClock.currentTimeMillis()
-                                            <= currentProgram.getEndTimeUtcMillis())
-                    .isTrue();
+            assertTrue(
+                    currentProgram.getStartTimeUtcMillis() <= mClock.currentTimeMillis()
+                            && mClock.currentTimeMillis() <= currentProgram.getEndTimeUtcMillis());
 
             // Test {@link ProgramDataManager#getPrograms(long)}.
             // Case #1: Normal case
@@ -155,14 +149,14 @@ public class ProgramDataManagerTest {
             // Case #2: Corner cases where there's a program that starts at the start of the range.
             long startTimeMs = programs.get(0).getStartTimeUtcMillis();
             programs = mProgramDataManager.getPrograms(channelId, startTimeMs);
-            assertThat(programs.get(0).getStartTimeUtcMillis()).isEqualTo(startTimeMs);
+            assertEquals(startTimeMs, programs.get(0).getStartTimeUtcMillis());
 
             // Test {@link ProgramDataManager#setPrefetchTimeRange(long)}.
             programs =
                     mProgramDataManager.getPrograms(
                             channelId, prefetchTimeRangeStartMs - TimeUnit.HOURS.toMillis(1));
             for (Program program : programs) {
-                assertThat(program.getEndTimeUtcMillis()).isAtLeast(prefetchTimeRangeStartMs);
+                assertTrue(program.getEndTimeUtcMillis() >= prefetchTimeRangeStartMs);
             }
         }
     }
@@ -192,14 +186,12 @@ public class ProgramDataManagerTest {
         TestProgramDataManagerOnCurrentProgramUpdatedListener listener =
                 new TestProgramDataManagerOnCurrentProgramUpdatedListener();
         mProgramDataManager.addOnCurrentProgramUpdatedListener(testChannelId, listener);
-        assertThat(
-                        listener.currentProgramUpdatedLatch.await(
-                                WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
-        assertThat(listener.updatedChannelId).isEqualTo(testChannelId);
+        assertTrue(
+                listener.currentProgramUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
+        assertEquals(testChannelId, listener.updatedChannelId);
         Program currentProgram = mProgramDataManager.getCurrentProgram(testChannelId);
         assertProgramEquals(nextProgramStartTimeMs, nextProgramInfo, currentProgram);
-        assertThat(currentProgram).isEqualTo(listener.updatedProgram);
+        assertEquals(listener.updatedProgram, currentProgram);
     }
 
     /** Test if program data is refreshed after the program insertion. */
@@ -212,15 +204,14 @@ public class ProgramDataManagerTest {
         mListener.reset();
         List<Program> programList =
                 mProgramDataManager.getPrograms(testChannelId, mClock.currentTimeMillis());
-        assertThat(programList).isNotNull();
+        assertNotNull(programList);
         long lastProgramEndTime = programList.get(programList.size() - 1).getEndTimeUtcMillis();
         // Make change in content provider
         mContentProvider.simulateAppend(testChannelId);
-        assertThat(mListener.programUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
+        assertTrue(mListener.programUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
         programList = mProgramDataManager.getPrograms(testChannelId, mClock.currentTimeMillis());
-        assertThat(lastProgramEndTime)
-                .isLessThan(programList.get(programList.size() - 1).getEndTimeUtcMillis());
+        assertTrue(
+                lastProgramEndTime < programList.get(programList.size() - 1).getEndTimeUtcMillis());
     }
 
     /** Test for {@link ProgramDataManager#setPauseProgramUpdate(boolean)}. */
@@ -233,28 +224,23 @@ public class ProgramDataManagerTest {
         mListener.reset();
         mProgramDataManager.setPauseProgramUpdate(true);
         mContentProvider.simulateAppend(testChannelId);
-        assertThat(mListener.programUpdatedLatch.await(FAILURE_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isFalse();
+        assertFalse(
+                mListener.programUpdatedLatch.await(FAILURE_TIME_OUT_MS, TimeUnit.MILLISECONDS));
     }
 
     public static void assertProgramEquals(
             long expectedStartTime, ProgramInfo expectedInfo, Program actualProgram) {
-        assertWithMessage("title").that(actualProgram.getTitle()).isEqualTo(expectedInfo.title);
-        assertWithMessage("episode")
-                .that(actualProgram.getEpisodeTitle())
-                .isEqualTo(expectedInfo.episode);
-        assertWithMessage("description")
-                .that(actualProgram.getDescription())
-                .isEqualTo(expectedInfo.description);
-        assertWithMessage("startTime")
-                .that(actualProgram.getStartTimeUtcMillis())
-                .isEqualTo(expectedStartTime);
-        assertWithMessage("endTime")
-                .that(actualProgram.getEndTimeUtcMillis())
-                .isEqualTo(expectedStartTime + expectedInfo.durationMs);
+        assertEquals("title", expectedInfo.title, actualProgram.getTitle());
+        assertEquals("episode", expectedInfo.episode, actualProgram.getEpisodeTitle());
+        assertEquals("description", expectedInfo.description, actualProgram.getDescription());
+        assertEquals("startTime", expectedStartTime, actualProgram.getStartTimeUtcMillis());
+        assertEquals(
+                "endTime",
+                expectedStartTime + expectedInfo.durationMs,
+                actualProgram.getEndTimeUtcMillis());
     }
 
-    private final class FakeContentResolver extends MockContentResolver {
+    private class FakeContentResolver extends MockContentResolver {
         @Override
         public void notifyChange(Uri uri, ContentObserver observer, boolean syncToNetwork) {
             super.notifyChange(uri, observer, syncToNetwork);
@@ -269,7 +255,7 @@ public class ProgramDataManagerTest {
         }
     }
 
-    private static final class ProgramInfoWrapper {
+    private static class ProgramInfoWrapper {
         private final int index;
         private final long startTimeMs;
         private final ProgramInfo programInfo;
@@ -283,7 +269,7 @@ public class ProgramDataManagerTest {
 
     // This implements the minimal methods in content resolver
     // and detailed assumptions are written in each method.
-    private final class FakeContentProvider extends MockContentProvider {
+    private class FakeContentProvider extends MockContentProvider {
         private final SparseArray<List<ProgramInfoWrapper>> mProgramInfoList = new SparseArray<>();
 
         /**
@@ -374,9 +360,9 @@ public class ProgramDataManagerTest {
         }
 
         private void assertProgramUri(Uri uri) {
-            assertWithMessage("Uri(" + uri + ") isn't channel uri")
-                    .that(uri.toString().startsWith(TvContract.Programs.CONTENT_URI.toString()))
-                    .isTrue();
+            assertTrue(
+                    "Uri(" + uri + ") isn't channel uri",
+                    uri.toString().startsWith(TvContract.Programs.CONTENT_URI.toString()));
         }
 
         public ProgramInfoWrapper get(long channelId, int position) {
@@ -388,8 +374,8 @@ public class ProgramDataManagerTest {
         }
     }
 
-    private final class FakeCursor extends MockCursor {
-        private final String[] allColumns = {
+    private class FakeCursor extends MockCursor {
+        private final String[] ALL_COLUMNS = {
             TvContract.Programs.COLUMN_CHANNEL_ID,
             TvContract.Programs.COLUMN_TITLE,
             TvContract.Programs.COLUMN_SHORT_DESCRIPTION,
@@ -417,7 +403,7 @@ public class ProgramDataManagerTest {
          * @param endTimeMs end of the time range to query programs.
          */
         public FakeCursor(String[] columns, long channelId, long startTimeMs, long endTimeMs) {
-            mColumns = (columns == null) ? allColumns : columns;
+            mColumns = (columns == null) ? ALL_COLUMNS : columns;
             mIsQueryForSingleChannel = (channelId > 0);
             mChannelId = channelId;
             mProgramPosition = -1;
@@ -480,12 +466,11 @@ public class ProgramDataManagerTest {
                     return mCurrentProgram.startTimeMs;
                 case TvContract.Programs.COLUMN_END_TIME_UTC_MILLIS:
                     return mCurrentProgram.startTimeMs + mCurrentProgram.programInfo.durationMs;
-                default:
-                    if (DEBUG) {
-                        Log.d(TAG, "Column (" + columnName + ") is ignored in getLong()");
-                    }
-                    return 0;
             }
+            if (DEBUG) {
+                Log.d(TAG, "Column (" + columnName + ") is ignored in getLong()");
+            }
+            return 0;
         }
 
         @Override
@@ -498,12 +483,11 @@ public class ProgramDataManagerTest {
                     return mCurrentProgram.programInfo.description;
                 case TvContract.Programs.COLUMN_EPISODE_TITLE:
                     return mCurrentProgram.programInfo.episode;
-                default:
-                    if (DEBUG) {
-                        Log.d(TAG, "Column (" + columnName + ") is ignored in getString()");
-                    }
-                    return null;
             }
+            if (DEBUG) {
+                Log.d(TAG, "Column (" + columnName + ") is ignored in getString()");
+            }
+            return null;
         }
 
         @Override

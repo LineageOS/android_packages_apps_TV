@@ -33,7 +33,6 @@ import java.util.List;
  * android.media.tv.TvContract.Programs#COLUMN_INTERNAL_PROVIDER_DATA} field in the {@link
  * android.media.tv.TvContract.Programs}.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public final class InternalDataUtils {
     private static final boolean DEBUG = false;
     private static final String TAG = "InternalDataUtils";

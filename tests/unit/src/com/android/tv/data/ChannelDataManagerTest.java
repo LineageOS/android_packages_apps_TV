@@ -18,8 +18,9 @@ package com.android.tv.data;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -31,7 +32,6 @@ import android.media.tv.TvContract;
 import android.media.tv.TvContract.Channels;
 import android.net.Uri;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import android.test.MoreAsserts;
 import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
@@ -39,8 +39,8 @@ import android.test.mock.MockCursor;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
-import com.android.tv.testing.constants.Constants;
-import com.android.tv.testing.data.ChannelInfo;
+import com.android.tv.testing.ChannelInfo;
+import com.android.tv.testing.Constants;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -61,7 +60,6 @@ import org.mockito.Mockito;
  * the methods of {@link ChannelDataManager} should be called from the UI thread.
  */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 public class ChannelDataManagerTest {
     private static final boolean DEBUG = false;
     private static final String TAG = "ChannelDataManagerTest";
@@ -79,9 +77,7 @@ public class ChannelDataManagerTest {
 
     @Before
     public void setUp() {
-        assertWithMessage("More than 2 channels to test")
-                .that(Constants.UNIT_TEST_CHANNEL_COUNT > 2)
-                .isTrue();
+        assertTrue("More than 2 channels to test", Constants.UNIT_TEST_CHANNEL_COUNT > 2);
 
         mContentProvider = new FakeContentProvider(getTargetContext());
         mContentResolver = new FakeContentResolver();
@@ -125,8 +121,7 @@ public class ChannelDataManagerTest {
                                 mChannelDataManager.start();
                             }
                         });
-        assertThat(mListener.loadFinishedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
+        assertTrue(mListener.loadFinishedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
     }
 
     private void restart() throws InterruptedException {
@@ -145,7 +140,7 @@ public class ChannelDataManagerTest {
     @Test
     public void testIsDbLoadFinished() throws InterruptedException {
         startAndWaitForComplete();
-        assertThat(mChannelDataManager.isDbLoadFinished()).isTrue();
+        assertTrue(mChannelDataManager.isDbLoadFinished());
     }
 
     /**
@@ -157,8 +152,7 @@ public class ChannelDataManagerTest {
         startAndWaitForComplete();
 
         // Test {@link ChannelDataManager#getChannelCount}
-        assertThat(mChannelDataManager.getChannelCount())
-                .isEqualTo(Constants.UNIT_TEST_CHANNEL_COUNT);
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT, mChannelDataManager.getChannelCount());
 
         // Test {@link ChannelDataManager#getChannelList}
         List<ChannelInfo> channelInfoList = new ArrayList<>();
@@ -169,18 +163,19 @@ public class ChannelDataManagerTest {
         for (Channel channel : channelList) {
             boolean found = false;
             for (ChannelInfo channelInfo : channelInfoList) {
-                if (TextUtils.equals(channelInfo.name, channel.getDisplayName())) {
+                if (TextUtils.equals(channelInfo.name, channel.getDisplayName())
+                        && TextUtils.equals(channelInfo.name, channel.getDisplayName())) {
                     found = true;
                     channelInfoList.remove(channelInfo);
                     break;
                 }
             }
-            assertWithMessage("Cannot find (" + channel + ")").that(found).isTrue();
+            assertTrue("Cannot find (" + channel + ")", found);
         }
 
         // Test {@link ChannelDataManager#getChannelIndex()}
         for (Channel channel : channelList) {
-            assertThat(mChannelDataManager.getChannel(channel.getId())).isEqualTo(channel);
+            assertEquals(channel, mChannelDataManager.getChannel(channel.getId()));
         }
     }
 
@@ -189,7 +184,7 @@ public class ChannelDataManagerTest {
     public void testGetChannels_noChannels() throws InterruptedException {
         mContentProvider.clear();
         startAndWaitForComplete();
-        assertThat(mChannelDataManager.getChannelCount()).isEqualTo(0);
+        assertEquals(0, mChannelDataManager.getChannelCount());
     }
 
     /**
@@ -205,9 +200,9 @@ public class ChannelDataManagerTest {
         List<Channel> browsableChannelList = mChannelDataManager.getBrowsableChannelList();
         for (Channel browsableChannel : browsableChannelList) {
             boolean found = channelList.remove(browsableChannel);
-            assertWithMessage("Cannot find (" + browsableChannel + ")").that(found).isTrue();
+            assertTrue("Cannot find (" + browsableChannel + ")", found);
         }
-        assertThat(channelList).isEmpty();
+        assertEquals(0, channelList.size());
 
         // Prepare for next tests.
         channelList = mChannelDataManager.getChannelList();
@@ -218,8 +213,8 @@ public class ChannelDataManagerTest {
 
         // Test {@link ChannelDataManager#updateBrowsable} & notification.
         mChannelDataManager.updateBrowsable(channel1.getId(), false, false);
-        assertThat(mListener.channelBrowsableChangedCalled).isTrue();
-        assertThat(mChannelDataManager.getBrowsableChannelList()).doesNotContain(channel1);
+        assertTrue(mListener.channelBrowsableChangedCalled);
+        assertFalse(mChannelDataManager.getBrowsableChannelList().contains(channel1));
         MoreAsserts.assertContentsInAnyOrder(channelListener.updatedChannels, channel1);
         channelListener.reset();
 
@@ -229,8 +224,8 @@ public class ChannelDataManagerTest {
         mChannelDataManager.applyUpdatedValuesToDb();
         restart();
         browsableChannelList = mChannelDataManager.getBrowsableChannelList();
-        assertThat(browsableChannelList).hasSize(Constants.UNIT_TEST_CHANNEL_COUNT - 1);
-        assertThat(browsableChannelList).doesNotContain(channel1);
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT - 1, browsableChannelList.size());
+        assertFalse(browsableChannelList.contains(channel1));
     }
 
     /**
@@ -254,10 +249,10 @@ public class ChannelDataManagerTest {
         mChannelDataManager.updateBrowsable(channel1.getId(), false, true);
         mChannelDataManager.updateBrowsable(channel2.getId(), false, true);
         mChannelDataManager.updateBrowsable(channel1.getId(), true, true);
-        assertThat(mListener.channelBrowsableChangedCalled).isFalse();
+        assertFalse(mListener.channelBrowsableChangedCalled);
         List<Channel> browsableChannelList = mChannelDataManager.getBrowsableChannelList();
-        assertThat(browsableChannelList).contains(channel1);
-        assertThat(browsableChannelList).doesNotContain(channel2);
+        assertTrue(browsableChannelList.contains(channel1));
+        assertFalse(browsableChannelList.contains(channel2));
 
         // Test {@link ChannelDataManager#applyUpdatedValuesToDb}
         // Disable the update notification to avoid the unwanted call of "onLoadFinished".
@@ -265,8 +260,8 @@ public class ChannelDataManagerTest {
         mChannelDataManager.applyUpdatedValuesToDb();
         restart();
         browsableChannelList = mChannelDataManager.getBrowsableChannelList();
-        assertThat(browsableChannelList).hasSize(Constants.UNIT_TEST_CHANNEL_COUNT - 1);
-        assertThat(browsableChannelList).doesNotContain(channel2);
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT - 1, browsableChannelList.size());
+        assertFalse(browsableChannelList.contains(channel2));
     }
 
     /**
@@ -280,7 +275,7 @@ public class ChannelDataManagerTest {
         // Test if all channels aren't locked at the first time.
         List<Channel> channelList = mChannelDataManager.getChannelList();
         for (Channel channel : channelList) {
-            assertWithMessage(channel + " is locked").that(channel.isLocked()).isFalse();
+            assertFalse(channel + " is locked", channel.isLocked());
         }
 
         // Prepare for next tests.
@@ -288,14 +283,14 @@ public class ChannelDataManagerTest {
 
         // Test {@link ChannelDataManager#updateLocked}
         mChannelDataManager.updateLocked(channel.getId(), true);
-        assertThat(mChannelDataManager.getChannel(channel.getId()).isLocked()).isTrue();
+        assertTrue(mChannelDataManager.getChannel(channel.getId()).isLocked());
 
         // Test {@link ChannelDataManager#applyUpdatedValuesToDb}.
         // Disable the update notification to avoid the unwanted call of "onLoadFinished".
         mContentResolver.mNotifyDisabled = true;
         mChannelDataManager.applyUpdatedValuesToDb();
         restart();
-        assertThat(mChannelDataManager.getChannel(channel.getId()).isLocked()).isTrue();
+        assertTrue(mChannelDataManager.getChannel(channel.getId()).isLocked());
 
         // Cleanup
         mChannelDataManager.updateLocked(channel.getId(), false);
@@ -312,10 +307,9 @@ public class ChannelDataManagerTest {
         ChannelInfo testChannelInfo = ChannelInfo.create(getTargetContext(), (int) testChannelId);
         testChannelId = Constants.UNIT_TEST_CHANNEL_COUNT + 1;
         mContentProvider.simulateInsert(testChannelInfo);
-        assertThat(mListener.channelListUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
-        assertThat(mChannelDataManager.getChannelCount())
-                .isEqualTo(Constants.UNIT_TEST_CHANNEL_COUNT + 1);
+        assertTrue(
+                mListener.channelListUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT + 1, mChannelDataManager.getChannelCount());
 
         // Test channel update
         mListener.reset();
@@ -324,41 +318,35 @@ public class ChannelDataManagerTest {
         mChannelDataManager.addChannelListener(testChannelId, channelListener);
         String newName = testChannelInfo.name + "_test";
         mContentProvider.simulateUpdate(testChannelId, newName);
-        assertThat(mListener.channelListUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
-        assertThat(
-                        channelListener.channelChangedLatch.await(
-                                WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
-        assertThat(channelListener.removedChannels).isEmpty();
-        assertThat(channelListener.updatedChannels).hasSize(1);
+        assertTrue(
+                mListener.channelListUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
+        assertTrue(
+                channelListener.channelChangedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
+        assertEquals(0, channelListener.removedChannels.size());
+        assertEquals(1, channelListener.updatedChannels.size());
         Channel updatedChannel = channelListener.updatedChannels.get(0);
-        assertThat(updatedChannel.getId()).isEqualTo(testChannelId);
-        assertThat(updatedChannel.getDisplayNumber()).isEqualTo(testChannelInfo.number);
-        assertThat(updatedChannel.getDisplayName()).isEqualTo(newName);
-        assertThat(mChannelDataManager.getChannelCount())
-                .isEqualTo(Constants.UNIT_TEST_CHANNEL_COUNT + 1);
+        assertEquals(testChannelId, updatedChannel.getId());
+        assertEquals(testChannelInfo.number, updatedChannel.getDisplayNumber());
+        assertEquals(newName, updatedChannel.getDisplayName());
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT + 1, mChannelDataManager.getChannelCount());
 
         // Test channel remove.
         mListener.reset();
         channelListener.reset();
         mContentProvider.simulateDelete(testChannelId);
-        assertThat(mListener.channelListUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
-        assertThat(
-                        channelListener.channelChangedLatch.await(
-                                WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS))
-                .isTrue();
-        assertThat(channelListener.removedChannels).hasSize(1);
-        assertThat(channelListener.updatedChannels).isEmpty();
+        assertTrue(
+                mListener.channelListUpdatedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
+        assertTrue(
+                channelListener.channelChangedLatch.await(WAIT_TIME_OUT_MS, TimeUnit.MILLISECONDS));
+        assertEquals(1, channelListener.removedChannels.size());
+        assertEquals(0, channelListener.updatedChannels.size());
         Channel removedChannel = channelListener.removedChannels.get(0);
-        assertThat(removedChannel.getDisplayName()).isEqualTo(newName);
-        assertThat(removedChannel.getDisplayNumber()).isEqualTo(testChannelInfo.number);
-        assertThat(mChannelDataManager.getChannelCount())
-                .isEqualTo(Constants.UNIT_TEST_CHANNEL_COUNT);
+        assertEquals(newName, removedChannel.getDisplayName());
+        assertEquals(testChannelInfo.number, removedChannel.getDisplayNumber());
+        assertEquals(Constants.UNIT_TEST_CHANNEL_COUNT, mChannelDataManager.getChannelCount());
     }
 
-    private static class ChannelInfoWrapper {
+    private class ChannelInfoWrapper {
         public ChannelInfo channelInfo;
         public boolean browsable;
         public boolean locked;
@@ -525,9 +513,9 @@ public class ChannelDataManagerTest {
         }
 
         private void assertChannelUri(Uri uri) {
-            assertWithMessage("Uri(" + uri + ") isn't channel uri")
-                    .that(uri.toString().startsWith(Channels.CONTENT_URI.toString()))
-                    .isTrue();
+            assertTrue(
+                    "Uri(" + uri + ") isn't channel uri",
+                    uri.toString().startsWith(Channels.CONTENT_URI.toString()));
         }
 
         public void clear() {
@@ -548,7 +536,7 @@ public class ChannelDataManagerTest {
     }
 
     private class FakeCursor extends MockCursor {
-        private final String[] allColumns = {
+        private final String[] ALL_COLUMNS = {
             Channels._ID,
             Channels.COLUMN_DISPLAY_NAME,
             Channels.COLUMN_DISPLAY_NUMBER,
@@ -562,7 +550,7 @@ public class ChannelDataManagerTest {
         private int mPosition;
 
         public FakeCursor(String[] columns) {
-            mColumns = (columns == null) ? allColumns : columns;
+            mColumns = (columns == null) ? ALL_COLUMNS : columns;
             mPosition = -1;
         }
 
@@ -587,7 +575,6 @@ public class ChannelDataManagerTest {
             switch (columnName) {
                 case Channels._ID:
                     return mContentProvider.keyAt(mPosition);
-                default: // fall out
             }
             if (DEBUG) {
                 Log.d(TAG, "Column (" + columnName + ") is ignored in getLong()");
@@ -608,7 +595,6 @@ public class ChannelDataManagerTest {
                     return DUMMY_INPUT_ID;
                 case Channels.COLUMN_VIDEO_FORMAT:
                     return channel.channelInfo.getVideoFormat();
-                default: // fall out
             }
             if (DEBUG) {
                 Log.d(TAG, "Column (" + columnName + ") is ignored in getString()");
@@ -627,7 +613,6 @@ public class ChannelDataManagerTest {
                     return channel.browsable ? 1 : 0;
                 case COLUMN_LOCKED:
                     return channel.locked ? 1 : 0;
-                default: // fall out
             }
             if (DEBUG) {
                 Log.d(TAG, "Column (" + columnName + ") is ignored in getInt()");
@@ -651,7 +636,7 @@ public class ChannelDataManagerTest {
         }
     }
 
-    private static class TestChannelDataManagerListener implements ChannelDataManager.Listener {
+    private class TestChannelDataManagerListener implements ChannelDataManager.Listener {
         public CountDownLatch loadFinishedLatch = new CountDownLatch(1);
         public CountDownLatch channelListUpdatedLatch = new CountDownLatch(1);
         public boolean channelBrowsableChangedCalled;
@@ -678,7 +663,7 @@ public class ChannelDataManagerTest {
         }
     }
 
-    private static class TestChannelDataManagerChannelListener
+    private class TestChannelDataManagerChannelListener
             implements ChannelDataManager.ChannelListener {
         public CountDownLatch channelChangedLatch = new CountDownLatch(1);
         public final List<Channel> removedChannels = new ArrayList<>();

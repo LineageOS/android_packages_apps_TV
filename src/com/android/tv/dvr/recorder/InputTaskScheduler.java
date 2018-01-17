@@ -26,13 +26,13 @@ import android.util.ArrayMap;
 import android.util.Log;
 import android.util.LongSparseArray;
 import com.android.tv.InputSessionManager;
-import com.android.tv.common.util.Clock;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.WritableDvrDataManager;
 import com.android.tv.dvr.data.ScheduledRecording;
+import com.android.tv.util.Clock;
 import com.android.tv.util.CompositeComparator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -443,7 +443,6 @@ public class InputTaskScheduler {
                     break;
                 case MSG_UPDATE_SCHEDULED_RECORDING:
                     handleUpdateSchedule((ScheduledRecording) msg.obj);
-                    break;
                 case MSG_BUILD_SCHEDULE:
                     handleBuildSchedule();
                     break;

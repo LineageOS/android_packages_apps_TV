@@ -21,7 +21,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
-import com.android.tv.testing.data.ChannelInfo;
+import com.android.tv.testing.ChannelInfo;
 
 /**
  * Connection for controlling the Test TV Input Service.

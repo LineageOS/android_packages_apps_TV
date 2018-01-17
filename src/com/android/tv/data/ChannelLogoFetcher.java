@@ -28,10 +28,10 @@ import android.os.RemoteException;
 import android.support.annotation.MainThread;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.common.util.PermissionUtils;
-import com.android.tv.common.util.SharedPreferencesUtils;
+import com.android.tv.common.SharedPreferencesUtils;
 import com.android.tv.util.BitmapUtils;
 import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
+import com.android.tv.util.PermissionUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ import java.util.Map;
  * Fetches channel logos from the cloud into the database. It's for the channels which have no logos
  * or need update logos. This class is thread safe.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ChannelLogoFetcher {
     private static final String TAG = "ChannelLogoFetcher";
     private static final boolean DEBUG = false;

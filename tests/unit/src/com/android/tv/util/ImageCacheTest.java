@@ -21,15 +21,12 @@ import static org.junit.Assert.assertSame;
 
 import android.graphics.Bitmap;
 import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Tests for {@link ImageCache}. */
 @MediumTest
-@RunWith(AndroidJUnit4.class)
 public class ImageCacheTest {
     private static final Bitmap ORIG = Bitmap.createBitmap(100, 100, Bitmap.Config.RGB_565);
 

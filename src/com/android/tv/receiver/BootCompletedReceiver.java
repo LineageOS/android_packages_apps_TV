@@ -23,10 +23,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-import com.android.tv.Starter;
+import com.android.tv.Features;
 import com.android.tv.TvActivity;
-import com.android.tv.TvFeatures;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.recorder.DvrRecordingService;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
@@ -52,12 +51,12 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!TvSingletons.getSingletons(context).getTvInputManagerHelper().hasTvInputManager()) {
+        if (!TvApplication.getSingletons(context).getTvInputManagerHelper().hasTvInputManager()) {
             Log.wtf(TAG, "Stopping because device does not have a TvInputManager");
             return;
         }
         if (DEBUG) Log.d(TAG, "boot completed " + intent);
-        Starter.start(context);
+        TvApplication.setCurrentRunningProcess(context, true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ChannelPreviewUpdater.getInstance(context).updatePreviewDataForChannelsImmediately();
@@ -70,7 +69,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         // Grant permission to already set up packages after the system has finished booting.
         SetupUtils.grantEpgPermissionToSetUpPackages(context);
 
-        if (TvFeatures.UNHIDE.isEnabled(context)) {
+        if (Features.UNHIDE.isEnabled(context)) {
             if (OnboardingUtils.isFirstBoot(context)) {
                 // Enable the application if this is the first "unhide" feature is enabled just in
                 // case when the app has been disabled before.
@@ -85,7 +84,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             }
         }
 
-        RecordingScheduler scheduler = TvSingletons.getSingletons(context).getRecordingScheduler();
+        RecordingScheduler scheduler = TvApplication.getSingletons(context).getRecordingScheduler();
         if (scheduler != null) {
             scheduler.updateAndStartServiceIfNeeded();
         }

@@ -16,8 +16,7 @@
 
 package com.android.tv.data;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,13 +25,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.testing.ComparatorTester;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.Comparator;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -40,20 +37,17 @@ import org.mockito.stubbing.Answer;
 
 /** Tests for {@link Channel}. */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 public class ChannelTest {
     // Used for testing TV inputs with invalid input package. This could happen when a TV input is
     // uninstalled while drawing an app link card.
-    private static final String INVALID_TV_INPUT_PACKAGE_NAME =
-            "com.android.tv.invalid_tv_input";
+    private static final String INVALID_TV_INPUT_PACKAGE_NAME = "com.android.tv.invalid_tv_input";
     // Used for testing TV inputs defined inside of Live TV.
     private static final String LIVE_CHANNELS_PACKAGE_NAME = "com.android.tv";
     // Used for testing a TV input which doesn't have its leanback launcher activity.
     private static final String NONE_LEANBACK_TV_INPUT_PACKAGE_NAME =
             "com.android.tv.none_leanback_tv_input";
     // Used for testing a TV input which has its leanback launcher activity.
-    private static final String LEANBACK_TV_INPUT_PACKAGE_NAME =
-            "com.android.tv.leanback_tv_input";
+    private static final String LEANBACK_TV_INPUT_PACKAGE_NAME = "com.android.tv.leanback_tv_input";
     private static final String TEST_APP_LINK_TEXT = "test_app_link_text";
     private static final String PARTNER_INPUT_ID = "partner";
     private static final ActivityInfo TEST_ACTIVITY_INFO = new ActivityInfo();
@@ -133,7 +127,6 @@ public class ChannelTest {
         assertAppLinkType(Channel.APP_LINK_TYPE_APP, LEANBACK_TV_INPUT_PACKAGE_NAME, null, null);
     }
 
-    @Test
     public void testGetAppLinkType_NoText_InvalidIntent() {
         assertAppLinkType(
                 Channel.APP_LINK_TYPE_NONE, INVALID_TV_INPUT_PACKAGE_NAME, null, mInvalidIntent);
@@ -148,7 +141,6 @@ public class ChannelTest {
                 Channel.APP_LINK_TYPE_APP, LEANBACK_TV_INPUT_PACKAGE_NAME, null, mInvalidIntent);
     }
 
-    @Test
     public void testGetAppLinkType_NoText_ValidIntent() {
         assertAppLinkType(
                 Channel.APP_LINK_TYPE_NONE, INVALID_TV_INPUT_PACKAGE_NAME, null, mValidIntent);
@@ -163,7 +155,6 @@ public class ChannelTest {
                 Channel.APP_LINK_TYPE_APP, LEANBACK_TV_INPUT_PACKAGE_NAME, null, mValidIntent);
     }
 
-    @Test
     public void testGetAppLinkType_HasText_NoIntent() {
         assertAppLinkType(
                 Channel.APP_LINK_TYPE_NONE,
@@ -184,7 +175,6 @@ public class ChannelTest {
                 null);
     }
 
-    @Test
     public void testGetAppLinkType_HasText_InvalidIntent() {
         assertAppLinkType(
                 Channel.APP_LINK_TYPE_NONE,
@@ -208,7 +198,6 @@ public class ChannelTest {
                 mInvalidIntent);
     }
 
-    @Test
     public void testGetAppLinkType_HasText_ValidIntent() {
         assertAppLinkType(
                 Channel.APP_LINK_TYPE_CHANNEL,
@@ -245,13 +234,14 @@ public class ChannelTest {
                                         ? null
                                         : appLinkIntent.toUri(Intent.URI_INTENT_SCHEME))
                         .build();
-        assertWithMessage("Unexpected app-link type for for " + testChannel)
-                .that(testChannel.getAppLinkType(mMockContext))
-                .isEqualTo(expectedType);
+        assertEquals(
+                "Unexpected app-link type for for " + testChannel,
+                expectedType,
+                testChannel.getAppLinkType(mMockContext));
     }
 
-    @Test
     public void testComparator() {
+
         TvInputManagerHelper manager = Mockito.mock(TvInputManagerHelper.class);
         Mockito.when(manager.isPartnerInput(Matchers.anyString()))
                 .thenAnswer(
@@ -303,7 +293,6 @@ public class ChannelTest {
      * <p>Sort partner inputs first, then sort by input label, then by input id. See <a
      * href="http://b/23031603">b/23031603</a>.
      */
-    @Test
     public void testComparatorLabel() {
         TvInputManagerHelper manager = Mockito.mock(TvInputManagerHelper.class);
         Mockito.when(manager.isPartnerInput(Matchers.anyString()))
@@ -332,7 +321,6 @@ public class ChannelTest {
         comparatorTester.test();
     }
 
-    @Test
     public void testNormalizeChannelNumber() {
         assertNormalizedDisplayNumber(null, null);
         assertNormalizedDisplayNumber("", "");
@@ -353,10 +341,10 @@ public class ChannelTest {
     }
 
     private void assertNormalizedDisplayNumber(String displayNumber, String normalized) {
-        assertThat(Channel.normalizeDisplayNumber(displayNumber)).isEqualTo(normalized);
+        assertEquals(normalized, Channel.normalizeDisplayNumber(displayNumber));
     }
 
-    private static final class TestChannelComparator extends Channel.DefaultComparator {
+    private class TestChannelComparator extends Channel.DefaultComparator {
         public TestChannelComparator(TvInputManagerHelper manager) {
             super(null, manager);
         }
@@ -367,8 +355,7 @@ public class ChannelTest {
         }
     }
 
-    private static final class ChannelComparatorWithDescriptionAsLabel
-            extends Channel.DefaultComparator {
+    private static class ChannelComparatorWithDescriptionAsLabel extends Channel.DefaultComparator {
         public ChannelComparatorWithDescriptionAsLabel(TvInputManagerHelper manager) {
             super(null, manager);
         }

@@ -30,12 +30,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.ui.setup.SetupGuidedStepFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.TvInputNewComparator;
+import com.android.tv.tuner.TunerInputController;
 import com.android.tv.ui.GuidedActionsStylistWithDivider;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
@@ -46,8 +48,7 @@ import java.util.List;
 /** A fragment for channel source info/setup. */
 public class SetupSourcesFragment extends SetupMultiPaneFragment {
     /** The action category for the actions which is fired from this fragment. */
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.onboarding.SetupSourcesFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.onboarding.SetupSourcesFragment";
     /** An action to open the merchant collection. */
     public static final int ACTION_ONLINE_STORE = 1;
     /**
@@ -70,7 +71,7 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        TvSingletons.getSingletons(getActivity()).getTracker().sendScreenView(SETUP_TRACKER_LABEL);
+        TvApplication.getSingletons(getActivity()).getTracker().sendScreenView(SETUP_TRACKER_LABEL);
         return view;
     }
 
@@ -189,18 +190,16 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             Context context = getActivity();
-            TvSingletons singletons = TvSingletons.getSingletons(context);
-            mInputManager = singletons.getTvInputManagerHelper();
-            mChannelDataManager = singletons.getChannelDataManager();
-            mSetupUtils = singletons.getSetupUtils();
+            ApplicationSingletons app = TvApplication.getSingletons(context);
+            mInputManager = app.getTvInputManagerHelper();
+            mChannelDataManager = app.getChannelDataManager();
+            mSetupUtils = SetupUtils.getInstance(context);
             buildInputs();
             mInputManager.addCallback(mInputCallback);
             mChannelDataManager.addListener(mChannelDataManagerListener);
             super.onCreate(savedInstanceState);
             mParentFragment = (SetupSourcesFragment) getParentFragment();
-            singletons
-                    .getTunerInputController()
-                    .executeNetworkTunerDiscoveryAsyncTask(getContext());
+            TunerInputController.executeNetworkTunerDiscoveryAsyncTask(getContext());
         }
 
         @Override

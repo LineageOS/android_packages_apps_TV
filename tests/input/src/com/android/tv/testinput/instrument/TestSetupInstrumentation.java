@@ -21,7 +21,7 @@ import android.app.Instrumentation;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.testing.constants.Constants;
+import com.android.tv.testing.Constants;
 import com.android.tv.testinput.TestTvInputService;
 import com.android.tv.testinput.TestTvInputSetupActivity;
 

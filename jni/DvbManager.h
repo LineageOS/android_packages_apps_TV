@@ -61,6 +61,7 @@ class DvbManager {
 
 
     int mFeFd;
+    int mDemuxFd;
     int mDvrFd;
     int mPatFilterFd;
     int mDvbApiVersion;

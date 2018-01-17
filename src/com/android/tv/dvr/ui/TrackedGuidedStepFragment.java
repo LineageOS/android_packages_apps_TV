@@ -19,7 +19,7 @@ package com.android.tv.dvr.ui;
 import android.content.Context;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidedAction;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.analytics.Tracker;
 
 /** A {@link GuidedStepFragment} with {@link Tracker} for analytics. */
@@ -29,7 +29,7 @@ public abstract class TrackedGuidedStepFragment extends GuidedStepFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mTracker = TvSingletons.getSingletons(context).getAnalytics().getDefaultTracker();
+        mTracker = TvApplication.getSingletons(context).getAnalytics().getDefaultTracker();
     }
 
     @Override

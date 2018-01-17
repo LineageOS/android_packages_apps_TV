@@ -33,7 +33,7 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.text.TextUtils;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.data.BaseProgram;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
@@ -73,7 +73,7 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mDvrDataManager = TvSingletons.getSingletons(getActivity()).getDvrDataManager();
+        mDvrDataManager = TvApplication.getSingletons(getActivity()).getDvrDataManager();
         mWatchLabel = getString(R.string.dvr_detail_watch);
         mResumeLabel = getString(R.string.dvr_detail_series_resume);
         mWatchDrawable = getResources().getDrawable(R.drawable.lb_ic_play, null);
@@ -84,7 +84,7 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
     @Override
     protected void onCreateInternal() {
         mDvrWatchedPositionManager =
-                TvSingletons.getSingletons(getActivity()).getDvrWatchedPositionManager();
+                TvApplication.getSingletons(getActivity()).getDvrWatchedPositionManager();
         setDetailsOverviewRow(DetailsContent.createFromSeriesRecording(getContext(), mSeries));
         setupRecordedProgramsRow();
         mDvrDataManager.addSeriesRecordingListener(this);
@@ -137,7 +137,7 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
     protected boolean onLoadRecordingDetails(Bundle args) {
         long recordId = args.getLong(DvrDetailsActivity.RECORDING_ID);
         mSeries =
-                TvSingletons.getSingletons(getActivity())
+                TvApplication.getSingletons(getActivity())
                         .getDvrDataManager()
                         .getSeriesRecording(recordId);
         if (mSeries == null) {

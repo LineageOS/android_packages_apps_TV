@@ -38,7 +38,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Channel;
 import com.android.tv.dialog.HalfSizedDialogFragment;
@@ -344,8 +344,8 @@ class ScheduleRowPresenter extends RowPresenter {
         setHeaderPresenter(null);
         setSelectEffectEnabled(false);
         mContext = context;
-        mDvrManager = TvSingletons.getSingletons(context).getDvrManager();
-        mDvrScheduleManager = TvSingletons.getSingletons(context).getDvrScheduleManager();
+        mDvrManager = TvApplication.getSingletons(context).getDvrManager();
+        mDvrScheduleManager = TvApplication.getSingletons(context).getDvrScheduleManager();
         mTunerConflictWillNotBeRecordedInfo =
                 mContext.getString(R.string.dvr_schedules_tuner_conflict_will_not_be_recorded_info);
         mTunerConflictWillBePartiallyRecordedInfo =
@@ -426,7 +426,7 @@ class ScheduleRowPresenter extends RowPresenter {
             switch (actions.length) {
                 case 2:
                     viewHolder.mSecondActionView.setImageResource(getImageForAction(actions[1]));
-                    // fall through
+                    // pass through
                 case 1:
                     viewHolder.mFirstActionView.setImageResource(getImageForAction(actions[0]));
                     break;
@@ -486,7 +486,7 @@ class ScheduleRowPresenter extends RowPresenter {
 
     private String getChannelNameText(ScheduleRow row) {
         Channel channel =
-                TvSingletons.getSingletons(mContext)
+                TvApplication.getSingletons(mContext)
                         .getChannelDataManager()
                         .getChannel(row.getChannelId());
         return channel == null

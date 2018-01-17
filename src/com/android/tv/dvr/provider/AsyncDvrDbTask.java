@@ -20,18 +20,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.provider.DvrContract.Schedules;
 import com.android.tv.dvr.provider.DvrContract.SeriesRecordings;
+import com.android.tv.util.NamedThreadFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** {@link AsyncTask} that defaults to executing on its own single threaded Executor Service. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public abstract class AsyncDvrDbTask<Params, Progress, Result>
         extends AsyncTask<Params, Progress, Result> {
     private static final NamedThreadFactory THREAD_FACTORY =

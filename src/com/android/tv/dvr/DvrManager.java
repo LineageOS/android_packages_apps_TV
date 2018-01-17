@@ -36,10 +36,10 @@ import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Range;
-import com.android.tv.TvSingletons;
+import com.android.tv.ApplicationSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManager.OnRecordedProgramLoadFinishedListener;
@@ -78,9 +78,9 @@ public class DvrManager {
     public DvrManager(Context context) {
         SoftPreconditions.checkFeatureEnabled(context, CommonFeatures.DVR, TAG);
         mAppContext = context.getApplicationContext();
-        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
-        mDataManager = (WritableDvrDataManager) tvSingletons.getDvrDataManager();
-        mScheduleManager = tvSingletons.getDvrScheduleManager();
+        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
+        mDataManager = (WritableDvrDataManager) appSingletons.getDvrDataManager();
+        mScheduleManager = appSingletons.getDvrScheduleManager();
         if (mDataManager.isInitialized() && mScheduleManager.isInitialized()) {
             createSeriesRecordingsForRecordedProgramsIfNeeded(mDataManager.getRecordedPrograms());
         } else {
@@ -666,7 +666,7 @@ public class DvrManager {
             return false;
         }
         Program program =
-                TvSingletons.getSingletons(mAppContext)
+                TvApplication.getSingletons(mAppContext)
                         .getProgramDataManager()
                         .getCurrentProgram(channel.getId());
         return program == null || !program.isRecordingProhibited();
@@ -683,7 +683,7 @@ public class DvrManager {
             return false;
         }
         Channel channel =
-                TvSingletons.getSingletons(mAppContext)
+                TvApplication.getSingletons(mAppContext)
                         .getChannelDataManager()
                         .getChannel(program.getChannelId());
         if (channel == null || channel.isRecordingProhibited()) {
@@ -833,7 +833,7 @@ public class DvrManager {
                 if (!recordedProgramPath.exists()) {
                     if (DEBUG) Log.d(TAG, "File to delete not exist: " + recordedProgramPath);
                 } else {
-                    CommonUtils.deleteDirOrFile(recordedProgramPath);
+                    Utils.deleteDirOrFile(recordedProgramPath);
                     if (DEBUG) {
                         Log.d(TAG, "Sucessfully deleted files of the recorded program: " + dataUri);
                     }

@@ -19,7 +19,7 @@ package com.android.tv.dvr.ui.browse;
 import android.content.Context;
 import android.os.Handler;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.util.Utils;
@@ -100,7 +100,7 @@ class ScheduledRecordingPresenter extends DvrItemPresenter<ScheduledRecording> {
 
     public ScheduledRecordingPresenter(Context context) {
         super(context);
-        mDvrManager = TvSingletons.getSingletons(mContext).getDvrManager();
+        mDvrManager = TvApplication.getSingletons(mContext).getDvrManager();
         mProgressBarColor =
                 mContext.getResources()
                         .getColor(R.color.play_controls_recording_icon_color_on_focus);

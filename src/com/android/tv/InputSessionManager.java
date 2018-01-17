@@ -76,7 +76,7 @@ public class InputSessionManager {
 
     public InputSessionManager(Context context) {
         mContext = context.getApplicationContext();
-        mInputManager = TvSingletons.getSingletons(context).getTvInputManagerHelper();
+        mInputManager = TvApplication.getSingletons(context).getTvInputManagerHelper();
     }
 
     /**

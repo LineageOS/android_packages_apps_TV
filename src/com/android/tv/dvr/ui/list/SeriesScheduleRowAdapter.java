@@ -23,8 +23,9 @@ import android.os.Build;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.util.ArrayMap;
 import android.util.Log;
+import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManager;
@@ -64,7 +65,7 @@ class SeriesScheduleRowAdapter extends ScheduleRowAdapter {
         } else {
             mInputId = null;
         }
-        TvSingletons singletons = TvSingletons.getSingletons(context);
+        ApplicationSingletons singletons = TvApplication.getSingletons(context);
         mDvrManager = singletons.getDvrManager();
         mDataManager = singletons.getDvrDataManager();
         setHasStableIds(true);

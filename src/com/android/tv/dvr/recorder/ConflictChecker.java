@@ -27,10 +27,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.ArraySet;
 import android.util.Log;
+import com.android.tv.ApplicationSingletons;
 import com.android.tv.InputSessionManager;
 import com.android.tv.InputSessionManager.OnTvViewChannelChangeListener;
 import com.android.tv.MainActivity;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
@@ -39,7 +40,6 @@ import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,35 +88,21 @@ public class ConflictChecker {
             new ScheduledRecordingListener() {
                 @Override
                 public void onScheduledRecordingAdded(ScheduledRecording... scheduledRecordings) {
-                    if (DEBUG) {
-                        Log.d(
-                                TAG,
-                                "onScheduledRecordingAdded: "
-                                        + Arrays.toString(scheduledRecordings));
-                    }
+                    if (DEBUG) Log.d(TAG, "onScheduledRecordingAdded: " + scheduledRecordings);
                     mHandler.sendEmptyMessage(MSG_CHECK_CONFLICT);
                 }
 
                 @Override
                 public void onScheduledRecordingRemoved(ScheduledRecording... scheduledRecordings) {
-                    if (DEBUG) {
-                        Log.d(
-                                TAG,
-                                "onScheduledRecordingRemoved: "
-                                        + Arrays.toString(scheduledRecordings));
-                    }
+                    if (DEBUG) Log.d(TAG, "onScheduledRecordingRemoved: " + scheduledRecordings);
                     mHandler.sendEmptyMessage(MSG_CHECK_CONFLICT);
                 }
 
                 @Override
                 public void onScheduledRecordingStatusChanged(
                         ScheduledRecording... scheduledRecordings) {
-                    if (DEBUG) {
-                        Log.d(
-                                TAG,
-                                "onScheduledRecordingStatusChanged: "
-                                        + Arrays.toString(scheduledRecordings));
-                    }
+                    if (DEBUG)
+                        Log.d(TAG, "onScheduledRecordingStatusChanged: " + scheduledRecordings);
                     mHandler.sendEmptyMessage(MSG_CHECK_CONFLICT);
                 }
             };
@@ -133,10 +119,10 @@ public class ConflictChecker {
 
     public ConflictChecker(MainActivity mainActivity) {
         mMainActivity = mainActivity;
-        TvSingletons tvSingletons = TvSingletons.getSingletons(mainActivity);
-        mChannelDataManager = tvSingletons.getChannelDataManager();
-        mScheduleManager = tvSingletons.getDvrScheduleManager();
-        mSessionManager = tvSingletons.getInputSessionManager();
+        ApplicationSingletons appSingletons = TvApplication.getSingletons(mainActivity);
+        mChannelDataManager = appSingletons.getChannelDataManager();
+        mScheduleManager = appSingletons.getDvrScheduleManager();
+        mSessionManager = appSingletons.getInputSessionManager();
     }
 
     /** Starts checking the conflict. */

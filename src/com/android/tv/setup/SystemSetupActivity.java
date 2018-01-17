@@ -24,12 +24,13 @@ import android.content.Intent;
 import android.media.tv.TvInputInfo;
 import android.os.Bundle;
 import android.widget.Toast;
+import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
 import com.android.tv.SetupPassthroughActivity;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
+import com.android.tv.common.TvCommonUtils;
 import com.android.tv.common.ui.setup.SetupActivity;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.onboarding.SetupSourcesFragment;
 import com.android.tv.util.OnboardingUtils;
 import com.android.tv.util.SetupUtils;
@@ -51,7 +52,7 @@ public class SystemSetupActivity extends SetupActivity {
             finish();
             return;
         }
-        TvSingletons singletons = TvSingletons.getSingletons(this);
+        ApplicationSingletons singletons = TvApplication.getSingletons(this);
         mInputManager = singletons.getTvInputManagerHelper();
     }
 
@@ -85,7 +86,7 @@ public class SystemSetupActivity extends SetupActivity {
                                     params.getString(
                                             SetupSourcesFragment.ACTION_PARAM_KEY_INPUT_ID);
                             TvInputInfo input = mInputManager.getTvInputInfo(inputId);
-                            Intent intent = CommonUtils.createSetupIntent(input);
+                            Intent intent = TvCommonUtils.createSetupIntent(input);
                             if (intent == null) {
                                 Toast.makeText(
                                                 this,

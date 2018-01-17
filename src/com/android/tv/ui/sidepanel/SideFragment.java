@@ -30,13 +30,13 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.analytics.HasTrackerLabel;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.util.DurationTimer;
-import com.android.tv.common.util.SystemProperties;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ProgramDataManager;
+import com.android.tv.util.DurationTimer;
+import com.android.tv.util.SystemProperties;
 import com.android.tv.util.ViewCache;
 import java.util.List;
 
@@ -85,7 +85,7 @@ public abstract class SideFragment<T extends Item> extends Fragment implements H
         super.onAttach(context);
         mChannelDataManager = getMainActivity().getChannelDataManager();
         mProgramDataManager = getMainActivity().getProgramDataManager();
-        mTracker = TvSingletons.getSingletons(context).getTracker();
+        mTracker = TvApplication.getSingletons(context).getTracker();
     }
 
     @Override

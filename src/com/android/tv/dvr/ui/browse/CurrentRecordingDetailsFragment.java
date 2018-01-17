@@ -22,7 +22,7 @@ import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.dialog.HalfSizedDialogFragment;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
@@ -66,7 +66,7 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mDvrDataManger = TvSingletons.getSingletons(context).getDvrDataManager();
+        mDvrDataManger = TvApplication.getSingletons(context).getDvrDataManager();
         mDvrDataManger.addScheduledRecordingListener(mScheduledRecordingListener);
     }
 
@@ -100,7 +100,7 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
                                 public void onActionClick(long actionId) {
                                     if (actionId == DvrStopRecordingFragment.ACTION_STOP) {
                                         DvrManager dvrManager =
-                                                TvSingletons.getSingletons(getContext())
+                                                TvApplication.getSingletons(getContext())
                                                         .getDvrManager();
                                         dvrManager.stopRecording(getRecording());
                                         getActivity().finish();

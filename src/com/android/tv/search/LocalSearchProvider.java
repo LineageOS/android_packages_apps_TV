@@ -27,13 +27,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.util.CommonUtils;
-import com.android.tv.common.util.PermissionUtils;
+import com.android.tv.common.TvCommonUtils;
 import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
+import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.TvUriMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,13 +84,13 @@ public class LocalSearchProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mPerformanceMonitor = TvSingletons.getSingletons(getContext()).getPerformanceMonitor();
+        mPerformanceMonitor = TvApplication.getSingletons(getContext()).getPerformanceMonitor();
         return true;
     }
 
     @VisibleForTesting
     void setSearchInterface(SearchInterface searchInterface) {
-        SoftPreconditions.checkState(CommonUtils.isRunningInTest());
+        SoftPreconditions.checkState(TvCommonUtils.isRunningInTest());
         mSearchInterface = searchInterface;
     }
 

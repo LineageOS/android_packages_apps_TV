@@ -33,8 +33,8 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.common.TvContentRatingCache;
-import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.search.LocalSearchProvider.SearchResult;
+import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +48,6 @@ import java.util.Objects;
 import java.util.Set;
 
 /** An implementation of {@link SearchInterface} to search query from TvProvider directly. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class TvProviderSearch implements SearchInterface {
     private static final String TAG = "TvProviderSearch";
     private static final boolean DEBUG = false;

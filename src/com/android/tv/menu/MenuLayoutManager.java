@@ -366,7 +366,7 @@ public class MenuLayoutManager {
             return;
         }
         boolean indexValid = Utils.isIndexValid(mMenuRowViews, position);
-        SoftPreconditions.checkArgument(indexValid, TAG, "position %s ", position);
+        SoftPreconditions.checkArgument(indexValid, TAG, "position " + position);
         if (!indexValid) {
             return;
         }
@@ -419,7 +419,7 @@ public class MenuLayoutManager {
             return;
         }
         boolean newIndexValid = Utils.isIndexValid(mMenuRowViews, position);
-        SoftPreconditions.checkArgument(newIndexValid, TAG, "position %s", position);
+        SoftPreconditions.checkArgument(newIndexValid, TAG, "position " + position);
         if (!newIndexValid) {
             return;
         }

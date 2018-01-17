@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import com.android.tv.R;
-import com.android.tv.TvSingletons;
+import com.android.tv.TvApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class DvrInsufficientSpaceErrorFragment extends DvrGuidedStepFragment {
         Activity activity = getActivity();
         actions.add(
                 new GuidedAction.Builder(activity).clickAction(GuidedAction.ACTION_ID_OK).build());
-        if (TvSingletons.getSingletons(getContext()).getDvrManager().hasValidItems()) {
+        if (TvApplication.getSingletons(getContext()).getDvrManager().hasValidItems()) {
             actions.add(
                     new GuidedAction.Builder(activity)
                             .id(ACTION_VIEW_RECENT_RECORDINGS)
