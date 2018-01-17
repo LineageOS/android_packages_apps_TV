@@ -25,7 +25,6 @@ LOCAL_RESOURCE_DIR := \
 LOCAL_STATIC_JAVA_LIBRARIES := \
     tv-common \
     lib-exoplayer \
-    lib-exoplayer-v2 \
     lib-exoplayer-v2-core \
     android-support-annotations \
     android-support-compat \
