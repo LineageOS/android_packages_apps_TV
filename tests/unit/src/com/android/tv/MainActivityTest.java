@@ -16,10 +16,11 @@
 package com.android.tv;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.support.test.filters.MediumTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.widget.TextView;
 import com.android.tv.data.Channel;
@@ -27,15 +28,17 @@ import com.android.tv.testing.testinput.TvTestInputConstants;
 import com.android.tv.ui.ChannelBannerView;
 import java.util.List;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Tests for {@link MainActivity}. */
 @MediumTest
+@RunWith(AndroidJUnit4.class)
 public class MainActivityTest extends BaseMainActivityTestCase {
     @Test
     public void testInitialConditions() {
         waitUntilChannelLoadingFinish();
         List<Channel> channelList = mActivity.getChannelDataManager().getChannelList();
-        assertTrue("Expected at least one channel", channelList.size() > 0);
+        assertWithMessage("Expected at least one channel").that(channelList.size() > 0).isTrue();
     }
 
     @Test
@@ -68,7 +71,7 @@ public class MainActivityTest extends BaseMainActivityTestCase {
 
     private void assertChannelName(String displayName) {
         TextView channelNameView = (TextView) mActivity.findViewById(R.id.channel_name);
-        assertEquals("Channel Name", displayName, channelNameView.getText());
+        assertWithMessage("Channel Name").that(channelNameView.getText()).isEqualTo(displayName);
     }
 
     private void assertProgramGuide(boolean isShown) {
@@ -86,7 +89,7 @@ public class MainActivityTest extends BaseMainActivityTestCase {
                 assertViewIsShown(
                         expectedClass.getSimpleName(), R.id.scene_transition_common, expectedShown);
         if (v != null) {
-            assertEquals(expectedClass, v.getClass());
+            assertThat(v.getClass()).isEqualTo(expectedClass);
         }
         return v;
     }
@@ -100,7 +103,7 @@ public class MainActivityTest extends BaseMainActivityTestCase {
                 return null;
             }
         }
-        assertEquals(viewName + " shown", expected, view.isShown());
+        assertWithMessage(viewName + " shown").that(view.isShown()).isEqualTo(expected);
         return view;
     }
 }

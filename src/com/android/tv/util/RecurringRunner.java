@@ -22,8 +22,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
-import com.android.tv.common.SharedPreferencesUtils;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.util.SharedPreferencesUtils;
 import java.util.Date;
 
 /**

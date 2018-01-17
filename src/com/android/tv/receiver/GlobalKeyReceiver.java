@@ -23,7 +23,9 @@ import android.os.AsyncTask;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import com.android.tv.Starter;
 import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 
 /** Handles global keys. */
 public class GlobalKeyReceiver extends BroadcastReceiver {
@@ -39,11 +41,11 @@ public class GlobalKeyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!TvApplication.getSingletons(context).getTvInputManagerHelper().hasTvInputManager()) {
+        if (!TvSingletons.getSingletons(context).getTvInputManagerHelper().hasTvInputManager()) {
             Log.wtf(TAG, "Stopping because device does not have a TvInputManager");
             return;
         }
-        TvApplication.setCurrentRunningProcess(context, true);
+        Starter.start(context);
         Context appContext = context.getApplicationContext();
         if (DEBUG) Log.d(TAG, "onReceive: " + intent);
         if (sUserSetupComplete) {

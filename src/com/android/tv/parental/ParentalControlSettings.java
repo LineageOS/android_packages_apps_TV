@@ -19,7 +19,7 @@ package com.android.tv.parental;
 import android.content.Context;
 import android.media.tv.TvContentRating;
 import android.media.tv.TvInputManager;
-import com.android.tv.experiments.Experiments;
+import com.android.tv.common.experiments.Experiments;
 import com.android.tv.parental.ContentRatingSystem.Rating;
 import com.android.tv.parental.ContentRatingSystem.SubRating;
 import com.android.tv.util.TvSettings;

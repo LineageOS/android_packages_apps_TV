@@ -19,7 +19,7 @@ package com.android.tv.common.feature;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import com.android.tv.common.TvCommonUtils;
+import com.android.tv.common.util.CommonUtils;
 
 /**
  * When run in a test harness this feature can be turned on or off, overriding the normal value.
@@ -56,7 +56,7 @@ public class TestableFeature implements Feature {
 
     @VisibleForTesting
     public void enableForTest() {
-        if (!TvCommonUtils.isRunningInTest()) {
+        if (!CommonUtils.isRunningInTest()) {
             Log.e(TAG, "Not enabling for test:" + this, new IllegalStateException(DETAIL_MESSAGE));
         } else {
             mTestValue = true;
@@ -65,7 +65,7 @@ public class TestableFeature implements Feature {
 
     @VisibleForTesting
     public void disableForTests() {
-        if (!TvCommonUtils.isRunningInTest()) {
+        if (!CommonUtils.isRunningInTest()) {
             Log.e(
                     TAG,
                     "Not disabling for test: " + this,
@@ -77,7 +77,7 @@ public class TestableFeature implements Feature {
 
     @VisibleForTesting
     public void resetForTests() {
-        if (!TvCommonUtils.isRunningInTest()) {
+        if (!CommonUtils.isRunningInTest()) {
             Log.e(TAG, "Not resetting feature: " + this, new IllegalStateException(DETAIL_MESSAGE));
         } else {
             mTestValue = null;
@@ -86,7 +86,7 @@ public class TestableFeature implements Feature {
 
     @Override
     public boolean isEnabled(Context context) {
-        if (TvCommonUtils.isRunningInTest() && mTestValue != null) {
+        if (CommonUtils.isRunningInTest() && mTestValue != null) {
             return mTestValue;
         }
         return mDelegate.isEnabled(context);
@@ -95,7 +95,7 @@ public class TestableFeature implements Feature {
     @Override
     public String toString() {
         String msg = mDelegate.toString();
-        if (TvCommonUtils.isRunningInTest()) {
+        if (CommonUtils.isRunningInTest()) {
             if (mTestValue == null) {
                 msg = "Testable Feature is unchanged: " + msg;
             } else {

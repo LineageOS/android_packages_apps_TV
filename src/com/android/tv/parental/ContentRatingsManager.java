@@ -19,12 +19,12 @@ package com.android.tv.parental;
 import android.content.Context;
 import android.media.tv.TvContentRating;
 import android.media.tv.TvContentRatingSystemInfo;
-import android.media.tv.TvInputManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.R;
 import com.android.tv.parental.ContentRatingSystem.Rating;
 import com.android.tv.parental.ContentRatingSystem.SubRating;
+import com.android.tv.util.TvInputManagerHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,19 +32,19 @@ public class ContentRatingsManager {
     private final List<ContentRatingSystem> mContentRatingSystems = new ArrayList<>();
 
     private final Context mContext;
+    private final TvInputManagerHelper.TvInputManagerInterface mTvInputManager;
 
-    public ContentRatingsManager(Context context) {
+    public ContentRatingsManager(
+            Context context, TvInputManagerHelper.TvInputManagerInterface tvInputManager) {
         mContext = context;
+        this.mTvInputManager = tvInputManager;
     }
 
     public void update() {
         mContentRatingSystems.clear();
-
-        TvInputManager manager =
-                (TvInputManager) mContext.getSystemService(Context.TV_INPUT_SERVICE);
         ContentRatingsParser parser = new ContentRatingsParser(mContext);
 
-        List<TvContentRatingSystemInfo> infos = manager.getTvContentRatingSystemList();
+        List<TvContentRatingSystemInfo> infos = mTvInputManager.getTvContentRatingSystemList();
         for (TvContentRatingSystemInfo info : infos) {
             List<ContentRatingSystem> list = parser.parse(info);
             if (list != null) {

@@ -20,7 +20,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.util.Utils;
@@ -50,7 +50,7 @@ class FullSchedulesCardPresenter extends DvrItemPresenter<Object> {
         cardView.setTitle(mCardTitleText);
         cardView.setImage(mIconDrawable);
         List<ScheduledRecording> scheduledRecordings =
-                TvApplication.getSingletons(mContext)
+                TvSingletons.getSingletons(mContext)
                         .getDvrDataManager()
                         .getAvailableScheduledRecordings();
         int fullDays = 0;

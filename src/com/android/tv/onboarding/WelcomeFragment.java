@@ -16,6 +16,8 @@
 
 package com.android.tv.onboarding;
 
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS;
+
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
@@ -24,11 +26,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.OnboardingFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import com.android.tv.R;
 import com.android.tv.common.ui.setup.SetupActionHelper;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
@@ -37,7 +46,7 @@ import java.util.List;
 
 /** A fragment for the onboarding welcome screen. */
 public class WelcomeFragment extends OnboardingFragment {
-    public static final String ACTION_CATEGORY = "comgoogle.android.tv.onboarding.WelcomeFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.onboarding.WelcomeFragment";
     public static final int ACTION_NEXT = 1;
 
     private static final long START_DELAY_CLOUD_MS = 33;
@@ -576,7 +585,14 @@ public class WelcomeFragment extends OnboardingFragment {
     private ImageView mTvContentView;
     private ImageView mArrowView;
 
+    private TextView mTitleView;
+    private Button mStartButton;
+    private View mPagingIndicator;
+
     private Animator mAnimator;
+
+    private boolean mLogoAnimationFinished;
+    private boolean mTitleChanged;
 
     public WelcomeFragment() {
         setExitTransition(
@@ -598,14 +614,91 @@ public class WelcomeFragment extends OnboardingFragment {
             mPageDescriptions = getResources().getStringArray(R.array.welcome_page_descriptions);
         }
     }
-
     @Nullable
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         setLogoResourceId(R.drawable.splash_logo);
-        if (savedInstanceState != null) {
+        mTitleView = view.findViewById(android.support.v17.leanback.R.id.title);
+        mPagingIndicator = view.findViewById(android.support.v17.leanback.R.id.page_indicator);
+        mStartButton = view.findViewById(android.support.v17.leanback.R.id.button_start);
+
+        mStartButton.setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+                int type = event.getEventType();
+                if (type == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
+                        || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+                    if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
+                        // Skip the event before the title is accessibility focused to avoid race
+                        // conditions
+                        return;
+                    }
+                }
+                super.onInitializeAccessibilityEvent(host, event);
+            }
+        });
+
+        mPagingIndicator.setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+                int type = event.getEventType();
+                if (type == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
+                        || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+                    if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
+                        // Skip the event before the title is accessibility focused to avoid race
+                        // conditions
+                        return;
+                    }
+                }
+                super.onInitializeAccessibilityEvent(host, event);
+            }
+        });
+
+        mTitleView.setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                if (action == ACTION_CLEAR_ACCESSIBILITY_FOCUS) {
+                    if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
+                        // Skip the event before the title is accessibility focused to avoid race
+                        // conditions
+                        return false;
+                    }
+                }
+                return super.performAccessibilityAction(host, action, args);
+            }
+        });
+
+        mTitleView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                mTitleChanged = false;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!mTitleView.isAccessibilityFocused()) {
+                    mTitleView.performAccessibilityAction(
+                        AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+                } else {
+                    mTitleView.sendAccessibilityEvent(
+                            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                }
+                mTitleChanged = true;
+            }
+        });
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null && mLogoAnimationFinished) {
             switch (getCurrentPageIndex()) {
                 case 0:
                     mTvContentView.setImageResource(
@@ -627,12 +720,17 @@ public class WelcomeFragment extends OnboardingFragment {
                     break;
             }
         }
-        return view;
     }
 
     @Override
     public int onProvideTheme() {
         return R.style.Theme_Leanback_Onboarding;
+    }
+
+    @Override
+    protected void onLogoAnimationFinished() {
+        super.onLogoAnimationFinished();
+        mLogoAnimationFinished = true;
     }
 
     @Override
@@ -733,6 +831,7 @@ public class WelcomeFragment extends OnboardingFragment {
         if (mAnimator != null) {
             mAnimator.cancel();
         }
+        mTitleChanged = false;
         mArrowView.setVisibility(View.GONE);
         // TV screen hiding animator.
         Animator hideAnimator =

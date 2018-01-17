@@ -47,7 +47,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.data.Channel;
@@ -213,12 +213,12 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
                         mMainActivity, R.animator.channel_banner_program_description_fade_out);
 
         if (CommonFeatures.DVR.isEnabled(mMainActivity)) {
-            mDvrManager = TvApplication.getSingletons(mMainActivity).getDvrManager();
+            mDvrManager = TvSingletons.getSingletons(mMainActivity).getDvrManager();
         } else {
             mDvrManager = null;
         }
         mContentRatingsManager =
-                TvApplication.getSingletons(getContext())
+                TvSingletons.getSingletons(getContext())
                         .getTvInputManagerHelper()
                         .getContentRatingsManager();
 

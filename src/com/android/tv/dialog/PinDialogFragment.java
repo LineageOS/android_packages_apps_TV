@@ -45,13 +45,13 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.util.TvSettings;
 
 public class PinDialogFragment extends SafeDismissDialogFragment {
     private static final String TAG = "PinDialogFragment";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     /** PIN code dialog for unlock channel */
     public static final int PIN_DIALOG_TYPE_UNLOCK_CHANNEL = 0;
@@ -68,7 +68,7 @@ public class PinDialogFragment extends SafeDismissDialogFragment {
     /** PIN code dialog for set new PIN */
     public static final int PIN_DIALOG_TYPE_NEW_PIN = 3;
 
-    // PIN code dialog for checking old PIN. This is internal only.
+    // PIN code dialog for checking old PIN. Only used in this class.
     private static final int PIN_DIALOG_TYPE_OLD_PIN = 4;
 
     /** PIN code dialog for unlocking DVR playback */
@@ -192,7 +192,7 @@ public class PinDialogFragment extends SafeDismissDialogFragment {
                     mTitleView.setText(
                             getString(
                                     R.string.pin_enter_unlock_dvr,
-                                    TvApplication.getSingletons(getContext())
+                                    TvSingletons.getSingletons(getContext())
                                             .getTvInputManagerHelper()
                                             .getContentRatingsManager()
                                             .getDisplayNameForRating(tvContentRating)));

@@ -40,10 +40,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseLongArray;
 import android.view.View;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.MainActivityWrapper.OnCurrentChannelChangeListener;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.Starter;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
@@ -122,7 +122,7 @@ public class NotificationService extends Service
     @Override
     public void onCreate() {
         if (DEBUG) Log.d(TAG, "onCreate");
-        TvApplication.setCurrentRunningProcess(this, true);
+        Starter.start(this);
         super.onCreate();
         mCurrentNotificationCount = 0;
         mNotificationChannels = new long[NOTIFICATION_COUNT];
@@ -146,17 +146,17 @@ public class NotificationService extends Service
                 getResources().getDimensionPixelOffset(R.dimen.notif_ch_logo_padding_bottom);
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        ApplicationSingletons appSingletons = TvApplication.getSingletons(this);
-        mTvInputManagerHelper = appSingletons.getTvInputManagerHelper();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(this);
+        mTvInputManagerHelper = tvSingletons.getTvInputManagerHelper();
         mHandlerThread = new HandlerThread("tv notification");
         mHandlerThread.start();
         mHandler = new NotificationHandler(mHandlerThread.getLooper(), this);
         mHandler.sendEmptyMessage(MSG_INITIALIZE_RECOMMENDER);
 
         // Just called for early initialization.
-        appSingletons.getChannelDataManager();
-        appSingletons.getProgramDataManager();
-        appSingletons.getMainActivityWrapper().addOnCurrentChannelChangeListener(this);
+        tvSingletons.getChannelDataManager();
+        tvSingletons.getProgramDataManager();
+        tvSingletons.getMainActivityWrapper().addOnCurrentChannelChangeListener(this);
     }
 
     @UiThread
@@ -209,7 +209,7 @@ public class NotificationService extends Service
 
     @Override
     public void onDestroy() {
-        TvApplication.getSingletons(this)
+        TvSingletons.getSingletons(this)
                 .getMainActivityWrapper()
                 .removeOnCurrentChannelChangeListener(this);
         if (mRecommender != null) {

@@ -21,7 +21,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.Starter;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.provider.EpisodicProgramLoadTask;
@@ -53,7 +53,7 @@ public class DvrSchedulesActivity extends Activity {
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
-        TvApplication.setCurrentRunningProcess(this, true);
+        Starter.start(this);
         // Pass null to prevent automatically re-creating fragments
         super.onCreate(null);
         setContentView(R.layout.activity_dvr_schedules);

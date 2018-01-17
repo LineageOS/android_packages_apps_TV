@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import com.android.tv.TvActivity;
-import com.android.tv.testing.Utils;
+import com.android.tv.testing.utils.Utils;
 import org.junit.Rule;
 import org.junit.Test;
 

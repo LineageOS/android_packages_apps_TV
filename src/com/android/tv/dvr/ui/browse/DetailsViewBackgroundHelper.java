@@ -57,6 +57,7 @@ class DetailsViewBackgroundHelper {
     public DetailsViewBackgroundHelper(Activity activity) {
         mBackgroundManager = BackgroundManager.getInstance(activity);
         mBackgroundManager.attach(activity.getWindow());
+        mBackgroundManager.setAutoReleaseOnStop(false);
     }
 
     /** Sets the given image to background. */

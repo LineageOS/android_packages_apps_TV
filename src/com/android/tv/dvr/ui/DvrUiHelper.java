@@ -39,14 +39,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.recording.RecordingStorageStatusManager;
+import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.BaseProgram;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.dialog.HalfSizedDialogFragment;
 import com.android.tv.dvr.DvrManager;
-import com.android.tv.dvr.DvrStorageStatusManager;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
@@ -91,17 +92,17 @@ public class DvrUiHelper {
      */
     public static void checkStorageStatusAndShowErrorMessage(
             Activity activity, String inputId, Runnable recordingRequestRunnable) {
-        if (Utils.isBundledInput(inputId)) {
-            switch (TvApplication.getSingletons(activity)
-                    .getDvrStorageStatusManager()
+        if (CommonUtils.isBundledInput(inputId)) {
+            switch (TvSingletons.getSingletons(activity)
+                    .getRecordingStorageStatusManager()
                     .getDvrStorageStatus()) {
-                case DvrStorageStatusManager.STORAGE_STATUS_TOTAL_CAPACITY_TOO_SMALL:
+                case RecordingStorageStatusManager.STORAGE_STATUS_TOTAL_CAPACITY_TOO_SMALL:
                     showDvrSmallSizedStorageErrorDialog(activity);
                     return;
-                case DvrStorageStatusManager.STORAGE_STATUS_MISSING:
+                case RecordingStorageStatusManager.STORAGE_STATUS_MISSING:
                     showDvrMissingStorageErrorDialog(activity);
                     return;
-                case DvrStorageStatusManager.STORAGE_STATUS_FREE_SPACE_INSUFFICIENT:
+                case RecordingStorageStatusManager.STORAGE_STATUS_FREE_SPACE_INSUFFICIENT:
                     showDvrNoFreeSpaceErrorDialog(activity, recordingRequestRunnable);
                     return;
             }
@@ -281,7 +282,7 @@ public class DvrUiHelper {
         if (program == null) {
             return false;
         }
-        DvrManager dvrManager = TvApplication.getSingletons(activity).getDvrManager();
+        DvrManager dvrManager = TvSingletons.getSingletons(activity).getDvrManager();
         if (!program.isEpisodic()) {
             // One time recording.
             dvrManager.addSchedule(program);
@@ -392,7 +393,7 @@ public class DvrUiHelper {
             return;
         }
         List<ScheduledRecording> conflicts =
-                TvApplication.getSingletons(context)
+                TvSingletons.getSingletons(context)
                         .getDvrManager()
                         .getConflictingSchedulesForTune(channel.getId());
         startSchedulesActivity(context, getEarliestScheduledRecording(conflicts));
@@ -443,7 +444,7 @@ public class DvrUiHelper {
             boolean showViewScheduleOptionInDialog,
             Program currentProgram) {
         SeriesRecording series =
-                TvApplication.getSingletons(context)
+                TvSingletons.getSingletons(context)
                         .getDvrDataManager()
                         .getSeriesRecording(seriesRecordingId);
         if (series == null) {

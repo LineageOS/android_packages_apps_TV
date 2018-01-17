@@ -31,8 +31,9 @@ import java.util.Set;
 /**
  * An abstract class to present DVR items in {@link RecordingCardView}, which is mainly used in
  * {@link DvrBrowseFragment}. DVR items might include: {@link
- * com.android.tv.dvr.data.ScheduledRecording}, {@link com.android.tv.dvr.data.RecordedProgram}, and
- * {@link com.android.tv.dvr.data.SeriesRecording}.
+ * com.android.tv.dvr.data.ScheduledRecording}, {@link
+ * com.android.tv.dvr.data.RecordedProgram}, and {@link
+ * com.android.tv.dvr.data.SeriesRecording}.
  */
 public abstract class DvrItemPresenter<T> extends Presenter {
     protected final Context mContext;

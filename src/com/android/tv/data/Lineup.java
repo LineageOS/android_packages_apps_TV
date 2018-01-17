@@ -19,23 +19,45 @@ package com.android.tv.data;
 import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
+import java.util.List;
 
 /** A class that represents a lineup. */
 public class Lineup {
     /** The ID of this lineup. */
-    public final String id;
+    public String getId() {
+        return id;
+    }
 
     /** The type associated with this lineup. */
-    public final int type;
+    public int getType() {
+        return type;
+    }
 
     /** The human readable name associated with this lineup. */
-    public final String name;
+    public String getName() {
+        return name;
+    }
 
-    /**
-     * Location this lineup can be found. This is a human readable description of a geographic
-     * location.
-     */
-    public final String location;
+    /** The human readable name associated with this lineup. */
+    public String getLocation() {
+        return location;
+    }
+
+    /** An unmodifiable list of channel numbers that this lineup has. */
+    public List<String> getChannels() {
+        return channels;
+    }
+
+    private final String id;
+
+    private final int type;
+
+    private final String name;
+
+    private final String location;
+
+    private final List<String> channels;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -44,7 +66,9 @@ public class Lineup {
         LINEUP_BROADCAST_DIGITAL,
         LINEUP_BROADCAST_ANALOG,
         LINEUP_IPTV,
-        LINEUP_MVPD
+        LINEUP_MVPD,
+        LINEUP_INTERNET,
+        LINEUP_OTHER
     })
     public @interface LineupType {}
 
@@ -64,16 +88,23 @@ public class Lineup {
     public static final int LINEUP_IPTV = 4;
 
     /**
-     * Indicates the lineup is either satelite, cable or IPTV but we are not sure which specific
+     * Indicates the lineup is either satellite, cable or IPTV but we are not sure which specific
      * type.
      */
     public static final int LINEUP_MVPD = 5;
 
+    /** Lineup type for Internet. */
+    public static final int LINEUP_INTERNET = 6;
+
+    /** Lineup type for other. */
+    public static final int LINEUP_OTHER = 7;
+
     /** Creates a lineup. */
-    public Lineup(String id, int type, String name, String location) {
+    public Lineup(String id, int type, String name, String location, List<String> channels) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.location = location;
+        this.channels = Collections.unmodifiableList(channels);
     }
 }

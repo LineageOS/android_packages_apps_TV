@@ -16,11 +16,21 @@
 
 package com.android.tv.ui.sidepanel;
 
+import android.accounts.Account;
+import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
+
+
+
+
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
+import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.tuner.TunerPreferences;
-import com.android.tv.util.Utils;
+import com.android.tv.common.util.CommonUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +61,7 @@ public class DeveloperOptionFragment extends SideFragment {
                         }
                     });
         }
-        if (Utils.isDeveloper()) {
+        if (CommonUtils.isDeveloper()) {
             items.add(
                     new ActionItem(getString(R.string.dev_item_watch_history)) {
                         @Override
@@ -68,21 +78,21 @@ public class DeveloperOptionFragment extends SideFragment {
                     @Override
                     protected void onUpdate() {
                         super.onUpdate();
-                        setChecked(TunerPreferences.getStoreTsStream(getContext()));
+                        setChecked(CommonPreferences.getStoreTsStream(getContext()));
                     }
 
                     @Override
                     protected void onSelected() {
                         super.onSelected();
-                        TunerPreferences.setStoreTsStream(getContext(), isChecked());
+                        CommonPreferences.setStoreTsStream(getContext(), isChecked());
                     }
                 });
-        if (Utils.isDeveloper()) {
+        if (CommonUtils.isDeveloper()) {
             items.add(
                     new ActionItem(getString(R.string.dev_item_show_performance_monitor_log)) {
                         @Override
                         protected void onSelected() {
-                            TvApplication.getSingletons(getContext())
+                            TvSingletons.getSingletons(getContext())
                                     .getPerformanceMonitor()
                                     .startPerformanceMonitorEventDebugActivity(getContext());
                         }

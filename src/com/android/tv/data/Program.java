@@ -33,8 +33,9 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.common.BuildConfig;
-import com.android.tv.common.CollectionUtils;
 import com.android.tv.common.TvContentRatingCache;
+import com.android.tv.common.util.CollectionUtils;
+import com.android.tv.common.util.CommonUtils;
 import com.android.tv.util.ImageLoader;
 import com.android.tv.util.Utils;
 import java.io.Serializable;
@@ -128,7 +129,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
         builder.setEndTimeUtcMillis(cursor.getLong(index++));
         builder.setVideoWidth((int) cursor.getLong(index++));
         builder.setVideoHeight((int) cursor.getLong(index++));
-        if (Utils.isInBundledPackageSet(packageName)) {
+        if (CommonUtils.isInBundledPackageSet(packageName)) {
             InternalDataUtils.deserializeInternalProviderData(cursor.getBlob(index), builder);
         }
         index++;
@@ -475,6 +476,9 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     public static ContentValues toContentValues(Program program) {
         ContentValues values = new ContentValues();
         values.put(TvContract.Programs.COLUMN_CHANNEL_ID, program.getChannelId());
+        if (!TextUtils.isEmpty(program.getPackageName())) {
+            values.put(Programs.COLUMN_PACKAGE_NAME, program.getPackageName());
+        }
         putValue(values, TvContract.Programs.COLUMN_TITLE, program.getTitle());
         putValue(values, TvContract.Programs.COLUMN_EPISODE_TITLE, program.getEpisodeTitle());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

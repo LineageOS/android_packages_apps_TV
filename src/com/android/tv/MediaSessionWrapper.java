@@ -16,6 +16,7 @@
 
 package com.android.tv;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -28,6 +29,7 @@ import android.media.tv.TvInputInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
@@ -40,14 +42,16 @@ import com.android.tv.util.Utils;
  */
 class MediaSessionWrapper {
     private static final String MEDIA_SESSION_TAG = "com.android.tv.mediasession";
-    private static PlaybackState MEDIA_SESSION_STATE_PLAYING =
+
+    private static final PlaybackState MEDIA_SESSION_STATE_PLAYING =
             new PlaybackState.Builder()
                     .setState(
                             PlaybackState.STATE_PLAYING,
                             PlaybackState.PLAYBACK_POSITION_UNKNOWN,
                             1.0f)
                     .build();
-    private static PlaybackState MEDIA_SESSION_STATE_STOPPED =
+
+    private static final PlaybackState MEDIA_SESSION_STATE_STOPPED =
             new PlaybackState.Builder()
                     .setState(
                             PlaybackState.STATE_STOPPED,
@@ -60,7 +64,7 @@ class MediaSessionWrapper {
     private int mNowPlayingCardWidth;
     private int mNowPlayingCardHeight;
 
-    MediaSessionWrapper(Context context) {
+    MediaSessionWrapper(Context context, PendingIntent pendingIntent) {
         mContext = context;
         mMediaSession = new MediaSession(context, MEDIA_SESSION_TAG);
         mMediaSession.setCallback(
@@ -74,6 +78,7 @@ class MediaSessionWrapper {
         mMediaSession.setFlags(
                 MediaSession.FLAG_HANDLES_MEDIA_BUTTONS
                         | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mMediaSession.setSessionActivity(pendingIntent);
         mNowPlayingCardWidth =
                 mContext.getResources().getDimensionPixelSize(R.dimen.notif_card_img_max_width);
         mNowPlayingCardHeight =
@@ -151,7 +156,7 @@ class MediaSessionWrapper {
     private String getChannelName(Channel channel) {
         if (channel.isPassthrough()) {
             TvInputInfo input =
-                    TvApplication.getSingletons(mContext)
+                    TvSingletons.getSingletons(mContext)
                             .getTvInputManagerHelper()
                             .getTvInputInfo(channel.getInputId());
             return Utils.loadLabel(mContext, input);
@@ -211,6 +216,11 @@ class MediaSessionWrapper {
                 return null;
             }
         }.execute();
+    }
+
+    @VisibleForTesting
+    MediaSession getMediaSession() {
+        return mMediaSession;
     }
 
     private static class ProgramPosterArtCallback

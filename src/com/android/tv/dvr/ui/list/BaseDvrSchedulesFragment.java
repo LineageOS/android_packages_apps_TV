@@ -23,9 +23,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -50,7 +49,7 @@ public abstract class BaseDvrSchedulesFragment extends DetailsFragment
         mRowsAdapter = onCreateRowsAdapter(presenterSelector);
         setAdapter(mRowsAdapter);
         mRowsAdapter.start();
-        ApplicationSingletons singletons = TvApplication.getSingletons(getContext());
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
         singletons.getDvrDataManager().addScheduledRecordingListener(this);
         singletons.getDvrScheduleManager().addOnConflictStateChangeListener(this);
         mEmptyInfoScreenView = (TextView) getActivity().findViewById(R.id.empty_info_screen);
@@ -96,7 +95,7 @@ public abstract class BaseDvrSchedulesFragment extends DetailsFragment
 
     @Override
     public void onDestroy() {
-        ApplicationSingletons singletons = TvApplication.getSingletons(getContext());
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
         singletons.getDvrScheduleManager().removeOnConflictStateChangeListener(this);
         singletons.getDvrDataManager().removeScheduledRecordingListener(this);
         mRowsAdapter.stop();

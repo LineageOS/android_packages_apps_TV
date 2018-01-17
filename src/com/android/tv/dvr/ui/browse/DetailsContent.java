@@ -21,7 +21,7 @@ import android.media.tv.TvContract;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.Channel;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -76,7 +76,7 @@ class DetailsContent {
     static DetailsContent createFromScheduledRecording(
             Context context, ScheduledRecording scheduledRecording) {
         Channel channel =
-                TvApplication.getSingletons(context)
+                TvSingletons.getSingletons(context)
                         .getChannelDataManager()
                         .getChannel(scheduledRecording.getChannelId());
         String description =
@@ -278,7 +278,7 @@ class DetailsContent {
         /** Builds details content. */
         public DetailsContent build(Context context) {
             Channel channel =
-                    TvApplication.getSingletons(context)
+                    TvSingletons.getSingletons(context)
                             .getChannelDataManager()
                             .getChannel(mChannelId);
             if (mDetailsContent.mTitle == null) {

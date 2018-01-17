@@ -19,16 +19,16 @@ package com.android.tv.menu;
 import android.content.Context;
 import android.media.tv.TvTrackInfo;
 import android.support.annotation.VisibleForTesting;
-import com.android.tv.Features;
+import com.android.tv.TvFeatures;
 import com.android.tv.TvOptionsManager;
-import com.android.tv.customization.CustomAction;
+import com.android.tv.common.customization.CustomAction;
+import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.DisplayMode;
 import com.android.tv.ui.TvViewUiManager;
 import com.android.tv.ui.sidepanel.ClosedCaptionFragment;
 import com.android.tv.ui.sidepanel.DeveloperOptionFragment;
 import com.android.tv.ui.sidepanel.DisplayModeFragment;
 import com.android.tv.ui.sidepanel.MultiAudioFragment;
-import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,12 +45,12 @@ public class TvOptionsRowAdapter extends CustomizableOptionsRowAdapter {
         List<MenuAction> actionList = new ArrayList<>();
         actionList.add(MenuAction.SELECT_CLOSED_CAPTION_ACTION);
         actionList.add(MenuAction.SELECT_DISPLAY_MODE_ACTION);
-        if (Features.PICTURE_IN_PICTURE.isEnabled(getMainActivity())) {
+        if (TvFeatures.PICTURE_IN_PICTURE.isEnabled(getMainActivity())) {
             actionList.add(MenuAction.SYSTEMWIDE_PIP_ACTION);
         }
         actionList.add(MenuAction.SELECT_AUDIO_LANGUAGE_ACTION);
         actionList.add(MenuAction.MORE_CHANNELS_ACTION);
-        if (Utils.isDeveloper()) {
+        if (CommonUtils.isDeveloper()) {
             actionList.add(MenuAction.DEV_ACTION);
         }
         actionList.add(MenuAction.SETTINGS_ACTION);

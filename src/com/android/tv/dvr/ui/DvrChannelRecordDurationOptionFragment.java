@@ -22,7 +22,7 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Channel;
 import com.android.tv.dvr.DvrManager;
@@ -42,7 +42,7 @@ public class DvrChannelRecordDurationOptionFragment extends DvrGuidedStepFragmen
         if (args != null) {
             long channelId = args.getLong(DvrHalfSizedDialogFragment.KEY_CHANNEL_ID);
             mChannel =
-                    TvApplication.getSingletons(getContext())
+                    TvSingletons.getSingletons(getContext())
                             .getChannelDataManager()
                             .getChannel(channelId);
         }
@@ -90,7 +90,7 @@ public class DvrChannelRecordDurationOptionFragment extends DvrGuidedStepFragmen
 
     @Override
     public void onTrackedGuidedActionClicked(GuidedAction action) {
-        DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
+        DvrManager dvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
         long duration = mDurations.get((int) action.getId());
         long startTimeMs = System.currentTimeMillis();
         long endTimeMs = System.currentTimeMillis() + duration;

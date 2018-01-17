@@ -19,7 +19,7 @@ package com.android.tv.data;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import com.android.tv.util.StringUtils;
+import com.android.tv.common.util.StringUtils;
 import java.util.Objects;
 
 /** A convenience class to handle channel number. */
@@ -41,6 +41,23 @@ public final class ChannelNumber implements Comparable<ChannelNumber> {
 
     public ChannelNumber() {
         reset();
+    }
+
+    /**
+     * {@code lhs} and {@code rhs} are equivalent if {@link ChannelNumber#compare(String, String)}
+     * is 0 or if only one has a delimiter and both {@link ChannelNumber#majorNumber} equals.
+     */
+    public static boolean equivalent(String lhs, String rhs) {
+        if (compare(lhs, rhs) == 0) {
+            return true;
+        }
+        // Match if only one has delimiter
+        ChannelNumber lhsNumber = parseChannelNumber(lhs);
+        ChannelNumber rhsNumber = parseChannelNumber(rhs);
+        return lhsNumber != null
+                && rhsNumber != null
+                && lhsNumber.hasDelimiter != rhsNumber.hasDelimiter
+                && lhsNumber.majorNumber.equals(rhsNumber.majorNumber);
     }
 
     public void reset() {
