@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import com.android.tv.common.util.NetworkTrafficTags;
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;

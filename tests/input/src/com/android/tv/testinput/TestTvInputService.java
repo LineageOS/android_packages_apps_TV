@@ -42,12 +42,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
 import com.android.tv.input.TunerHelper;
-import com.android.tv.testing.ChannelInfo;
+import com.android.tv.testing.data.ChannelInfo;
 import com.android.tv.testing.testinput.ChannelState;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /** Simple TV input service which provides test channels. */
+@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class TestTvInputService extends TvInputService {
     private static final String TAG = "TestTvInputService";
     private static final int REFRESH_DELAY_MS = 1000 / 5;

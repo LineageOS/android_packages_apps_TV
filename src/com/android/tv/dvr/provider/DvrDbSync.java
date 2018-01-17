@@ -29,7 +29,7 @@ import android.os.Looper;
 import android.support.annotation.MainThread;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManager.ScheduledRecordingListener;
@@ -140,8 +140,8 @@ public class DvrDbSync {
         this(
                 context,
                 dataManager,
-                TvApplication.getSingletons(context).getChannelDataManager(),
-                TvApplication.getSingletons(context).getDvrManager(),
+                TvSingletons.getSingletons(context).getChannelDataManager(),
+                TvSingletons.getSingletons(context).getDvrManager(),
                 SeriesRecordingScheduler.getInstance(context));
     }
 

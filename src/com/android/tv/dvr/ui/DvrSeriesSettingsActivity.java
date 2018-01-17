@@ -21,7 +21,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.Starter;
 import com.android.tv.common.SoftPreconditions;
 
 /** Activity to show details view in DVR. */
@@ -60,7 +60,7 @@ public class DvrSeriesSettingsActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        TvApplication.setCurrentRunningProcess(this, true);
+        Starter.start(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dvr_series_settings);
         long seriesRecordingId = getIntent().getLongExtra(SERIES_RECORDING_ID, -1);

@@ -32,14 +32,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.ChannelTuner;
 import com.android.tv.MainActivity;
 import com.android.tv.MainActivity.KeyHandlerResultType;
 import com.android.tv.R;
 import com.android.tv.TimeShiftManager;
-import com.android.tv.TvApplication;
 import com.android.tv.TvOptionsManager;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.feature.CommonFeatures;
@@ -232,7 +231,7 @@ public class TvOverlayManager {
             ProgramGuideSearchFragment searchFragment) {
         mMainActivity = mainActivity;
         mChannelTuner = channelTuner;
-        ApplicationSingletons singletons = TvApplication.getSingletons(mainActivity);
+        TvSingletons singletons = TvSingletons.getSingletons(mainActivity);
         mChannelDataManager = singletons.getChannelDataManager();
         mInputManager = singletons.getTvInputManagerHelper();
         mTvView = tvView;
@@ -709,6 +708,10 @@ public class TvOverlayManager {
         }
     }
 
+    public boolean isOverlayOpened() {
+        return mOpenedOverlays != OVERLAY_TYPE_NONE;
+    }
+
     /** Hides all the opened overlays according to the flags. */
     // TODO: Add test for this method.
     public void hideOverlays(@HideOverlayFlag int flags) {
@@ -1013,6 +1016,10 @@ public class TvOverlayManager {
                     || mSetupFragmentActive
                     || mNewSourcesFragmentActive) {
                 // Do not handle media key when any pop-ups which can handle keys are active.
+                return MainActivity.KEY_EVENT_HANDLER_RESULT_HANDLED;
+            }
+            if (mTvView.isScreenBlocked()) {
+                // Do not handle media key when screen is blocked.
                 return MainActivity.KEY_EVENT_HANDLER_RESULT_HANDLED;
             }
             TimeShiftManager timeShiftManager = mMainActivity.getTimeShiftManager();

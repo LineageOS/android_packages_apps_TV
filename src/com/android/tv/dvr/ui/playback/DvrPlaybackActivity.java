@@ -24,7 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.Starter;
 import com.android.tv.dialog.PinDialogFragment.OnPinCheckedListener;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.util.Utils;
@@ -39,7 +39,7 @@ public class DvrPlaybackActivity extends Activity implements OnPinCheckedListene
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        TvApplication.setCurrentRunningProcess(this, true);
+        Starter.start(this);
         if (DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setIntent(createProgramIntent(getIntent()));

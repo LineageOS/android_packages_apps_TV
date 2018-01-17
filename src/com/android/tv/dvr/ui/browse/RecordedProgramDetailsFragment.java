@@ -23,7 +23,7 @@ import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
@@ -44,7 +44,7 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mDvrDataManager = TvApplication.getSingletons(getContext()).getDvrDataManager();
+        mDvrDataManager = TvSingletons.getSingletons(getContext()).getDvrDataManager();
         mDvrDataManager.addRecordedProgramListener(this);
         super.onCreate(savedInstanceState);
     }
@@ -52,7 +52,7 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
     @Override
     public void onCreateInternal() {
         mDvrWatchedPositionManager =
-                TvApplication.getSingletons(getActivity()).getDvrWatchedPositionManager();
+                TvSingletons.getSingletons(getActivity()).getDvrWatchedPositionManager();
         setDetailsOverviewRow(
                 DetailsContent.createFromRecordedProgram(getContext(), mRecordedProgram));
     }
@@ -139,7 +139,7 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
                                     mRecordedProgram.getId()));
                 } else if (action.getId() == ACTION_DELETE_RECORDING) {
                     DvrManager dvrManager =
-                            TvApplication.getSingletons(getActivity()).getDvrManager();
+                            TvSingletons.getSingletons(getActivity()).getDvrManager();
                     dvrManager.removeRecordedProgram(mRecordedProgram);
                     getActivity().finish();
                 }

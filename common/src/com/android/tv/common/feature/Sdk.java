@@ -29,5 +29,13 @@ public class Sdk {
                 }
             };
 
+    public static final Feature AT_LEAST_O =
+            new Feature() {
+                @Override
+                public boolean isEnabled(Context context) {
+                    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+                }
+            };
+
     private Sdk() {}
 }

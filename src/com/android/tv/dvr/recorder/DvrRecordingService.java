@@ -29,15 +29,15 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.InputSessionManager;
 import com.android.tv.InputSessionManager.OnRecordingSessionChangeListener;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.Starter;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.common.util.Clock;
 import com.android.tv.dvr.WritableDvrDataManager;
-import com.android.tv.util.Clock;
 import com.android.tv.util.RecurringRunner;
 
 /**
@@ -114,12 +114,12 @@ public class DvrRecordingService extends Service {
 
     @Override
     public void onCreate() {
-        TvApplication.setCurrentRunningProcess(this, true);
+        Starter.start(this);
         if (DEBUG) Log.d(TAG, "onCreate");
         super.onCreate();
         SoftPreconditions.checkFeatureEnabled(this, CommonFeatures.DVR, TAG);
         sInstance = this;
-        ApplicationSingletons singletons = TvApplication.getSingletons(this);
+        TvSingletons singletons = TvSingletons.getSingletons(this);
         WritableDvrDataManager dataManager =
                 (WritableDvrDataManager) singletons.getDvrDataManager();
         mSessionManager = singletons.getInputSessionManager();
@@ -183,7 +183,6 @@ public class DvrRecordingService extends Service {
 
     @VisibleForTesting
     protected void startForegroundInternal(boolean hasUpcomingRecording) {
-        // STOPSHIP: Replace the content title with real UX strings
         Notification.Builder builder =
                 new Notification.Builder(this)
                         .setContentTitle(mContentTitle)
@@ -204,7 +203,6 @@ public class DvrRecordingService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // STOPSHIP: Replace the channel name with real UX strings
             mNotificationChannel =
                     new NotificationChannel(
                             DVR_NOTIFICATION_CHANNEL_ID,

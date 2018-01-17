@@ -19,6 +19,8 @@ package com.android.tv.ui.sidepanel.parentalcontrols;
 import android.database.ContentObserver;
 import android.media.tv.TvContract;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v17.leanback.widget.VerticalGridView;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import com.android.tv.R;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelNumber;
+import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.ui.OnRepeatedKeyInterceptListener;
 import com.android.tv.ui.sidepanel.ActionItem;
 import com.android.tv.ui.sidepanel.ChannelCheckItem;
@@ -47,6 +50,7 @@ public class ChannelsBlockedFragment extends SideFragment {
     private final List<Channel> mChannels = new ArrayList<>();
     private long mLastFocusedChannelId = Channel.INVALID_ID;
     private int mSelectedPosition = INVALID_POSITION;
+    private boolean mUpdated;
     private final ContentObserver mProgramUpdateObserver =
             new ContentObserver(new Handler()) {
                 @Override
@@ -94,6 +98,7 @@ public class ChannelsBlockedFragment extends SideFragment {
                 .registerContentObserver(
                         TvContract.Programs.CONTENT_URI, true, mProgramUpdateObserver);
         getMainActivity().startShrunkenTvView(true, true);
+        mUpdated = false;
         return view;
     }
 
@@ -102,6 +107,10 @@ public class ChannelsBlockedFragment extends SideFragment {
         getActivity().getContentResolver().unregisterContentObserver(mProgramUpdateObserver);
         getChannelDataManager().applyUpdatedValuesToDb();
         getMainActivity().endShrunkenTvView();
+        if (VERSION.SDK_INT >= VERSION_CODES.O && mUpdated) {
+            ChannelPreviewUpdater.getInstance(getMainActivity())
+                    .updatePreviewDataForChannelsImmediately();
+        }
         super.onDestroyView();
     }
 
@@ -185,6 +194,7 @@ public class ChannelsBlockedFragment extends SideFragment {
             }
             mBlockedChannelCount = lock ? mChannels.size() : 0;
             notifyItemsChanged();
+            mUpdated = true;
         }
 
         @Override
@@ -228,6 +238,7 @@ public class ChannelsBlockedFragment extends SideFragment {
             getChannelDataManager().updateLocked(getChannel().getId(), isChecked());
             mBlockedChannelCount += isChecked() ? 1 : -1;
             notifyItemChanged(mLockAllItem);
+            mUpdated = true;
         }
 
         @Override

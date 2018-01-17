@@ -35,10 +35,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.data.Channel;
@@ -91,8 +90,7 @@ public class ProgramItemView extends TextView {
                         // do nothing
                         return;
                     }
-                    ApplicationSingletons singletons =
-                            TvApplication.getSingletons(view.getContext());
+                    TvSingletons singletons = TvSingletons.getSingletons(view.getContext());
                     Tracker tracker = singletons.getTracker();
                     tracker.sendEpgItemClicked();
                     final MainActivity tvActivity = (MainActivity) view.getContext();
@@ -208,7 +206,7 @@ public class ProgramItemView extends TextView {
         super(context, attrs, defStyle);
         setOnClickListener(ON_CLICKED);
         setOnFocusChangeListener(ON_FOCUS_CHANGED);
-        mDvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
+        mDvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
     }
 
     private void initIfNeeded() {

@@ -25,10 +25,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.test.filters.SmallTest;
 import android.test.ProviderTestCase2;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.TvApplication;
+import com.android.tv.common.BaseSingletons;
 import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.util.MockApplicationSingletons;
+import com.android.tv.util.MockTvSingletons;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 
 /** Unit test for {@link LocalSearchProvider}. */
 @SmallTest
+@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvider> {
     private static final String AUTHORITY = "com.android.tv.search";
     private static final String KEYWORD = "keyword";
@@ -48,11 +49,11 @@ public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvid
                             + SearchManager.SUGGEST_URI_PATH_QUERY
                             + "/"
                             + KEYWORD);
-    private static final Uri WRONG_SERACH_URI =
+    private static final Uri WRONG_SEARCH_URI =
             Uri.parse("content://" + AUTHORITY + "/wrong_path/" + KEYWORD);
 
-    private ApplicationSingletons mOldAppSingletons;
-    MockApplicationSingletons mMockAppSingletons;
+    private BaseSingletons mOldTvSingletons;
+    MockTvSingletons mMockTvSingletons;
     @Mock PerformanceMonitor mMockPerformanceMointor;
     @Mock SearchInterface mMockSearchInterface;
 
@@ -65,10 +66,10 @@ public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvid
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         setContext(getTargetContext());
-        mOldAppSingletons = TvApplication.sAppSingletons;
-        mMockAppSingletons = new MockApplicationSingletons(getTargetContext());
-        mMockAppSingletons.setPerformanceMonitor(mMockPerformanceMointor);
-        TvApplication.sAppSingletons = mMockAppSingletons;
+        mOldTvSingletons = TvApplication.sSingletons;
+        mMockTvSingletons = new MockTvSingletons(getTargetContext());
+        mMockTvSingletons.setPerformanceMonitor(mMockPerformanceMointor);
+        TvApplication.sSingletons = mMockTvSingletons;
         super.setUp();
         getProvider().setSearchInterface(mMockSearchInterface);
     }
@@ -76,7 +77,7 @@ public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvid
     @After
     @Override
     public void tearDown() throws Exception {
-        TvApplication.sAppSingletons = mOldAppSingletons;
+        TvApplication.sSingletons = mOldTvSingletons;
         super.tearDown();
     }
 
@@ -90,7 +91,7 @@ public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvid
 
     @Test
     public void testQuery_invalidUri() {
-        try (Cursor c = getProvider().query(WRONG_SERACH_URI, null, null, null, null)) {
+        try (Cursor c = getProvider().query(WRONG_SEARCH_URI, null, null, null, null)) {
             fail("Query with invalid URI should fail.");
         } catch (IllegalArgumentException e) {
             // Success.

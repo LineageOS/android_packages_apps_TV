@@ -20,13 +20,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Tests for {@link com.android.tv.util.Utils#isInGivenDay}. */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class UtilsTest_IsInGivenDay {
     @Test
     public void testIsInGivenDay() {

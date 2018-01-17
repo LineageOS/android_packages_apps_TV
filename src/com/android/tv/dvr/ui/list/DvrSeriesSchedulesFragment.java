@@ -30,9 +30,8 @@ import android.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrDataManager;
@@ -141,7 +140,7 @@ public class DvrSeriesSchedulesFragment extends BaseDvrSchedulesFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ApplicationSingletons singletons = TvApplication.getSingletons(getContext());
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
         mChannelDataManager = singletons.getChannelDataManager();
         mChannelDataManager.addListener(mChannelListener);
         mDvrDataManager = singletons.getDvrDataManager();

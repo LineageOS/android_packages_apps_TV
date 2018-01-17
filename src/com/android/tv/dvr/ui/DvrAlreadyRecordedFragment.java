@@ -25,7 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.RecordedProgram;
@@ -49,7 +49,7 @@ public class DvrAlreadyRecordedFragment extends DvrGuidedStepFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mProgram = getArguments().getParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM);
-        DvrManager dvrManager = TvApplication.getSingletons(context).getDvrManager();
+        DvrManager dvrManager = TvSingletons.getSingletons(context).getDvrManager();
         mDuplicate =
                 dvrManager.getRecordedProgram(
                         mProgram.getTitle(),

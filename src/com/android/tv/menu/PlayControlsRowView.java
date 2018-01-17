@@ -28,7 +28,7 @@ import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TimeShiftManager;
 import com.android.tv.TimeShiftManager.TimeShiftActionId;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.data.Channel;
@@ -127,8 +127,8 @@ public class PlayControlsRowView extends MenuRowView {
         mCompactButtonMargin =
                 res.getDimensionPixelSize(R.dimen.play_controls_button_compact_margin);
         if (CommonFeatures.DVR.isEnabled(context)) {
-            mDvrDataManager = TvApplication.getSingletons(context).getDvrDataManager();
-            mDvrManager = TvApplication.getSingletons(context).getDvrManager();
+            mDvrDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
+            mDvrManager = TvSingletons.getSingletons(context).getDvrManager();
         } else {
             mDvrDataManager = null;
             mDvrManager = null;
@@ -275,7 +275,7 @@ public class PlayControlsRowView extends MenuRowView {
     private void onRecordButtonClicked() {
         boolean isRecording = isCurrentChannelRecording();
         Channel currentChannel = mMainActivity.getCurrentChannel();
-        TvApplication.getSingletons(getContext())
+        TvSingletons.getSingletons(getContext())
                 .getTracker()
                 .sendMenuClicked(
                         isRecording
@@ -290,7 +290,7 @@ public class PlayControlsRowView extends MenuRowView {
                         .show();
             } else {
                 Program program =
-                        TvApplication.getSingletons(mMainActivity)
+                        TvSingletons.getSingletons(mMainActivity)
                                 .getProgramDataManager()
                                 .getCurrentProgram(currentChannel.getId());
                 DvrUiHelper.checkStorageStatusAndShowErrorMessage(

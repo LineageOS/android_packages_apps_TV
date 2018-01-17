@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2017 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.android.tv;
 
 import android.app.Activity;
@@ -46,20 +61,33 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
         if (mTvView.isPlaying()) {
             switch (mAudioFocusStatus) {
                 case AudioManager.AUDIOFOCUS_GAIN:
-                    mTvView.setStreamVolume(AUDIO_MAX_VOLUME);
+                    if (mTvView.isTimeShiftAvailable()) {
+                        mTvView.timeshiftPlay();
+                    } else {
+                        mTvView.setStreamVolume(AUDIO_MAX_VOLUME);
+                    }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
-                    if (Features.PICTURE_IN_PICTURE.isEnabled(mActivity)
+                    if (TvFeatures.PICTURE_IN_PICTURE.isEnabled(mActivity)
                             && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                             && mActivity.isInPictureInPictureMode()) {
                         mActivity.finish();
                         break;
                     }
+                    // fall through
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    mTvView.setStreamVolume(AUDIO_MIN_VOLUME);
+                    if (mTvView.isTimeShiftAvailable()) {
+                        mTvView.timeshiftPause();
+                    } else {
+                        mTvView.setStreamVolume(AUDIO_MIN_VOLUME);
+                    }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                    mTvView.setStreamVolume(AUDIO_DUCKING_VOLUME);
+                    if (mTvView.isTimeShiftAvailable()) {
+                        mTvView.timeshiftPause();
+                    } else {
+                        mTvView.setStreamVolume(AUDIO_DUCKING_VOLUME);
+                    }
                     break;
             }
         }

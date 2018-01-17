@@ -146,8 +146,8 @@ public class TimeShiftManager {
             DISABLE_ACTION_THRESHOLD + 3 * REQUEST_CURRENT_POSITION_INTERVAL;
     /**
      * The current position sent from TIS can not be exactly the same as the current system time due
-     * to the elapsed time to pass the message from TIS to Live TV. So the boundary threshold is
-     * necessary. The same goes for the recording start time. It's the same {@link
+     * to the elapsed time to pass the message from TIS to Live TV. So the boundary threshold
+     * is necessary. The same goes for the recording start time. It's the same {@link
      * #REQUEST_CURRENT_POSITION_INTERVAL}.
      */
     private static final long RECORDING_BOUNDARY_THRESHOLD = REQUEST_CURRENT_POSITION_INTERVAL;
@@ -1095,10 +1095,9 @@ public class TimeShiftManager {
             SoftPreconditions.checkArgument(
                     endTimeMs - startTimeMs <= TWO_WEEKS_MS,
                     TAG,
-                    "createDummyProgram: long duration of dummy programs are requested ("
-                            + Utils.toTimeString(startTimeMs)
-                            + ", "
-                            + Utils.toTimeString(endTimeMs));
+                    "createDummyProgram: long duration of dummy programs are requested ( %s , %s)",
+                    Utils.toTimeString(startTimeMs),
+                    Utils.toTimeString(endTimeMs));
             if (startTimeMs >= endTimeMs) {
                 return Collections.emptyList();
             }

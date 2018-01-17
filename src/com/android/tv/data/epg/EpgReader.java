@@ -23,12 +23,28 @@ import com.android.tv.data.Channel;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.data.SeriesInfo;
+//import com.google.auto.value.AutoValue;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** An interface used to retrieve the EPG data. This class should be used in worker thread. */
 @WorkerThread
 public interface EpgReader {
+
+    /** Value class that holds a EpgChannelId and its corresponding Channel */
+    //@AutoValue
+    abstract class EpgChannel {
+        public static EpgChannel createEpgChannel(Channel channel, String epgChannelId) {
+            return new AutoValue_EpgReader_EpgChannel(channel, epgChannelId);
+        }
+
+        public abstract Channel getChannel();
+
+        public abstract String getEpgChannelId();
+    }
+
     /** Checks if the reader is available. */
     boolean isAvailable();
 
@@ -55,7 +71,7 @@ public interface EpgReader {
      * Returns the list of channels for the given lineup. The returned channels should map into the
      * existing channels on the device. This method is usually called after selecting the lineup.
      */
-    List<Channel> getChannels(@NonNull String lineupId);
+    Set<EpgChannel> getChannels(Set<Channel> inputChannels, @NonNull String lineupId);
 
     /** Pre-loads and caches channels for a given lineup. */
     void preloadChannels(@NonNull String lineupId);
@@ -65,18 +81,19 @@ public interface EpgReader {
     void clearCachedChannels(@NonNull String lineupId);
 
     /**
-     * Returns the programs for the given channel. Must call {@link #getChannels(String)}
+     * Returns the programs for the given channel. Must call {@link #getChannels(Set, String)}
      * beforehand. Note that the {@code Program} doesn't have valid program ID because it's not
      * retrieved from TvProvider.
      */
-    List<Program> getPrograms(long channelId);
+    List<Program> getPrograms(EpgChannel epgChannel);
 
     /**
      * Returns the programs for the given channels. Note that the {@code Program} doesn't have valid
      * program ID because it's not retrieved from TvProvider. This method is only used to get
      * programs for a short duration typically.
      */
-    Map<Long, List<Program>> getPrograms(@NonNull List<Long> channelIds, long duration);
+    Map<EpgChannel, Collection<Program>> getPrograms(
+            @NonNull Set<EpgChannel> epgChannels, long duration);
 
     /** Returns the series information for the given series ID. */
     SeriesInfo getSeriesInfo(@NonNull String seriesId);

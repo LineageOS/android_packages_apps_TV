@@ -33,13 +33,13 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.WeakHandler;
+import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.Program;
 import com.android.tv.data.WatchedHistoryManager;
-import com.android.tv.util.PermissionUtils;
 import com.android.tv.util.TvUriMatcher;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class RecommendationDataManager implements WatchedHistoryManager.Listener {
     private static final int MSG_START = 1000;
     private static final int MSG_STOP = 1001;
@@ -185,7 +186,7 @@ public class RecommendationDataManager implements WatchedHistoryManager.Listener
         mHandler = new RecommendationHandler(mHandlerThread.getLooper(), this);
         mMainHandler = new RecommendationMainHandler(Looper.getMainLooper(), this);
         mContentObserver = new RecommendationContentObserver(mHandler);
-        mChannelDataManager = TvApplication.getSingletons(mContext).getChannelDataManager();
+        mChannelDataManager = TvSingletons.getSingletons(mContext).getChannelDataManager();
         runOnMainThread(
                 new Runnable() {
                     @Override

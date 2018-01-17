@@ -27,7 +27,7 @@ import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.text.format.DateUtils;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrManager;
@@ -63,16 +63,18 @@ public class DvrScheduleFragment extends DvrGuidedStepFragment {
             mProgram = args.getParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM);
             mAddCurrentProgramToSeries = args.getBoolean(KEY_ADD_CURRENT_PROGRAM_TO_SERIES, false);
         }
-        DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
+        DvrManager dvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
         SoftPreconditions.checkArgument(
                 mProgram != null && mProgram.isEpisodic(),
                 TAG,
-                "The program should be episodic: " + mProgram);
+                "The program should be episodic: %s ",
+                mProgram);
         SeriesRecording seriesRecording = dvrManager.getSeriesRecording(mProgram);
         SoftPreconditions.checkArgument(
                 seriesRecording == null || seriesRecording.isStopped(),
                 TAG,
-                "The series recording should be stopped or null: " + seriesRecording);
+                "The series recording should be stopped or null: %s",
+                seriesRecording);
         super.onCreate(savedInstanceState);
     }
 
@@ -144,7 +146,7 @@ public class DvrScheduleFragment extends DvrGuidedStepFragment {
             }
         } else if (action.getId() == ACTION_RECORD_SERIES) {
             SeriesRecording seriesRecording =
-                    TvApplication.getSingletons(getContext())
+                    TvSingletons.getSingletons(getContext())
                             .getDvrDataManager()
                             .getSeriesRecording(mProgram.getSeriesId());
             if (seriesRecording == null) {
@@ -159,7 +161,7 @@ public class DvrScheduleFragment extends DvrGuidedStepFragment {
                 seriesRecording =
                         SeriesRecording.buildFrom(seriesRecording)
                                 .setPriority(
-                                        TvApplication.getSingletons(getContext())
+                                        TvSingletons.getSingletons(getContext())
                                                 .getDvrScheduleManager()
                                                 .suggestNewSeriesPriority())
                                 .build();

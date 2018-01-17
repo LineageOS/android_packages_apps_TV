@@ -38,20 +38,15 @@ import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
-import com.android.tv.common.BuildConfig;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Channel;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.Program;
 import com.android.tv.data.StreamInfo;
-import com.android.tv.experiments.Experiments;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,12 +63,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /** A class that includes convenience methods for accessing TvProvider database. */
+@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class Utils {
     private static final String TAG = "Utils";
     private static final boolean DEBUG = false;
-
-    private static final SimpleDateFormat ISO_8601 =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
 
     public static final String EXTRA_KEY_ACTION = "action";
     public static final String EXTRA_ACTION_SHOW_TV_INPUT = "show_tv_input";
@@ -115,15 +108,6 @@ public class Utils {
     private static final long RECORDING_FAILED_REASON_NONE = 0;
     private static final long HALF_MINUTE_MS = TimeUnit.SECONDS.toMillis(30);
     private static final long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
-
-    // Hardcoded list for known bundled inputs not written by OEM/SOCs.
-    // Bundled (system) inputs not in the list will get the high priority
-    // so they and their channels come first in the UI.
-    private static final Set<String> BUNDLED_PACKAGE_SET = new ArraySet<>();
-
-    static {
-        BUNDLED_PACKAGE_SET.add("com.android.tv");
-    }
 
     private enum AspectRatio {
         ASPECT_RATIO_4_3(4, 3),
@@ -661,7 +645,7 @@ public class Utils {
             return null;
         }
         TvInputManagerHelper inputManager =
-                TvApplication.getSingletons(context).getTvInputManagerHelper();
+                TvSingletons.getSingletons(context).getTvInputManagerHelper();
         CharSequence customLabel = inputManager.loadCustomLabel(input);
         String label = (customLabel == null) ? null : customLabel.toString();
         if (TextUtils.isEmpty(label)) {
@@ -702,11 +686,6 @@ public class Utils {
     /** Converts time in milliseconds to a String. */
     public static String toTimeString(long timeMillis) {
         return toTimeString(timeMillis, true);
-    }
-
-    /** Converts time in milliseconds to a ISO 8061 string. */
-    public static String toIsoDateTimeString(long timeMillis) {
-        return ISO_8601.format(new Date(timeMillis));
     }
 
     /**
@@ -775,7 +754,7 @@ public class Utils {
     /** Checks where there is any internal TV input. */
     public static boolean hasInternalTvInputs(Context context, boolean tunerInputOnly) {
         for (TvInputInfo input :
-                TvApplication.getSingletons(context)
+                TvSingletons.getSingletons(context)
                         .getTvInputManagerHelper()
                         .getTvInputInfos(true, tunerInputOnly)) {
             if (isInternalTvInput(context, input.getId())) {
@@ -789,7 +768,7 @@ public class Utils {
     public static List<TvInputInfo> getInternalTvInputs(Context context, boolean tunerInputOnly) {
         List<TvInputInfo> inputs = new ArrayList<>();
         for (TvInputInfo input :
-                TvApplication.getSingletons(context)
+                TvSingletons.getSingletons(context)
                         .getTvInputManagerHelper()
                         .getTvInputInfos(true, tunerInputOnly)) {
             if (isInternalTvInput(context, input.getId())) {
@@ -817,45 +796,20 @@ public class Utils {
     /** Returns the TV input for the given channel ID. */
     @Nullable
     public static TvInputInfo getTvInputInfoForChannelId(Context context, long channelId) {
-        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
-        Channel channel = appSingletons.getChannelDataManager().getChannel(channelId);
+        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        Channel channel = tvSingletons.getChannelDataManager().getChannel(channelId);
         if (channel == null) {
             return null;
         }
-        return appSingletons.getTvInputManagerHelper().getTvInputInfo(channel.getInputId());
+        return tvSingletons.getTvInputManagerHelper().getTvInputInfo(channel.getInputId());
     }
 
     /** Returns the {@link TvInputInfo} for the given input ID. */
     @Nullable
     public static TvInputInfo getTvInputInfoForInputId(Context context, String inputId) {
-        return TvApplication.getSingletons(context)
+        return TvSingletons.getSingletons(context)
                 .getTvInputManagerHelper()
                 .getTvInputInfo(inputId);
-    }
-
-    /** Deletes a file or a directory. */
-    public static void deleteDirOrFile(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory()) {
-            for (File child : fileOrDirectory.listFiles()) {
-                deleteDirOrFile(child);
-            }
-        }
-        fileOrDirectory.delete();
-    }
-
-    /** Checks whether a given package is in our bundled package set. */
-    public static boolean isInBundledPackageSet(String packageName) {
-        return BUNDLED_PACKAGE_SET.contains(packageName);
-    }
-
-    /** Checks whether a given input is a bundled input. */
-    public static boolean isBundledInput(String inputId) {
-        for (String prefix : BUNDLED_PACKAGE_SET) {
-            if (inputId.startsWith(prefix + "/")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /** Returns the canonical genre ID's from the {@code genres}. */
@@ -897,11 +851,6 @@ public class Utils {
             genres[i] = GenreItems.getCanonicalGenre(canonicalGenreIds[i]);
         }
         return Genres.encode(genres);
-    }
-
-    /** Returns true if the current user is a developer. */
-    public static boolean isDeveloper() {
-        return BuildConfig.ENG || Experiments.ENABLE_DEVELOPER_FEATURES.get();
     }
 
     /**
