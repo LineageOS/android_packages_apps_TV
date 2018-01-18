@@ -32,12 +32,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
+import com.android.tv.common.util.DurationTimer;
 import com.android.tv.data.Channel;
-import com.android.tv.util.DurationTimer;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,9 +143,9 @@ public class SelectInputView extends VerticalGridView
         super(context, attrs, defStyleAttr);
         setAdapter(new InputListAdapter());
 
-        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
-        mTracker = appSingletons.getTracker();
-        mTvInputManagerHelper = appSingletons.getTvInputManagerHelper();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        mTracker = tvSingletons.getTracker();
+        mTvInputManagerHelper = tvSingletons.getTvInputManagerHelper();
         mComparator =
                 new TvInputManagerHelper.HardwareInputComparator(context, mTvInputManagerHelper);
 

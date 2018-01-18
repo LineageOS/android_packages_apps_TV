@@ -17,22 +17,24 @@ package com.android.tv.data;
 
 import static android.media.tv.TvContract.Programs.Genres.COMEDY;
 import static android.media.tv.TvContract.Programs.Genres.FAMILY_KIDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.media.tv.TvContentRating;
 import android.media.tv.TvContract.Programs.Genres;
 import android.os.Parcel;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.data.Program.CriticScore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Tests for {@link Program}. */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class ProgramTest {
     private static final int NOT_FOUND_GENRE = 987;
 
@@ -43,7 +45,7 @@ public class ProgramTest {
     @Test
     public void testBuild() {
         Program program = new Program.Builder().build();
-        assertEquals("isValid", false, program.isValid());
+        assertWithMessage("isValid").that(program.isValid()).isFalse();
     }
 
     @Test
@@ -127,7 +129,7 @@ public class ProgramTest {
             p2.unmarshall(bytes, 0, bytes.length);
             p2.setDataPosition(0);
             Program r2 = Program.fromParcel(p2);
-            assertEquals(p, r2);
+            assertThat(r2).isEqualTo(p);
         } finally {
             p1.recycle();
             p2.recycle();
@@ -141,34 +143,36 @@ public class ProgramTest {
                         .setTitle("MyTitle")
                         .addCriticScore(
                                 new CriticScore(
-                                        "default source", "5/10", "https://testurl/testimage.jpg"))
+                                        "default source", "5/10", "http://testurl/testimage.jpg"))
                         .build();
         Parcel parcel = Parcel.obtain();
         program.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Program programFromParcel = Program.CREATOR.createFromParcel(parcel);
 
-        assertNotNull(programFromParcel.getCriticScores());
-        assertEquals(programFromParcel.getCriticScores().get(0).source, "default source");
-        assertEquals(programFromParcel.getCriticScores().get(0).score, "5/10");
-        assertEquals(
-                programFromParcel.getCriticScores().get(0).logoUrl,
-                "https://testurl/testimage.jpg");
+        assertThat(programFromParcel.getCriticScores()).isNotNull();
+        assertThat(programFromParcel.getCriticScores().get(0).source).isEqualTo("default source");
+        assertThat(programFromParcel.getCriticScores().get(0).score).isEqualTo("5/10");
+        assertThat(programFromParcel.getCriticScores().get(0).logoUrl)
+                .isEqualTo("http://testurl/testimage.jpg");
     }
 
     private static void assertNullCanonicalGenres(Program program) {
         String[] actual = program.getCanonicalGenres();
-        assertNull("Expected null canonical genres but was " + Arrays.toString(actual), actual);
+        assertWithMessage("Expected null canonical genres but was " + Arrays.toString(actual))
+                .that(actual)
+                .isNull();
     }
 
     private static void assertCanonicalGenres(Program program, String... expected) {
-        assertEquals(
-                "canonical genres",
-                Arrays.asList(expected),
-                Arrays.asList(program.getCanonicalGenres()));
+        assertWithMessage("canonical genres")
+                .that(Arrays.asList(program.getCanonicalGenres()))
+                .isEqualTo(Arrays.asList(expected));
     }
 
     private static void assertHasGenre(Program program, int genreId, boolean expected) {
-        assertEquals("hasGenre(" + genreId + ")", expected, program.hasGenre(genreId));
+        assertWithMessage("hasGenre(" + genreId + ")")
+                .that(program.hasGenre(genreId))
+                .isEqualTo(expected);
     }
 }

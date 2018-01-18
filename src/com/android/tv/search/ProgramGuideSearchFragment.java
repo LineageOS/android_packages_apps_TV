@@ -40,8 +40,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
+import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.util.ImageLoader;
-import com.android.tv.util.PermissionUtils;
 import java.util.List;
 
 public class ProgramGuideSearchFragment extends SearchFragment {
@@ -83,7 +83,8 @@ public class ProgramGuideSearchFragment extends SearchFragment {
                                 mMainCardHeight,
                                 createImageLoaderCallback(cardView));
                     } else {
-                        cardView.setMainImage(mMainActivity.getDrawable(R.drawable.ic_launcher));
+                        cardView.setMainImage(
+                                mMainActivity.getDrawable(R.drawable.ic_live_channels_96x96));
                     }
                 }
 
@@ -168,7 +169,7 @@ public class ProgramGuideSearchFragment extends SearchFragment {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         v.setBackgroundResource(R.color.program_guide_scrim);
 
-        setBadgeDrawable(mMainActivity.getDrawable(R.drawable.ic_launcher));
+        setBadgeDrawable(mMainActivity.getDrawable(R.drawable.ic_live_channels_96x96));
         setSearchResultProvider(mSearchResultProvider);
         setOnItemViewClickedListener(mItemClickedListener);
         return v;

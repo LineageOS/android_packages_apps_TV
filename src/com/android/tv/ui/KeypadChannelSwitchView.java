@@ -37,12 +37,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.util.DurationTimer;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelNumber;
-import com.android.tv.util.DurationTimer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +116,7 @@ public class KeypadChannelSwitchView extends LinearLayout
         super(context, attrs, defStyleAttr);
 
         mMainActivity = (MainActivity) context;
-        mTracker = TvApplication.getSingletons(context).getTracker();
+        mTracker = TvSingletons.getSingletons(context).getTracker();
         Resources resources = getResources();
         mLayoutInflater = LayoutInflater.from(context);
         mShowDurationMillis = resources.getInteger(R.integer.keypad_channel_switch_show_duration);

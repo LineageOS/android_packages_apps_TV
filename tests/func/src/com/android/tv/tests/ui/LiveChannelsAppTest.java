@@ -66,8 +66,9 @@ public class LiveChannelsAppTest extends LiveChannelsTestCase {
 
     public void testDisplayModeCancel() {
         ChannelStateData data = new ChannelStateData();
-        data.mTvTrackInfos.add(com.android.tv.testing.Constants.SVGA_VIDEO_TRACK);
-        data.mSelectedVideoTrackId = com.android.tv.testing.Constants.SVGA_VIDEO_TRACK.getId();
+        data.mTvTrackInfos.add(com.android.tv.testing.constants.Constants.SVGA_VIDEO_TRACK);
+        data.mSelectedVideoTrackId =
+                com.android.tv.testing.constants.Constants.SVGA_VIDEO_TRACK.getId();
         updateThenTune(data, TvTestInputConstants.CH_2);
 
         mMenuHelper.assertPressOptionsDisplayMode();
@@ -88,7 +89,8 @@ public class LiveChannelsAppTest extends LiveChannelsTestCase {
 
     public void testMultiAudioCancel() {
         ChannelStateData data = new ChannelStateData();
-        data.mTvTrackInfos.add(com.android.tv.testing.Constants.GENERIC_AUDIO_TRACK);
+        data.mTvTrackInfos.add(
+                com.android.tv.testing.constants.Constants.GENERIC_AUDIO_TRACK);
         updateThenTune(data, TvTestInputConstants.CH_2);
 
         mMenuHelper.assertPressOptionsMultiAudio();

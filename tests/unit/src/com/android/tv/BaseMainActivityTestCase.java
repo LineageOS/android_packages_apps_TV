@@ -23,7 +23,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.text.TextUtils;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
-import com.android.tv.testing.ChannelInfo;
+import com.android.tv.testing.data.ChannelInfo;
 import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TestInputControlConnection;
 import com.android.tv.testing.testinput.TestInputControlUtils;

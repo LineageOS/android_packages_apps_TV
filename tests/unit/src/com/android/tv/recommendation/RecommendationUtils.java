@@ -18,7 +18,7 @@ package com.android.tv.recommendation;
 
 import android.content.Context;
 import com.android.tv.data.Channel;
-import com.android.tv.testing.Utils;
+import com.android.tv.testing.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

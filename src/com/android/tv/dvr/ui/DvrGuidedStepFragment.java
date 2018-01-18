@@ -26,14 +26,13 @@ import android.support.v17.leanback.widget.VerticalGridView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
+import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.dialog.HalfSizedDialogFragment.OnActionClickListener;
 import com.android.tv.dialog.SafeDismissDialogFragment;
 import com.android.tv.dvr.DvrManager;
-import com.android.tv.dvr.DvrStorageStatusManager;
 import java.util.List;
 
 public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
@@ -56,7 +55,7 @@ public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ApplicationSingletons singletons = TvApplication.getSingletons(context);
+        TvSingletons singletons = TvSingletons.getSingletons(context);
         mDvrManager = singletons.getDvrManager();
     }
 
@@ -115,8 +114,8 @@ public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
     }
 
     /**
-     * The inner guided step fragment for {@link com.android.tv.dvr.ui.DvrHalfSizedDialogFragment
-     * .DvrNoFreeSpaceErrorDialogFragment}.
+     * The inner guided step fragment for {@link
+     * com.android.tv.dvr.ui.DvrHalfSizedDialogFragment .DvrNoFreeSpaceErrorDialogFragment}.
      */
     public static class DvrNoFreeSpaceErrorFragment extends DvrGuidedStepFragment {
         @Override
@@ -155,7 +154,8 @@ public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
     }
 
     /**
-     * The inner guided step fragment for {@link com.android.tv.dvr.ui.DvrHalfSizedDialogFragment
+     * The inner guided step fragment for {@link
+     * com.android.tv.dvr.ui.DvrHalfSizedDialogFragment
      * .DvrSmallSizedStorageErrorDialogFragment}.
      */
     public static class DvrSmallSizedStorageErrorFragment extends DvrGuidedStepFragment {
@@ -166,7 +166,7 @@ public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
                     getResources()
                             .getString(
                                     R.string.dvr_error_small_sized_storage_description,
-                                    DvrStorageStatusManager.MIN_STORAGE_SIZE_FOR_DVR_IN_BYTES
+                                    RecordingStorageStatusManager.MIN_STORAGE_SIZE_FOR_DVR_IN_BYTES
                                             / 1024
                                             / 1024
                                             / 1024);

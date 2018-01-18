@@ -25,8 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.ArraySet;
 import android.util.Range;
-import com.android.tv.ApplicationSingletons;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
@@ -51,6 +50,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /** A class to manage the schedules. */
 @TargetApi(Build.VERSION_CODES.N)
 @MainThread
+@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public class DvrScheduleManager {
     private static final String TAG = "DvrScheduleManager";
 
@@ -94,9 +94,9 @@ public class DvrScheduleManager {
 
     public DvrScheduleManager(Context context) {
         mContext = context;
-        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
-        mDataManager = (DvrDataManagerImpl) appSingletons.getDvrDataManager();
-        mChannelDataManager = appSingletons.getChannelDataManager();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        mDataManager = (DvrDataManagerImpl) tvSingletons.getDvrDataManager();
+        mChannelDataManager = tvSingletons.getChannelDataManager();
         if (mDataManager.isDvrScheduleLoadFinished() && mChannelDataManager.isDbLoadFinished()) {
             buildData();
         } else {
@@ -126,7 +126,7 @@ public class DvrScheduleManager {
                             TvInputInfo input =
                                     Utils.getTvInputInfoForInputId(mContext, schedule.getInputId());
                             if (!SoftPreconditions.checkArgument(
-                                    input != null, TAG, "Input was removed for : " + schedule)) {
+                                    input != null, TAG, "Input was removed for : %s", schedule)) {
                                 // Input removed.
                                 mInputScheduleMap.remove(schedule.getInputId());
                                 mInputConflictInfoMap.remove(schedule.getInputId());
@@ -190,7 +190,7 @@ public class DvrScheduleManager {
                             TvInputInfo input =
                                     Utils.getTvInputInfoForInputId(mContext, schedule.getInputId());
                             if (!SoftPreconditions.checkArgument(
-                                    input != null, TAG, "Input was removed for : " + schedule)) {
+                                    input != null, TAG, "Input was removed for : %s", schedule)) {
                                 // Input removed.
                                 mInputScheduleMap.remove(schedule.getInputId());
                                 mInputConflictInfoMap.remove(schedule.getInputId());

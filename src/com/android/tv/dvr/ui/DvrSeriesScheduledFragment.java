@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -68,7 +68,7 @@ public class DvrSeriesScheduledFragment extends DvrGuidedStepFragment {
                 getArguments()
                         .getBoolean(DvrSeriesScheduledDialogActivity.SHOW_VIEW_SCHEDULE_OPTION);
         mSeriesRecording =
-                TvApplication.getSingletons(context)
+                TvSingletons.getSingletons(context)
                         .getDvrDataManager()
                         .getSeriesRecording(seriesRecordingId);
         if (mSeriesRecording == null) {
@@ -78,12 +78,12 @@ public class DvrSeriesScheduledFragment extends DvrGuidedStepFragment {
         mPrograms = (List<Program>) BigArguments.getArgument(SERIES_SCHEDULED_KEY_PROGRAMS);
         BigArguments.reset();
         mSchedulesAddedCount =
-                TvApplication.getSingletons(getContext())
+                TvSingletons.getSingletons(getContext())
                         .getDvrManager()
                         .getAvailableScheduledRecording(mSeriesRecording.getId())
                         .size();
         DvrScheduleManager dvrScheduleManager =
-                TvApplication.getSingletons(context).getDvrScheduleManager();
+                TvSingletons.getSingletons(context).getDvrScheduleManager();
         List<ScheduledRecording> conflictingRecordings =
                 dvrScheduleManager.getConflictingSchedules(mSeriesRecording);
         mHasConflict = !conflictingRecordings.isEmpty();

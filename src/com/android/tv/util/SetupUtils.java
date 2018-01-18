@@ -28,15 +28,15 @@ import android.media.tv.TvInputManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
-import com.android.tv.ApplicationSingletons;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
+import com.android.tv.common.BaseApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
-import com.android.tv.tuner.tvinput.TunerTvInputService;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,9 +54,8 @@ public class SetupUtils {
     // Recognized inputs means that the user already knows the inputs are installed.
     private static final String PREF_KEY_RECOGNIZED_INPUTS = "recognized_inputs";
     private static final String PREF_KEY_IS_FIRST_TUNE = "is_first_tune";
-    private static SetupUtils sSetupUtils;
 
-    private final TvApplication mTvApplication;
+    private final Context mContext;
     private final SharedPreferences mSharedPreferences;
     private final Set<String> mKnownInputs;
     private final Set<String> mSetUpInputs;
@@ -64,9 +63,10 @@ public class SetupUtils {
     private boolean mIsFirstTune;
     private final String mTunerInputId;
 
-    private SetupUtils(TvApplication tvApplication) {
-        mTvApplication = tvApplication;
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(tvApplication);
+    @VisibleForTesting
+    protected SetupUtils(Context context) {
+        mContext = context;
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         mSetUpInputs = new ArraySet<>();
         mSetUpInputs.addAll(
                 mSharedPreferences.getStringSet(PREF_KEY_SET_UP_INPUTS, Collections.emptySet()));
@@ -77,18 +77,16 @@ public class SetupUtils {
         mRecognizedInputs.addAll(
                 mSharedPreferences.getStringSet(PREF_KEY_RECOGNIZED_INPUTS, mKnownInputs));
         mIsFirstTune = mSharedPreferences.getBoolean(PREF_KEY_IS_FIRST_TUNE, true);
-        mTunerInputId =
-                TvContract.buildInputId(
-                        new ComponentName(tvApplication, TunerTvInputService.class));
+        mTunerInputId = BaseApplication.getSingletons(context).getEmbeddedTunerInputId();
     }
 
-    /** Gets an instance of {@link SetupUtils}. */
-    public static SetupUtils getInstance(Context context) {
-        if (sSetupUtils != null) {
-            return sSetupUtils;
-        }
-        sSetupUtils = new SetupUtils((TvApplication) context.getApplicationContext());
-        return sSetupUtils;
+    /**
+     * Creates an instance of {@link SetupUtils}.
+     *
+     * <p><b>WARNING</b> this should only be called by the top level application.
+     */
+    public static SetupUtils createForTvSingletons(Context context) {
+        return new SetupUtils(context.getApplicationContext());
     }
 
     /** Additional work after the setup of TV input. */
@@ -99,14 +97,15 @@ public class SetupUtils {
         // which one is the last callback. To reduce error prune, we update channel
         // list again and make all channels of {@code inputId} browsable.
         onSetupDone(inputId);
-        final ChannelDataManager manager = mTvApplication.getChannelDataManager();
+        final ChannelDataManager manager =
+                TvSingletons.getSingletons(mContext).getChannelDataManager();
         if (!manager.isDbLoadFinished()) {
             manager.addListener(
                     new ChannelDataManager.Listener() {
                         @Override
                         public void onLoadFinished() {
                             manager.removeListener(this);
-                            updateChannelsAfterSetup(mTvApplication, inputId, postRunnable);
+                            updateChannelsAfterSetup(mContext, inputId, postRunnable);
                         }
 
                         @Override
@@ -116,14 +115,14 @@ public class SetupUtils {
                         public void onChannelBrowsableChanged() {}
                     });
         } else {
-            updateChannelsAfterSetup(mTvApplication, inputId, postRunnable);
+            updateChannelsAfterSetup(mContext, inputId, postRunnable);
         }
     }
 
     private static void updateChannelsAfterSetup(
             Context context, final String inputId, final Runnable postRunnable) {
-        ApplicationSingletons appSingletons = TvApplication.getSingletons(context);
-        final ChannelDataManager manager = appSingletons.getChannelDataManager();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        final ChannelDataManager manager = tvSingletons.getChannelDataManager();
         manager.updateChannels(
                 new Runnable() {
                     @Override
@@ -159,8 +158,9 @@ public class SetupUtils {
     @UiThread
     public void markNewChannelsBrowsable() {
         Set<String> newInputsWithChannels = new HashSet<>();
-        TvInputManagerHelper tvInputManagerHelper = mTvApplication.getTvInputManagerHelper();
-        ChannelDataManager channelDataManager = mTvApplication.getChannelDataManager();
+        TvSingletons singletons = TvSingletons.getSingletons(mContext);
+        TvInputManagerHelper tvInputManagerHelper = singletons.getTvInputManagerHelper();
+        ChannelDataManager channelDataManager = singletons.getChannelDataManager();
         SoftPreconditions.checkState(channelDataManager.isDbLoadFinished());
         for (TvInputInfo input : tvInputManagerHelper.getTvInputInfos(true, true)) {
             String inputId = input.getId();
@@ -340,8 +340,7 @@ public class SetupUtils {
                 try {
                     // Just after booting, input list from TvInputManager are not reliable.
                     // So we need to double-check package existence. b/29034900
-                    mTvApplication
-                            .getPackageManager()
+                    mContext.getPackageManager()
                             .getPackageInfo(
                                     ComponentName.unflattenFromString(input).getPackageName(),
                                     PackageManager.GET_ACTIVITIES);

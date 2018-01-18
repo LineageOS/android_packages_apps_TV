@@ -20,7 +20,7 @@ import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
-import com.android.tv.testing.Utils;
+import com.android.tv.testing.utils.Utils;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;

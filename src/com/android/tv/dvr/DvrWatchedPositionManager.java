@@ -20,7 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.tv.TvInputManager;
 import android.support.annotation.IntDef;
-import com.android.tv.common.SharedPreferencesUtils;
+import com.android.tv.common.util.SharedPreferencesUtils;
 import com.android.tv.dvr.data.RecordedProgram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

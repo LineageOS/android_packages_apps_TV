@@ -16,7 +16,7 @@
 
 package com.android.tv.ui.sidepanel;
 
-import static com.android.tv.Features.TUNER;
+import static com.android.tv.TvFeatures.TUNER;
 
 import android.app.ApplicationErrorReport;
 import android.content.Intent;
@@ -26,13 +26,13 @@ import android.widget.Toast;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
-import com.android.tv.customization.TvCustomizationManager;
+import com.android.tv.TvSingletons;
+import com.android.tv.common.CommonPreferences;
+import com.android.tv.common.customization.CustomizationManager;
+import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.dialog.PinDialogFragment;
 import com.android.tv.license.LicenseSideFragment;
 import com.android.tv.license.Licenses;
-import com.android.tv.tuner.TunerPreferences;
-import com.android.tv.util.PermissionUtils;
-import com.android.tv.util.SetupUtils;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +82,9 @@ public class SettingsFragment extends SideFragment {
         items.add(customizeChannelListItem);
         final MainActivity activity = getMainActivity();
         boolean hasNewInput =
-                SetupUtils.getInstance(activity).hasNewInput(activity.getTvInputManagerHelper());
+                TvSingletons.getSingletons(getContext())
+                        .getSetupUtils()
+                        .hasNewInput(activity.getTvInputManagerHelper());
         items.add(
                 new ActionItem(
                         getString(R.string.settings_channel_source_item_setup),
@@ -127,7 +129,7 @@ public class SettingsFragment extends SideFragment {
         boolean showTrickplaySetting = false;
         if (TUNER.isEnabled(getContext())) {
             for (TvInputInfo inputInfo :
-                    TvApplication.getSingletons(getContext())
+                    TvSingletons.getSingletons(getContext())
                             .getTvInputManagerHelper()
                             .getTvInputInfos(true, true)) {
                 if (Utils.isInternalTvInput(getContext(), inputInfo.getId())) {
@@ -137,8 +139,8 @@ public class SettingsFragment extends SideFragment {
             }
             if (showTrickplaySetting) {
                 showTrickplaySetting =
-                        TvCustomizationManager.getTrickplayMode(getContext())
-                                == TvCustomizationManager.TRICKPLAY_MODE_ENABLED;
+                        CustomizationManager.getTrickplayMode(getContext())
+                                == CustomizationManager.TRICKPLAY_MODE_ENABLED;
             }
         }
         if (showTrickplaySetting) {
@@ -152,20 +154,20 @@ public class SettingsFragment extends SideFragment {
                         protected void onUpdate() {
                             super.onUpdate();
                             boolean enabled =
-                                    TunerPreferences.getTrickplaySetting(getContext())
-                                            != TunerPreferences.TRICKPLAY_SETTING_DISABLED;
+                                    CommonPreferences.getTrickplaySetting(getContext())
+                                            != CommonPreferences.TRICKPLAY_SETTING_DISABLED;
                             setChecked(enabled);
                         }
 
                         @Override
                         protected void onSelected() {
                             super.onSelected();
-                            @TunerPreferences.TrickplaySetting
+                            @CommonPreferences.TrickplaySetting
                             int setting =
                                     isChecked()
-                                            ? TunerPreferences.TRICKPLAY_SETTING_ENABLED
-                                            : TunerPreferences.TRICKPLAY_SETTING_DISABLED;
-                            TunerPreferences.setTrickplaySetting(getContext(), setting);
+                                            ? CommonPreferences.TRICKPLAY_SETTING_ENABLED
+                                            : CommonPreferences.TRICKPLAY_SETTING_DISABLED;
+                            CommonPreferences.setTrickplaySetting(getContext(), setting);
                         }
                     });
         }

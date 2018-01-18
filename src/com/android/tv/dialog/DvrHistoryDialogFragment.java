@@ -30,9 +30,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.android.tv.ApplicationSingletons;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.dvr.DvrDataManager;
@@ -45,6 +44,7 @@ import java.util.List;
 
 /** Displays the DVR history. */
 @TargetApi(VERSION_CODES.N)
+@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public class DvrHistoryDialogFragment extends SafeDismissDialogFragment {
     public static final String DIALOG_TAG = DvrHistoryDialogFragment.class.getSimpleName();
 
@@ -53,7 +53,7 @@ public class DvrHistoryDialogFragment extends SafeDismissDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ApplicationSingletons singletons = TvApplication.getSingletons(getContext());
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
         DvrDataManager dataManager = singletons.getDvrDataManager();
         ChannelDataManager channelDataManager = singletons.getChannelDataManager();
         for (ScheduledRecording schedule : dataManager.getAllScheduledRecordings()) {

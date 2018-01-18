@@ -24,7 +24,7 @@ import android.os.SystemClock;
 import android.support.test.filters.MediumTest;
 import android.text.TextUtils;
 import com.android.tv.BaseMainActivityTestCase;
-import com.android.tv.testing.Constants;
+import com.android.tv.testing.constants.Constants;
 import com.android.tv.testing.testinput.ChannelState;
 import com.android.tv.testing.testinput.ChannelStateData;
 import com.android.tv.testing.testinput.TvTestInputConstants;

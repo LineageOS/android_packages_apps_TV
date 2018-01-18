@@ -16,9 +16,11 @@
 
 package com.android.tv.dvr.ui;
 
+import android.annotation.TargetApi;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
@@ -27,7 +29,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.tv.R;
-import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
@@ -36,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Fragment for DVR series recording settings. */
+@TargetApi(Build.VERSION_CODES.N)
+@SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
     /** Name of series recording id starting the fragment. Type: Long */
     public static final String COME_FROM_SERIES_RECORDING_ID = "series_recording_id";
@@ -62,7 +66,7 @@ public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
                         .setPriority(Long.MAX_VALUE)
                         .setId(ONE_TIME_RECORDING_ID)
                         .build());
-        DvrDataManager dvrDataManager = TvApplication.getSingletons(context).getDvrDataManager();
+        DvrDataManager dvrDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
         long comeFromSeriesRecordingId = getArguments().getLong(COME_FROM_SERIES_RECORDING_ID, -1);
         for (SeriesRecording series : dvrDataManager.getSeriesRecordings()) {
             if (series.getState() == SeriesRecording.STATE_SERIES_NORMAL
@@ -127,7 +131,7 @@ public class DvrPrioritySettingsFragment extends TrackedGuidedStepFragment {
     public void onTrackedGuidedActionClicked(GuidedAction action) {
         long actionId = action.getId();
         if (actionId == ACTION_ID_SAVE) {
-            DvrManager dvrManager = TvApplication.getSingletons(getContext()).getDvrManager();
+            DvrManager dvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
             int size = mSeriesRecordings.size();
             for (int i = 1; i < size; ++i) {
                 long priority = DvrScheduleManager.suggestSeriesPriority(size - i);
