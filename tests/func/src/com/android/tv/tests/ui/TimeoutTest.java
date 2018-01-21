@@ -15,13 +15,14 @@
  */
 package com.android.tv.tests.ui;
 
-import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertHas;
-import static com.android.tv.testing.uihelper.UiDeviceAsserts.assertWaitForCondition;
-
 import android.support.test.filters.LargeTest;
 import android.support.test.uiautomator.Until;
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Test timeout events like the menu despairing after no input.
@@ -30,27 +31,30 @@ import com.android.tv.testing.uihelper.Constants;
  * complete.
  */
 @LargeTest
-public class TimeoutTest extends LiveChannelsTestCase {
+@RunWith(JUnit4.class)
+public class TimeoutTest {
 
+    @Rule public final LiveChannelsTestController controller = new LiveChannelsTestController();
+
+    @Test
     public void testMenu() {
-        mLiveChannelsHelper.assertAppStarted();
-        mDevice.pressMenu();
+        controller.liveChannelsHelper.assertAppStarted();
+        controller.pressMenu();
 
-        assertWaitForCondition(mDevice, Until.hasObject(Constants.MENU));
-        assertWaitForCondition(
-                mDevice,
+        controller.assertWaitForCondition(Until.hasObject(Constants.MENU));
+        controller.assertWaitForCondition(
                 Until.gone(Constants.MENU),
-                mTargetResources.getInteger(R.integer.menu_show_duration));
+                controller.getTargetResources().getInteger(R.integer.menu_show_duration));
     }
 
+    @Test
     public void testProgramGuide() {
-        mLiveChannelsHelper.assertAppStarted();
-        mMenuHelper.assertPressProgramGuide();
-        assertWaitForCondition(mDevice, Until.hasObject(Constants.PROGRAM_GUIDE));
-        assertWaitForCondition(
-                mDevice,
+        controller.liveChannelsHelper.assertAppStarted();
+        controller.menuHelper.assertPressProgramGuide();
+        controller.assertWaitForCondition(Until.hasObject(Constants.PROGRAM_GUIDE));
+        controller.assertWaitForCondition(
                 Until.gone(Constants.PROGRAM_GUIDE),
-                mTargetResources.getInteger(R.integer.program_guide_show_duration));
-        assertHas(mDevice, Constants.MENU, false);
+                controller.getTargetResources().getInteger(R.integer.program_guide_show_duration));
+        controller.assertHas(Constants.MENU, false);
     }
 }
