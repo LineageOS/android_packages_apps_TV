@@ -255,7 +255,7 @@ public class PreviewDataManager {
                                 android.support.media.tv.Channel previewChannel =
                                         android.support.media.tv.Channel.fromCursor(cursor);
                                 Long previewChannelType = previewChannel.getInternalProviderFlag1();
-                                if (previewChannel.getPackageName() == packageName
+                                if (packageName.equals(previewChannel.getPackageName())
                                         && previewChannelType != null) {
                                     previewData.addPreviewChannelId(
                                             previewChannelType, previewChannel.getId());
