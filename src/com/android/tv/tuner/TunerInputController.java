@@ -81,10 +81,10 @@ public class TunerInputController {
 
     /** Action of {@link Intent} to check network connection repeatedly when it is necessary. */
     private static final String CHECKING_NETWORK_TUNER_STATUS =
-            " com.android.tv.action.CHECKING_NETWORK_TUNER_STATUS";
+            "com.android.tv.action.CHECKING_NETWORK_TUNER_STATUS";
 
     private static final String EXTRA_CHECKING_DURATION =
-            " com.android.tv.action.extra.CHECKING_DURATION";
+            "com.android.tv.action.extra.CHECKING_DURATION";
     private static final String EXTRA_DEVICE_IP = "com.android.tv.action.extra.DEVICE_IP";
 
     private static final long INITIAL_CHECKING_DURATION_MS = TimeUnit.SECONDS.toMillis(10);
