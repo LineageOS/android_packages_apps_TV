@@ -77,7 +77,6 @@ public class ChannelScanFileParser {
      *     "A &lt;frequency&gt; &lt;modulation&gt;".
      * @return a list of {@link ScanChannel} objects parsed
      */
-    @SuppressWarnings("StringSplitter")
     public static List<ScanChannel> parseScanFile(InputStream is) {
         BufferedReader in = new BufferedReader(new InputStreamReader(is));
         String line;
