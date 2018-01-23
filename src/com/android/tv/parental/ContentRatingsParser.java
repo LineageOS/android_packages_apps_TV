@@ -214,7 +214,8 @@ public class ContentRatingsParser {
         }
 
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
-            switch (parser.getEventType()) {
+            int eventType = parser.getEventType();
+            switch (eventType) {
                 case XmlPullParser.START_TAG:
                     String tag = parser.getName();
                     switch (tag) {
@@ -243,6 +244,13 @@ public class ContentRatingsParser {
                         checkVersion(
                                 "Malformed XML: Tag mismatch for " + TAG_RATING_SYSTEM_DEFINITION);
                     }
+                    break;
+                default:
+                    checkVersion(
+                            "Malformed XML: Unknown event type "
+                                    + eventType
+                                    + " in "
+                                    + TAG_RATING_SYSTEM_DEFINITION);
             }
         }
         throw new XmlPullParserException(
