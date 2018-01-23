@@ -20,7 +20,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvContract;
-import com.android.tv.tuner.tvinput.LiveTvTunerTvInputService;
 import com.android.tv.TvApplication;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.StubAnalytics;
@@ -34,6 +33,7 @@ import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.StubPerformanceMonitor;
+import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.account.AccountHelperImpl;
@@ -41,7 +41,8 @@ import javax.inject.Provider;
 
 /** The top level application for Live TV. */
 public class LiveTvApplication extends TvApplication {
-    protected static final String TV_ACTIVITY_CLASS_NAME = "com.android.tv.TvActivity";
+    protected static final String TV_ACTIVITY_CLASS_NAME =
+            CommonConstants.BASE_PACKAGE + ".TvActivity";
 
     private final StubPerformanceMonitor performanceMonitor = new StubPerformanceMonitor();
     private final Provider<EpgReader> mEpgReaderProvider =

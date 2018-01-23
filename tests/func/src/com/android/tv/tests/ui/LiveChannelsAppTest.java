@@ -101,8 +101,7 @@ public class LiveChannelsAppTest {
     @Test
     public void testMultiAudioCancel() {
         ChannelStateData data = new ChannelStateData();
-        data.mTvTrackInfos.add(
-                com.android.tv.testing.constants.Constants.GENERIC_AUDIO_TRACK);
+        data.mTvTrackInfos.add(com.android.tv.testing.constants.Constants.GENERIC_AUDIO_TRACK);
         controller.updateThenTune(data, TvTestInputConstants.CH_2);
 
         controller.menuHelper.assertPressOptionsMultiAudio();

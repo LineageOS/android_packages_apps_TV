@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.livetuner;
 
 import com.android.tv.tuner.tvinput.BaseTunerTvInputService;
 

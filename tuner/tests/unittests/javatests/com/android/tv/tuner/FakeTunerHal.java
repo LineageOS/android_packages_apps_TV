@@ -16,7 +16,7 @@
 
 package com.android.tv.tuner;
 
-public class FakeTunerHal extends TunerHal {
+public class FakeTunerHal extends com.android.tv.tuner.TunerHal {
 
     private boolean mDeviceOpened;
 

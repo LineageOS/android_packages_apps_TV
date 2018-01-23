@@ -24,11 +24,11 @@ import android.os.Message;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.Pair;
+import com.android.tv.common.SoftPreconditions;
+import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer.BufferReason;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.util.MimeTypes;
-import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer.BufferReason;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,7 +85,7 @@ public class SampleChunkIoHelper implements Handler.Callback {
         public void onIoError() {}
     }
 
-    private class IoParams {
+    private static class IoParams {
         private final int index;
         private final long positionUs;
         private final SampleHolder sample;

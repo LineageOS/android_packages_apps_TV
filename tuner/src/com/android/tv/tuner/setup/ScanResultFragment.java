@@ -31,8 +31,7 @@ import java.util.List;
 
 /** A fragment for initial screen. */
 public class ScanResultFragment extends SetupMultiPaneFragment {
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.tuner.setup.ScanResultFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.ScanResultFragment";
 
     @Override
     protected SetupGuidedStepFragment onCreateContentFragment() {

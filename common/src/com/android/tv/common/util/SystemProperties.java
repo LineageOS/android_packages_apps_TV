@@ -36,9 +36,7 @@ public final class SystemProperties {
     public static final BooleanSystemProperty USE_DEBUG_KEYS =
             new BooleanSystemProperty("tv_use_debug_keys", false);
 
-    /**
-     * Send {@link com.android.tv.analytics.Tracker} information. Defaults to {@code true}.
-     */
+    /** Send {@link com.android.tv.analytics.Tracker} information. Defaults to {@code true}. */
     public static final BooleanSystemProperty USE_TRACKER =
             new BooleanSystemProperty("tv_use_tracker", true);
 

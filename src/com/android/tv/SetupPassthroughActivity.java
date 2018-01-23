@@ -33,10 +33,10 @@ import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ChannelDataManager.Listener;
 import com.android.tv.data.epg.EpgFetcher;
 import com.android.tv.data.epg.EpgInputWhiteList;
-
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+
 import java.util.concurrent.TimeUnit;
 
 /**

@@ -77,11 +77,11 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
 
     /**
      * Broadcast Action: The user has updated LC to a new version that supports tuner input. {@link
-     * com.android.tv.tuner.TunerInputController} will recevice this intent to check the
-     * existence of tuner input when the new version is first launched.
+     * TunerInputController} will receive this intent to check the existence of tuner input when the
+     * new version is first launched.
      */
     public static final String ACTION_APPLICATION_FIRST_LAUNCHED =
-            "com.android.tv.action.APPLICATION_FIRST_LAUNCHED";
+            " com.android.tv.action.APPLICATION_FIRST_LAUNCHED";
 
     private static final String PREFERENCE_IS_FIRST_LAUNCH = "is_first_launch";
 

@@ -30,8 +30,7 @@ import com.android.tv.common.ui.setup.SetupActionHelper;
 /** A fragment for new channel source info/setup. */
 public class NewSourcesFragment extends Fragment {
     /** The action category. */
-    public static final String ACTION_CATEOGRY =
-            "com.android.tv.onboarding.NewSourcesFragment";
+    public static final String ACTION_CATEOGRY = "com.android.tv.onboarding.NewSourcesFragment";
     /** An action to show the setup screen. */
     public static final int ACTION_SETUP = 1;
     /** An action to close this fragment. */

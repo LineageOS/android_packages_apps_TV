@@ -26,6 +26,7 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.testing.utils.Utils;
 import junit.framework.Assert;
 
@@ -55,7 +56,7 @@ public class LiveChannelsUiDeviceHelper extends BaseUiDeviceHelper {
         waitForCondition(mUiDevice, Until.hasObject(Constants.TV_VIEW));
 
         Assert.assertTrue(
-                Constants.TV_APP_PACKAGE + " did not start",
+            Constants.TV_APP_PACKAGE + " did not start",
                 mUiDevice.wait(
                         Until.hasObject(By.pkg(Constants.TV_APP_PACKAGE).depth(0)),
                         APPLICATION_START_TIMEOUT_MSEC));
@@ -67,7 +68,7 @@ public class LiveChannelsUiDeviceHelper extends BaseUiDeviceHelper {
     }
 
     public void assertAppStopped() {
-        while (mUiDevice.hasObject(By.pkg(Constants.TV_APP_PACKAGE).depth(0))) {
+        while (mUiDevice.hasObject(By.pkg(CommonConstants.BASE_PACKAGE).depth(0))) {
             mUiDevice.pressBack();
             mUiDevice.waitForIdle();
         }

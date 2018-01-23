@@ -29,6 +29,7 @@ import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
 import com.android.tv.R;
 import com.android.tv.testing.testinput.TvTestInputConstants;
+import com.android.tv.testing.uihelper.Constants;
 import com.android.tv.testing.uihelper.DialogHelper;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -40,7 +41,7 @@ import org.junit.runners.JUnit4;
 @SmallTest
 @RunWith(JUnit4.class)
 public class PlayControlsRowViewTest {
-    private static final String BUTTON_ID_PLAY_PAUSE = "com.android.tv:id/play_pause";
+    private static final String BUTTON_ID_PLAY_PAUSE = Constants.TV_APP_PACKAGE + ":id/play_pause";
     @Rule public final LiveChannelsTestController controller = new LiveChannelsTestController();
 
     private BySelector mBySettingsSidePanel;

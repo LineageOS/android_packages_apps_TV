@@ -24,8 +24,8 @@ import android.util.Log;
 import com.android.tv.Starter;
 import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
-
 import com.android.tv.util.Partner;
+
 
 /** A class for handling the broadcast intents from PackageManager. */
 public class PackageIntentsReceiver extends BroadcastReceiver {

@@ -21,15 +21,15 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
-
-
-
-
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.CommonUtils;
+
+
+
+
 
 import java.util.ArrayList;
 import java.util.List;

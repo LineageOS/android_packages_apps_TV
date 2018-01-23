@@ -614,6 +614,7 @@ public class WelcomeFragment extends OnboardingFragment {
             mPageDescriptions = getResources().getStringArray(R.array.welcome_page_descriptions);
         }
     }
+
     @Nullable
     @Override
     public View onCreateView(
@@ -624,74 +625,82 @@ public class WelcomeFragment extends OnboardingFragment {
         mPagingIndicator = view.findViewById(android.support.v17.leanback.R.id.page_indicator);
         mStartButton = view.findViewById(android.support.v17.leanback.R.id.button_start);
 
-        mStartButton.setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
-                int type = event.getEventType();
-                if (type == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
-                        || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-                    if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
-                        // Skip the event before the title is accessibility focused to avoid race
-                        // conditions
-                        return;
+        mStartButton.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityEvent(
+                            View host, AccessibilityEvent event) {
+                        int type = event.getEventType();
+                        if (type == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
+                                || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+                            if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
+                                // Skip the event before the title is accessibility focused to avoid
+                                // race
+                                // conditions
+                                return;
+                            }
+                        }
+                        super.onInitializeAccessibilityEvent(host, event);
                     }
-                }
-                super.onInitializeAccessibilityEvent(host, event);
-            }
-        });
+                });
 
-        mPagingIndicator.setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
-                int type = event.getEventType();
-                if (type == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
-                        || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-                    if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
-                        // Skip the event before the title is accessibility focused to avoid race
-                        // conditions
-                        return;
+        mPagingIndicator.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityEvent(
+                            View host, AccessibilityEvent event) {
+                        int type = event.getEventType();
+                        if (type == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
+                                || type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+                            if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
+                                // Skip the event before the title is accessibility focused to avoid
+                                // race
+                                // conditions
+                                return;
+                            }
+                        }
+                        super.onInitializeAccessibilityEvent(host, event);
                     }
-                }
-                super.onInitializeAccessibilityEvent(host, event);
-            }
-        });
+                });
 
-        mTitleView.setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public boolean performAccessibilityAction(View host, int action, Bundle args) {
-                if (action == ACTION_CLEAR_ACCESSIBILITY_FOCUS) {
-                    if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
-                        // Skip the event before the title is accessibility focused to avoid race
-                        // conditions
-                        return false;
+        mTitleView.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                        if (action == ACTION_CLEAR_ACCESSIBILITY_FOCUS) {
+                            if (!mTitleChanged || mTitleView.isAccessibilityFocused()) {
+                                // Skip the event before the title is accessibility focused to avoid
+                                // race
+                                // conditions
+                                return false;
+                            }
+                        }
+                        return super.performAccessibilityAction(host, action, args);
                     }
-                }
-                return super.performAccessibilityAction(host, action, args);
-            }
-        });
+                });
 
-        mTitleView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                mTitleChanged = false;
-            }
+        mTitleView.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        mTitleChanged = false;
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!mTitleView.isAccessibilityFocused()) {
-                    mTitleView.performAccessibilityAction(
-                        AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
-                } else {
-                    mTitleView.sendAccessibilityEvent(
-                            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
-                }
-                mTitleChanged = true;
-            }
-        });
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!mTitleView.isAccessibilityFocused()) {
+                            mTitleView.performAccessibilityAction(
+                                    AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+                        } else {
+                            mTitleView.sendAccessibilityEvent(
+                                    AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                        }
+                        mTitleChanged = true;
+                    }
+                });
         return view;
     }
 

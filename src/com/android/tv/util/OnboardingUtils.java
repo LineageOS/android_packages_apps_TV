@@ -48,8 +48,8 @@ public final class OnboardingUtils {
     }
 
     /**
-     * Checks if this is the first run of {@link com.android.tv.MainActivity} with the
-     * current onboarding version.
+     * Checks if this is the first run of {@link com.android.tv.MainActivity} with the current
+     * onboarding version.
      */
     public static boolean isFirstRunWithCurrentVersion(Context context) {
         int versionCode =
@@ -59,8 +59,8 @@ public final class OnboardingUtils {
     }
 
     /**
-     * Marks that the first run of {@link com.android.tv.MainActivity} with the current
-     * onboarding version has been completed.
+     * Marks that the first run of {@link com.android.tv.MainActivity} with the current onboarding
+     * version has been completed.
      */
     public static void setFirstRunWithCurrentVersionCompleted(Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)

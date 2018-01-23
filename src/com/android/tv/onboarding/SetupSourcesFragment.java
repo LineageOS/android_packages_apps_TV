@@ -46,8 +46,7 @@ import java.util.List;
 /** A fragment for channel source info/setup. */
 public class SetupSourcesFragment extends SetupMultiPaneFragment {
     /** The action category for the actions which is fired from this fragment. */
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.onboarding.SetupSourcesFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv..onboarding.SetupSourcesFragment";
     /** An action to open the merchant collection. */
     public static final int ACTION_ONLINE_STORE = 1;
     /**

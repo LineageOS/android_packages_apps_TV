@@ -34,8 +34,7 @@ import java.util.List;
 
 /** A fragment for initial screen. */
 public class PostalCodeFragment extends SetupMultiPaneFragment {
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.tuner.setup.PostalCodeFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.PostalCodeFragment";
     public static final String KEY_POSTAL_CODE = "postal_code";
     private static final int VIEW_TYPE_EDITABLE = 1;
 

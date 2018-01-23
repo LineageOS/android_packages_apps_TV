@@ -28,6 +28,7 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.PermissionUtils;
@@ -44,7 +45,7 @@ public class LocalSearchProvider extends ContentProvider {
     private static final boolean DEBUG = false;
 
     /** The authority for LocalSearchProvider. */
-    public static final String AUTHORITY = "com.android.tv.search";
+    public static final String AUTHORITY = CommonConstants.BASE_PACKAGE + ".search";
 
     public static final int PROGRESS_PERCENTAGE_HIDE = -1;
 

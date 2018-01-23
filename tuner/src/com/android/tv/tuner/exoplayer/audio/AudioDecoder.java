@@ -41,7 +41,7 @@ public abstract class AudioDecoder {
      * Clear previous decode state if any. Prepares to decode samples of the specified encoding.
      * This method should be called before using decode.
      *
-     * @param mime audio encoding
+     * @param mimeType audio encoding
      */
     public abstract void resetDecoderState(String mimeType);
 

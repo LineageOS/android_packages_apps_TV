@@ -321,8 +321,8 @@ public class BaseTunerSetupActivity extends SetupActivity {
      * A callback to be invoked when the TvInputService is enabled or disabled.
      *
      * @param context a {@link Context} instance
-     * @param enabled {@code true} for the {@link TunerTvInputService} to be enabled;
-     *                otherwise {@code false}
+     * @param enabled {@code true} for the {@link TunerTvInputService} to be enabled; otherwise
+     *     {@code false}
      */
     public static void onTvInputEnabled(Context context, boolean enabled, Integer tunerType) {
         // Send a notification for tuner setup if there's no channels and the tuner TV input
@@ -404,21 +404,21 @@ public class BaseTunerSetupActivity extends SetupActivity {
         // Build and send the notification.
         Notification notification =
                 new NotificationCompat.BigPictureStyle(
-                        new NotificationCompat.Builder(context)
-                                .setAutoCancel(false)
-                                .setContentTitle(contentTitle)
-                                .setContentText(contentText)
-                                .setContentInfo(contentText)
-                                .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                                .setLargeIcon(largeIcon)
-                                .setSmallIcon(
-                                        context.getResources()
-                                                .getIdentifier(
-                                                        TAG_ICON,
-                                                        TAG_DRAWABLE,
-                                                        context.getPackageName()))
-                                .setContentIntent(
-                                        createPendingIntentForSetupActivity(context)))
+                                new NotificationCompat.Builder(context)
+                                        .setAutoCancel(false)
+                                        .setContentTitle(contentTitle)
+                                        .setContentText(contentText)
+                                        .setContentInfo(contentText)
+                                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                                        .setLargeIcon(largeIcon)
+                                        .setSmallIcon(
+                                                context.getResources()
+                                                        .getIdentifier(
+                                                                TAG_ICON,
+                                                                TAG_DRAWABLE,
+                                                                context.getPackageName()))
+                                        .setContentIntent(
+                                                createPendingIntentForSetupActivity(context)))
                         .build();
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -432,12 +432,13 @@ public class BaseTunerSetupActivity extends SetupActivity {
      */
     private static PendingIntent createPendingIntentForSetupActivity(Context context) {
         return PendingIntent.getActivity(
-                context, 0,
+                context,
+                0,
                 BaseApplication.getSingletons(context).getTunerSetupIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /** A static factory for {@link TunerHal} instances **/
+    /** A static factory for {@link TunerHal} instances * */
     @VisibleForTesting
     protected static class TunerHalFactory {
         private Context mContext;

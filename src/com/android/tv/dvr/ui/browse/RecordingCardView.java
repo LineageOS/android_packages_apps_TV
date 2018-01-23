@@ -37,8 +37,8 @@ import com.android.tv.ui.ViewUtils;
 import com.android.tv.util.ImageLoader;
 
 /**
- * A CardView for displaying info about a {@link com.android.tv.dvr.data.ScheduledRecording}
- * or {@link RecordedProgram} or {@link com.android.tv.dvr.data.SeriesRecording}.
+ * A CardView for displaying info about a {@link com.android.tv.dvr.data.ScheduledRecording} or
+ * {@link RecordedProgram} or {@link com.android.tv.dvr.data.SeriesRecording}.
  */
 public class RecordingCardView extends BaseCardView {
     // This value should be the same with

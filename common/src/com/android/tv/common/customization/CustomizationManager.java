@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.Log;
+import com.android.tv.common.CommonConstants;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -40,10 +41,11 @@ public class CustomizationManager {
     private static final boolean DEBUG = false;
 
     private static final String[] CUSTOMIZE_PERMISSIONS = {
-        "com.android.tv.permission.CUSTOMIZE_TV_APP"
+        CommonConstants.BASE_PACKAGE + ".permission.CUSTOMIZE_TV_APP"
     };
 
-    private static final String CATEGORY_TV_CUSTOMIZATION = "com.android.tv.category";
+    private static final String CATEGORY_TV_CUSTOMIZATION =
+            CommonConstants.BASE_PACKAGE + ".category";
 
     /** Row IDs to share customized actions. Only rows listed below can have customized action. */
     public static final String ID_OPTIONS_ROW = "options_row";

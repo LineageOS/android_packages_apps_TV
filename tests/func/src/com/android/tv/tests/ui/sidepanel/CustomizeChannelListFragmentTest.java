@@ -52,8 +52,7 @@ public class CustomizeChannelListFragmentTest {
         mTvView = controller.getUiDevice().findObject(Constants.TV_VIEW);
         mNormalTvViewCenter = mTvView.getVisibleCenter();
         assertNotNull(mNormalTvViewCenter);
-        controller.pressKeysForChannel(
-                com.android.tv.testing.testinput.TvTestInputConstants.CH_2);
+        controller.pressKeysForChannel(com.android.tv.testing.testinput.TvTestInputConstants.CH_2);
         // Wait until KeypadChannelSwitchView closes.
         controller.assertWaitForCondition(Until.hasObject(Constants.CHANNEL_BANNER));
         mBySettingsSidePanel =

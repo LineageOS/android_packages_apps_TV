@@ -54,7 +54,8 @@ public class CommonPreferences {
         sPref2TypeMapping.put(PREFS_KEY_LAST_POSTAL_CODE, String.class);
     }
 
-    private static final String SHARED_PREFS_NAME = "com.android.tv.common.preferences";
+    private static final String SHARED_PREFS_NAME =
+            CommonConstants.BASE_PACKAGE + ".common.preferences";
 
     @IntDef({TRICKPLAY_SETTING_NOT_SET, TRICKPLAY_SETTING_DISABLED, TRICKPLAY_SETTING_ENABLED})
     @Retention(RetentionPolicy.SOURCE)

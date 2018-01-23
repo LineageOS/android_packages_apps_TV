@@ -54,12 +54,12 @@ import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ChannelLogoFetcher;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
-
-
 import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.Utils;
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
