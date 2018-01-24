@@ -18,6 +18,7 @@ package com.android.tv.tuner;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.SoftPreconditions;
 
@@ -30,7 +31,8 @@ public class TunerPreferences extends CommonPreferences {
     private static final String PREFS_KEY_SCAN_DONE = "scan_done";
     private static final String PREFS_KEY_TRICKPLAY_EXPIRED_MS = "trickplay_expired_ms";
 
-    private static final String SHARED_PREFS_NAME = "com.android.tv.tuner.preferences";
+    private static final String SHARED_PREFS_NAME =
+            CommonConstants.BASE_PACKAGE + ".tuner.preferences";
 
     public static final int CHANNEL_DATA_VERSION_NOT_SET = -1;
 

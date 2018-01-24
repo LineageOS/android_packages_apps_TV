@@ -23,10 +23,10 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Pair;
-import com.google.android.exoplayer.SampleHolder;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.exoplayer.SampleExtractor;
+import com.google.android.exoplayer.SampleHolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Manages {@link SampleChunk} objects.
@@ -82,7 +83,7 @@ public class BufferManager {
     private long mTotalWriteSize;
     private long mTotalWriteTimeNs;
     private float mWriteBandwidth = 0.0f;
-    private volatile int mSpeedCheckCount;
+    private final AtomicInteger mSpeedCheckCount = new AtomicInteger();
 
     public interface ChunkEvictedListener {
         void onChunkEvicted(String id, long createdTimeMs);
@@ -634,10 +635,10 @@ public class BufferManager {
 
         // Checks write speed for only MAXIMUM_SPEED_CHECK_COUNT times to ignore outliers
         // by temporary system overloading during the playback.
-        if (mSpeedCheckCount > MAXIMUM_SPEED_CHECK_COUNT) {
+        if (mSpeedCheckCount.get() > MAXIMUM_SPEED_CHECK_COUNT) {
             return false;
         }
-        mSpeedCheckCount++;
+        mSpeedCheckCount.incrementAndGet();
         float megabytePerSecond = calculateWriteBandwidth();
         resetWriteStat(megabytePerSecond);
         if (DEBUG) {
@@ -667,7 +668,7 @@ public class BufferManager {
      */
     @VisibleForTesting
     public boolean hasSpeedCheckDone() {
-        return mSpeedCheckCount > 0;
+        return mSpeedCheckCount.get() > 0;
     }
 
     /**

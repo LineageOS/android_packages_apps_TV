@@ -35,7 +35,6 @@ import android.support.annotation.Nullable;
 import android.support.media.tv.Program;
 import android.util.Log;
 import android.util.Pair;
-import com.google.android.exoplayer.C;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.recording.RecordingCapability;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
@@ -51,6 +50,7 @@ import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
+import com.google.android.exoplayer.C;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -457,7 +457,7 @@ public class TunerRecordingSessionWorker
         PsipData.EitItem currentProgram = getCurrentProgram(items);
         if (currentProgram == null
                 || !currentProgram.hasCaptionTrack()
-                || mCurrenProgram != null && mCurrenProgram.compareTo(currentProgram) == 0) {
+                || (mCurrenProgram != null && mCurrenProgram.compareTo(currentProgram) == 0)) {
             return;
         }
         mCurrenProgram = currentProgram;

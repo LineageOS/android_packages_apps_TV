@@ -45,14 +45,11 @@ DvbManager::DvbManager(JNIEnv *env, jobject)
           mDeliverySystemType(-1),
           mFeHasLock(false),
           mHasPendingTune(false) {
-    jclass clazz = env->FindClass(
-        "com/android/tv/tuner/TunerHal");
-    mOpenDvbFrontEndMethodID = env->GetMethodID(
-        clazz, "openDvbFrontEndFd", "()I");
-    mOpenDvbDemuxMethodID = env->GetMethodID(
-        clazz, "openDvbDemuxFd", "()I");
-    mOpenDvbDvrMethodID = env->GetMethodID(
-        clazz, "openDvbDvrFd", "()I");
+  jclass clazz = env->FindClass("com/android/tv/tuner/TunerHal");
+  mOpenDvbFrontEndMethodID =
+      env->GetMethodID(clazz, "openDvbFrontEndFd", "()I");
+  mOpenDvbDemuxMethodID = env->GetMethodID(clazz, "openDvbDemuxFd", "()I");
+  mOpenDvbDvrMethodID = env->GetMethodID(clazz, "openDvbDvrFd", "()I");
 }
 
 DvbManager::~DvbManager() {

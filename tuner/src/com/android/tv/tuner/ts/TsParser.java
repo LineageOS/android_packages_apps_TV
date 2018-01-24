@@ -94,7 +94,7 @@ public class TsParser {
         void onSdtItemParsed(SdtItem channel, List<PmtItem> pmtItems);
     }
 
-    private abstract class Stream {
+    private abstract static class Stream {
         private static final int INVALID_CONTINUITY_COUNTER = -1;
         private static final int NUM_CONTINUITY_COUNTER = 16;
 

@@ -21,8 +21,7 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.feature.Feature;
 
 /**
- * A {@link Feature} controlled by a {@link com.android.tv.common.config.api.RemoteConfig}
- * boolean.
+ * A {@link Feature} controlled by a {@link com.android.tv.common.config.api.RemoteConfig} boolean.
  */
 public class RemoteConfigFeature implements Feature {
     private final String mKey;

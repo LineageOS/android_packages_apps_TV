@@ -19,6 +19,7 @@ package com.android.tv.common.util;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import com.android.tv.common.CommonConstants;
 
 /** Static utilities for {@link android.content.SharedPreferences} */
 public final class SharedPreferencesUtils {
@@ -29,7 +30,7 @@ public final class SharedPreferencesUtils {
     public static final String SHARED_PREF_DVR_WATCHED_POSITION =
             "dvr_watched_position_shared_preference";
     public static final String SHARED_PREF_AUDIO_CAPABILITIES =
-            "com.android.tv.audio_capabilities";
+            CommonConstants.BASE_PACKAGE + ".audio_capabilities";
     public static final String SHARED_PREF_RECURRING_RUNNER = "sharedPreferencesRecurringRunner";
     public static final String SHARED_PREF_EPG = "epg_preferences";
     public static final String SHARED_PREF_SERIES_RECORDINGS = "seriesRecordings";

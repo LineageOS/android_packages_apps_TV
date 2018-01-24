@@ -30,8 +30,7 @@ import java.util.List;
 
 /** A fragment for initial screen. */
 public class WelcomeFragment extends SetupMultiPaneFragment {
-    public static final String ACTION_CATEGORY =
-            "com.android.tv.tuner.setup.WelcomeFragment";
+    public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.WelcomeFragment";
 
     @Override
     protected SetupGuidedStepFragment onCreateContentFragment() {

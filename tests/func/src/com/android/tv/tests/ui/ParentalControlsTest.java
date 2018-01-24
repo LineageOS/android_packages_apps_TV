@@ -34,9 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Tests for {@link com.android.tv.ui.sidepanel.parentalcontrols.ParentalControlsFragment}
- */
+/** Tests for {@link com.android.tv.ui.sidepanel.parentalcontrols.ParentalControlsFragment} */
 @MediumTest
 @RunWith(JUnit4.class)
 public class ParentalControlsTest {

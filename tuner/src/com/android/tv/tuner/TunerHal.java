@@ -22,10 +22,10 @@ import android.support.annotation.StringDef;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Pair;
-import com.android.tv.common.annotation.UsedByNative;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.customization.CustomizationManager;
 
+import com.android.tv.common.annotation.UsedByNative;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
@@ -152,7 +152,7 @@ public abstract class TunerHal implements AutoCloseable {
      * Returns if tuner input service would use built-in tuners instead of USB tuners or network
      * tuners.
      */
-    static boolean useBuiltInTuner(Context context) {
+    public static boolean useBuiltInTuner(Context context) {
         return getBuiltInTunerType(context) != 0;
     }
 

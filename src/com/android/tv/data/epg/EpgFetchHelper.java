@@ -27,6 +27,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.Program;
 import java.util.ArrayList;
@@ -45,10 +46,10 @@ class EpgFetchHelper {
 
     // Value: Long
     private static final String KEY_LAST_UPDATED_EPG_TIMESTAMP =
-            "com.android.tv.data.epg.EpgFetcher.LastUpdatedEpgTimestamp";
+            CommonConstants.BASE_PACKAGE + ".data.epg.EpgFetcher.LastUpdatedEpgTimestamp";
     // Value: String
     private static final String KEY_LAST_LINEUP_ID =
-            "com.android.tv.data.epg.EpgFetcher.LastLineupId";
+            CommonConstants.BASE_PACKAGE + ".data.epg.EpgFetcher.LastLineupId";
 
     private static long sLastEpgUpdatedTimestamp = -1;
     private static String sLastLineupId;

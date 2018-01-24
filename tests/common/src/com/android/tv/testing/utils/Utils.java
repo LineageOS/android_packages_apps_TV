@@ -26,6 +26,7 @@ import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.net.Uri;
 import android.util.Log;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.CommonUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,7 +109,7 @@ public final class Utils {
     public static boolean isTvActivityEnabled(Context context) {
         PackageManager pm = context.getPackageManager();
         ComponentName name =
-                new ComponentName("com.android.tv", "com.android.tv.TvActivity");
+                new ComponentName(CommonConstants.BASE_PACKAGE, "com.android.tv.TvActivity");
         int enabled = pm.getComponentEnabledSetting(name);
         return enabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 || enabled == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;

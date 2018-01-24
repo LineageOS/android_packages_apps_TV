@@ -20,6 +20,10 @@ import android.media.tv.TvInputInfo;
 
 /** Constants for common use in apps and tests. */
 public final class CommonConstants {
+
+    public static final String BASE_PACKAGE =
+                    "com.android.tv";
+
     /** A constant for the key of the extra data for the app linking intent. */
     public static final String EXTRA_APP_LINK_CHANNEL_URI = "app_link_channel_uri";
 
@@ -46,7 +50,8 @@ public final class CommonConstants {
      *
      * <p>Value type: Intent (Parcelable)
      */
-    public static final String EXTRA_SETUP_INTENT = "com.android.tv.extra.SETUP_INTENT";
+    public static final String EXTRA_SETUP_INTENT =
+            CommonConstants.BASE_PACKAGE + ".extra.SETUP_INTENT";
 
     /**
      * A constant of the key to indicate an Activity launch intent for the intent action {@link
@@ -55,7 +60,7 @@ public final class CommonConstants {
      * <p>Value type: Intent (Parcelable)
      */
     public static final String EXTRA_ACTIVITY_AFTER_COMPLETION =
-            "com.android.tv.intent.extra.ACTIVITY_AFTER_COMPLETION";
+            CommonConstants.BASE_PACKAGE + ".intent.extra.ACTIVITY_AFTER_COMPLETION";
 
     private CommonConstants() {}
 }

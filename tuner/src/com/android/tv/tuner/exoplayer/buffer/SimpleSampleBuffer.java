@@ -18,13 +18,13 @@ package com.android.tv.tuner.exoplayer.buffer;
 
 import android.os.ConditionVariable;
 import android.support.annotation.NonNull;
+import com.android.tv.common.SoftPreconditions;
+import com.android.tv.tuner.exoplayer.SampleExtractor;
+import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
-import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.exoplayer.SampleExtractor;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import java.io.IOException;
 import java.util.List;
 

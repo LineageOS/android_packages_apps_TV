@@ -17,16 +17,16 @@
 package com.android.tv.tuner.exoplayer;
 
 import android.content.Context;
-import com.google.android.exoplayer.MediaCodecSelector;
-import com.google.android.exoplayer.SampleSource;
-import com.google.android.exoplayer.TrackRenderer;
-import com.google.android.exoplayer.upstream.DataSource;
 import com.android.tv.tuner.TunerFeatures;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilder;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilderCallback;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.tvinput.PlaybackBufferListener;
+import com.google.android.exoplayer.MediaCodecSelector;
+import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.TrackRenderer;
+import com.google.android.exoplayer.upstream.DataSource;
 
 /** Builder for renderer objects for {@link MpegTsPlayer}. */
 public class MpegTsRendererBuilder implements RendererBuilder {

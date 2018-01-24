@@ -141,7 +141,7 @@ class TunerTsStreamerManager {
         mTunerHalManager.releaseCachedHal(sessionId);
     }
 
-    private class StreamerFinder {
+    private static class StreamerFinder {
         private final Map<TunerChannel, Set<Integer>> mSessions = new HashMap<>();
         private final Map<TunerChannel, TunerTsStreamer> mStreamers = new HashMap<>();
 
@@ -251,7 +251,7 @@ class TunerTsStreamerManager {
      * Supports sharing {@link TunerHal} among multiple sessions. The class also supports session
      * affinity for {@link TunerHal} allocation.
      */
-    private class TunerHalManager {
+    private static class TunerHalManager {
         private final Map<Integer, TunerHal> mTunerHals = new HashMap<>();
 
         private TunerHal getOrCreateTunerHal(Context context, int sessionId) {

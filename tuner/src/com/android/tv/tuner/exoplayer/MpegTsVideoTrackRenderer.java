@@ -19,6 +19,7 @@ import android.content.Context;
 import android.media.MediaCodec;
 import android.os.Handler;
 import android.util.Log;
+import com.android.tv.tuner.TunerFeatures;
 import com.google.android.exoplayer.DecoderInfo;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaCodecSelector;
@@ -27,7 +28,6 @@ import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.MediaFormatHolder;
 import com.google.android.exoplayer.MediaSoftwareCodecUtil;
 import com.google.android.exoplayer.SampleSource;
-import com.android.tv.tuner.TunerFeatures;
 import java.lang.reflect.Field;
 
 /** MPEG-2 TS video track renderer */

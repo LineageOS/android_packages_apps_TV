@@ -114,8 +114,8 @@ public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
     }
 
     /**
-     * The inner guided step fragment for {@link
-     * com.android.tv.dvr.ui.DvrHalfSizedDialogFragment .DvrNoFreeSpaceErrorDialogFragment}.
+     * The inner guided step fragment for {@link com.android.tv.dvr.ui.DvrHalfSizedDialogFragment
+     * .DvrNoFreeSpaceErrorDialogFragment}.
      */
     public static class DvrNoFreeSpaceErrorFragment extends DvrGuidedStepFragment {
         @Override
@@ -154,8 +154,7 @@ public abstract class DvrGuidedStepFragment extends TrackedGuidedStepFragment {
     }
 
     /**
-     * The inner guided step fragment for {@link
-     * com.android.tv.dvr.ui.DvrHalfSizedDialogFragment
+     * The inner guided step fragment for {@link com.android.tv.dvr.ui.DvrHalfSizedDialogFragment
      * .DvrSmallSizedStorageErrorDialogFragment}.
      */
     public static class DvrSmallSizedStorageErrorFragment extends DvrGuidedStepFragment {

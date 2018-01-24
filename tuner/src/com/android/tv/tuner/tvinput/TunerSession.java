@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.util.SystemPropertiesProxy;
 import com.android.tv.tuner.R;
@@ -46,6 +45,7 @@ import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.android.tv.tuner.util.GlobalSettingsUtils;
 import com.android.tv.tuner.util.StatusTextUtils;
+import com.google.android.exoplayer.audio.AudioCapabilities;
 
 /**
  * Provides a tuner TV input session. It handles Overlay UI works. Main tuner input functions are

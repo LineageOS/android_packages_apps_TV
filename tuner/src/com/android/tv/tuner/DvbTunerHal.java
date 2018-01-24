@@ -34,7 +34,7 @@ public class DvbTunerHal extends TunerHal {
     private final DvbDeviceAccessor mDvbDeviceAccessor;
     private DvbDeviceInfoWrapper mDvbDeviceInfo;
 
-    protected DvbTunerHal(Context context) {
+    public DvbTunerHal(Context context) {
         super(context);
         mDvbDeviceAccessor = new DvbDeviceAccessor(context);
     }

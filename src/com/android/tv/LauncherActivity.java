@@ -35,8 +35,7 @@ import android.util.Log;
 public class LauncherActivity extends Activity {
     private static final String TAG = "LauncherActivity";
 
-    public static final String ERROR_MESSAGE =
-            "com.android.tv.LauncherActivity.ErrorMessage";
+    public static final String ERROR_MESSAGE = "com.android.tv.LauncherActivity.ErrorMessage";
 
     private static final int REQUEST_CODE_DEFAULT = 0;
     private static final int REQUEST_START_ACTIVITY = 100;

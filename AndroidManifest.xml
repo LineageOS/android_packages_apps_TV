@@ -224,7 +224,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.android.tv.tuner.tvinput.LiveTvTunerTvInputService"
+        <service android:name="com.android.tv.tuner.livetuner.LiveTvTunerTvInputService"
             android:enabled="false"
             android:process="com.android.tv.tuner"
             android:label="@string/bt_app_name"

@@ -17,6 +17,8 @@
 package com.android.tv.tuner.exoplayer;
 
 import android.util.Log;
+import com.android.tv.tuner.cc.Cea708Parser;
+import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaClock;
 import com.google.android.exoplayer.MediaFormat;
@@ -25,8 +27,6 @@ import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.util.Assertions;
-import com.android.tv.tuner.cc.Cea708Parser;
-import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import java.io.IOException;
 
 /** A {@link TrackRenderer} for CEA-708 textual subtitles. */

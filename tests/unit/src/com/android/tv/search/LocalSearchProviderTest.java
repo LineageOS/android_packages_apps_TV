@@ -27,6 +27,7 @@ import android.support.test.filters.SmallTest;
 import android.test.ProviderTestCase2;
 import com.android.tv.TvApplication;
 import com.android.tv.common.BaseSingletons;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.util.MockTvSingletons;
 import org.junit.After;
@@ -39,7 +40,7 @@ import org.mockito.MockitoAnnotations;
 @SmallTest
 @SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class LocalSearchProviderTest extends ProviderTestCase2<LocalSearchProvider> {
-    private static final String AUTHORITY = "com.android.tv.search";
+    private static final String AUTHORITY = CommonConstants.BASE_PACKAGE + ".search";
     private static final String KEYWORD = "keyword";
     private static final Uri BASE_SEARCH_URI =
             Uri.parse(

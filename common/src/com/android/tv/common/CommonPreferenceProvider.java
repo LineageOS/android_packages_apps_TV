@@ -31,7 +31,7 @@ import android.net.Uri;
  */
 public class CommonPreferenceProvider extends ContentProvider {
     /** The authority of the provider */
-    public static final String AUTHORITY = "com.android.tv.common.preferences";
+    public static final String AUTHORITY = CommonConstants.BASE_PACKAGE + ".common.preferences";
 
     private static final String PATH_PREFERENCES = "preferences";
 
@@ -162,8 +162,9 @@ public class CommonPreferenceProvider extends ContentProvider {
                 return Preferences.CONTENT_TYPE;
             case MATCH_PREFERENCE_KEY:
                 return Preferences.CONTENT_ITEM_TYPE;
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
         }
-        throw new IllegalArgumentException("Unknown URI " + uri);
     }
 
     /**

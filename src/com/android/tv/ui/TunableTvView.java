@@ -64,6 +64,7 @@ import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BuildConfig;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.Debug;
@@ -103,7 +104,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     public static final int BLOCK_SCREEN_TYPE_NORMAL = 2;
 
     private static final String PERMISSION_RECEIVE_INPUT_EVENT =
-            "com.android.tv.permission.RECEIVE_INPUT_EVENT";
+            CommonConstants.BASE_PACKAGE + ".permission.RECEIVE_INPUT_EVENT";
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({

@@ -44,6 +44,7 @@ import com.android.tv.MainActivityWrapper.OnCurrentChannelChangeListener;
 import com.android.tv.R;
 import com.android.tv.Starter;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
@@ -62,16 +63,16 @@ public class NotificationService extends Service
     private static final boolean DEBUG = false;
 
     public static final String ACTION_SHOW_RECOMMENDATION =
-            "com.android.tv.notification.ACTION_SHOW_RECOMMENDATION";
+            CommonConstants.BASE_PACKAGE + ".notification.ACTION_SHOW_RECOMMENDATION";
     public static final String ACTION_HIDE_RECOMMENDATION =
-            "com.android.tv.notification.ACTION_HIDE_RECOMMENDATION";
+            CommonConstants.BASE_PACKAGE + ".notification.ACTION_HIDE_RECOMMENDATION";
 
     /**
      * Recommendation intent has an extra data for the recommendation type. It'll be also sent to a
      * TV input as a tune parameter.
      */
     public static final String TUNE_PARAMS_RECOMMENDATION_TYPE =
-            "com.android.tv.recommendation_type";
+            CommonConstants.BASE_PACKAGE + ".recommendation_type";
 
     private static final String TYPE_RANDOM_RECOMMENDATION = "random";
     private static final String TYPE_ROUTINE_WATCH_RECOMMENDATION = "routine_watch";

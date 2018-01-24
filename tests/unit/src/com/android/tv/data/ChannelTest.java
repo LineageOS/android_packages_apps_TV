@@ -44,16 +44,14 @@ import org.mockito.stubbing.Answer;
 public class ChannelTest {
     // Used for testing TV inputs with invalid input package. This could happen when a TV input is
     // uninstalled while drawing an app link card.
-    private static final String INVALID_TV_INPUT_PACKAGE_NAME =
-            "com.android.tv.invalid_tv_input";
+    private static final String INVALID_TV_INPUT_PACKAGE_NAME = "com.android.tv.invalid_tv_input";
     // Used for testing TV inputs defined inside of Live TV.
     private static final String LIVE_CHANNELS_PACKAGE_NAME = "com.android.tv";
     // Used for testing a TV input which doesn't have its leanback launcher activity.
     private static final String NONE_LEANBACK_TV_INPUT_PACKAGE_NAME =
             "com.android.tv.none_leanback_tv_input";
     // Used for testing a TV input which has its leanback launcher activity.
-    private static final String LEANBACK_TV_INPUT_PACKAGE_NAME =
-            "com.android.tv.leanback_tv_input";
+    private static final String LEANBACK_TV_INPUT_PACKAGE_NAME = "com.android.tv.leanback_tv_input";
     private static final String TEST_APP_LINK_TEXT = "test_app_link_text";
     private static final String PARTNER_INPUT_ID = "partner";
     private static final ActivityInfo TEST_ACTIVITY_INFO = new ActivityInfo();
