@@ -115,6 +115,7 @@ public class ChannelTest {
         assertAppLinkType(Channel.APP_LINK_TYPE_APP, LEANBACK_TV_INPUT_PACKAGE_NAME, null, null);
     }
 
+    @Test
     public void testGetAppLinkType_NoText_InvalidIntent() {
         assertAppLinkType(Channel.APP_LINK_TYPE_NONE, INVALID_TV_INPUT_PACKAGE_NAME, null,
                 mInvalidIntent);
@@ -126,6 +127,7 @@ public class ChannelTest {
                 mInvalidIntent);
     }
 
+    @Test
     public void testGetAppLinkType_NoText_ValidIntent() {
         assertAppLinkType(Channel.APP_LINK_TYPE_NONE, INVALID_TV_INPUT_PACKAGE_NAME, null,
                 mValidIntent);
@@ -137,6 +139,7 @@ public class ChannelTest {
                 mValidIntent);
     }
 
+    @Test
     public void testGetAppLinkType_HasText_NoIntent() {
         assertAppLinkType(Channel.APP_LINK_TYPE_NONE, INVALID_TV_INPUT_PACKAGE_NAME,
                 TEST_APP_LINK_TEXT, null);
@@ -148,6 +151,7 @@ public class ChannelTest {
                 TEST_APP_LINK_TEXT, null);
     }
 
+    @Test
     public void testGetAppLinkType_HasText_InvalidIntent() {
         assertAppLinkType(Channel.APP_LINK_TYPE_NONE, INVALID_TV_INPUT_PACKAGE_NAME,
                 TEST_APP_LINK_TEXT, mInvalidIntent);
@@ -159,6 +163,7 @@ public class ChannelTest {
                 TEST_APP_LINK_TEXT, mInvalidIntent);
     }
 
+    @Test
     public void testGetAppLinkType_HasText_ValidIntent() {
         assertAppLinkType(Channel.APP_LINK_TYPE_CHANNEL, INVALID_TV_INPUT_PACKAGE_NAME,
                 TEST_APP_LINK_TEXT, mValidIntent);
@@ -184,6 +189,7 @@ public class ChannelTest {
                 expectedType, testChannel.getAppLinkType(mMockContext));
     }
 
+    @Test
     public void testComparator() {
 
         TvInputManagerHelper manager = Mockito.mock(TvInputManagerHelper.class);
@@ -229,6 +235,7 @@ public class ChannelTest {
      * <p>Sort partner inputs first, then sort by input label, then by input id.
      * See <a href="http://b/23031603">b/23031603</a>.
      */
+    @Test
     public void testComparatorLabel() {
         TvInputManagerHelper manager = Mockito.mock(TvInputManagerHelper.class);
         Mockito.when(manager.isPartnerInput(Matchers.anyString())).thenAnswer(
@@ -257,6 +264,7 @@ public class ChannelTest {
         comparatorTester.test();
     }
 
+    @Test
     public void testNormalizeChannelNumber() {
         assertNormalizedDisplayNumber(null, null);
         assertNormalizedDisplayNumber("", "");
