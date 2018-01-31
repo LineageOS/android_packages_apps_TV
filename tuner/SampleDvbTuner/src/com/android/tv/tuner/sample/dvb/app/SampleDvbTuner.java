@@ -25,7 +25,7 @@ import com.android.tv.common.CommonConstants;
 import com.android.tv.common.config.DefaultConfigManager;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.util.CommonUtils;
-import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
+import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 
 /** The top level application for Sample DVB Tuner. */
@@ -48,7 +48,7 @@ public class SampleDvbTuner extends BaseApplication {
         if (mEmbeddedInputId == null) {
             mEmbeddedInputId =
                     TvContract.buildInputId(
-                            new ComponentName(this, LiveTvTunerTvInputService.class));
+                            new ComponentName(this, SampleDvbTunerTvInputService.class));
         }
         return mEmbeddedInputId;
     }
