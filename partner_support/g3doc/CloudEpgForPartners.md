@@ -1,7 +1,5 @@
 # 3rd party instructions for using Cloud EPG feature of Live Channels
 
-NOTE: This document is shared with patners
-
 Partners can ask Live Channels to retrieve EPG data for their TV Input Service
 using live channels
 
