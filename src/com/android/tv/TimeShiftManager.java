@@ -1226,7 +1226,11 @@ public class TimeShiftManager {
                 extends AsyncDbTask.LoadProgramsForChannelTask {
 
             LoadProgramsForCurrentChannelTask(ContentResolver contentResolver, Range<Long> period) {
-                super(contentResolver, mChannel.getId(), period);
+                super(
+                        TvSingletons.getSingletons(mContext).getDbExecutor(),
+                        contentResolver,
+                        mChannel.getId(),
+                        period);
             }
 
             @Override

@@ -31,7 +31,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** {@link AsyncTask} that defaults to executing on its own single threaded Executor Service. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public abstract class AsyncDvrDbTask<Params, Progress, Result>
         extends AsyncTask<Params, Progress, Result> {
     private static final NamedThreadFactory THREAD_FACTORY =

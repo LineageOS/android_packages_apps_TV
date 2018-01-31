@@ -62,7 +62,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /** Implements a DVR feature. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class TunerRecordingSessionWorker
         implements PlaybackBufferListener,
                 EventDetector.EventListener,

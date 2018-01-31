@@ -74,11 +74,11 @@ public class ProgramGuideSearchFragment extends SearchFragment {
                     LocalSearchProvider.SearchResult result = (LocalSearchProvider.SearchResult) o;
                     if (DEBUG) Log.d(TAG, "onBindViewHolder result:" + result);
 
-                    cardView.setTitleText(result.title);
-                    if (!TextUtils.isEmpty(result.imageUri)) {
+                    cardView.setTitleText(result.getTitle());
+                    if (!TextUtils.isEmpty(result.getImageUri())) {
                         ImageLoader.loadBitmap(
                                 mMainActivity,
-                                result.imageUri,
+                                result.getImageUri(),
                                 mMainCardWidth,
                                 mMainCardHeight,
                                 createImageLoaderCallback(cardView));
@@ -136,7 +136,8 @@ public class ProgramGuideSearchFragment extends SearchFragment {
                     LocalSearchProvider.SearchResult result = (LocalSearchProvider.SearchResult) o;
                     mMainActivity.getFragmentManager().popBackStack();
                     mMainActivity.tuneToChannel(
-                            mMainActivity.getChannelDataManager().getChannel(result.channelId));
+                            mMainActivity.getChannelDataManager().getChannel(
+                                    result.getChannelId()));
                 }
             };
 

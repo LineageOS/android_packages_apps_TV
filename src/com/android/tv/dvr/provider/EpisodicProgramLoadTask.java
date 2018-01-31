@@ -185,6 +185,7 @@ public abstract class EpisodicProgramLoadTask {
     private AsyncProgramQueryTask createTask() {
         SqlParams sqlParams = createSqlParams();
         return new AsyncProgramQueryTask(
+                TvSingletons.getSingletons(mContext).getDbExecutor(),
                 mContext.getContentResolver(),
                 sqlParams.uri,
                 sqlParams.selection,

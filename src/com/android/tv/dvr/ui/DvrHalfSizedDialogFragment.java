@@ -186,4 +186,12 @@ public class DvrHalfSizedDialogFragment extends HalfSizedDialogFragment {
             return new DvrAlreadyRecordedFragment();
         }
     }
+
+    /** A dialog fragment for {@link DvrFutureProgramInfoFragment}. */
+    public static class DvrFutureProgramInfoDialogFragment extends DvrGuidedStepDialogFragment {
+        @Override
+        protected DvrGuidedStepFragment onCreateGuidedStepFragment() {
+            return new DvrFutureProgramInfoFragment();
+        }
+    }
 }

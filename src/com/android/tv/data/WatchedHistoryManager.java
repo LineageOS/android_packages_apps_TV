@@ -43,7 +43,6 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>Note that this class is not thread safe. Please use this on one thread.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class WatchedHistoryManager {
     private static final String TAG = "WatchedHistoryManager";
     private static final boolean DEBUG = false;

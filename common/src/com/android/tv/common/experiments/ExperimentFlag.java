@@ -17,6 +17,7 @@
 package com.android.tv.common.experiments;
 
 import android.support.annotation.VisibleForTesting;
+import com.android.tv.common.BuildConfig;
 
 
 /** Experiments return values based on user, device and other criteria. */

@@ -38,6 +38,7 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.MutableInt;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.util.PermissionUtils;
@@ -54,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executor;
 
 /**
  * The class to manage channel data. Basic features: reading channel list and each channel's current
@@ -62,7 +64,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * methods are called in only the main thread.
  */
 @AnyThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ChannelDataManager {
     private static final String TAG = "ChannelDataManager";
     private static final boolean DEBUG = false;
@@ -71,6 +72,7 @@ public class ChannelDataManager {
 
     private final Context mContext;
     private final TvInputManagerHelper mInputManager;
+    private final Executor mDbExecutor;
     private boolean mStarted;
     private boolean mDbLoadFinished;
     private QueryAllChannelsTask mChannelsUpdateTask;
@@ -142,15 +144,23 @@ public class ChannelDataManager {
 
     @MainThread
     public ChannelDataManager(Context context, TvInputManagerHelper inputManager) {
-        this(context, inputManager, context.getContentResolver());
+        this(
+                context,
+                inputManager,
+                TvSingletons.getSingletons(context).getDbExecutor(),
+                context.getContentResolver());
     }
 
     @MainThread
     @VisibleForTesting
     ChannelDataManager(
-            Context context, TvInputManagerHelper inputManager, ContentResolver contentResolver) {
+            Context context,
+            TvInputManagerHelper inputManager,
+            Executor executor,
+            ContentResolver contentResolver) {
         mContext = context;
         mInputManager = inputManager;
+        mDbExecutor = executor;
         mContentResolver = contentResolver;
         mChannelComparator = new Channel.DefaultComparator(context, inputManager);
         // Detect duplicate channels while sorting.
@@ -606,7 +616,7 @@ public class ChannelDataManager {
     private final class QueryAllChannelsTask extends AsyncDbTask.AsyncChannelQueryTask {
 
         QueryAllChannelsTask(ContentResolver contentResolver) {
-            super(contentResolver);
+            super(mDbExecutor, contentResolver);
         }
 
         @Override
@@ -717,14 +727,14 @@ public class ChannelDataManager {
     /**
      * Updates a column {@code columnName} of DB table {@code uri} with the value {@code
      * columnValue}. The selective rows in the ID list {@code ids} will be updated. The DB
-     * operations will run on {@link AsyncDbTask#getExecutor()}.
+     * operations will run on {@link TvSingletons#getDbExecutor()}.
      */
     private void updateOneColumnValue(
             final String columnName, final int columnValue, final List<Long> ids) {
         if (!PermissionUtils.hasAccessAllEpg(mContext)) {
             return;
         }
-        AsyncDbTask.executeOnDbThread(
+        mDbExecutor.execute(
                 new Runnable() {
                     @Override
                     public void run() {

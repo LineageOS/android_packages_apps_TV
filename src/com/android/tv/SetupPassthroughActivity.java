@@ -36,7 +36,7 @@ import com.android.tv.data.epg.EpgInputWhiteList;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
-
+import com.google.android.tv.partner.support.EpgContract;
 import java.util.concurrent.TimeUnit;
 
 /**

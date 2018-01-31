@@ -18,9 +18,11 @@ package com.android.tv;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -123,6 +125,7 @@ import com.android.tv.ui.sidepanel.MultiAudioFragment;
 import com.android.tv.ui.sidepanel.SettingsFragment;
 import com.android.tv.ui.sidepanel.SideFragment;
 import com.android.tv.ui.sidepanel.parentalcontrols.ParentalControlsFragment;
+import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.CaptionSettings;
 import com.android.tv.util.ImageCache;
 import com.android.tv.util.OnboardingUtils;
@@ -143,10 +146,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /** The main activity for the Live TV app. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class MainActivity extends Activity implements OnActionClickListener, OnPinCheckedListener {
     private static final String TAG = "MainActivity";
     private static final boolean DEBUG = false;
@@ -1481,12 +1484,25 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                 return true;
             }
             mTuneParams = intent.getExtras();
+            String programUriString = intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
+            Uri programUriFromIntent =
+                    programUriString == null ? null : Uri.parse(programUriString);
+            long channelIdFromIntent = ContentUris.parseId(mInitChannelUri);
+            if (programUriFromIntent != null) {
+                new AsyncQueryProgramTask(
+                        TvSingletons.getSingletons(this).getDbExecutor(),
+                        getContentResolver(),
+                        programUriFromIntent,
+                        Program.PROJECTION,
+                        null, null, null,
+                        channelIdFromIntent)
+                        .executeOnDbThread();
+            }
             if (mTuneParams == null) {
                 mTuneParams = new Bundle();
             }
             if (Utils.isChannelUriForTunerInput(mInitChannelUri)) {
-                long channelId = ContentUris.parseId(mInitChannelUri);
-                mTuneParams.putLong(KEY_INIT_CHANNEL_ID, channelId);
+                mTuneParams.putLong(KEY_INIT_CHANNEL_ID, channelIdFromIntent);
             } else if (TvContract.isChannelUriForPassthroughInput(mInitChannelUri)) {
                 // If mInitChannelUri is for a passthrough TV input.
                 String inputId = mInitChannelUri.getPathSegments().get(1);
@@ -1535,6 +1551,58 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
         return true;
     }
 
+    private class AsyncQueryProgramTask extends AsyncDbTask.AsyncQueryTask<Program> {
+        private final long mChannelIdFromIntent;
+
+        public AsyncQueryProgramTask(Executor executor, ContentResolver contentResolver, Uri uri,
+                String[] projection, String selection, String[] selectionArgs, String orderBy,
+                long channelId) {
+            super(executor, contentResolver, uri, projection, selection, selectionArgs, orderBy);
+            mChannelIdFromIntent = channelId;
+        }
+
+        @Override
+        protected Program onQuery(Cursor c) {
+            Program program = null;
+            if (c != null && c.moveToNext()) {
+                program = Program.fromCursor(c);
+            }
+            return program;
+        }
+
+        @Override
+        protected void onPostExecute(Program program) {
+            if (program == null || program.getStartTimeUtcMillis() <= System.currentTimeMillis()) {
+                // null or current program
+                return;
+            }
+            Channel channel = mChannelDataManager.getChannel(mChannelIdFromIntent);
+            if (channel != null) {
+                ScheduledRecording scheduledRecording =
+                        TvSingletons.getSingletons(MainActivity.this)
+                                .getDvrDataManager()
+                                .getScheduledRecordingForProgramId(program.getId());
+                DvrUiHelper.checkStorageStatusAndShowErrorMessage(
+                        MainActivity.this,
+                        channel.getInputId(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                if (CommonFeatures.DVR.isEnabled(MainActivity.this)
+                                        && scheduledRecording == null
+                                        && mDvrManager.isProgramRecordable(program)) {
+                                    DvrUiHelper.requestRecordingFutureProgram(
+                                            MainActivity.this,
+                                            program,
+                                            false);
+                                } else {
+                                    DvrUiHelper.showProgramInfoDialog(MainActivity.this, program);
+                                }
+                            }
+                        });
+            }
+        }
+    }
     private void stopTv() {
         stopTv(null, false);
     }

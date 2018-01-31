@@ -27,54 +27,33 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Range;
+import com.android.tv.TvSingletons;
+import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.dvr.data.RecordedProgram;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Executor;
 
 /**
  * {@link AsyncTask} that defaults to executing on its own single threaded Executor Service.
- *
- * <p>Instances of this class should only be executed this using {@link
- * #executeOnDbThread(Object[])}.
  *
  * @param <Params> the type of the parameters sent to the task upon execution.
  * @param <Progress> the type of the progress units published during the background computation.
  * @param <Result> the type of the result of the background computation.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public abstract class AsyncDbTask<Params, Progress, Result>
         extends AsyncTask<Params, Progress, Result> {
     private static final String TAG = "AsyncDbTask";
     private static final boolean DEBUG = false;
 
-    private static final NamedThreadFactory THREAD_FACTORY =
-            new NamedThreadFactory(AsyncDbTask.class.getSimpleName());
-    private static final ExecutorService DB_EXECUTOR =
-            Executors.newSingleThreadExecutor(THREAD_FACTORY);
+    private final Executor mExecutor;
+    boolean mCalledExecuteOnDbThread;
 
-    /** Returns the single tread executor used for DbTasks. */
-    public static ExecutorService getExecutor() {
-        return DB_EXECUTOR;
-    }
-
-    /**
-     * Executes the given command at some time in the future.
-     *
-     * <p>The command will be executed by {@link #getExecutor()}.
-     *
-     * @param command the runnable task
-     * @throws RejectedExecutionException if this task cannot be accepted for execution
-     * @throws NullPointerException if command is null
-     */
-    public static void executeOnDbThread(Runnable command) {
-        DB_EXECUTOR.execute(command);
+    protected AsyncDbTask(Executor mExecutor) {
+        this.mExecutor = mExecutor;
     }
 
     /**
@@ -95,12 +74,14 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         private final String mOrderBy;
 
         public AsyncQueryTask(
+                Executor executor,
                 ContentResolver contentResolver,
                 Uri uri,
                 String[] projection,
                 String selection,
                 String[] selectionArgs,
                 String orderBy) {
+            super(executor);
             mContentResolver = contentResolver;
             mUri = uri;
             mProjection = projection;
@@ -111,7 +92,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
 
         @Override
         protected final Result doInBackground(Void... params) {
-            if (!THREAD_FACTORY.namedWithPrefix(Thread.currentThread())) {
+            if (!mCalledExecuteOnDbThread) {
                 IllegalStateException e =
                         new IllegalStateException(
                                 this
@@ -119,7 +100,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                                         + "but it was called on thread "
                                         + Thread.currentThread());
                 Log.w(TAG, e);
-                if (DEBUG) {
+                if (BuildConfig.ENG) {
                     throw e;
                 }
             }
@@ -181,16 +162,26 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         private final CursorFilter mFilter;
 
         public AsyncQueryListTask(
+                Executor executor,
                 ContentResolver contentResolver,
                 Uri uri,
                 String[] projection,
                 String selection,
                 String[] selectionArgs,
                 String orderBy) {
-            this(contentResolver, uri, projection, selection, selectionArgs, orderBy, null);
+            this(
+                    executor,
+                    contentResolver,
+                    uri,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    orderBy,
+                    null);
         }
 
         public AsyncQueryListTask(
+                Executor executor,
                 ContentResolver contentResolver,
                 Uri uri,
                 String[] projection,
@@ -198,7 +189,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                 String[] selectionArgs,
                 String orderBy,
                 CursorFilter filter) {
-            super(contentResolver, uri, projection, selection, selectionArgs, orderBy);
+            super(executor, contentResolver, uri, projection, selection, selectionArgs, orderBy);
             mFilter = filter;
         }
 
@@ -244,13 +235,14 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     public abstract static class AsyncQueryItemTask<T> extends AsyncQueryTask<T> {
 
         public AsyncQueryItemTask(
+                Executor executor,
                 ContentResolver contentResolver,
                 Uri uri,
                 String[] projection,
                 String selection,
                 String[] selectionArgs,
                 String orderBy) {
-            super(contentResolver, uri, projection, selection, selectionArgs, orderBy);
+            super(executor, contentResolver, uri, projection, selection, selectionArgs, orderBy);
         }
 
         @Override
@@ -290,8 +282,9 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     /** Gets an {@link List} of {@link Channel}s from {@link TvContract.Channels#CONTENT_URI}. */
     public abstract static class AsyncChannelQueryTask extends AsyncQueryListTask<Channel> {
 
-        public AsyncChannelQueryTask(ContentResolver contentResolver) {
+        public AsyncChannelQueryTask(Executor executor, ContentResolver contentResolver) {
             super(
+                    executor,
                     contentResolver,
                     TvContract.Channels.CONTENT_URI,
                     Channel.PROJECTION,
@@ -308,11 +301,19 @@ public abstract class AsyncDbTask<Params, Progress, Result>
 
     /** Gets an {@link List} of {@link Program}s from {@link TvContract.Programs#CONTENT_URI}. */
     public abstract static class AsyncProgramQueryTask extends AsyncQueryListTask<Program> {
-        public AsyncProgramQueryTask(ContentResolver contentResolver) {
-            super(contentResolver, Programs.CONTENT_URI, Program.PROJECTION, null, null, null);
+        public AsyncProgramQueryTask(Executor executor, ContentResolver contentResolver) {
+            super(
+                    executor,
+                    contentResolver,
+                    Programs.CONTENT_URI,
+                    Program.PROJECTION,
+                    null,
+                    null,
+                    null);
         }
 
         public AsyncProgramQueryTask(
+                Executor executor,
                 ContentResolver contentResolver,
                 Uri uri,
                 String selection,
@@ -320,6 +321,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                 String sortOrder,
                 CursorFilter filter) {
             super(
+                    executor,
                     contentResolver,
                     uri,
                     Program.PROJECTION,
@@ -338,8 +340,9 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     /** Gets an {@link List} of {@link TvContract.RecordedPrograms}s. */
     public abstract static class AsyncRecordedProgramQueryTask
             extends AsyncQueryListTask<RecordedProgram> {
-        public AsyncRecordedProgramQueryTask(ContentResolver contentResolver, Uri uri) {
-            super(contentResolver, uri, RecordedProgram.PROJECTION, null, null, null);
+        public AsyncRecordedProgramQueryTask(
+                Executor executor, ContentResolver contentResolver, Uri uri) {
+            super(executor, contentResolver, uri, RecordedProgram.PROJECTION, null, null, null);
         }
 
         @Override
@@ -348,11 +351,12 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         }
     }
 
-    /** Execute the task on the {@link #DB_EXECUTOR} thread. */
+    /** Execute the task on {@link TvSingletons#getDbExecutor()}. */
     @SafeVarargs
     @MainThread
     public final void executeOnDbThread(Params... params) {
-        executeOnExecutor(DB_EXECUTOR, params);
+        mCalledExecuteOnDbThread = true;
+        executeOnExecutor(mExecutor, params);
     }
 
     /**
@@ -365,8 +369,12 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         protected final long mChannelId;
 
         public LoadProgramsForChannelTask(
-                ContentResolver contentResolver, long channelId, @Nullable Range<Long> period) {
+                Executor executor,
+                ContentResolver contentResolver,
+                long channelId,
+                @Nullable Range<Long> period) {
             super(
+                    executor,
                     contentResolver,
                     period == null
                             ? TvContract.buildProgramsUriForChannel(channelId)
@@ -392,8 +400,10 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     /** Gets a single {@link Program} from {@link TvContract.Programs#CONTENT_URI}. */
     public static class AsyncQueryProgramTask extends AsyncQueryItemTask<Program> {
 
-        public AsyncQueryProgramTask(ContentResolver contentResolver, long programId) {
+        public AsyncQueryProgramTask(
+                Executor executor, ContentResolver contentResolver, long programId) {
             super(
+                    executor,
                     contentResolver,
                     TvContract.buildProgramUri(programId),
                     Program.PROJECTION,

@@ -47,7 +47,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /** Class to manage the preview data. */
 @TargetApi(Build.VERSION_CODES.O)
 @MainThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class PreviewDataManager {
     private static final String TAG = "PreviewDataManager";
     private static final boolean DEBUG = false;

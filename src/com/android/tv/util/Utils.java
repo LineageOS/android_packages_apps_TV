@@ -63,7 +63,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /** A class that includes convenience methods for accessing TvProvider database. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class Utils {
     private static final String TAG = "Utils";
     private static final boolean DEBUG = false;
@@ -666,8 +665,9 @@ public class Utils {
      * Converts time in milliseconds to a String.
      *
      * @param fullFormat {@code true} for returning date string with a full format (e.g., Mon Aug 15
-     *     20:08:35 GMT 2016). {@code false} for a short format, {e.g., [8/15/16] 8:08 AM}, in which
-     *     date information would only appears when the target time is not today.
+     *     20:08:35 GMT 2016). {@code false} for a short format, {e.g., 8/15/16 or 8:08 AM}, in
+     *     which only the time is shown if the time is on the same day as now, and only the date is
+     *     shown if it's a different day.
      */
     public static String toTimeString(long timeMillis, boolean fullFormat) {
         if (fullFormat) {

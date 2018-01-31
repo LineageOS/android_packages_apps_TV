@@ -48,7 +48,7 @@ import java.util.concurrent.Future;
  * {@link ProgramDataManager}.
  */
 public class DataManagerSearch implements SearchInterface {
-    private static final String TAG = "TvProviderSearch";
+    private static final String TAG = "DataManagerSearch";
     private static final boolean DEBUG = false;
 
     private final Context mContext;
@@ -89,6 +89,7 @@ public class DataManagerSearch implements SearchInterface {
 
     @MainThread
     private List<SearchResult> searchFromDataManagers(String query, int limit, int action) {
+        // TODO(b/72499165): add a test.
         List<SearchResult> results = new ArrayList<>();
         if (!mChannelDataManager.isDbLoadFinished()) {
             return results;
@@ -241,44 +242,45 @@ public class DataManagerSearch implements SearchInterface {
             }
         }
 
-        SearchResult result = new SearchResult();
+        SearchResult.Builder result = SearchResult.builder();
 
         long channelId = channel.getId();
-        result.channelId = channelId;
-        result.channelNumber = channel.getDisplayNumber();
+        result.setChannelId(channelId);
+        result.setChannelNumber(channel.getDisplayNumber());
         if (program == null) {
-            result.title = channel.getDisplayName();
-            result.description = channel.getDescription();
-            result.imageUri = TvContract.buildChannelLogoUri(channelId).toString();
-            result.intentAction = Intent.ACTION_VIEW;
-            result.intentData = buildIntentData(channelId);
-            result.contentType = Programs.CONTENT_ITEM_TYPE;
-            result.isLive = true;
-            result.progressPercentage = LocalSearchProvider.PROGRESS_PERCENTAGE_HIDE;
+            result.setTitle(channel.getDisplayName());
+            result.setDescription(channel.getDescription());
+            result.setImageUri(TvContract.buildChannelLogoUri(channelId).toString());
+            result.setIntentAction(Intent.ACTION_VIEW);
+            result.setIntentData(buildIntentData(channelId));
+            result.setContentType(Programs.CONTENT_ITEM_TYPE);
+            result.setIsLive(true);
+            result.setProgressPercentage(LocalSearchProvider.PROGRESS_PERCENTAGE_HIDE);
         } else {
-            result.title = program.getTitle();
-            result.description =
+            result.setTitle(program.getTitle());
+            result.setDescription(
                     buildProgramDescription(
                             channel.getDisplayNumber(),
                             channel.getDisplayName(),
                             program.getStartTimeUtcMillis(),
-                            program.getEndTimeUtcMillis());
-            result.imageUri = program.getPosterArtUri();
-            result.intentAction = Intent.ACTION_VIEW;
-            result.intentData = buildIntentData(channelId);
-            result.contentType = Programs.CONTENT_ITEM_TYPE;
-            result.isLive = true;
-            result.videoWidth = program.getVideoWidth();
-            result.videoHeight = program.getVideoHeight();
-            result.duration = program.getDurationMillis();
-            result.progressPercentage =
+                            program.getEndTimeUtcMillis()));
+            result.setImageUri(program.getPosterArtUri());
+            result.setIntentAction(Intent.ACTION_VIEW);
+            result.setIntentData(buildIntentData(channelId));
+            result.setIntentExtraData(TvContract.buildProgramUri(program.getId()).toString());
+            result.setContentType(Programs.CONTENT_ITEM_TYPE);
+            result.setIsLive(true);
+            result.setVideoWidth(program.getVideoWidth());
+            result.setVideoHeight(program.getVideoHeight());
+            result.setDuration(program.getDurationMillis());
+            result.setProgressPercentage(
                     getProgressPercentage(
-                            program.getStartTimeUtcMillis(), program.getEndTimeUtcMillis());
+                            program.getStartTimeUtcMillis(), program.getEndTimeUtcMillis()));
         }
         if (DEBUG) {
             Log.d(TAG, "Add a result : channel=" + channel + " program=" + program);
         }
-        results.add(result);
+        results.add(result.build());
         channelsFound.add(channel.getId());
     }
 

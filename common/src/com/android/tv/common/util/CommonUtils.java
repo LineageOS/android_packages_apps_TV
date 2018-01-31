@@ -34,6 +34,7 @@ import java.util.Set;
 @SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public final class CommonUtils {
     private static final String LC_PACKAGE_NAME = "com.android.tv";
+
     private static final ThreadLocal<SimpleDateFormat> ISO_8601 =
             new ThreadLocal() {
                 private final SimpleDateFormat value =

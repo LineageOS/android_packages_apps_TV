@@ -42,7 +42,7 @@ import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.config.RemoteConfigUtils;
+import com.android.tv.common.config.api.RemoteConfigValue;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.LocationUtils;
@@ -58,8 +58,8 @@ import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.Utils;
-
-
+import com.google.android.tv.partner.support.EpgInput;
+import com.google.android.tv.partner.support.EpgInputs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +77,6 @@ import java.util.concurrent.TimeUnit;
  * task can run at a time. Because fetching EPG takes long time, the fetching task shouldn't run on
  * the serial executor. Instead, it should run on the {@link AsyncTask#THREAD_POOL_EXECUTOR}.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class EpgFetcherImpl implements EpgFetcher {
     private static final String TAG = "EpgFetcherImpl";
     private static final boolean DEBUG = false;
@@ -100,8 +99,8 @@ public class EpgFetcherImpl implements EpgFetcher {
     private static final long FETCH_DURING_SCAN_DURATION_SEC = TimeUnit.HOURS.toSeconds(3);
     private static final long FAST_FETCH_DURATION_SEC = TimeUnit.DAYS.toSeconds(2);
 
-    private static final int DEFAULT_ROUTINE_INTERVAL_HOUR = 4;
-    private static final String KEY_ROUTINE_INTERVAL = "live_channels_epg_fetcher_interval_hour";
+    private static final RemoteConfigValue<Long> ROUTINE_INTERVAL_HOUR =
+            RemoteConfigValue.create("live_channels_epg_fetcher_interval_hour", 4);
 
     private static final int MSG_PREPARE_FETCH_DURING_SCAN = 1;
     private static final int MSG_CHANNEL_UPDATED_DURING_SCAN = 2;
@@ -136,10 +135,7 @@ public class EpgFetcherImpl implements EpgFetcher {
         PerformanceMonitor performanceMonitor = tvSingletons.getPerformanceMonitor();
         EpgReader epgReader = tvSingletons.providesEpgReader().get();
         Clock clock = tvSingletons.getClock();
-        int routineIntervalMs =
-                (int)
-                        RemoteConfigUtils.getRemoteConfig(
-                                context, KEY_ROUTINE_INTERVAL, DEFAULT_ROUTINE_INTERVAL_HOUR);
+        long routineIntervalMs = ROUTINE_INTERVAL_HOUR.get(tvSingletons.getRemoteConfig());
 
         return new EpgFetcherImpl(
                 context,
@@ -165,7 +161,7 @@ public class EpgFetcherImpl implements EpgFetcher {
         mClock = clock;
         mRoutineIntervalMs =
                 routineIntervalMs <= 0
-                        ? TimeUnit.HOURS.toMillis(DEFAULT_ROUTINE_INTERVAL_HOUR)
+                        ? TimeUnit.HOURS.toMillis(ROUTINE_INTERVAL_HOUR.getDefaultValue())
                         : TimeUnit.HOURS.toMillis(routineIntervalMs);
         mEpgDataExpiredTimeLimitMs = routineIntervalMs * 2;
         mFastFetchDurationSec = FAST_FETCH_DURATION_SEC + routineIntervalMs / 1000;

@@ -26,23 +26,47 @@ import android.media.tv.TvContract.Programs;
 import android.net.Uri;
 import android.util.Log;
 import com.android.tv.common.TvContentRatingCache;
+import com.android.tv.common.util.Clock;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
-public class ProgramUtils {
+/** Static utilities for using Programs in tests */
+public final class ProgramUtils {
     private static final String TAG = "ProgramUtils";
     private static final boolean DEBUG = false;
 
-    // Populate program data for a week.
-    private static final long PROGRAM_INSERT_DURATION_MS = TimeUnit.DAYS.toMillis(7);
+    /** Populate program data for a week */
+    public static final long PROGRAM_INSERT_DURATION_MS = TimeUnit.DAYS.toMillis(7);
+
     private static final int MAX_DB_INSERT_COUNT_AT_ONCE = 500;
 
     /**
      * Populate programs by repeating given program information. This method will populate programs
      * without any gap nor overlapping starting from the current time.
      */
-    public static void populatePrograms(Context context, Uri channelUri, ProgramInfo program) {
+    public static void populatePrograms(
+            Context context, Uri channelUri, ProgramInfo program, Clock clock) {
+        populatePrograms(context, channelUri, program, clock, PROGRAM_INSERT_DURATION_MS);
+    }
+
+    public static void populatePrograms(
+            Context context,
+            Uri channelUri,
+            ProgramInfo program,
+            Clock clock,
+            long programInsertDurationMs) {
+        long currentTimeMs = clock.currentTimeMillis();
+        long targetEndTimeMs = currentTimeMs + programInsertDurationMs;
+        populatePrograms(context, channelUri, program, currentTimeMs, targetEndTimeMs);
+    }
+
+    public static void populatePrograms(
+            Context context,
+            Uri channelUri,
+            ProgramInfo program,
+            long currentTimeMs,
+            long targetEndTimeMs) {
         ContentValues values = new ContentValues();
         long channelId = ContentUris.parseId(channelUri);
 
@@ -52,8 +76,6 @@ public class ProgramUtils {
                 Programs.COLUMN_CONTENT_RATING,
                 TvContentRatingCache.contentRatingsToString(program.contentRatings));
 
-        long currentTimeMs = System.currentTimeMillis();
-        long targetEndTimeMs = currentTimeMs + PROGRAM_INSERT_DURATION_MS;
         long timeMs = getLastProgramEndTimeMs(context, channelUri, currentTimeMs, targetEndTimeMs);
         if (timeMs <= 0) {
             timeMs = currentTimeMs;
@@ -110,4 +132,16 @@ public class ProgramUtils {
     }
 
     private ProgramUtils() {}
+
+    public static void updateProgramForAllChannelsOf(
+            Context context, String inputId, Clock clock, long durationMs) {
+        // Reload channels so we have the ids.
+        Map<Long, ChannelInfo> channelIdToInfoMap =
+                ChannelUtils.queryChannelInfoMapForTvInput(context, inputId);
+        for (Long channelId : channelIdToInfoMap.keySet()) {
+            ProgramInfo programInfo = ProgramInfo.create();
+            populatePrograms(
+                    context, TvContract.buildChannelUri(channelId), programInfo, clock, durationMs);
+        }
+    }
 }

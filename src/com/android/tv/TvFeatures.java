@@ -37,7 +37,7 @@ import com.android.tv.common.feature.Sdk;
 import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.common.util.PermissionUtils;
 
-
+import com.google.android.tv.partner.support.PartnerCustomizations;
 
 /**
  * List of {@link Feature} for the Live TV App.

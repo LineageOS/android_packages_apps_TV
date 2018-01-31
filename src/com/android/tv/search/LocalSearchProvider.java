@@ -24,6 +24,7 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,6 +40,7 @@ import com.android.tv.util.TvUriMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class LocalSearchProvider extends ContentProvider {
     private static final String TAG = "LocalSearchProvider";
@@ -59,6 +61,7 @@ public class LocalSearchProvider extends ContentProvider {
                 SearchManager.SUGGEST_COLUMN_RESULT_CARD_IMAGE,
                 SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
                 SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+                SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
                 SearchManager.SUGGEST_COLUMN_CONTENT_TYPE,
                 SearchManager.SUGGEST_COLUMN_IS_LIVE,
                 SearchManager.SUGGEST_COLUMN_VIDEO_WIDTH,
@@ -177,17 +180,18 @@ public class LocalSearchProvider extends ContentProvider {
         int index = 0;
         for (SearchResult result : results) {
             row.clear();
-            row.add(result.title);
-            row.add(result.description);
-            row.add(result.imageUri);
-            row.add(result.intentAction);
-            row.add(result.intentData);
-            row.add(result.contentType);
-            row.add(result.isLive ? LIVE_CONTENTS : NO_LIVE_CONTENTS);
-            row.add(result.videoWidth == 0 ? null : String.valueOf(result.videoWidth));
-            row.add(result.videoHeight == 0 ? null : String.valueOf(result.videoHeight));
-            row.add(result.duration == 0 ? null : String.valueOf(result.duration));
-            row.add(String.valueOf(result.progressPercentage));
+            row.add(result.getTitle());
+            row.add(result.getDescription());
+            row.add(result.getImageUri());
+            row.add(result.getIntentAction());
+            row.add(result.getIntentData());
+            row.add(result.getIntentExtraData());
+            row.add(result.getContentType());
+            row.add(result.getIsLive() ? LIVE_CONTENTS : NO_LIVE_CONTENTS);
+            row.add(result.getVideoWidth() == 0 ? null : String.valueOf(result.getVideoWidth()));
+            row.add(result.getVideoHeight() == 0 ? null : String.valueOf(result.getVideoHeight()));
+            row.add(result.getDuration() == 0 ? null : String.valueOf(result.getDuration()));
+            row.add(String.valueOf(result.getProgressPercentage()));
             cursor.addRow(row);
             if (DEBUG) Log.d(TAG, "Result[" + (++index) + "]: " + result);
         }
@@ -220,50 +224,59 @@ public class LocalSearchProvider extends ContentProvider {
     }
 
     /** A placeholder to a search result. */
-    public static class SearchResult {
-        public long channelId;
-        public String channelNumber;
-        public String title;
-        public String description;
-        public String imageUri;
-        public String intentAction;
-        public String intentData;
-        public String contentType;
-        public boolean isLive;
-        public int videoWidth;
-        public int videoHeight;
-        public long duration;
-        public int progressPercentage;
 
-        @Override
-        public String toString() {
-            return "SearchResult{channelId="
-                    + channelId
-                    + ", channelNumber="
-                    + channelNumber
-                    + ", title="
-                    + title
-                    + ", description="
-                    + description
-                    + ", imageUri="
-                    + imageUri
-                    + ", intentAction="
-                    + intentAction
-                    + ", intentData="
-                    + intentData
-                    + ", contentType="
-                    + contentType
-                    + ", isLive="
-                    + isLive
-                    + ", videoWidth="
-                    + videoWidth
-                    + ", videoHeight="
-                    + videoHeight
-                    + ", duration="
-                    + duration
-                    + ", progressPercentage="
-                    + progressPercentage
-                    + "}";
+    public abstract static class SearchResult {
+        public static Builder builder() {
+            // primitive fields cannot be nullable. Set to default;
+            return new AutoValue_LocalSearchProvider_SearchResult.Builder()
+                    .setChannelId(0)
+                    .setIsLive(false)
+                    .setVideoWidth(0)
+                    .setVideoHeight(0)
+                    .setDuration(0)
+                    .setProgressPercentage(0);
         }
+
+
+        abstract static class Builder {
+            abstract Builder setChannelId(long value);
+            abstract Builder setChannelNumber(String value);
+            abstract Builder setTitle(String value);
+            abstract Builder setDescription(String value);
+            abstract Builder setImageUri(String value);
+            abstract Builder setIntentAction(String value);
+            abstract Builder setIntentData(String value);
+            abstract Builder setIntentExtraData(String value);
+            abstract Builder setContentType(String value);
+            abstract Builder setIsLive(boolean value);
+            abstract Builder setVideoWidth(int value);
+            abstract Builder setVideoHeight(int value);
+            abstract Builder setDuration(long value);
+            abstract Builder setProgressPercentage(int value);
+            abstract SearchResult build();
+        }
+
+        abstract long getChannelId();
+        @Nullable
+        abstract String getChannelNumber();
+        @Nullable
+        abstract String getTitle();
+        @Nullable
+        abstract String getDescription();
+        @Nullable
+        abstract String getImageUri();
+        @Nullable
+        abstract String getIntentAction();
+        @Nullable
+        abstract String getIntentData();
+        @Nullable
+        abstract String getIntentExtraData();
+        @Nullable
+        abstract String getContentType();
+        abstract boolean getIsLive();
+        abstract int getVideoWidth();
+        abstract int getVideoHeight();
+        abstract long getDuration();
+        abstract int getProgressPercentage();
     }
 }

@@ -42,7 +42,6 @@ import java.util.Map;
  * Fetches channel logos from the cloud into the database. It's for the channels which have no logos
  * or need update logos. This class is thread safe.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ChannelLogoFetcher {
     private static final String TAG = "ChannelLogoFetcher";
     private static final boolean DEBUG = false;

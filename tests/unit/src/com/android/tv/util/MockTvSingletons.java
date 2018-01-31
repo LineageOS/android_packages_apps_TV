@@ -41,6 +41,7 @@ import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.tuner.TunerInputController;
+import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Mock {@link TvSingletons} class. */
@@ -199,5 +200,10 @@ public class MockTvSingletons implements TvSingletons {
     @Override
     public String getEmbeddedTunerInputId() {
         return "com.android.tv/.tuner.tvinput.LiveTvTunerTvInputService";
+    }
+
+    @Override
+    public Executor getDbExecutor() {
+        return mApp.getDbExecutor();
     }
 }

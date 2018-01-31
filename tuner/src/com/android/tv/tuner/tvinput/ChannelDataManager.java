@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Manages the channel info and EPG data through {@link TvInputManager}. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ChannelDataManager implements Handler.Callback {
     private static final String TAG = "ChannelDataManager";
 

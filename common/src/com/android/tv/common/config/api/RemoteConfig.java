@@ -45,4 +45,10 @@ public interface RemoteConfig {
 
     /** Gets value as a long corresponding to the specified key. */
     long getLong(String key);
+
+    /**
+     * Gets value as a long corresponding to the specified key. Returns the defaultValue if no value
+     * is found.
+     */
+    long getLong(String key, long defaultValue);
 }

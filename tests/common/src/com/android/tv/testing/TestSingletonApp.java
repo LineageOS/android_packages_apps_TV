@@ -20,6 +20,7 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import com.android.tv.InputSessionManager;
 import com.android.tv.MainActivityWrapper;
 import com.android.tv.TvSingletons;
@@ -41,10 +42,12 @@ import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
+import com.android.tv.perf.StubPerformanceMonitor;
 import com.android.tv.tuner.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
+import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Test application for Live TV. */
@@ -59,6 +62,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private TunerInputController mTunerInputController;
+    private PerformanceMonitor mPerformanceMonitor;
 
     @Override
     public void onCreate() {
@@ -209,11 +213,19 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     @Override
     public PerformanceMonitor getPerformanceMonitor() {
-        return null;
+        if (mPerformanceMonitor == null) {
+            mPerformanceMonitor = new StubPerformanceMonitor();
+        }
+        return mPerformanceMonitor;
     }
 
     @Override
     public String getEmbeddedTunerInputId() {
         return "com.android.tv/.tuner.tvinput.TunerTvInputService";
+    }
+
+    @Override
+    public Executor getDbExecutor() {
+        return AsyncTask.SERIAL_EXECUTOR;
     }
 }

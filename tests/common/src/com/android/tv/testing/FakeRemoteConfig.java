@@ -41,7 +41,15 @@ public class FakeRemoteConfig implements RemoteConfig {
 
     @Override
     public long getLong(String key) {
-        String value = values.get(key);
-        return TextUtils.isEmpty(value) ? 0 : Long.valueOf(key);
+        return getLong(key, 0);
+    }
+
+    @Override
+    public long getLong(String key, long defaultValue) {
+        if (values.containsKey(key)) {
+            String value = values.get(key);
+            return TextUtils.isEmpty(value) ? defaultValue : Long.valueOf(value);
+        }
+        return defaultValue;
     }
 }

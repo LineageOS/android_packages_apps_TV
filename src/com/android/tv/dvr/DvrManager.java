@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Executor;
 
 /**
  * DVR manager class to add and remove recordings. UI can modify recording list through this class,
@@ -74,11 +75,13 @@ public class DvrManager {
     // @GuardedBy("mListener")
     private final Map<Listener, Handler> mListener = new HashMap<>();
     private final Context mAppContext;
+    private final Executor mDbExecutor;
 
     public DvrManager(Context context) {
         SoftPreconditions.checkFeatureEnabled(context, CommonFeatures.DVR, TAG);
         mAppContext = context.getApplicationContext();
         TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        mDbExecutor = tvSingletons.getDbExecutor();
         mDataManager = (WritableDvrDataManager) tvSingletons.getDvrDataManager();
         mScheduleManager = tvSingletons.getDvrScheduleManager();
         if (mDataManager.isInitialized() && mScheduleManager.isInitialized()) {
@@ -504,7 +507,7 @@ public class DvrManager {
         if (!SoftPreconditions.checkState(mDataManager.isInitialized())) {
             return;
         }
-        new AsyncDbTask<Void, Void, Integer>() {
+        new AsyncDbTask<Void, Void, Integer>(mDbExecutor) {
             @Override
             protected Integer doInBackground(Void... params) {
                 ContentResolver resolver = mAppContext.getContentResolver();
@@ -536,7 +539,7 @@ public class DvrManager {
                 dbOperations.add(ContentProviderOperation.newDelete(r.getUri()).build());
             }
         }
-        new AsyncDbTask<Void, Void, Boolean>() {
+        new AsyncDbTask<Void, Void, Boolean>(mDbExecutor) {
             @Override
             protected Boolean doInBackground(Void... params) {
                 ContentResolver resolver = mAppContext.getContentResolver();

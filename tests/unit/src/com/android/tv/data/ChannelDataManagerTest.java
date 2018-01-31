@@ -30,6 +30,7 @@ import android.database.Cursor;
 import android.media.tv.TvContract;
 import android.media.tv.TvContract.Channels;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.MoreAsserts;
@@ -98,7 +99,10 @@ public class ChannelDataManagerTest {
                                         .thenReturn(true);
                                 mChannelDataManager =
                                         new ChannelDataManager(
-                                                getTargetContext(), mockHelper, mContentResolver);
+                                                getTargetContext(),
+                                                mockHelper,
+                                                AsyncTask.SERIAL_EXECUTOR,
+                                                mContentResolver);
                                 mChannelDataManager.addListener(mListener);
                             }
                         });

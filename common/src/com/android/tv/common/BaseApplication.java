@@ -29,7 +29,6 @@ import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.Debug;
-import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.common.util.SystemProperties;
 
 /** The base application class for Live TV applications. */
@@ -55,10 +54,6 @@ public abstract class BaseApplication extends Application implements BaseSinglet
     @Override
     public void onCreate() {
         super.onCreate();
-        if (!PermissionUtils.hasInternet(this)) {
-            // When an isolated process starts, just skip all the initialization.
-            return;
-        }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).start();
         Debug.getTimer(Debug.TAG_START_UP_TIMER)
                 .log("Start " + this.getClass().getSimpleName() + ".onCreate");

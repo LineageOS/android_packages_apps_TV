@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 /**
  * A class to synchronizes DVR DB with TvProvider.
@@ -68,6 +69,7 @@ public class DvrDbSync {
     private final DvrManager mDvrManager;
     private final DvrDataManagerImpl mDataManager;
     private final ChannelDataManager mChannelDataManager;
+    private final Executor mDbExecutor;
     private final Queue<Long> mProgramIdQueue = new LinkedList<>();
     private QueryProgramTask mQueryProgramTask;
     private final SeriesRecordingScheduler mSeriesRecordingScheduler;
@@ -142,7 +144,8 @@ public class DvrDbSync {
                 dataManager,
                 TvSingletons.getSingletons(context).getChannelDataManager(),
                 TvSingletons.getSingletons(context).getDvrManager(),
-                SeriesRecordingScheduler.getInstance(context));
+                SeriesRecordingScheduler.getInstance(context),
+                TvSingletons.getSingletons(context).getDbExecutor());
     }
 
     @VisibleForTesting
@@ -151,12 +154,14 @@ public class DvrDbSync {
             DvrDataManagerImpl dataManager,
             ChannelDataManager channelDataManager,
             DvrManager dvrManager,
-            SeriesRecordingScheduler seriesRecordingScheduler) {
+            SeriesRecordingScheduler seriesRecordingScheduler,
+            Executor dbExecutor) {
         mContext = context;
         mDvrManager = dvrManager;
         mDataManager = dataManager;
         mChannelDataManager = channelDataManager;
         mSeriesRecordingScheduler = seriesRecordingScheduler;
+        mDbExecutor = dbExecutor;
     }
 
     /** Starts the DB sync. */
@@ -356,7 +361,7 @@ public class DvrDbSync {
         private final long mProgramId;
 
         QueryProgramTask(long programId) {
-            super(mContext.getContentResolver(), programId);
+            super(mDbExecutor, mContext.getContentResolver(), programId);
             mProgramId = programId;
         }
 

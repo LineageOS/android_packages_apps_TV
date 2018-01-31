@@ -80,7 +80,6 @@ import java.util.concurrent.TimeUnit;
  * handling {@link ExoPlayer}, managing a tuner device, trickplay, and so on.
  */
 @WorkerThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class TunerSessionWorker
         implements PlaybackBufferListener,
                 MpegTsPlayer.VideoEventListener,
