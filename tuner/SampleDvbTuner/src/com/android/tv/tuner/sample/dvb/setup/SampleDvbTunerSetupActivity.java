@@ -28,7 +28,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
@@ -176,7 +175,6 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
                         selectedLineup = null;
                         if (CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
                                         getApplicationContext())
-                                && Experiments.ENABLE_LINEUP_SELECTION.get()
                                 && channelNumbers != null
                                 && !channelNumbers.isEmpty()
                                 && !TextUtils.isEmpty(this.postalCode)) {
@@ -340,7 +338,6 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
 
     private void restartFetchLineupTask() {
         if (!CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(getApplicationContext())
-                || !Experiments.ENABLE_LINEUP_SELECTION.get()
                 || TextUtils.isEmpty(postalCode)) {
             return;
         }

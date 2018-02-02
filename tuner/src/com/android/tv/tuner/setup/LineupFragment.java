@@ -122,8 +122,7 @@ public class LineupFragment extends SetupMultiPaneFragment {
         getChildFragmentManager()
                 .beginTransaction()
                 .replace(
-                        0,
-                        // TODO(b/72813253) com.android.tv.common.R.id.guided_step_fragment_container
+                        com.android.tv.common.R.id.guided_step_fragment_container,
                         contentFragment,
                         SetupMultiPaneFragment.CONTENT_FRAGMENT_TAG)
                 .commit();
@@ -198,18 +197,18 @@ public class LineupFragment extends SetupMultiPaneFragment {
                 actions.add(
                         new GuidedAction.Builder(getActivity())
                                 .id(ACTION_ID_RETRY)
-                                .title("retry") // TODO(b/72813253) R.string.action_text_retry
+                                .title(com.android.tv.common.R.string.action_text_retry)
                                 .build());
                 actions.add(
                         new GuidedAction.Builder(getActivity())
                                 .id(ACTION_SKIP)
-                                .title("skip") // TODO(b/72813253) R.string.action_text_skip
+                                .title(com.android.tv.common.R.string.action_text_skip)
                                 .build());
             } else if (lineups == null) {
                 actions.add(
                         new GuidedAction.Builder(getActivity())
                                 .id(ACTION_SKIP)
-                                .title("skip") // TODO(b/72813253) R.string.action_text_skip
+                                .title(com.android.tv.common.R.string.action_text_skip)
                                 .build());
             } else {
                 Resources res = getResources();
