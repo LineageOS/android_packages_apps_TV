@@ -26,6 +26,7 @@ import com.android.tv.common.experiments.Experiments;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Checks if a package or a input is white listed. */
@@ -34,7 +35,8 @@ public final class EpgInputWhiteList {
     private static final String TAG = "EpgInputWhiteList";
     @VisibleForTesting public static final String KEY = "live_channels_3rd_party_epg_inputs";
     private static final String QA_DEV_INPUTS =
-            "com.example.partnersupportsampletvinput/.SampleTvInputService";
+            "com.example.partnersupportsampletvinput/.SampleTvInputService,"
+                    + "com.android.tv.tuner.sample.dvb/.tvinput.SampleDvbTunerTvInputService";
 
     /** Returns the package portion of a inputId */
     @Nullable
@@ -83,10 +85,19 @@ public final class EpgInputWhiteList {
         return result;
     }
 
-    private Set<String> toInputSet(String value) {
+    @VisibleForTesting
+    static Set<String> toInputSet(String value) {
         if (TextUtils.isEmpty(value)) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
-        return new HashSet(Arrays.asList(value.split(",")));
+        List<String> strings = Arrays.asList(value.split(","));
+        Set<String> result = new HashSet<>(strings.size());
+        for (String s : strings) {
+            String trimmed = s.trim();
+            if (!TextUtils.isEmpty(trimmed)) {
+                result.add(trimmed);
+            }
+        }
+        return result;
     }
 }

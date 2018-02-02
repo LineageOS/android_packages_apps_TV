@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class LocalSearchProvider extends ContentProvider {
     private static final String TAG = "LocalSearchProvider";
     private static final boolean DEBUG = false;
@@ -224,7 +223,7 @@ public class LocalSearchProvider extends ContentProvider {
     }
 
     /** A placeholder to a search result. */
-
+    // TODO(b/72052568): Get autovalue to work in aosp master
     public abstract static class SearchResult {
         public static Builder builder() {
             // primitive fields cannot be nullable. Set to default;
@@ -237,46 +236,73 @@ public class LocalSearchProvider extends ContentProvider {
                     .setProgressPercentage(0);
         }
 
-
+        // TODO(b/72052568): Get autovalue to work in aosp master
         abstract static class Builder {
             abstract Builder setChannelId(long value);
+
             abstract Builder setChannelNumber(String value);
+
             abstract Builder setTitle(String value);
+
             abstract Builder setDescription(String value);
+
             abstract Builder setImageUri(String value);
+
             abstract Builder setIntentAction(String value);
+
             abstract Builder setIntentData(String value);
+
             abstract Builder setIntentExtraData(String value);
+
             abstract Builder setContentType(String value);
+
             abstract Builder setIsLive(boolean value);
+
             abstract Builder setVideoWidth(int value);
+
             abstract Builder setVideoHeight(int value);
+
             abstract Builder setDuration(long value);
+
             abstract Builder setProgressPercentage(int value);
+
             abstract SearchResult build();
         }
 
         abstract long getChannelId();
+
         @Nullable
         abstract String getChannelNumber();
+
         @Nullable
         abstract String getTitle();
+
         @Nullable
         abstract String getDescription();
+
         @Nullable
         abstract String getImageUri();
+
         @Nullable
         abstract String getIntentAction();
+
         @Nullable
         abstract String getIntentData();
+
         @Nullable
         abstract String getIntentExtraData();
+
         @Nullable
         abstract String getContentType();
+
         abstract boolean getIsLive();
+
         abstract int getVideoWidth();
+
         abstract int getVideoHeight();
+
         abstract long getDuration();
+
         abstract int getProgressPercentage();
     }
 }

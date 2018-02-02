@@ -33,8 +33,6 @@ import java.util.Set;
 /** Util class for common use in TV app and inputs. */
 @SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public final class CommonUtils {
-    private static final String LC_PACKAGE_NAME = "com.android.tv";
-
     private static final ThreadLocal<SimpleDateFormat> ISO_8601 =
             new ThreadLocal() {
                 private final SimpleDateFormat value =
@@ -120,7 +118,7 @@ public final class CommonUtils {
 
     /** Returns true if the application is packaged with Live TV. */
     public static boolean isPackagedWithLiveChannels(Context context) {
-        return (LC_PACKAGE_NAME.equals(context.getPackageName()));
+        return (CommonConstants.BASE_PACKAGE.equals(context.getPackageName()));
     }
 
     /** Returns true if the current user is a developer. */

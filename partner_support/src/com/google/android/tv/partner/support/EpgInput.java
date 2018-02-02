@@ -23,6 +23,7 @@ import android.content.ContentValues;
  *
  * @see {@link EpgContract.EpgInputs}
  */
+// TODO(b/72052568): Get autovalue to work in aosp master
 public abstract class EpgInput {
 
     public static EpgInput createEpgChannel(long id, String inputId, String lineupId) {
