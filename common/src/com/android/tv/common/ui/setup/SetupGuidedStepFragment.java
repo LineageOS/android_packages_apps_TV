@@ -178,16 +178,29 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
         return true;
     }
 
-    protected boolean getAccessibilityMode() {
-        return mAccessibilityMode;
-    }
-
-    protected boolean getFromContentFragment() {
-        return mFromContentFragment;
-    }
-
-    protected void setFromContentFragment(boolean fromContentFragment) {
-        mFromContentFragment = fromContentFragment;
+    protected void setAccessibilityDelegate(GuidedActionsStylist.ViewHolder vh,
+            GuidedAction action) {
+        if (!mAccessibilityMode || findActionPositionById(action.getId()) == 0) {
+            return;
+        }
+        vh.itemView.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                        if ((action == AccessibilityNodeInfo.ACTION_FOCUS
+                                || action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS)
+                                && mFromContentFragment) {
+                            // block the action and make the first action view accessibility focused
+                            View view = getActionItemView(0);
+                            if (view != null) {
+                                view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                                mFromContentFragment = false;
+                                return true;
+                            }
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
     }
 
     private class SetupGuidedStepFragmentGuidedActionsStylist extends GuidedActionsStylist {
@@ -195,27 +208,7 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
         @Override
         public void onBindViewHolder(GuidedActionsStylist.ViewHolder vh, GuidedAction action) {
             super.onBindViewHolder(vh, action);
-            if (!getAccessibilityMode() || findActionPositionById(action.getId()) == 0) {
-                return;
-            }
-            vh.itemView.setAccessibilityDelegate(
-                new AccessibilityDelegate() {
-                    @Override
-                    public boolean performAccessibilityAction(View host, int action, Bundle args) {
-                        if ((action == AccessibilityNodeInfo.ACTION_FOCUS
-                                || action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS)
-                                && getFromContentFragment()) {
-                            // block the action and make the first action view accessibility focused
-                            View view = getActionItemView(0);
-                            if (view != null) {
-                                view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                                setFromContentFragment(false);
-                                return true;
-                            }
-                        }
-                        return super.performAccessibilityAction(host, action, args);
-                    }
-                });
+            setAccessibilityDelegate(vh, action);
         }
     }
 }

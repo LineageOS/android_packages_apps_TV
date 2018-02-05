@@ -28,10 +28,7 @@ import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.support.v17.leanback.widget.VerticalGridView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
@@ -400,30 +397,7 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
                         descriptionView.setTypeface(Typeface.create(getString(R.string.font), 0));
                     }
                 }
-                if (!getAccessibilityMode() || findActionPositionById(action.getId()) == 0) {
-                    return;
-                }
-                vh.itemView.setAccessibilityDelegate(
-                    new AccessibilityDelegate() {
-                        @Override
-                        public boolean performAccessibilityAction(View host, int action,
-                                Bundle args) {
-                            if ((action == AccessibilityNodeInfo.ACTION_FOCUS
-                                    || action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS)
-                                    && getFromContentFragment()) {
-                                // block the action and make the first action view accessibility
-                                // focused
-                                View view = getActionItemView(0);
-                                if (view != null) {
-                                    view.sendAccessibilityEvent(
-                                            AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                                    setFromContentFragment(false);
-                                    return true;
-                                }
-                            }
-                            return super.performAccessibilityAction(host, action, args);
-                        }
-                    });
+                setAccessibilityDelegate(vh, action);
             }
         }
     }
