@@ -22,12 +22,16 @@ import android.os.Bundle;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
+import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.support.v17.leanback.widget.VerticalGridView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.LinearLayout;
 import com.android.tv.common.R;
 
@@ -41,6 +45,8 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     public static final String KEY_THREE_PANE = "key_three_pane";
 
     private View mContentFragment;
+    private boolean mFromContentFragment;
+    private boolean mAccessibilityMode;
 
     @Override
     public View onCreateView(
@@ -99,12 +105,33 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     }
 
     @Override
+    public GuidedActionsStylist onCreateActionsStylist() {
+        return new SetupGuidedStepFragmentGuidedActionsStylist();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         AccessibilityManager am =
                 (AccessibilityManager) getActivity().getSystemService(ACCESSIBILITY_SERVICE);
-        if (am.isEnabled() && am.isTouchExplorationEnabled()) {
-            mContentFragment.setFocusable(true);
+        mAccessibilityMode = am != null && am.isEnabled() && am.isTouchExplorationEnabled();
+        mContentFragment.setFocusable(mAccessibilityMode);
+        if (mAccessibilityMode) {
+            mContentFragment.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                        if (action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS
+                                && !getActions().isEmpty()) {
+                            // scroll to the top. This makes the first action view on the screen.
+                            // Otherwise, the view can be recycled, so accessibility events cannot
+                            // be sent later.
+                            getGuidedActionsStylist().getActionsGridView().scrollToPosition(0);
+                            mFromContentFragment = true;
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
             mContentFragment.requestFocus();
         }
     }
@@ -133,6 +160,11 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
 
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
+        if (!action.isFocusable()) {
+            // an unfocusable action may be clicked in accessibility mode when it's accessibility
+            // focused
+            return;
+        }
         SetupActionHelper.onActionClick(this, getActionCategory(), (int) action.getId());
     }
 
@@ -144,5 +176,46 @@ public abstract class SetupGuidedStepFragment extends GuidedStepFragment {
     @Override
     public boolean isFocusOutEndAllowed() {
         return true;
+    }
+
+    protected boolean getAccessibilityMode() {
+        return mAccessibilityMode;
+    }
+
+    protected boolean getFromContentFragment() {
+        return mFromContentFragment;
+    }
+
+    protected void setFromContentFragment(boolean fromContentFragment) {
+        mFromContentFragment = fromContentFragment;
+    }
+
+    private class SetupGuidedStepFragmentGuidedActionsStylist extends GuidedActionsStylist {
+
+        @Override
+        public void onBindViewHolder(GuidedActionsStylist.ViewHolder vh, GuidedAction action) {
+            super.onBindViewHolder(vh, action);
+            if (!getAccessibilityMode() || findActionPositionById(action.getId()) == 0) {
+                return;
+            }
+            vh.itemView.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                        if ((action == AccessibilityNodeInfo.ACTION_FOCUS
+                                || action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS)
+                                && getFromContentFragment()) {
+                            // block the action and make the first action view accessibility focused
+                            View view = getActionItemView(0);
+                            if (view != null) {
+                                view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                                setFromContentFragment(false);
+                                return true;
+                            }
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
+        }
     }
 }
