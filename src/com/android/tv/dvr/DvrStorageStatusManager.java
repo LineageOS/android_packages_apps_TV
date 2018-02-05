@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A class for extending TV app-specific function to {@link RecordingStorageStatusManager}. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class DvrStorageStatusManager extends RecordingStorageStatusManager {
     private static final String TAG = "DvrStorageStatusManager";
 

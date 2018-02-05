@@ -35,6 +35,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import com.android.tv.common.BaseApplication;
+import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
@@ -62,6 +63,9 @@ import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Live TV application.
@@ -84,6 +88,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
             " com.android.tv.action.APPLICATION_FIRST_LAUNCHED";
 
     private static final String PREFERENCE_IS_FIRST_LAUNCH = "is_first_launch";
+
+    private static final NamedThreadFactory THREAD_FACTORY = new NamedThreadFactory("tv-app-db");
+    private static final ExecutorService DB_EXECUTOR =
+            Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
     private String mVersionName = "";
 
@@ -496,5 +504,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
             Log.i(TAG, (enable ? "Un-hide" : "Hide") + " Live TV.");
         }
         getSetupUtils().onInputListUpdated(inputManager);
+    }
+
+    @Override
+    public Executor getDbExecutor() {
+        return DB_EXECUTOR;
     }
 }

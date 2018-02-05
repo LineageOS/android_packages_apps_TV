@@ -25,6 +25,7 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.Feature;
+import com.android.tv.common.feature.Model;
 import com.android.tv.common.feature.PropertyFeature;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.LocationUtils;

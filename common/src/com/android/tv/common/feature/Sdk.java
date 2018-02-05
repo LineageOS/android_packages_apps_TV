@@ -20,7 +20,7 @@ import android.content.Context;
 import android.os.Build;
 
 /** Holder for SDK version features */
-public class Sdk {
+public final class Sdk {
     public static final Feature AT_LEAST_N =
             new Feature() {
                 @Override

@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** A helper class for setting/getting common preferences across applications. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class CommonPreferences {
     private static final String TAG = "CommonPreferences";
 

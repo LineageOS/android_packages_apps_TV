@@ -12,7 +12,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     guava-22-0-jar \
     javax-annotations-jar \
     mockito-target \
-    platform-robolectric-3.6.1-prebuilt \
+    platform-robolectric-3.4.2-prebuilt \
     truth-0-36-prebuilt-jar \
     ub-uiautomator \
 

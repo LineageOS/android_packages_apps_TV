@@ -56,6 +56,7 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v14-preference \
     android-support-v17-leanback \
     android-support-v17-preference-leanback \
+    live-channels-partner-support \
     live-tv-tuner \
     tv-common \
 

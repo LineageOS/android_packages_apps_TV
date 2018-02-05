@@ -33,7 +33,7 @@ import java.util.Set;
 public interface EpgReader {
 
     /** Value class that holds a EpgChannelId and its corresponding Channel */
-    // TODO(b/72052568): Get autovalue to work in aosp
+    // TODO(b/72052568): Get autovalue to work in aosp master
     abstract class EpgChannel {
         public static EpgChannel createEpgChannel(Channel channel, String epgChannelId) {
             return new AutoValue_EpgReader_EpgChannel(channel, epgChannelId);

@@ -223,7 +223,8 @@ public class RecordingTask extends RecordingCallback
 
     @Override
     public void onRecordingStopped(Uri recordedProgramUri) {
-        if (DEBUG) Log.d(TAG, "onRecordingStopped");
+        Log.i(TAG, "Recording Stopped: " + mScheduledRecording);
+        Log.i(TAG, "Recording Stopped: stored as " + recordedProgramUri);
         if (mRecordingSession == null) {
             return;
         }
@@ -244,12 +245,13 @@ public class RecordingTask extends RecordingCallback
 
     @Override
     public void onError(int reason) {
-        if (DEBUG) Log.d(TAG, "onError reason " + reason);
+        Log.i(TAG, "Recording failed with code=" + reason + " for " + mScheduledRecording);
         if (mRecordingSession == null) {
             return;
         }
         switch (reason) {
             case TvInputManager.RECORDING_ERROR_INSUFFICIENT_SPACE:
+                Log.i(TAG, "Insufficient space to record " + mScheduledRecording);
                 mMainThreadHandler.post(
                         new Runnable() {
                             @Override
@@ -342,7 +344,7 @@ public class RecordingTask extends RecordingCallback
     }
 
     private void handleStartRecording() {
-        if (DEBUG) Log.d(TAG, "handleStartRecording " + mScheduledRecording);
+        Log.i(TAG, "Start Recording: " + mScheduledRecording);
         long programId = mScheduledRecording.getProgramId();
         mRecordingSession.startRecording(
                 programId == ScheduledRecording.ID_NOT_SET
@@ -363,7 +365,7 @@ public class RecordingTask extends RecordingCallback
     }
 
     private void handleStopRecording() {
-        if (DEBUG) Log.d(TAG, "handleStopRecording " + mScheduledRecording);
+        Log.i(TAG, "Stop Recording: " + mScheduledRecording);
         mRecordingSession.stopRecording();
         mState = State.RECORDING_STOP_REQUESTED;
     }

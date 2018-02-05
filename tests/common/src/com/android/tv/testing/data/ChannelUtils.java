@@ -30,12 +30,12 @@ import android.util.SparseArray;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /** Static helper methods for working with {@link android.media.tv.TvContract}. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ChannelUtils {
     private static final String TAG = "ChannelUtils";
     private static final boolean DEBUG = false;
@@ -149,6 +149,14 @@ public class ChannelUtils {
 
     private ChannelUtils() {
         // Prevent instantiation.
+    }
+
+    public static List<ChannelInfo> createChannelInfos(Context context, int channelCount) {
+        List<ChannelInfo> channels = new ArrayList<>();
+        for (int i = 1; i <= channelCount; i++) {
+            channels.add(ChannelInfo.create(context, i));
+        }
+        return channels;
     }
 
     public static class InsertLogosTask extends AsyncTask<Map<Uri, String>, Void, Void> {

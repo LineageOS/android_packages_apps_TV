@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.SortedMap;
 
 /** Manages DVR storage. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class DvrStorageManager implements BufferManager.StorageManager {
     private static final String TAG = "DvrStorageManager";
 

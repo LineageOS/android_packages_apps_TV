@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** The helper class for {@link EpgFetcher} */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 class EpgFetchHelper {
     private static final String TAG = "EpgFetchHelper";
     private static final boolean DEBUG = false;

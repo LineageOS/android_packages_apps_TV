@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.CommonUtils;
@@ -56,6 +57,7 @@ import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrAlreadyRecordedDialog
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrAlreadyScheduledDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrChannelRecordDurationOptionDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrChannelWatchConflictDialogFragment;
+import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrFutureProgramInfoDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrInsufficientSpaceErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrMissingStorageErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrNoFreeSpaceErrorDialogFragment;
@@ -105,6 +107,7 @@ public class DvrUiHelper {
                 case RecordingStorageStatusManager.STORAGE_STATUS_FREE_SPACE_INSUFFICIENT:
                     showDvrNoFreeSpaceErrorDialog(activity, recordingRequestRunnable);
                     return;
+                default: // fall out
             }
         }
         recordingRequestRunnable.run();
@@ -234,6 +237,18 @@ public class DvrUiHelper {
         Bundle args = new Bundle();
         args.putParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM, program);
         showDialogFragment(activity, new DvrAlreadyRecordedDialogFragment(), args, false, true);
+    }
+
+    /** Shows program information dialog. */
+    public static void showProgramInfoDialog(Activity activity, Program program) {
+        if (program == null || !BuildConfig.ENG) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putParcelable(
+                DvrHalfSizedDialogFragment.KEY_PROGRAM,
+                program);
+        showDialogFragment(activity, new DvrFutureProgramInfoDialogFragment(), args, false, true);
     }
 
     /**

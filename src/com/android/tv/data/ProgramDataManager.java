@@ -33,8 +33,11 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.LruCache;
+import com.android.tv.TvSingletons;
 import com.android.tv.common.MemoryManageable;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.config.api.RemoteConfig;
+import com.android.tv.common.config.api.RemoteConfigValue;
 import com.android.tv.common.util.Clock;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.MultiLongSparseArray;
@@ -49,23 +52,26 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @MainThread
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class ProgramDataManager implements MemoryManageable {
     private static final String TAG = "ProgramDataManager";
     private static final boolean DEBUG = false;
 
     // To prevent from too many program update operations at the same time, we give random interval
     // between PERIODIC_PROGRAM_UPDATE_MIN_MS and PERIODIC_PROGRAM_UPDATE_MAX_MS.
-    private static final long PERIODIC_PROGRAM_UPDATE_MIN_MS = TimeUnit.MINUTES.toMillis(5);
+    @VisibleForTesting
+    static final long PERIODIC_PROGRAM_UPDATE_MIN_MS = TimeUnit.MINUTES.toMillis(5);
+
     private static final long PERIODIC_PROGRAM_UPDATE_MAX_MS = TimeUnit.MINUTES.toMillis(10);
     private static final long PROGRAM_PREFETCH_UPDATE_WAIT_MS = TimeUnit.SECONDS.toMillis(5);
     // TODO: need to optimize consecutive DB updates.
     private static final long CURRENT_PROGRAM_UPDATE_WAIT_MS = TimeUnit.SECONDS.toMillis(5);
     @VisibleForTesting static final long PROGRAM_GUIDE_SNAP_TIME_MS = TimeUnit.MINUTES.toMillis(30);
-    @VisibleForTesting static final long PROGRAM_GUIDE_MAX_TIME_RANGE = TimeUnit.DAYS.toMillis(2);
+    private static final RemoteConfigValue<Long> PROGRAM_GUIDE_MAX_HOURS =
+            RemoteConfigValue.create("live_channels_program_guide_max_hours", 48);
 
     // TODO: Use TvContract constants, once they become public.
     private static final String PARAM_START_TIME = "start_time";
@@ -85,6 +91,8 @@ public class ProgramDataManager implements MemoryManageable {
 
     private final Clock mClock;
     private final ContentResolver mContentResolver;
+    private final Executor mDbExecutor;
+    private final RemoteConfig mRemoteConfig;
     private boolean mStarted;
     // Updated only on the main thread.
     private volatile boolean mCurrentProgramsLoadFinished;
@@ -115,14 +123,26 @@ public class ProgramDataManager implements MemoryManageable {
 
     @MainThread
     public ProgramDataManager(Context context) {
-        this(context.getContentResolver(), Clock.SYSTEM, Looper.myLooper());
+        this(
+                TvSingletons.getSingletons(context).getDbExecutor(),
+                context.getContentResolver(),
+                Clock.SYSTEM,
+                Looper.myLooper(),
+                TvSingletons.getSingletons(context).getRemoteConfig());
     }
 
     @VisibleForTesting
-    ProgramDataManager(ContentResolver contentResolver, Clock time, Looper looper) {
+    ProgramDataManager(
+            Executor executor,
+            ContentResolver contentResolver,
+            Clock time,
+            Looper looper,
+            RemoteConfig remoteConfig) {
+        mDbExecutor = executor;
         mClock = time;
         mContentResolver = contentResolver;
         mHandler = new MyHandler(looper);
+        mRemoteConfig = remoteConfig;
         mProgramObserver =
                 new ContentObserver(mHandler) {
                     @Override
@@ -283,9 +303,11 @@ public class ProgramDataManager implements MemoryManageable {
                 cachedPrograms.subList(startIndex, cachedPrograms.size()));
     }
 
-    // Returns the index of program that is played at the specified time.
-    // If there isn't, return the first program among programs that starts after the given time
-    // if returnNextProgram is {@code true}.
+    /**
+    * Returns the index of program that is played at the specified time.
+    * If there isn't, return the first program among programs that starts after the given time
+    * if returnNextProgram is {@code true}.
+    */
     private int getProgramIndexAt(List<Program> programs, long time) {
         Program key = mZeroLengthProgramCache.get(time);
         if (key == null) {
@@ -439,10 +461,13 @@ public class ProgramDataManager implements MemoryManageable {
         private boolean mSuccess;
 
         public ProgramsPrefetchTask() {
+            super(mDbExecutor);
             long time = mClock.currentTimeMillis();
             mStartTimeMs =
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
-            mEndTimeMs = mStartTimeMs + PROGRAM_GUIDE_MAX_TIME_RANGE;
+            mEndTimeMs =
+                    mStartTimeMs
+                            + TimeUnit.DAYS.toMillis(PROGRAM_GUIDE_MAX_HOURS.get(mRemoteConfig));
             mSuccess = false;
         }
 
@@ -553,6 +578,7 @@ public class ProgramDataManager implements MemoryManageable {
     private class ProgramsUpdateTask extends AsyncDbTask.AsyncQueryTask<List<Program>> {
         public ProgramsUpdateTask(ContentResolver contentResolver, long time) {
             super(
+                    mDbExecutor,
                     contentResolver,
                     Programs.CONTENT_URI
                             .buildUpon()
@@ -620,6 +646,7 @@ public class ProgramDataManager implements MemoryManageable {
         private UpdateCurrentProgramForChannelTask(
                 ContentResolver contentResolver, long channelId, long time) {
             super(
+                    mDbExecutor,
                     contentResolver,
                     TvContract.buildProgramsUriForChannel(channelId, time, time),
                     Program.PROJECTION,
@@ -694,6 +721,8 @@ public class ProgramDataManager implements MemoryManageable {
                         }
                         break;
                     }
+                default:
+                    // Do nothing
             }
         }
     }

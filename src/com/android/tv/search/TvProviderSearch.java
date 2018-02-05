@@ -46,12 +46,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /** An implementation of {@link SearchInterface} to search query from TvProvider directly. */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class TvProviderSearch implements SearchInterface {
     private static final String TAG = "TvProviderSearch";
     private static final boolean DEBUG = false;
+
+    private static final long SEARCH_TIME_FRAME_MS = TimeUnit.DAYS.toMillis(14);
 
     private static final int NO_LIMIT = 0;
 
@@ -76,6 +78,7 @@ public class TvProviderSearch implements SearchInterface {
     @Override
     @WorkerThread
     public List<SearchResult> search(String query, int limit, int action) {
+        // TODO(b/72499463): add a test.
         List<SearchResult> results = new ArrayList<>();
         if (!PermissionUtils.hasAccessAllEpg(mContext)) {
             // TODO: support this feature for non-system LC app. b/23939816
@@ -192,8 +195,8 @@ public class TvProviderSearch implements SearchInterface {
         if (results.size() > limit) {
             results = results.subList(0, limit);
         }
-        for (SearchResult result : results) {
-            fillProgramInfo(result);
+        for (int i = 0; i < results.size(); i++) {
+            results.set(i, fillProgramInfo(results.get(i)));
         }
         if (DEBUG) {
             Log.d(
@@ -257,19 +260,19 @@ public class TvProviderSearch implements SearchInterface {
                     }
                     channelsFound.add(id);
 
-                    SearchResult result = new SearchResult();
-                    result.channelId = id;
-                    result.channelNumber = c.getString(1);
-                    result.title = c.getString(2);
-                    result.description = c.getString(3);
-                    result.imageUri = TvContract.buildChannelLogoUri(result.channelId).toString();
-                    result.intentAction = Intent.ACTION_VIEW;
-                    result.intentData = buildIntentData(result.channelId);
-                    result.contentType = Programs.CONTENT_ITEM_TYPE;
-                    result.isLive = true;
-                    result.progressPercentage = LocalSearchProvider.PROGRESS_PERCENTAGE_HIDE;
+                    SearchResult.Builder result = SearchResult.builder();
+                    result.setChannelId(id);
+                    result.setChannelNumber(c.getString(1));
+                    result.setTitle(c.getString(2));
+                    result.setDescription(c.getString(3));
+                    result.setImageUri(TvContract.buildChannelLogoUri(id).toString());
+                    result.setIntentAction(Intent.ACTION_VIEW);
+                    result.setIntentData(buildIntentData(id));
+                    result.setContentType(Programs.CONTENT_ITEM_TYPE);
+                    result.setIsLive(true);
+                    result.setProgressPercentage(LocalSearchProvider.PROGRESS_PERCENTAGE_HIDE);
 
-                    searchResults.add(result);
+                    searchResults.add(result.build());
 
                     if (limit != NO_LIMIT && ++count >= limit) {
                         break;
@@ -286,9 +289,9 @@ public class TvProviderSearch implements SearchInterface {
      * blocked.
      */
     @WorkerThread
-    private void fillProgramInfo(SearchResult result) {
+    private SearchResult fillProgramInfo(SearchResult result) {
         long now = System.currentTimeMillis();
-        Uri uri = TvContract.buildProgramsUriForChannel(result.channelId, now, now);
+        Uri uri = TvContract.buildProgramsUriForChannel(result.getChannelId(), now, now);
         String[] projection =
                 new String[] {
                     Programs.COLUMN_TITLE,
@@ -302,23 +305,27 @@ public class TvProviderSearch implements SearchInterface {
 
         try (Cursor c = mContentResolver.query(uri, projection, null, null, null)) {
             if (c != null && c.moveToNext() && !isRatingBlocked(c.getString(2))) {
-                String channelName = result.title;
+                String channelName = result.getTitle();
+                String channelNumber = result.getChannelNumber();
+                SearchResult.Builder builder = SearchResult.builder();
                 long startUtcMillis = c.getLong(5);
                 long endUtcMillis = c.getLong(6);
-                result.title = c.getString(0);
-                result.description =
+                builder.setTitle(c.getString(0));
+                builder.setDescription(
                         buildProgramDescription(
-                                result.channelNumber, channelName, startUtcMillis, endUtcMillis);
+                                channelNumber, channelName, startUtcMillis, endUtcMillis));
                 String imageUri = c.getString(1);
                 if (imageUri != null) {
-                    result.imageUri = imageUri;
+                    builder.setImageUri(imageUri);
                 }
-                result.videoWidth = c.getInt(3);
-                result.videoHeight = c.getInt(4);
-                result.duration = endUtcMillis - startUtcMillis;
-                result.progressPercentage = getProgressPercentage(startUtcMillis, endUtcMillis);
+                builder.setVideoWidth(c.getInt(3));
+                builder.setVideoHeight(c.getInt(4));
+                builder.setDuration(endUtcMillis - startUtcMillis);
+                builder.setProgressPercentage(getProgressPercentage(startUtcMillis, endUtcMillis));
+                return builder.build();
             }
         }
+        return result;
     }
 
     private String buildProgramDescription(
@@ -358,7 +365,8 @@ public class TvProviderSearch implements SearchInterface {
             Programs.COLUMN_VIDEO_WIDTH,
             Programs.COLUMN_VIDEO_HEIGHT,
             Programs.COLUMN_START_TIME_UTC_MILLIS,
-            Programs.COLUMN_END_TIME_UTC_MILLIS
+            Programs.COLUMN_END_TIME_UTC_MILLIS,
+            Programs._ID
         };
 
         StringBuilder sb = new StringBuilder();
@@ -373,7 +381,9 @@ public class TvProviderSearch implements SearchInterface {
                 (columnForExactMatching == null ? 0 : columnForExactMatching.length)
                         + (columnForPartialMatching == null ? 0 : columnForPartialMatching.length);
         String[] selectionArgs = new String[len + 2];
-        selectionArgs[0] = selectionArgs[1] = String.valueOf(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        selectionArgs[0] = String.valueOf(now + SEARCH_TIME_FRAME_MS);
+        selectionArgs[1] = String.valueOf(now);
         insertSelectionArgumentStrings(
                 selectionArgs, 2, query, columnForExactMatching, columnForPartialMatching);
 
@@ -419,26 +429,28 @@ public class TvProviderSearch implements SearchInterface {
                                 && !isRatingBlocked(c.getString(3))) {
                             long startUtcMillis = c.getLong(6);
                             long endUtcMillis = c.getLong(7);
-                            SearchResult result = new SearchResult();
-                            result.channelId = c.getLong(0);
-                            result.title = c.getString(1);
-                            result.description =
+                            SearchResult.Builder result = SearchResult.builder();
+                            result.setChannelId(c.getLong(0));
+                            result.setTitle(c.getString(1));
+                            result.setDescription(
                                     buildProgramDescription(
                                             cChannel.getString(1),
                                             cChannel.getString(2),
                                             startUtcMillis,
-                                            endUtcMillis);
-                            result.imageUri = c.getString(2);
-                            result.intentAction = Intent.ACTION_VIEW;
-                            result.intentData = buildIntentData(id);
-                            result.contentType = Programs.CONTENT_ITEM_TYPE;
-                            result.isLive = true;
-                            result.videoWidth = c.getInt(4);
-                            result.videoHeight = c.getInt(5);
-                            result.duration = endUtcMillis - startUtcMillis;
-                            result.progressPercentage =
-                                    getProgressPercentage(startUtcMillis, endUtcMillis);
-                            searchResults.add(result);
+                                            endUtcMillis));
+                            result.setImageUri(c.getString(2));
+                            result.setIntentAction(Intent.ACTION_VIEW);
+                            result.setIntentData(buildIntentData(id));
+                            result.setIntentExtraData(
+                                    TvContract.buildProgramUri(c.getLong(8)).toString());
+                            result.setContentType(Programs.CONTENT_ITEM_TYPE);
+                            result.setIsLive(true);
+                            result.setVideoWidth(c.getInt(4));
+                            result.setVideoHeight(c.getInt(5));
+                            result.setDuration(endUtcMillis - startUtcMillis);
+                            result.setProgressPercentage(
+                                    getProgressPercentage(startUtcMillis, endUtcMillis));
+                            searchResults.add(result.build());
 
                             if (limit != NO_LIMIT && ++count >= limit) {
                                 break;
@@ -557,10 +569,10 @@ public class TvProviderSearch implements SearchInterface {
     }
 
     private SearchResult buildSearchResultForInput(String inputId) {
-        SearchResult result = new SearchResult();
-        result.intentAction = Intent.ACTION_VIEW;
-        result.intentData = TvContract.buildChannelUriForPassthroughInput(inputId).toString();
-        return result;
+        SearchResult.Builder result = SearchResult.builder();
+        result.setIntentAction(Intent.ACTION_VIEW);
+        result.setIntentData(TvContract.buildChannelUriForPassthroughInput(inputId).toString());
+        return result.build();
     }
 
     @WorkerThread
@@ -570,21 +582,21 @@ public class TvProviderSearch implements SearchInterface {
         @Override
         public int compare(SearchResult lhs, SearchResult rhs) {
             // Show recently watched channel first
-            Long lhsMaxWatchStartTime = mMaxWatchStartTimeMap.get(lhs.channelId);
+            Long lhsMaxWatchStartTime = mMaxWatchStartTimeMap.get(lhs.getChannelId());
             if (lhsMaxWatchStartTime == null) {
-                lhsMaxWatchStartTime = getMaxWatchStartTime(lhs.channelId);
-                mMaxWatchStartTimeMap.put(lhs.channelId, lhsMaxWatchStartTime);
+                lhsMaxWatchStartTime = getMaxWatchStartTime(lhs.getChannelId());
+                mMaxWatchStartTimeMap.put(lhs.getChannelId(), lhsMaxWatchStartTime);
             }
-            Long rhsMaxWatchStartTime = mMaxWatchStartTimeMap.get(rhs.channelId);
+            Long rhsMaxWatchStartTime = mMaxWatchStartTimeMap.get(rhs.getChannelId());
             if (rhsMaxWatchStartTime == null) {
-                rhsMaxWatchStartTime = getMaxWatchStartTime(rhs.channelId);
-                mMaxWatchStartTimeMap.put(rhs.channelId, rhsMaxWatchStartTime);
+                rhsMaxWatchStartTime = getMaxWatchStartTime(rhs.getChannelId());
+                mMaxWatchStartTimeMap.put(rhs.getChannelId(), rhsMaxWatchStartTime);
             }
             if (!Objects.equals(lhsMaxWatchStartTime, rhsMaxWatchStartTime)) {
                 return Long.compare(rhsMaxWatchStartTime, lhsMaxWatchStartTime);
             }
             // Show recently added channel first if there's no watch history.
-            return Long.compare(rhs.channelId, lhs.channelId);
+            return Long.compare(rhs.getChannelId(), lhs.getChannelId());
         }
 
         private long getMaxWatchStartTime(long channelId) {

@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
  * Creates {@link JobService} to clean up recorded program files which are not referenced from
  * database.
  */
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
 public class TunerStorageCleanUpService extends JobService {
     private static final String TAG = "TunerStorageCleanUpService";
 

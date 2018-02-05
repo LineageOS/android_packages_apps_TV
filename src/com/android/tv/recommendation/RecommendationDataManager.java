@@ -50,7 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("TryWithResources") // TODO(b/62143348): remove when error prone check fixed
+/** Manages teh data need to make recommendations. */
 public class RecommendationDataManager implements WatchedHistoryManager.Listener {
     private static final int MSG_START = 1000;
     private static final int MSG_STOP = 1001;

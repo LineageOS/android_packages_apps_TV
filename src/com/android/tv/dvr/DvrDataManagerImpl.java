@@ -72,6 +72,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 /** DVR Data manager to handle recordings and schedules. */
 @MainThread
@@ -95,6 +96,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
     private final HashMap<Long, SeriesRecording> mSeriesRecordingsForRemovedInput = new HashMap<>();
 
     private final Context mContext;
+    private Executor mDbExecutor;
     private final ContentObserver mContentObserver =
             new ContentObserver(new Handler(Looper.getMainLooper())) {
                 @Override
@@ -170,9 +172,10 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
     public DvrDataManagerImpl(Context context, Clock clock) {
         super(context, clock);
         mContext = context;
-        mInputManager = TvSingletons.getSingletons(context).getTvInputManagerHelper();
-        mStorageStatusManager =
-                TvSingletons.getSingletons(context).getRecordingStorageStatusManager();
+        TvSingletons tvSingletons = TvSingletons.getSingletons(context);
+        mInputManager = tvSingletons.getTvInputManagerHelper();
+        mStorageStatusManager = tvSingletons.getRecordingStorageStatusManager();
+        mDbExecutor = tvSingletons.getDbExecutor();
     }
 
     public void start() {
@@ -996,11 +999,11 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                 .executeOnDbThread(ScheduledRecording.toArray(schedulesToDelete));
         new AsyncDeleteSeriesRecordingTask(mContext)
                 .executeOnDbThread(SeriesRecording.toArray(seriesRecordingsToDelete));
-        new AsyncDbTask<Void, Void, Void>() {
+        new AsyncDbTask<Void, Void, Void>(mDbExecutor) {
             @Override
             protected Void doInBackground(Void... params) {
                 ContentResolver resolver = mContext.getContentResolver();
-                String args[] = {inputId};
+                String[] args = {inputId};
                 try {
                     resolver.delete(
                             RecordedPrograms.CONTENT_URI,
@@ -1037,7 +1040,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         private final Uri mUri;
 
         public RecordedProgramsQueryTask(ContentResolver contentResolver, Uri uri) {
-            super(contentResolver, uri == null ? RecordedPrograms.CONTENT_URI : uri);
+            super(mDbExecutor, contentResolver, uri == null ? RecordedPrograms.CONTENT_URI : uri);
             mUri = uri;
         }
 

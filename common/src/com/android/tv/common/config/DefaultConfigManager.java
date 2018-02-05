@@ -51,5 +51,10 @@ public class DefaultConfigManager {
         public long getLong(String key) {
             return DEFAULT_LONG_VALUE;
         }
+
+        @Override
+        public long getLong(String key, long defaultValue) {
+            return defaultValue;
+        }
     }
 }

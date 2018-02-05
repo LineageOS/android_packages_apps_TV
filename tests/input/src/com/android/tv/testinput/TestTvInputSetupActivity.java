@@ -22,18 +22,15 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.os.Bundle;
 import android.util.Log;
+import com.android.tv.common.util.Clock;
 import com.android.tv.testing.constants.Constants;
 import com.android.tv.testing.data.ChannelInfo;
 import com.android.tv.testing.data.ChannelUtils;
-import com.android.tv.testing.data.ProgramInfo;
 import com.android.tv.testing.data.ProgramUtils;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /** The setup activity for {@link TestTvInputService}. */
 public class TestTvInputSetupActivity extends Activity {
@@ -56,20 +53,10 @@ public class TestTvInputSetupActivity extends Activity {
 
     public static void registerChannels(Context context, String inputId, int channelCount) {
         Log.i(TAG, "Registering " + channelCount + " channels");
-        List<ChannelInfo> channels = new ArrayList<>();
-        for (int i = 1; i <= channelCount; i++) {
-            channels.add(ChannelInfo.create(context, i));
-        }
+        List<ChannelInfo> channels = ChannelUtils.createChannelInfos(context, channelCount);
         ChannelUtils.updateChannels(context, inputId, channels);
-
-        // Reload channels so we have the ids.
-        Map<Long, ChannelInfo> channelIdToInfoMap =
-                ChannelUtils.queryChannelInfoMapForTvInput(context, inputId);
-        for (Long channelId : channelIdToInfoMap.keySet()) {
-            ProgramInfo programInfo = ProgramInfo.create();
-            ProgramUtils.populatePrograms(
-                    context, TvContract.buildChannelUri(channelId), programInfo);
-        }
+        ProgramUtils.updateProgramForAllChannelsOf(
+                context, inputId, Clock.SYSTEM, ProgramUtils.PROGRAM_INSERT_DURATION_MS);
     }
 
     public static class MyAlertDialogFragment extends DialogFragment {

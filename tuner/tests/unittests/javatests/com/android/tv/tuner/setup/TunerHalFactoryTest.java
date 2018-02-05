@@ -16,16 +16,23 @@
 
 package com.android.tv.tuner.setup;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 import android.os.AsyncTask;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity.TunerHalFactory;
 import java.util.concurrent.Executor;
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Tests for {@link TunerHalFactory}. */
 @SmallTest
-public class TunerHalFactoryTest extends TestCase {
+@RunWith(AndroidJUnit4.class)
+public class TunerHalFactoryTest {
     private final FakeExecutor mFakeExecutor = new FakeExecutor();
 
     private static class TestTunerHalFactory extends TunerHalFactory {
@@ -52,6 +59,7 @@ public class TunerHalFactoryTest extends TestCase {
         }
     }
 
+    @Test
     public void test_asyncGet() {
         TunerHalFactory tunerHalFactory = new TestTunerHalFactory(mFakeExecutor);
         assertNull(tunerHalFactory.mTunerHal);
@@ -64,6 +72,7 @@ public class TunerHalFactoryTest extends TestCase {
         tunerHalFactory.clear();
     }
 
+    @Test
     public void test_syncGet() {
         TunerHalFactory tunerHalFactory = new TestTunerHalFactory(AsyncTask.SERIAL_EXECUTOR);
         assertNull(tunerHalFactory.mTunerHal);
@@ -71,6 +80,7 @@ public class TunerHalFactoryTest extends TestCase {
         assertNotNull(tunerHalFactory.getOrCreate());
     }
 
+    @Test
     public void test_syncGetWithoutGenerate() {
         TunerHalFactory tunerHalFactory = new TestTunerHalFactory(mFakeExecutor);
         assertNull(tunerHalFactory.mTunerHal);
