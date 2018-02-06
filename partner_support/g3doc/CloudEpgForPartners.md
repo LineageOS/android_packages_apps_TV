@@ -24,7 +24,7 @@ Indicate TvProvider is patched by including the following in their TV
 customization resource
 
 ```
-<string name="tvprovider_allows_system_inserts_to_program_table">true</string>
+<bool name="tvprovider_allows_system_inserts_to_program_table">true</bool>
 ```
 
 See https://source.android.com/devices/tv/customize-tv-app
