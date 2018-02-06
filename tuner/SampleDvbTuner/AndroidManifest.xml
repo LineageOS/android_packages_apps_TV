@@ -70,7 +70,7 @@
         </activity>
 
         <service
-            android:name="com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerInputService"
+            android:name="com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService"
             android:label="@string/sample_dvb_tuner_app_name"
             android:permission="android.permission.BIND_TV_INPUT"
             android:process="com.google.android.tv.tuner.sample.dvb.tvinput" >

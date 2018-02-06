@@ -369,6 +369,7 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
                 case PENDING_ACTION_CHANNEL_CHANGED:
                     updateActions();
                     break;
+                default: // fall out
             }
             mPendingAction = PENDING_ACTION_NONE;
         }
@@ -396,6 +397,7 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
                         descriptionView.setTypeface(Typeface.create(getString(R.string.font), 0));
                     }
                 }
+                setAccessibilityDelegate(vh, action);
             }
         }
     }
