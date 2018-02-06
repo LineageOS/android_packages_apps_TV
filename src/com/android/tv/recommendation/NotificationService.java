@@ -366,7 +366,6 @@ public class NotificationService extends Service
         if (inputInfo == null) {
             return false;
         }
-        final String inputDisplayName = inputInfo.loadLabel(this).toString();
 
         final Program program = Utils.getCurrentProgram(this, channel.getId());
         if (program == null) {
@@ -405,7 +404,7 @@ public class NotificationService extends Service
                 mChannelLogoMaxWidth,
                 mChannelLogoMaxHeight,
                 createChannelLogoCallback(
-                        this, notificationId, inputDisplayName, channel, program, posterArtBitmap));
+                        this, notificationId, channel, program, posterArtBitmap));
 
         if (mNotificationChannels[notificationId] == Channel.INVALID_ID) {
             ++mCurrentNotificationCount;
@@ -415,35 +414,12 @@ public class NotificationService extends Service
         return true;
     }
 
-    @NonNull
-    private static ImageLoader.ImageLoaderCallback<NotificationService> createChannelLogoCallback(
-            NotificationService service,
-            final int notificationId,
-            final String inputDisplayName,
-            final Channel channel,
-            final Program program,
-            final Bitmap posterArtBitmap) {
-        return new ImageLoader.ImageLoaderCallback<NotificationService>(service) {
-            @Override
-            public void onBitmapLoaded(NotificationService service, Bitmap channelLogo) {
-                service.sendNotification(
-                        notificationId,
-                        channelLogo,
-                        channel,
-                        posterArtBitmap,
-                        program,
-                        inputDisplayName);
-            }
-        };
-    }
-
     private void sendNotification(
             int notificationId,
             Bitmap channelLogo,
             Channel channel,
             Bitmap posterArtBitmap,
-            Program program,
-            String inputDisplayName) {
+            Program program) {
         final long programDurationMs =
                 program.getEndTimeUtcMillis() - program.getStartTimeUtcMillis();
         long programLeftTimsMs = program.getEndTimeUtcMillis() - System.currentTimeMillis();
@@ -486,6 +462,26 @@ public class NotificationService extends Service
         mNotificationManager.notify(NOTIFY_TAG, notificationId, notification);
         Message msg = mHandler.obtainMessage(MSG_UPDATE_RECOMMENDATION, notificationId, 0, channel);
         mHandler.sendMessageDelayed(msg, programDurationMs / MAX_PROGRAM_UPDATE_COUNT);
+    }
+
+    @NonNull
+    private static ImageLoader.ImageLoaderCallback<NotificationService> createChannelLogoCallback(
+            NotificationService service,
+            final int notificationId,
+            final Channel channel,
+            final Program program,
+            final Bitmap posterArtBitmap) {
+        return new ImageLoader.ImageLoaderCallback<NotificationService>(service) {
+            @Override
+            public void onBitmapLoaded(NotificationService service, Bitmap channelLogo) {
+                service.sendNotification(
+                        notificationId,
+                        channelLogo,
+                        channel,
+                        posterArtBitmap,
+                        program);
+            }
+        };
     }
 
     private Bitmap overlayChannelLogo(Bitmap logo, Bitmap background) {
