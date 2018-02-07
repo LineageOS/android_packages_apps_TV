@@ -84,6 +84,9 @@ public abstract class AbstractGlobalKeyReceiver extends BroadcastReceiver {
                 // Workaround for b/23947504, the same key event may be sent twice, filter it.
                 sLastEventTime = eventTime;
                 switch (keyCode) {
+                    case KeyEvent.KEYCODE_DVR:
+                        ((TvApplication) appContext).handleDvrKey();
+                        break;
                     case KeyEvent.KEYCODE_GUIDE:
                         ((TvApplication) appContext).handleGuideKey();
                         break;
