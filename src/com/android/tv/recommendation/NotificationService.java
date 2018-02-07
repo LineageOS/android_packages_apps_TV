@@ -186,6 +186,9 @@ public class NotificationService extends Service
     }
 
     private void handleShowRecommendation() {
+        if (mRecommender == null) {
+            return;
+        }
         if (!mRecommender.isReady()) {
             mShowRecommendationAfterRecommenderReady = true;
         } else {
@@ -201,6 +204,9 @@ public class NotificationService extends Service
     }
 
     private void handleHideRecommendation() {
+        if (mRecommender == null) {
+            return;
+        }
         if (!mRecommender.isReady()) {
             mShowRecommendationAfterRecommenderReady = false;
         } else {
