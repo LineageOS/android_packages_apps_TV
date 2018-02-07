@@ -19,6 +19,8 @@ package com.android.tv.tuner.sample.dvb.setup;
 import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.media.tv.TvInputInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -431,7 +433,10 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            setResult(RESULT_OK);
+            Intent data = new Intent();
+            data.putExtra(TvInputInfo.EXTRA_INPUT_ID, inputId);
+            data.putExtra(EpgContract.EXTRA_USE_CLOUD_EPG, true);
+            setResult(RESULT_OK, data);
             finish();
         }
     }
