@@ -198,7 +198,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.android.tv.receiver.GlobalKeyReceiver">
+        <receiver android:name="com.android.tv.livetv.receiver.GlobalKeyReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.GLOBAL_BUTTON" />
             </intent-filter>

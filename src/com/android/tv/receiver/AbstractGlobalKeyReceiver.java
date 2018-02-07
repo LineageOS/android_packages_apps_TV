@@ -28,9 +28,9 @@ import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
 
 /** Handles global keys. */
-public class GlobalKeyReceiver extends BroadcastReceiver {
+public abstract class AbstractGlobalKeyReceiver extends BroadcastReceiver {
     private static final boolean DEBUG = false;
-    private static final String TAG = "GlobalKeyReceiver";
+    private static final String TAG = "AbstractGlobalKeyReceiver";
 
     private static final String ACTION_GLOBAL_BUTTON = "android.intent.action.GLOBAL_BUTTON";
     // Settings.Secure.USER_SETUP_COMPLETE is hidden.
