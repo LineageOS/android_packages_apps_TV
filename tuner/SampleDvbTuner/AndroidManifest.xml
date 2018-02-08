@@ -83,7 +83,7 @@
                 android:resource="@xml/sample_dvb_tvinputservice" />
         </service>
         <service
-            android:name="com.android.tv.tuner.sample.dvb.tvinput.tvinput.TunerStorageCleanUpService"
+            android:name="com.android.tv.tuner.tvinput.TunerStorageCleanUpService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:process="com.android.tv.tuner" />
