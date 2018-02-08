@@ -467,7 +467,7 @@ public class ProgramDataManager implements MemoryManageable {
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
             mEndTimeMs =
                     mStartTimeMs
-                            + TimeUnit.DAYS.toMillis(PROGRAM_GUIDE_MAX_HOURS.get(mRemoteConfig));
+                            + TimeUnit.HOURS.toMillis(PROGRAM_GUIDE_MAX_HOURS.get(mRemoteConfig));
             mSuccess = false;
         }
 

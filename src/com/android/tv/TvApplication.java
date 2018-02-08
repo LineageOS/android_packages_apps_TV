@@ -54,7 +54,7 @@ import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrStorageStatusManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
-import com.android.tv.perf.PerformanceMonitor;
+import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
 import com.android.tv.tuner.TunerInputController;
@@ -111,7 +111,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     // STOP-SHIP: Remove this variable when Tuner Process is split to another application.
     // When this variable is null, we don't know in which process TvApplication runs.
     private Boolean mRunningInMainProcess;
-    private PerformanceMonitor mPerformanceMonitor;
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
@@ -384,6 +383,11 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         if (!mMainActivityWrapper.isResumed()) {
             startMainActivity(null);
         }
+    }
+
+    /** Handles the global key KEYCODE_DVR. */
+    public void handleDvrKey() {
+        startActivity(new Intent(this, DvrBrowseActivity.class));
     }
 
     /** Handles the global key KEYCODE_TV_INPUT. */
