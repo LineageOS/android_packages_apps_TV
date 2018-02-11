@@ -117,6 +117,35 @@ public abstract class BaseProgram {
         return episodeTitle;
     }
 
+    /**
+     * Returns the content description of the program episode, suitable for being spoken by an
+     * accessibility service.
+     */
+    public String getEpisodeContentDescription(Context context) {
+        String episodeNumber = getEpisodeNumber();
+        String episodeTitle = getEpisodeTitle();
+        if (!TextUtils.isEmpty(episodeNumber)) {
+            episodeTitle = episodeTitle == null ? "" : episodeTitle;
+            String seasonNumber = getSeasonNumber();
+            if (TextUtils.isEmpty(seasonNumber) || TextUtils.equals(seasonNumber, "0")) {
+                // Do not list season if it is empty or 0
+                return context.getResources()
+                        .getString(
+                                R.string.content_description_episode_format_no_season_number,
+                                episodeNumber,
+                                episodeTitle);
+            } else {
+                return context.getResources()
+                        .getString(
+                                R.string.content_description_episode_format,
+                                seasonNumber,
+                                episodeNumber,
+                                episodeTitle);
+            }
+        }
+        return episodeTitle;
+    }
+
     /** Returns the description of the program. */
     public abstract String getDescription();
 
