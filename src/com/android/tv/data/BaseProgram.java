@@ -93,24 +93,28 @@ public abstract class BaseProgram {
 
     /** Returns the displayed title of the program episode. */
     public String getEpisodeDisplayTitle(Context context) {
-        if (!TextUtils.isEmpty(getEpisodeNumber())) {
-            String episodeTitle = getEpisodeTitle() == null ? "" : getEpisodeTitle();
-            if (TextUtils.equals(getSeasonNumber(), "0")) {
+        String episodeNumber = getEpisodeNumber();
+        String episodeTitle = getEpisodeTitle();
+        if (!TextUtils.isEmpty(episodeNumber)) {
+            episodeTitle = episodeTitle == null ? "" : episodeTitle;
+            String seasonNumber = getSeasonNumber();
+            if (TextUtils.isEmpty(seasonNumber) || TextUtils.equals(seasonNumber, "0")) {
                 // Do not show "S0: ".
-                return String.format(
-                        context.getResources()
-                                .getString(R.string.display_episode_title_format_no_season_number),
-                        getEpisodeNumber(),
-                        episodeTitle);
+                return context.getResources()
+                        .getString(
+                                R.string.display_episode_title_format_no_season_number,
+                                episodeNumber,
+                                episodeTitle);
             } else {
-                return String.format(
-                        context.getResources().getString(R.string.display_episode_title_format),
-                        getSeasonNumber(),
-                        getEpisodeNumber(),
-                        episodeTitle);
+                return context.getResources()
+                        .getString(
+                                R.string.display_episode_title_format,
+                                seasonNumber,
+                                episodeNumber,
+                                episodeTitle);
             }
         }
-        return getEpisodeTitle();
+        return episodeTitle;
     }
 
     /** Returns the description of the program. */
