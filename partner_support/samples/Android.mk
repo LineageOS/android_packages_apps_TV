@@ -9,18 +9,16 @@ LOCAL_MODULE_TAGS := optional
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
+    live-channels-partner-support
+
+LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-compat \
     android-support-core-ui \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
-    live-channels-partner-support \
-    android-support-tv-provider \
+    android-support-tv-provider
 
-
-LOCAL_AAPT_FLAGS := --auto-add-overlay \
-    --extra-packages android.support.compat \
-    --extra-packages android.support.v7.recyclerview \
-    --extra-packages android.support.v17.leanback \
+LOCAL_USE_AAPT2 := true
 
 LOCAL_PROGUARD_ENABLED := disabled
 # Overlay view related functionality requires system APIs.
@@ -30,10 +28,6 @@ LOCAL_MIN_SDK_VERSION := 23  # M
 # Required for com.android.tv.permission.RECEIVE_INPUT_EVENT
 LOCAL_PRIVILEGED_MODULE := true
 
-LOCAL_RESOURCE_DIR := \
-    $(TOP)/prebuilts/sdk/current/support/compat/res \
-    $(TOP)/prebuilts/sdk/current/support/v7/recyclerview/res \
-    $(TOP)/prebuilts/sdk/current/support/v17/leanback/res \
-    $(LOCAL_PATH)/res
+LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
 include $(BUILD_PACKAGE)
