@@ -42,7 +42,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     lib-exoplayer \
     lib-exoplayer-v2-core \
-    jsr330-jar \
+    jsr330 \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-compat \
@@ -75,22 +75,28 @@ include $(BUILD_PACKAGE)
 #############################################################
 # Pre-built dependency jars
 #############################################################
-include $(CLEAR_VARS)
-
-LOCAL_MODULE_TAGS := optional
-
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
+prebuilts := \
     lib-exoplayer:libs/exoplayer-r1.5.16.aar \
     lib-exoplayer-v2-core:libs/exoplayer-core-2-SNAPHOT-20180114.aar \
+    auto-value-jar:../../../prebuilts/tools/common/m2/repository/com/google/auto/value/auto-value/1.5.2/auto-value-1.5.2.jar \
+    javax-annotations-jar:../../../prebuilts/tools/common/m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar \
+    truth-0-36-prebuilt-jar:../../../prebuilts/tools/common/m2/repository/com/google/truth/truth/0.36/truth-0.36.jar \
 
-# TODO use external/jsr330
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += auto-value-jar:../../../prebuilts/tools/common/m2/repository/com/google/auto/value/auto-value/1.5.2/auto-value-1.5.2.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += guava-22-0-jar:../../../prebuilts/tools/common/m2/repository/com/google/guava/guava/22.0/guava-22.0.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += javax-annotations-jar:../../../prebuilts/tools/common/m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += jsr330-jar:../../../prebuilts/tools/common/m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += truth-0-36-prebuilt-jar:../../../prebuilts/tools/common/m2/repository/com/google/truth/truth/0.36/truth-0.36.jar
+define define-prebuilt
+  $(eval tw := $(subst :, ,$(strip $(1)))) \
+  $(eval include $(CLEAR_VARS)) \
+  $(eval LOCAL_MODULE := $(word 1,$(tw))) \
+  $(eval LOCAL_MODULE_TAGS := optional) \
+  $(eval LOCAL_MODULE_CLASS := JAVA_LIBRARIES) \
+  $(eval LOCAL_SRC_FILES := $(word 2,$(tw))) \
+  $(eval LOCAL_UNINSTALLABLE_MODULE := true) \
+  $(eval LOCAL_SDK_VERSION := current) \
+  $(eval include $(BUILD_PREBUILT))
+endef
 
+$(foreach p,$(prebuilts),\
+  $(call define-prebuilt,$(p)))
 
-include $(BUILD_MULTI_PREBUILT)
+prebuilts :=
 
 include $(call all-makefiles-under,$(LOCAL_PATH))

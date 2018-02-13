@@ -9,8 +9,7 @@ LOCAL_SRC_FILES := \
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     android-support-test \
-    guava-22-0-jar \
-    javax-annotations-jar \
+    guava \
     mockito-target \
     platform-robolectric-3.6.1-prebuilt \
     truth-0-36-prebuilt-jar \
