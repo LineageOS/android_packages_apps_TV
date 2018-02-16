@@ -43,6 +43,7 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.common.util.SharedPreferencesUtils;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
@@ -82,7 +83,7 @@ public class ChannelDataManager {
     // Use container class to support multi-thread safety. This value can be set only on the main
     // thread.
     private volatile UnmodifiableChannelData mData = new UnmodifiableChannelData();
-    private final Channel.DefaultComparator mChannelComparator;
+    private final ChannelImpl.DefaultComparator mChannelComparator;
 
     private final Handler mHandler;
     private final Set<Long> mBrowsableUpdateChannelIds = new HashSet<>();
@@ -162,7 +163,7 @@ public class ChannelDataManager {
         mInputManager = inputManager;
         mDbExecutor = executor;
         mContentResolver = contentResolver;
-        mChannelComparator = new Channel.DefaultComparator(context, inputManager);
+        mChannelComparator = new ChannelImpl.DefaultComparator(context, inputManager);
         // Detect duplicate channels while sorting.
         mChannelComparator.setDetectDuplicatesEnabled(true);
         mHandler = new ChannelDataManagerHandler(this);

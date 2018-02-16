@@ -46,13 +46,13 @@ import com.android.tv.Starter;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.WeakHandler;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
-import com.android.tv.util.BitmapUtils;
-import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
-import com.android.tv.util.ImageLoader;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.BitmapUtils;
+import com.android.tv.util.images.BitmapUtils.ScaledBitmapInfo;
+import com.android.tv.util.images.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -409,8 +409,7 @@ public class NotificationService extends Service
                 Channel.LOAD_IMAGE_TYPE_CHANNEL_LOGO,
                 mChannelLogoMaxWidth,
                 mChannelLogoMaxHeight,
-                createChannelLogoCallback(
-                        this, notificationId, channel, program, posterArtBitmap));
+                createChannelLogoCallback(this, notificationId, channel, program, posterArtBitmap));
 
         if (mNotificationChannels[notificationId] == Channel.INVALID_ID) {
             ++mCurrentNotificationCount;
@@ -481,11 +480,7 @@ public class NotificationService extends Service
             @Override
             public void onBitmapLoaded(NotificationService service, Bitmap channelLogo) {
                 service.sendNotification(
-                        notificationId,
-                        channelLogo,
-                        channel,
-                        posterArtBitmap,
-                        program);
+                        notificationId, channelLogo, channel, posterArtBitmap, program);
             }
         };
     }

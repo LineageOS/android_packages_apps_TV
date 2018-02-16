@@ -70,24 +70,26 @@ import com.android.tv.analytics.SendConfigInfoRunnable;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonPreferences;
-import com.android.tv.common.MemoryManageable;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.common.memory.MemoryManageable;
 import com.android.tv.common.ui.setup.OnActionClickListener;
 import com.android.tv.common.util.CommonUtils;
+import com.android.tv.common.util.ContentUriUtils;
 import com.android.tv.common.util.Debug;
 import com.android.tv.common.util.DurationTimer;
 import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.common.util.SystemProperties;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.OnCurrentProgramUpdatedListener;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
 import com.android.tv.data.StreamInfo;
 import com.android.tv.data.WatchedHistoryManager;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dialog.HalfSizedDialogFragment;
 import com.android.tv.dialog.PinDialogFragment;
 import com.android.tv.dialog.PinDialogFragment.OnPinCheckedListener;
@@ -127,7 +129,6 @@ import com.android.tv.ui.sidepanel.SideFragment;
 import com.android.tv.ui.sidepanel.parentalcontrols.ParentalControlsFragment;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.CaptionSettings;
-import com.android.tv.util.ImageCache;
 import com.android.tv.util.OnboardingUtils;
 import com.android.tv.util.RecurringRunner;
 import com.android.tv.util.SetupUtils;
@@ -137,6 +138,7 @@ import com.android.tv.util.TvTrackInfoUtils;
 import com.android.tv.util.Utils;
 import com.android.tv.util.ViewCache;
 import com.android.tv.util.account.AccountHelper;
+import com.android.tv.util.images.ImageCache;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -616,7 +618,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                         if (TextUtils.equals(input.getId(), currentInputId)) {
                             hideOverlays();
                         } else {
-                            tuneToChannel(Channel.createPassthroughChannel(input.getId()));
+                            tuneToChannel(ChannelImpl.createPassthroughChannel(input.getId()));
                         }
                     }
 
@@ -1024,7 +1026,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             mChannelTuner.moveToChannel(mChannelTuner.findNearestBrowsableChannel(0));
         } else {
             if (TvContract.isChannelUriForPassthroughInput(channelUri)) {
-                Channel channel = Channel.createPassthroughChannel(channelUri);
+                ChannelImpl channel = ChannelImpl.createPassthroughChannel(channelUri);
                 mChannelTuner.moveToChannel(channel);
             } else {
                 long channelId = ContentUris.parseId(channelUri);
@@ -1487,15 +1489,17 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             String programUriString = intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
             Uri programUriFromIntent =
                     programUriString == null ? null : Uri.parse(programUriString);
-            long channelIdFromIntent = ContentUris.parseId(mInitChannelUri);
-            if (programUriFromIntent != null) {
+            long channelIdFromIntent = ContentUriUtils.safeParseId(mInitChannelUri);
+            if (programUriFromIntent != null && channelIdFromIntent != Channel.INVALID_ID) {
                 new AsyncQueryProgramTask(
-                        TvSingletons.getSingletons(this).getDbExecutor(),
-                        getContentResolver(),
-                        programUriFromIntent,
-                        Program.PROJECTION,
-                        null, null, null,
-                        channelIdFromIntent)
+                                TvSingletons.getSingletons(this).getDbExecutor(),
+                                getContentResolver(),
+                                programUriFromIntent,
+                                Program.PROJECTION,
+                                null,
+                                null,
+                                null,
+                                channelIdFromIntent)
                         .executeOnDbThread();
             }
             if (mTuneParams == null) {
@@ -1554,8 +1558,14 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
     private class AsyncQueryProgramTask extends AsyncDbTask.AsyncQueryTask<Program> {
         private final long mChannelIdFromIntent;
 
-        public AsyncQueryProgramTask(Executor executor, ContentResolver contentResolver, Uri uri,
-                String[] projection, String selection, String[] selectionArgs, String orderBy,
+        public AsyncQueryProgramTask(
+                Executor executor,
+                ContentResolver contentResolver,
+                Uri uri,
+                String[] projection,
+                String selection,
+                String[] selectionArgs,
+                String orderBy,
                 long channelId) {
             super(executor, contentResolver, uri, projection, selection, selectionArgs, orderBy);
             mChannelIdFromIntent = channelId;
@@ -1592,9 +1602,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                                         && scheduledRecording == null
                                         && mDvrManager.isProgramRecordable(program)) {
                                     DvrUiHelper.requestRecordingFutureProgram(
-                                            MainActivity.this,
-                                            program,
-                                            false);
+                                            MainActivity.this, program, false);
                                 } else {
                                     DvrUiHelper.showProgramInfoDialog(MainActivity.this, program);
                                 }
@@ -1603,6 +1611,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             }
         }
     }
+
     private void stopTv() {
         stopTv(null, false);
     }
@@ -1734,7 +1743,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
         // For every tune, we need to inform the tuned channel or input to a user,
         // if Talkback is turned on.
         sendAccessibilityText(
-                !mChannelTuner.isCurrentChannelPassthrough()
+                mChannelTuner.isCurrentChannelPassthrough()
                         ? Utils.loadLabel(
                                 this, mTvInputManagerHelper.getTvInputInfo(channel.getInputId()))
                         : channel.getDisplayText());
@@ -2826,7 +2835,8 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             if (channel == null) {
                 return;
             }
-            Channel currentChannel = mChannelDataManager.getChannel(ContentUris.parseId(channel));
+            Channel currentChannel =
+                    mChannelDataManager.getChannel(ContentUriUtils.safeParseId(channel));
             if (currentChannel == null) {
                 Log.e(
                         TAG,

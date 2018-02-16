@@ -20,9 +20,9 @@ import android.content.Context;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.VisibleForTesting;
 import com.android.tv.TvSingletons;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
+import com.android.tv.data.api.Channel;
 import java.util.ArrayDeque;
 import java.util.Deque;
 

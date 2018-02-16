@@ -70,23 +70,24 @@ import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.Debug;
 import com.android.tv.common.util.DurationTimer;
 import com.android.tv.common.util.PermissionUtils;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
 import com.android.tv.data.StreamInfo;
 import com.android.tv.data.WatchedHistoryManager;
+import com.android.tv.data.api.Channel;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.recommendation.NotificationService;
-import com.android.tv.util.ImageLoader;
 import com.android.tv.util.NetworkUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.ImageLoader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-public class TunableTvView extends FrameLayout implements StreamInfo {
+/** Includes the real {@link AppLayerTvView} handling tuning, block and other display events. */
+public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvViewPlayingApi {
     private static final boolean DEBUG = false;
     private static final String TAG = "TunableTvView";
 
@@ -594,6 +595,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
         mIsUnderShrunken = isUnderShrunken;
     }
 
+    @Override
     public boolean isPlaying() {
         return mStarted;
     }
@@ -706,6 +708,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
         mCurrentChannel = currentChannel;
     }
 
+    @Override
     public void setStreamVolume(float volume) {
         if (!mStarted) {
             throw new IllegalStateException("TvView isn't started");
@@ -1260,6 +1263,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
      *
      * @param listener The instance of {@link TimeShiftListener}.
      */
+    @Override
     public void setTimeShiftListener(TimeShiftListener listener) {
         mTimeShiftListener = listener;
     }
@@ -1295,11 +1299,13 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     }
 
     /** Returns if the time shift is available for the current channel. */
+    @Override
     public boolean isTimeShiftAvailable() {
         return mTimeShiftAvailable;
     }
 
     /** Plays the media, if the current input supports time-shifting. */
+    @Override
     public void timeshiftPlay() {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
@@ -1311,6 +1317,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     }
 
     /** Pauses the media, if the current input supports time-shifting. */
+    @Override
     public void timeshiftPause() {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
@@ -1326,6 +1333,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
      *
      * @param speed The speed to rewind the media. e.g. 2 for 2x, 3 for 3x and 4 for 4x.
      */
+    @Override
     public void timeshiftRewind(int speed) {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
@@ -1345,6 +1353,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
      *
      * @param speed The speed to forward the media. e.g. 2 for 2x, 3 for 3x and 4 for 4x.
      */
+    @Override
     public void timeshiftFastForward(int speed) {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
@@ -1364,6 +1373,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
      *
      * @param timeMs The time in milliseconds to seek to.
      */
+    @Override
     public void timeshiftSeekTo(long timeMs) {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
@@ -1372,6 +1382,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
     }
 
     /** Returns the current playback position in milliseconds. */
+    @Override
     public long timeshiftGetCurrentPositionMs() {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
@@ -1403,21 +1414,6 @@ public class TunableTvView extends FrameLayout implements StreamInfo {
                 view.setBackgroundImage(drawablePosterArt);
             }
         };
-    }
-
-    /** Used to receive the time-shift events. */
-    public abstract static class TimeShiftListener {
-        /**
-         * Called when the availability of the time-shift for the current channel has been changed.
-         * It should be guaranteed that this is called only when the availability is really changed.
-         */
-        public abstract void onAvailabilityChanged();
-
-        /**
-         * Called when the record start time has been changed. This is not called when the recorded
-         * programs is played.
-         */
-        public abstract void onRecordStartTimeChanged(long recordStartTimeMs);
     }
 
     /** A listener which receives the notification when the screen is blocked/unblocked. */

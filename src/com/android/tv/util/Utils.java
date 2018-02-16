@@ -43,10 +43,11 @@ import android.view.View;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.data.Channel;
+import com.android.tv.common.util.Clock;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.Program;
 import com.android.tv.data.StreamInfo;
+import com.android.tv.data.api.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -366,6 +367,32 @@ public class Utils {
                 0);
     }
 
+    /**
+     * Returns duration string according to the date & time format. If {@code startUtcMillis} and
+     * {@code endUtcMills} are equal, formatted time will be returned instead.
+     *
+     * @param clock the clock used to get the current time.
+     * @param startUtcMillis start of duration in millis. Should be less than {code endUtcMillis}.
+     * @param endUtcMillis end of duration in millis. Should be larger than {@code startUtcMillis}.
+     * @param useShortFormat {@code true} if abbreviation is needed to save space. In that case,
+     *     date will be omitted if duration starts from today and is less than a day. If it's
+     *     necessary, {@link DateUtils#FORMAT_NUMERIC_DATE} is used otherwise.
+     */
+    public static String getDurationString(
+            Context context,
+            Clock clock,
+            long startUtcMillis,
+            long endUtcMillis,
+            boolean useShortFormat) {
+        return getDurationString(
+                context,
+                clock.currentTimeMillis(),
+                startUtcMillis,
+                endUtcMillis,
+                useShortFormat,
+                0);
+    }
+
     @VisibleForTesting
     static String getDurationString(
             Context context,
@@ -461,13 +488,21 @@ public class Utils {
 
     /** Returns the last millisecond of a day which the millis belongs to. */
     public static long getLastMillisecondOfDay(long millis) {
-        Calendar calender = Calendar.getInstance();
-        calender.setTime(new Date(millis));
-        calender.set(Calendar.HOUR_OF_DAY, 23);
-        calender.set(Calendar.MINUTE, 59);
-        calender.set(Calendar.SECOND, 59);
-        calender.set(Calendar.MILLISECOND, 999);
-        return calender.getTimeInMillis();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(millis));
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTimeInMillis();
+    }
+
+    /** Returns the last millisecond of a day which the millis belongs to. */
+    public static long getFirstMillisecondOfDay(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(millis));
+        resetCalendar(calendar);
+        return calendar.getTimeInMillis();
     }
 
     public static String getAspectRatioString(int width, int height) {
@@ -787,7 +822,7 @@ public class Utils {
     /** Returns the TV input for the given {@code program}. */
     @Nullable
     public static TvInputInfo getTvInputInfoForProgram(Context context, Program program) {
-        if (!Program.isValid(program)) {
+        if (!Program.isProgramValid(program)) {
             return null;
         }
         return getTvInputInfoForChannelId(context, program.getChannelId());

@@ -23,7 +23,7 @@ import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.widget.TextView;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.testing.testinput.TvTestInputConstants;
 import com.android.tv.ui.ChannelBannerView;
 import java.util.List;

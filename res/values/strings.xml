@@ -572,6 +572,8 @@
     <!-- Toast message that a new recording schedule of the current program has been created
          from the user action. -->
     <string name="dvr_msg_current_program_scheduled">Recording <xliff:g id="programName" example="Big bang theory">%1$s</xliff:g> from now to <xliff:g id="endTime" example="12:30 PM">%2$s</xliff:g></string>
+    <!-- Description of a card view to show DVR history. [CHAR LIMIT=25] -->
+    <string name="dvr_history_card_view_title">DVR History</string>
     <!-- Description of a card view to show full list of scheduled recordings. [CHAR LIMIT=25] -->
     <string name="dvr_full_schedule_card_view_title">Full schedule</string>
     <!-- Description of how many following days the schedule list will show. [CHAR LIMIT=25] -->

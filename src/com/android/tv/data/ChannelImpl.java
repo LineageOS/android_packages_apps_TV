@@ -30,9 +30,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.CommonUtils;
-import com.android.tv.util.ImageLoader;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.ImageLoader;
 import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,13 +41,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /** A convenience class to create and insert channel entries into the database. */
-public final class Channel {
-    private static final String TAG = "Channel";
-
-    public static final long INVALID_ID = -1;
-    public static final int LOAD_IMAGE_TYPE_CHANNEL_LOGO = 1;
-    public static final int LOAD_IMAGE_TYPE_APP_LINK_ICON = 2;
-    public static final int LOAD_IMAGE_TYPE_APP_LINK_POSTER_ART = 3;
+public final class ChannelImpl implements Channel {
+    private static final String TAG = "ChannelImpl";
 
     /** Compares the channel numbers of channels which belong to the same input. */
     public static final Comparator<Channel> CHANNEL_NUMBER_COMPARATOR =
@@ -57,27 +53,11 @@ public final class Channel {
                 }
             };
 
-    /**
-     * When a TIS doesn't provide any information about app link, and it doesn't have a leanback
-     * launch intent, there will be no app link card for the TIS.
-     */
-    public static final int APP_LINK_TYPE_NONE = -1;
-    /**
-     * When a TIS provide a specific app link information, the app link card will be {@code
-     * APP_LINK_TYPE_CHANNEL} which contains all the provided information.
-     */
-    public static final int APP_LINK_TYPE_CHANNEL = 1;
-    /**
-     * When a TIS doesn't provide a specific app link information, but the app has a leanback launch
-     * intent, the app link card will be {@code APP_LINK_TYPE_APP} which launches the application.
-     */
-    public static final int APP_LINK_TYPE_APP = 2;
-
     private static final int APP_LINK_TYPE_NOT_SET = 0;
     private static final String INVALID_PACKAGE_NAME = "packageName";
 
     public static final String[] PROJECTION = {
-        // Columns must match what is read in Channel.fromCursor()
+        // Columns must match what is read in ChannelImpl.fromCursor()
         TvContract.Channels._ID,
         TvContract.Channels.COLUMN_PACKAGE_NAME,
         TvContract.Channels.COLUMN_INPUT_ID,
@@ -97,17 +77,14 @@ public final class Channel {
         TvContract.Channels.COLUMN_INTERNAL_PROVIDER_FLAG2, // Only used in bundled input
     };
 
-    /** Channel number delimiter between major and minor parts. */
-    public static final char CHANNEL_NUMBER_DELIMITER = '-';
-
     /**
-     * Creates {@code Channel} object from cursor.
+     * Creates {@code ChannelImpl} object from cursor.
      *
      * <p>The query that created the cursor MUST use {@link #PROJECTION}
      */
-    public static Channel fromCursor(Cursor cursor) {
+    public static ChannelImpl fromCursor(Cursor cursor) {
         // Columns read must match the order of {@link #PROJECTION}
-        Channel channel = new Channel();
+        ChannelImpl channel = new ChannelImpl();
         int index = 0;
         channel.mId = cursor.getLong(index++);
         channel.mPackageName = Utils.intern(cursor.getString(index++));
@@ -175,14 +152,16 @@ public final class Channel {
 
     private boolean mChannelLogoExist;
 
-    private Channel() {
+    private ChannelImpl() {
         // Do nothing.
     }
 
+    @Override
     public long getId() {
         return mId;
     }
 
+    @Override
     public Uri getUri() {
         if (isPassthrough()) {
             return TvContract.buildChannelUriForPassthroughInput(mInputId);
@@ -191,35 +170,43 @@ public final class Channel {
         }
     }
 
+    @Override
     public String getPackageName() {
         return mPackageName;
     }
 
+    @Override
     public String getInputId() {
         return mInputId;
     }
 
+    @Override
     public String getType() {
         return mType;
     }
 
+    @Override
     public String getDisplayNumber() {
         return mDisplayNumber;
     }
 
+    @Override
     @Nullable
     public String getDisplayName() {
         return mDisplayName;
     }
 
+    @Override
     public String getDescription() {
         return mDescription;
     }
 
+    @Override
     public String getVideoFormat() {
         return mVideoFormat;
     }
 
+    @Override
     public boolean isPassthrough() {
         return mIsPassthrough;
     }
@@ -228,42 +215,51 @@ public final class Channel {
      * Gets identification text for displaying or debugging. It's made from Channels' display number
      * plus their display name.
      */
+    @Override
     public String getDisplayText() {
         return TextUtils.isEmpty(mDisplayName)
                 ? mDisplayNumber
                 : mDisplayNumber + " " + mDisplayName;
     }
 
+    @Override
     public String getAppLinkText() {
         return mAppLinkText;
     }
 
+    @Override
     public int getAppLinkColor() {
         return mAppLinkColor;
     }
 
+    @Override
     public String getAppLinkIconUri() {
         return mAppLinkIconUri;
     }
 
+    @Override
     public String getAppLinkPosterArtUri() {
         return mAppLinkPosterArtUri;
     }
 
+    @Override
     public String getAppLinkIntentUri() {
         return mAppLinkIntentUri;
     }
 
     /** Returns channel logo uri which is got from cloud, it's used only for ChannelLogoFetcher. */
+    @Override
     public String getLogoUri() {
         return mLogoUri;
     }
 
+    @Override
     public boolean isRecordingProhibited() {
         return mRecordingProhibited;
     }
 
     /** Checks whether this channel is physical tuner channel or not. */
+    @Override
     public boolean isPhysicalTunerChannel() {
         return !TextUtils.isEmpty(mType) && !TvContract.Channels.TYPE_OTHER.equals(mType);
     }
@@ -271,10 +267,10 @@ public final class Channel {
     /** Checks if two channels equal by checking ids. */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Channel)) {
+        if (!(o instanceof ChannelImpl)) {
             return false;
         }
-        Channel other = (Channel) o;
+        ChannelImpl other = (ChannelImpl) o;
         // All pass-through TV channels have INVALID_ID value for mId.
         return mId == other.mId
                 && TextUtils.equals(mInputId, other.mInputId)
@@ -286,15 +282,18 @@ public final class Channel {
         return Objects.hash(mId, mInputId, mIsPassthrough);
     }
 
+    @Override
     public boolean isBrowsable() {
         return mBrowsable;
     }
 
     /** Checks whether this channel is searchable or not. */
+    @Override
     public boolean isSearchable() {
         return mSearchable;
     }
 
+    @Override
     public boolean isLocked() {
         return mLocked;
     }
@@ -317,23 +316,24 @@ public final class Channel {
      * channels have same logos. It also excludes browsable and locked, because two fields are
      * changed by TV app.
      */
+    @Override
     public boolean hasSameReadOnlyInfo(Channel other) {
         return other != null
-                && Objects.equals(mId, other.mId)
-                && Objects.equals(mPackageName, other.mPackageName)
-                && Objects.equals(mInputId, other.mInputId)
-                && Objects.equals(mType, other.mType)
-                && Objects.equals(mDisplayNumber, other.mDisplayNumber)
-                && Objects.equals(mDisplayName, other.mDisplayName)
-                && Objects.equals(mDescription, other.mDescription)
-                && Objects.equals(mVideoFormat, other.mVideoFormat)
-                && mIsPassthrough == other.mIsPassthrough
-                && Objects.equals(mAppLinkText, other.mAppLinkText)
-                && mAppLinkColor == other.mAppLinkColor
-                && Objects.equals(mAppLinkIconUri, other.mAppLinkIconUri)
-                && Objects.equals(mAppLinkPosterArtUri, other.mAppLinkPosterArtUri)
-                && Objects.equals(mAppLinkIntentUri, other.mAppLinkIntentUri)
-                && Objects.equals(mRecordingProhibited, other.mRecordingProhibited);
+                && Objects.equals(mId, other.getId())
+                && Objects.equals(mPackageName, other.getPackageName())
+                && Objects.equals(mInputId, other.getInputId())
+                && Objects.equals(mType, other.getType())
+                && Objects.equals(mDisplayNumber, other.getDisplayNumber())
+                && Objects.equals(mDisplayName, other.getDisplayName())
+                && Objects.equals(mDescription, other.getDescription())
+                && Objects.equals(mVideoFormat, other.getVideoFormat())
+                && mIsPassthrough == other.isPassthrough()
+                && Objects.equals(mAppLinkText, other.getAppLinkText())
+                && mAppLinkColor == other.getAppLinkColor()
+                && Objects.equals(mAppLinkIconUri, other.getAppLinkIconUri())
+                && Objects.equals(mAppLinkPosterArtUri, other.getAppLinkPosterArtUri())
+                && Objects.equals(mAppLinkIntentUri, other.getAppLinkIntentUri())
+                && Objects.equals(mRecordingProhibited, other.isRecordingProhibited());
     }
 
     @Override
@@ -370,7 +370,37 @@ public final class Channel {
                 + "}";
     }
 
-    void copyFrom(Channel other) {
+    @Override
+    public void copyFrom(Channel channel) {
+        if (channel instanceof ChannelImpl) {
+            copyFrom((ChannelImpl) channel);
+        } else {
+            // copy what we can
+            mId = channel.getId();
+            mPackageName = channel.getPackageName();
+            mInputId = channel.getInputId();
+            mType = channel.getType();
+            mDisplayNumber = channel.getDisplayNumber();
+            mDisplayName = channel.getDisplayName();
+            mDescription = channel.getDescription();
+            mVideoFormat = channel.getVideoFormat();
+            mIsPassthrough = channel.isPassthrough();
+            mBrowsable = channel.isBrowsable();
+            mSearchable = channel.isSearchable();
+            mLocked = channel.isLocked();
+            mAppLinkText = channel.getAppLinkText();
+            mAppLinkColor = channel.getAppLinkColor();
+            mAppLinkIconUri = channel.getAppLinkIconUri();
+            mAppLinkPosterArtUri = channel.getAppLinkPosterArtUri();
+            mAppLinkIntentUri = channel.getAppLinkIntentUri();
+            mRecordingProhibited = channel.isRecordingProhibited();
+            mChannelLogoExist = channel.channelLogoExists();
+        }
+    }
+
+    @SuppressWarnings("ReferenceEquality")
+    public void copyFrom(ChannelImpl channel) {
+        ChannelImpl other = (ChannelImpl) channel;
         if (this == other) {
             return;
         }
@@ -398,7 +428,7 @@ public final class Channel {
     }
 
     /** Creates a channel for a passthrough TV input. */
-    public static Channel createPassthroughChannel(Uri uri) {
+    public static ChannelImpl createPassthroughChannel(Uri uri) {
         if (!TvContract.isChannelUriForPassthroughInput(uri)) {
             throw new IllegalArgumentException("URI is not a passthrough channel URI");
         }
@@ -407,24 +437,24 @@ public final class Channel {
     }
 
     /** Creates a channel for a passthrough TV input with {@code inputId}. */
-    public static Channel createPassthroughChannel(String inputId) {
+    public static ChannelImpl createPassthroughChannel(String inputId) {
         return new Builder().setInputId(inputId).setPassthrough(true).build();
     }
 
     /** Checks whether the channel is valid or not. */
     public static boolean isValid(Channel channel) {
-        return channel != null && (channel.mId != INVALID_ID || channel.mIsPassthrough);
+        return channel != null && (channel.getId() != INVALID_ID || channel.isPassthrough());
     }
 
     /**
-     * Builder class for {@code Channel}. Suppress using this outside of ChannelDataManager so
+     * Builder class for {@code ChannelImpl}. Suppress using this outside of ChannelDataManager so
      * Channels could be managed by ChannelDataManager.
      */
     public static final class Builder {
-        private final Channel mChannel;
+        private final ChannelImpl mChannel;
 
         public Builder() {
-            mChannel = new Channel();
+            mChannel = new ChannelImpl();
             // Fill initial data.
             mChannel.mId = INVALID_ID;
             mChannel.mPackageName = INVALID_PACKAGE_NAME;
@@ -438,7 +468,7 @@ public final class Channel {
         }
 
         public Builder(Channel other) {
-            mChannel = new Channel();
+            mChannel = new ChannelImpl();
             mChannel.copyFrom(other);
         }
 
@@ -539,8 +569,8 @@ public final class Channel {
             return this;
         }
 
-        public Channel build() {
-            Channel channel = new Channel();
+        public ChannelImpl build() {
+            ChannelImpl channel = new ChannelImpl();
             channel.copyFrom(mChannel);
             return channel;
         }
@@ -562,8 +592,8 @@ public final class Channel {
      *
      * @param context A context.
      * @param type The type of bitmap which will be loaded. It should be one of follows: {@link
-     *     #LOAD_IMAGE_TYPE_CHANNEL_LOGO}, {@link #LOAD_IMAGE_TYPE_APP_LINK_ICON}, or {@link
-     *     #LOAD_IMAGE_TYPE_APP_LINK_POSTER_ART}.
+     *     Channel#LOAD_IMAGE_TYPE_CHANNEL_LOGO}, {@link Channel#LOAD_IMAGE_TYPE_APP_LINK_ICON}, or
+     *     {@link Channel#LOAD_IMAGE_TYPE_APP_LINK_POSTER_ART}.
      * @param maxWidth The max width of the loaded bitmap.
      * @param maxHeight The max height of the loaded bitmap.
      * @param callback A callback which will be called after the loading finished.
@@ -583,7 +613,8 @@ public final class Channel {
      * Sets if the channel logo exists. This method should be only called from {@link
      * ChannelDataManager}.
      */
-    void setChannelLogoExist(boolean exist) {
+    @Override
+    public void setChannelLogoExist(boolean exist) {
         mChannelLogoExist = exist;
     }
 
@@ -593,10 +624,11 @@ public final class Channel {
     }
 
     /**
-     * Returns the type of app link for this channel. It returns {@link #APP_LINK_TYPE_CHANNEL} if
-     * the channel has a non null app link text and a valid app link intent, it returns {@link
-     * #APP_LINK_TYPE_APP} if the input service which holds the channel has leanback launch intent,
-     * and it returns {@link #APP_LINK_TYPE_NONE} otherwise.
+     * Returns the type of app link for this channel. It returns {@link
+     * Channel#APP_LINK_TYPE_CHANNEL} if the channel has a non null app link text and a valid app
+     * link intent, it returns {@link Channel#APP_LINK_TYPE_APP} if the input service which holds
+     * the channel has leanback launch intent, and it returns {@link Channel#APP_LINK_TYPE_NONE}
+     * otherwise.
      */
     public int getAppLinkType(Context context) {
         if (mAppLinkType == APP_LINK_TYPE_NOT_SET) {
@@ -607,7 +639,7 @@ public final class Channel {
 
     /**
      * Returns the app link intent for this channel. If the type of app link is {@link
-     * #APP_LINK_TYPE_NONE}, it returns {@code null}.
+     * Channel#APP_LINK_TYPE_NONE}, it returns {@code null}.
      */
     public Intent getAppLinkIntent(Context context) {
         if (mAppLinkType == APP_LINK_TYPE_NOT_SET) {
@@ -660,6 +692,17 @@ public final class Channel {
         return null;
     }
 
+    /**
+     * Default Channel ordering.
+     *
+     * <p>Ordering
+     * <li>{@link TvInputManagerHelper#isPartnerInput(String)}
+     * <li>{@link #getInputLabelForChannel(Channel)}
+     * <li>{@link #getInputId()}
+     * <li>{@link ChannelNumber#compare(String, String)}
+     * <li>
+     * </ol>
+     */
     public static class DefaultComparator implements Comparator<Channel> {
         private final Context mContext;
         private final TvInputManagerHelper mInputManager;
@@ -675,6 +718,7 @@ public final class Channel {
             mDetectDuplicatesEnabled = detectDuplicatesEnabled;
         }
 
+        @SuppressWarnings("ReferenceEquality")
         @Override
         public int compare(Channel lhs, Channel rhs) {
             if (lhs == rhs) {

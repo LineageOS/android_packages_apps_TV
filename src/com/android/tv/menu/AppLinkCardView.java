@@ -35,10 +35,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.data.Channel;
-import com.android.tv.util.BitmapUtils;
-import com.android.tv.util.ImageLoader;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.TvInputManagerHelper;
+import com.android.tv.util.images.BitmapUtils;
+import com.android.tv.util.images.ImageLoader;
 import java.util.Objects;
 
 /** A view to render an app link card. */
@@ -141,7 +141,7 @@ public class AppLinkCardView extends BaseCardView<ChannelsRowItem> {
                             protected void onPostExecute(CharSequence appLabel) {
                                 mTvInputManagerHelper.setTvInputApplicationLabel(
                                         mLoadTvInputId, appLabel);
-                                if (mLoadTvInputId != mChannel.getInputId()
+                                if (mLoadTvInputId.equals(mChannel.getInputId())
                                         || !isAttachedToWindow()) {
                                     return;
                                 }
@@ -339,7 +339,7 @@ public class AppLinkCardView extends BaseCardView<ChannelsRowItem> {
 
             @Override
             protected void onPostExecute(Drawable banner) {
-                if (mLoadTvInputId != mChannel.getInputId() || !isAttachedToWindow()) {
+                if (mLoadTvInputId.equals(mChannel.getInputId()) || !isAttachedToWindow()) {
                     return;
                 }
                 if (banner != null) {

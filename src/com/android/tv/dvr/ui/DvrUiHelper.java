@@ -45,8 +45,8 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.BaseProgram;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dialog.HalfSizedDialogFragment;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.RecordedProgram;
@@ -67,6 +67,7 @@ import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrSmallSizedStorageErro
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrStopRecordingDialogFragment;
 import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
 import com.android.tv.dvr.ui.browse.DvrDetailsActivity;
+import com.android.tv.dvr.ui.list.DvrHistoryActivity;
 import com.android.tv.dvr.ui.list.DvrSchedulesActivity;
 import com.android.tv.dvr.ui.list.DvrSchedulesFragment;
 import com.android.tv.dvr.ui.list.DvrSeriesSchedulesFragment;
@@ -245,9 +246,7 @@ public class DvrUiHelper {
             return;
         }
         Bundle args = new Bundle();
-        args.putParcelable(
-                DvrHalfSizedDialogFragment.KEY_PROGRAM,
-                program);
+        args.putParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM, program);
         showDialogFragment(activity, new DvrFutureProgramInfoDialogFragment(), args, false, true);
     }
 
@@ -418,6 +417,12 @@ public class DvrUiHelper {
     public static void startSchedulesActivityForOneTimeRecordingConflict(
             Context context, List<ScheduledRecording> conflicts) {
         startSchedulesActivity(context, getEarliestScheduledRecording(conflicts));
+    }
+
+    /** Shows the schedules activity with full schedule. */
+    public static void startDvrHistoryActivity(Context context) {
+        Intent intent = new Intent(context, DvrHistoryActivity.class);
+        context.startActivity(intent);
     }
 
     /** Shows the schedules activity with full schedule. */

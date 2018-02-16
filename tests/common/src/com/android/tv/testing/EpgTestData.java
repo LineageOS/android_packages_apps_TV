@@ -16,9 +16,10 @@
 
 package com.android.tv.testing;
 
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -173,7 +174,7 @@ public abstract class EpgTestData {
     }
 
     public static Channel toTvChannel(android.support.media.tv.Channel original) {
-        return new Channel.Builder()
+        return new ChannelImpl.Builder()
                 .setDisplayName(original.getDisplayName())
                 .setDisplayNumber(original.getDisplayNumber())
                 // TODO implement the reset

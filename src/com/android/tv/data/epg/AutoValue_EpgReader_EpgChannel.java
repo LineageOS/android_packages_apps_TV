@@ -16,7 +16,7 @@
 
 package com.android.tv.data.epg;
 
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 
 /**
  * Hand copy of generated Autovalue class.

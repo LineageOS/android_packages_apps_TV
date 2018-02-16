@@ -28,6 +28,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import com.android.tv.common.util.SharedPreferencesUtils;
+import com.android.tv.data.api.Channel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -43,8 +43,8 @@ public class DvrSchedulesFragment extends BaseDvrSchedulesFragment {
     }
 
     @Override
-    public ScheduleRowAdapter onCreateRowsAdapter(ClassPresenterSelector presenterSelecor) {
-        return new ScheduleRowAdapter(getContext(), presenterSelecor);
+    public ScheduleRowAdapter onCreateRowsAdapter(ClassPresenterSelector presenterSelector) {
+        return new ScheduleRowAdapter(getContext(), presenterSelector);
     }
 
     @Override

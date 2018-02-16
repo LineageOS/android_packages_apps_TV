@@ -25,6 +25,7 @@ import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.StubAnalytics;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.CommonConstants;
+import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.config.DefaultConfigManager;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
@@ -110,10 +111,10 @@ public class LiveTvApplication extends TvApplication {
         Intent intent =
                 CommonUtils.createSetupIntent(
                         new Intent(context, LiveTvTunerSetupActivity.class), mEmbeddedInputId);
-        intent.putExtra(CommonConstants.EXTRA_INPUT_ID, mEmbeddedInputId);
+        intent.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, mEmbeddedInputId);
         Intent tvActivityIntent = new Intent();
         tvActivityIntent.setComponent(new ComponentName(context, TV_ACTIVITY_CLASS_NAME));
-        intent.putExtra(CommonConstants.EXTRA_ACTIVITY_AFTER_COMPLETION, tvActivityIntent);
+        intent.putExtra(InputSetupActionUtils.EXTRA_ACTIVITY_AFTER_COMPLETION, tvActivityIntent);
         return intent;
     }
 

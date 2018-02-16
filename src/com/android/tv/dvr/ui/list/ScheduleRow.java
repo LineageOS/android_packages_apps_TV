@@ -110,6 +110,12 @@ class ScheduleRow {
                 && mSchedule.getState() == ScheduledRecording.STATE_RECORDING_IN_PROGRESS;
     }
 
+    /** Checks if the schedule is failed. */
+    public final boolean isRecordingFailed() {
+        return mSchedule != null
+                && mSchedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED;
+    }
+
     /** Checks if the schedule has been canceled or not. */
     public final boolean isScheduleCanceled() {
         return mSchedule != null

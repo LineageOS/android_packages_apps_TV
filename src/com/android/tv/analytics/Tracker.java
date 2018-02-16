@@ -17,7 +17,7 @@
 package com.android.tv.analytics;
 
 import com.android.tv.TimeShiftManager;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 
 /** Interface for sending user activity for analysis. */
 public interface Tracker {

@@ -24,7 +24,8 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.recommendation.Recommender;
 import com.android.tv.util.TvInputManagerHelper;
@@ -168,7 +169,7 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         }
         if (needToShowAppLinkItem()) {
             ChannelsRowItem.APP_LINK_ITEM.setChannel(
-                    new Channel.Builder(getMainActivity().getCurrentChannel()).build());
+                    new ChannelImpl.Builder(getMainActivity().getCurrentChannel()).build());
             items.add(ChannelsRowItem.APP_LINK_ITEM);
         }
         for (Channel channel : getRecentChannels()) {
@@ -193,7 +194,7 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
                     .getCurrentChannel()
                     .hasSameReadOnlyInfo(ChannelsRowItem.APP_LINK_ITEM.getChannel())) {
                 ChannelsRowItem.APP_LINK_ITEM.setChannel(
-                        new Channel.Builder(getMainActivity().getCurrentChannel()).build());
+                        new ChannelImpl.Builder(getMainActivity().getCurrentChannel()).build());
                 notifyItemChanged(currentIndex);
             }
             ++currentIndex;

@@ -27,9 +27,9 @@ import android.util.ArraySet;
 import android.util.Range;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrDataManager.OnDvrScheduleLoadFinishedListener;
 import com.android.tv.dvr.DvrDataManager.ScheduledRecordingListener;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -509,13 +509,13 @@ public class DvrScheduleManager {
     public List<ScheduledRecording> getConflictingSchedules(Program program) {
         SoftPreconditions.checkState(mInitialized, TAG, "Not initialized yet");
         SoftPreconditions.checkState(
-                Program.isValid(program), TAG, "Program is invalid: " + program);
+                Program.isProgramValid(program), TAG, "Program is invalid: " + program);
         SoftPreconditions.checkState(
                 program.getStartTimeUtcMillis() < program.getEndTimeUtcMillis(),
                 TAG,
                 "Program duration is empty: " + program);
         if (!mInitialized
-                || !Program.isValid(program)
+                || !Program.isProgramValid(program)
                 || program.getStartTimeUtcMillis() >= program.getEndTimeUtcMillis()) {
             return Collections.emptyList();
         }

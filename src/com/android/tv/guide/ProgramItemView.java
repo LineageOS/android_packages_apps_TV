@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -40,7 +39,10 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.data.Channel;
+import com.android.tv.common.util.Clock;
+import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
@@ -70,8 +72,10 @@ public class ProgramItemView extends TextView {
     private static TextAppearanceSpan sEpisodeTitleStyle;
     private static TextAppearanceSpan sGrayedOutEpisodeTitleStyle;
 
+    private final DvrManager mDvrManager;
+    private final Clock mClock;
+    private final ChannelDataManager mChannelDataManager;
     private ProgramGuide mProgramGuide;
-    private DvrManager mDvrManager;
     private TableEntry mTableEntry;
     private int mMaxWidthForRipple;
     private int mTextWidth;
@@ -86,6 +90,7 @@ public class ProgramItemView extends TextView {
                 @Override
                 public void onClick(final View view) {
                     TableEntry entry = ((ProgramItemView) view).mTableEntry;
+                    Clock clock = ((ProgramItemView) view).mClock;
                     if (entry == null) {
                         // do nothing
                         return;
@@ -114,7 +119,7 @@ public class ProgramItemView extends TextView {
                     } else if (entry.program != null
                             && CommonFeatures.DVR.isEnabled(view.getContext())) {
                         DvrManager dvrManager = singletons.getDvrManager();
-                        if (entry.entryStartUtcMillis > System.currentTimeMillis()
+                        if (entry.entryStartUtcMillis > clock.currentTimeMillis()
                                 && dvrManager.isProgramRecordable(entry.program)) {
                             if (entry.scheduledRecording == null) {
                                 DvrUiHelper.checkStorageStatusAndShowErrorMessage(
@@ -180,7 +185,8 @@ public class ProgramItemView extends TextView {
                             background.jumpToCurrentState();
                         }
                         int progress =
-                                getProgress(entry.entryStartUtcMillis, entry.entryEndUtcMillis);
+                                getProgress(
+                                        mClock, entry.entryStartUtcMillis, entry.entryEndUtcMillis);
                         setProgress(background, R.id.reverse_progress, MAX_PROGRESS - progress);
                     }
                     if (getHandler() != null) {
@@ -188,8 +194,7 @@ public class ProgramItemView extends TextView {
                                 .postAtTime(
                                         this,
                                         Utils.ceilTime(
-                                                SystemClock.uptimeMillis(),
-                                                FOCUS_UPDATE_FREQUENCY));
+                                                mClock.uptimeMillis(), FOCUS_UPDATE_FREQUENCY));
                     }
                 }
             };
@@ -206,7 +211,10 @@ public class ProgramItemView extends TextView {
         super(context, attrs, defStyle);
         setOnClickListener(ON_CLICKED);
         setOnFocusChangeListener(ON_FOCUS_CHANGED);
-        mDvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
+        mDvrManager = singletons.getDvrManager();
+        mChannelDataManager = singletons.getChannelDataManager();
+        mClock = singletons.getClock();
     }
 
     private void initIfNeeded() {
@@ -266,7 +274,7 @@ public class ProgramItemView extends TextView {
     @Override
     protected int[] onCreateDrawableState(int extraSpace) {
         if (mTableEntry != null) {
-            int states[] =
+            int[] states =
                     super.onCreateDrawableState(
                             extraSpace + STATE_CURRENT_PROGRAM.length + STATE_TOO_WIDE.length);
             if (mTableEntry.isCurrentProgram()) {
@@ -296,78 +304,154 @@ public class ProgramItemView extends TextView {
         mTableEntry = entry;
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        layoutParams.width = entry.getWidth();
-        setLayoutParams(layoutParams);
-
-        String title = entry.program != null ? entry.program.getTitle() : null;
-        String episode =
-                entry.program != null ? entry.program.getEpisodeDisplayTitle(getContext()) : null;
-
-        TextAppearanceSpan titleStyle = sGrayedOutProgramTitleStyle;
-        TextAppearanceSpan episodeStyle = sGrayedOutEpisodeTitleStyle;
-
-        if (entry.getWidth() < sVisibleThreshold) {
-            setText(null);
-        } else {
-            if (entry.isGap()) {
-                title = gapTitle;
-                episode = null;
-            } else if (entry.hasGenre(selectedGenreId)) {
-                titleStyle = sProgramTitleStyle;
-                episodeStyle = sEpisodeTitleStyle;
-            }
-            if (TextUtils.isEmpty(title)) {
-                title = getResources().getString(R.string.program_title_for_no_information);
-            }
-            SpannableStringBuilder description = new SpannableStringBuilder();
-            description.append(title);
-            if (!TextUtils.isEmpty(episode)) {
-                description.append('\n');
-
-                // Add a 'zero-width joiner'/ZWJ in order to ensure we have the same line height for
-                // all lines. This is a non-printing character so it will not change the horizontal
-                // spacing however it will affect the line height. As we ensure the ZWJ has the same
-                // text style as the title it will make sure the line height is consistent.
-                description.append('\u200D');
-
-                int middle = description.length();
-                description.append(episode);
-
-                description.setSpan(titleStyle, 0, middle, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                description.setSpan(
-                        episodeStyle,
-                        middle,
-                        description.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            } else {
-                description.setSpan(
-                        titleStyle, 0, description.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            setText(description);
-
-            // Sets recording icons if needed.
-            int iconResId = 0;
-            if (mTableEntry.scheduledRecording != null) {
-                if (mDvrManager.isConflicting(mTableEntry.scheduledRecording)) {
-                    iconResId = R.drawable.ic_warning_white_18dp;
-                } else {
-                    switch (mTableEntry.scheduledRecording.getState()) {
-                        case ScheduledRecording.STATE_RECORDING_NOT_STARTED:
-                            iconResId = R.drawable.ic_scheduled_recording;
-                            break;
-                        case ScheduledRecording.STATE_RECORDING_IN_PROGRESS:
-                            iconResId = R.drawable.ic_recording_program;
-                            break;
-                    }
-                }
-            }
-            setCompoundDrawablePadding(iconResId != 0 ? sCompoundDrawablePadding : 0);
-            setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, iconResId, 0);
+        if (layoutParams != null) {
+            // There is no layoutParams in the tests so we skip this
+            layoutParams.width = entry.getWidth();
+            setLayoutParams(layoutParams);
         }
+        String title = mTableEntry.program != null ? mTableEntry.program.getTitle() : null;
+        if (mTableEntry.isGap()) {
+            title = gapTitle;
+        }
+        if (TextUtils.isEmpty(title)) {
+            title = getResources().getString(R.string.program_title_for_no_information);
+        }
+        updateText(selectedGenreId, title);
+        updateIcons();
+        updateContentDescription(title);
         measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
         mTextWidth = getMeasuredWidth() - getPaddingStart() - getPaddingEnd();
         // Maximum width for us to use a ripple
         mMaxWidthForRipple = GuideUtils.convertMillisToPixel(fromUtcMillis, toUtcMillis);
+    }
+
+    private boolean isEntryWideEnough() {
+        return mTableEntry != null && mTableEntry.getWidth() >= sVisibleThreshold;
+    }
+
+    private void updateText(int selectedGenreId, String title) {
+        if (!isEntryWideEnough()) {
+            setText(null);
+            return;
+        }
+
+        String episode =
+                mTableEntry.program != null
+                        ? mTableEntry.program.getEpisodeDisplayTitle(getContext())
+                        : null;
+
+        TextAppearanceSpan titleStyle = sGrayedOutProgramTitleStyle;
+        TextAppearanceSpan episodeStyle = sGrayedOutEpisodeTitleStyle;
+        if (mTableEntry.isGap()) {
+
+            episode = null;
+        } else if (mTableEntry.hasGenre(selectedGenreId)) {
+            titleStyle = sProgramTitleStyle;
+            episodeStyle = sEpisodeTitleStyle;
+        }
+        SpannableStringBuilder description = new SpannableStringBuilder();
+        description.append(title);
+        if (!TextUtils.isEmpty(episode)) {
+            description.append('\n');
+
+            // Add a 'zero-width joiner'/ZWJ in order to ensure we have the same line height for
+            // all lines. This is a non-printing character so it will not change the horizontal
+            // spacing however it will affect the line height. As we ensure the ZWJ has the same
+            // text style as the title it will make sure the line height is consistent.
+            description.append('\u200D');
+
+            int middle = description.length();
+            description.append(episode);
+
+            description.setSpan(titleStyle, 0, middle, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            description.setSpan(
+                    episodeStyle, middle, description.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else {
+            description.setSpan(
+                    titleStyle, 0, description.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        setText(description);
+    }
+
+    private void updateIcons() {
+        // Sets recording icons if needed.
+        int iconResId = 0;
+        if (isEntryWideEnough() && mTableEntry.scheduledRecording != null) {
+            if (mDvrManager.isConflicting(mTableEntry.scheduledRecording)) {
+                iconResId = R.drawable.ic_warning_white_18dp;
+            } else {
+                switch (mTableEntry.scheduledRecording.getState()) {
+                    case ScheduledRecording.STATE_RECORDING_NOT_STARTED:
+                        iconResId = R.drawable.ic_scheduled_recording;
+                        break;
+                    case ScheduledRecording.STATE_RECORDING_IN_PROGRESS:
+                        iconResId = R.drawable.ic_recording_program;
+                        break;
+                    default:
+                        // leave the iconResId=0
+                }
+            }
+        }
+        setCompoundDrawablePadding(iconResId != 0 ? sCompoundDrawablePadding : 0);
+        setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, iconResId, 0);
+    }
+
+    private void updateContentDescription(String title) {
+        // The content description includes extra information that is displayed on the detail view
+        Resources resources = getResources();
+        String description = title;
+        // TODO(b/73282818): only say channel name when the row changes
+        Channel channel = mChannelDataManager.getChannel(mTableEntry.channelId);
+        if (channel != null) {
+            description = channel.getDisplayNumber() + " " + description;
+        }
+        description +=
+                " "
+                        + Utils.getDurationString(
+                                getContext(),
+                                mClock,
+                                mTableEntry.entryStartUtcMillis,
+                                mTableEntry.entryEndUtcMillis,
+                                true);
+        Program program = mTableEntry.program;
+        if (program != null) {
+            String episodeDescription = program.getEpisodeContentDescription(getContext());
+            if (!TextUtils.isEmpty(episodeDescription)) {
+                description += " " + episodeDescription;
+            }
+        }
+        if (mTableEntry.scheduledRecording != null) {
+            if (mDvrManager.isConflicting(mTableEntry.scheduledRecording)) {
+                description +=
+                        " " + resources.getString(R.string.dvr_epg_program_recording_conflict);
+            } else {
+                switch (mTableEntry.scheduledRecording.getState()) {
+                    case ScheduledRecording.STATE_RECORDING_NOT_STARTED:
+                        description +=
+                                " "
+                                        + resources.getString(
+                                                R.string.dvr_epg_program_recording_scheduled);
+                        break;
+                    case ScheduledRecording.STATE_RECORDING_IN_PROGRESS:
+                        description +=
+                                " "
+                                        + resources.getString(
+                                                R.string.dvr_epg_program_recording_in_progress);
+                        break;
+                    default:
+                        // do nothing
+                }
+            }
+        }
+        if (mTableEntry.isBlocked()) {
+            description += " " + resources.getString(R.string.program_guide_content_locked);
+        } else if (program != null) {
+            String programDescription = program.getDescription();
+            if (!TextUtils.isEmpty(programDescription)) {
+                description += " " + programDescription;
+            }
+        }
+        setContentDescription(description);
     }
 
     /** Update programItemView to handle alignments of text. */
@@ -423,8 +507,8 @@ public class ProgramItemView extends TextView {
         mTableEntry = null;
     }
 
-    private static int getProgress(long start, long end) {
-        long currentTime = System.currentTimeMillis();
+    private static int getProgress(Clock clock, long start, long end) {
+        long currentTime = clock.currentTimeMillis();
         if (currentTime <= start) {
             return 0;
         } else if (currentTime >= end) {

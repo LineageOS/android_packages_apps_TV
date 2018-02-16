@@ -20,7 +20,7 @@ import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.Pair;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

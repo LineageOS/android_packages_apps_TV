@@ -34,11 +34,12 @@ import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.LruCache;
 import com.android.tv.TvSingletons;
-import com.android.tv.common.MemoryManageable;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.config.api.RemoteConfigValue;
+import com.android.tv.common.memory.MemoryManageable;
 import com.android.tv.common.util.Clock;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.MultiLongSparseArray;
 import com.android.tv.util.Utils;
@@ -304,10 +305,11 @@ public class ProgramDataManager implements MemoryManageable {
     }
 
     /**
-    * Returns the index of program that is played at the specified time.
-    * If there isn't, return the first program among programs that starts after the given time
-    * if returnNextProgram is {@code true}.
-    */
+     * Returns the index of program that is played at the specified time.
+     *
+     * <p>If there isn't, return the first program among programs that starts after the given time
+     * if returnNextProgram is {@code true}.
+     */
     private int getProgramIndexAt(List<Program> programs, long time) {
         Program key = mZeroLengthProgramCache.get(time);
         if (key == null) {
@@ -391,7 +393,7 @@ public class ProgramDataManager implements MemoryManageable {
     private void removePreviousProgramsAndUpdateCurrentProgramInCache(
             long channelId, Program currentProgram) {
         SoftPreconditions.checkState(mPrefetchEnabled, TAG, "Prefetch is disabled.");
-        if (!Program.isValid(currentProgram)) {
+        if (!Program.isProgramValid(currentProgram)) {
             return;
         }
         ArrayList<Program> cachedPrograms = mChannelIdProgramCache.remove(channelId);

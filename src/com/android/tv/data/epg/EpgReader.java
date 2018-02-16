@@ -19,9 +19,9 @@ package com.android.tv.data.epg;
 import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.SeriesInfo;
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.Set;
 @WorkerThread
 public interface EpgReader {
 
-    /** Value class that holds a EpgChannelId and its corresponding Channel */
+    /** Value class that holds a EpgChannelId and its corresponding {@link Channel} */
     // TODO(b/72052568): Get autovalue to work in aosp master
     abstract class EpgChannel {
         public static EpgChannel createEpgChannel(Channel channel, String epgChannelId) {

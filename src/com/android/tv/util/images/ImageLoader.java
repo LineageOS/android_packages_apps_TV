@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.util;
+package com.android.tv.util.images;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -32,7 +32,7 @@ import android.util.ArraySet;
 import android.util.Log;
 import com.android.tv.R;
 import com.android.tv.common.concurrent.NamedThreadFactory;
-import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
+import com.android.tv.util.images.BitmapUtils.ScaledBitmapInfo;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;

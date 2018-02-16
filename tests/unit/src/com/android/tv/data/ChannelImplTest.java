@@ -27,6 +27,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+import com.android.tv.data.api.Channel;
 import com.android.tv.testing.ComparatorTester;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.Comparator;
@@ -38,10 +39,10 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-/** Tests for {@link Channel}. */
+/** Tests for {@link ChannelImpl}. */
 @SmallTest
 @RunWith(AndroidJUnit4.class)
-public class ChannelTest {
+public class ChannelImplTest {
     // Used for testing TV inputs with invalid input package. This could happen when a TV input is
     // uninstalled while drawing an app link card.
     private static final String INVALID_TV_INPUT_PACKAGE_NAME = "com.android.tv.invalid_tv_input";
@@ -232,10 +233,11 @@ public class ChannelTest {
 
     private void assertAppLinkType(
             int expectedType, String inputPackageName, String appLinkText, Intent appLinkIntent) {
-        // In Channel, Intent.URI_INTENT_SCHEME is used to parse the URI. So the same flag should be
+        // In ChannelImpl, Intent.URI_INTENT_SCHEME is used to parse the URI. So the same flag
+        // should be
         // used when the URI is created.
-        Channel testChannel =
-                new Channel.Builder()
+        ChannelImpl testChannel =
+                new ChannelImpl.Builder()
                         .setPackageName(inputPackageName)
                         .setAppLinkText(appLinkText)
                         .setAppLinkIntentUri(
@@ -263,40 +265,40 @@ public class ChannelTest {
         Comparator<Channel> comparator = new TestChannelComparator(manager);
         ComparatorTester<Channel> comparatorTester = ComparatorTester.withoutEqualsTest(comparator);
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setInputId(PARTNER_INPUT_ID).build());
-        comparatorTester.addComparableGroup(new Channel.Builder().setInputId("1").build());
+                new ChannelImpl.Builder().setInputId(PARTNER_INPUT_ID).build());
+        comparatorTester.addComparableGroup(new ChannelImpl.Builder().setInputId("1").build());
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setInputId("1").setDisplayNumber("2").build());
+                new ChannelImpl.Builder().setInputId("1").setDisplayNumber("2").build());
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setInputId("2").setDisplayNumber("1.0").build());
+                new ChannelImpl.Builder().setInputId("2").setDisplayNumber("1.0").build());
 
         // display name does not affect comparator
         comparatorTester.addComparableGroup(
-                new Channel.Builder()
+                new ChannelImpl.Builder()
                         .setInputId("2")
                         .setDisplayNumber("1.62")
                         .setDisplayName("test1")
                         .build(),
-                new Channel.Builder()
+                new ChannelImpl.Builder()
                         .setInputId("2")
                         .setDisplayNumber("1.62")
                         .setDisplayName("test2")
                         .build(),
-                new Channel.Builder()
+                new ChannelImpl.Builder()
                         .setInputId("2")
                         .setDisplayNumber("1.62")
                         .setDisplayName("test3")
                         .build());
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setInputId("2").setDisplayNumber("2.0").build());
+                new ChannelImpl.Builder().setInputId("2").setDisplayNumber("2.0").build());
         // Numeric display number sorting
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setInputId("2").setDisplayNumber("12.2").build());
+                new ChannelImpl.Builder().setInputId("2").setDisplayNumber("12.2").build());
         comparatorTester.test();
     }
 
     /**
-     * Test Input Label handled by {@link com.android.tv.data.Channel.DefaultComparator}.
+     * Test Input Label handled by {@link ChannelImpl.DefaultComparator}.
      *
      * <p>Sort partner inputs first, then sort by input label, then by input id. See <a
      * href="http://b/23031603">b/23031603</a>.
@@ -317,15 +319,15 @@ public class ChannelTest {
         ComparatorTester<Channel> comparatorTester = ComparatorTester.withoutEqualsTest(comparator);
 
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setInputId(PARTNER_INPUT_ID).setDescription("A").build());
+                new ChannelImpl.Builder().setInputId(PARTNER_INPUT_ID).setDescription("A").build());
 
         // The description is used as a label for this test.
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setDescription("A").setInputId("1").build());
+                new ChannelImpl.Builder().setDescription("A").setInputId("1").build());
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setDescription("A").setInputId("2").build());
+                new ChannelImpl.Builder().setDescription("A").setInputId("2").build());
         comparatorTester.addComparableGroup(
-                new Channel.Builder().setDescription("B").setInputId("1").build());
+                new ChannelImpl.Builder().setDescription("B").setInputId("1").build());
 
         comparatorTester.test();
     }
@@ -351,10 +353,10 @@ public class ChannelTest {
     }
 
     private void assertNormalizedDisplayNumber(String displayNumber, String normalized) {
-        assertThat(Channel.normalizeDisplayNumber(displayNumber)).isEqualTo(normalized);
+        assertThat(ChannelImpl.normalizeDisplayNumber(displayNumber)).isEqualTo(normalized);
     }
 
-    private static final class TestChannelComparator extends Channel.DefaultComparator {
+    private static final class TestChannelComparator extends ChannelImpl.DefaultComparator {
         public TestChannelComparator(TvInputManagerHelper manager) {
             super(null, manager);
         }
@@ -366,7 +368,7 @@ public class ChannelTest {
     }
 
     private static final class ChannelComparatorWithDescriptionAsLabel
-            extends Channel.DefaultComparator {
+            extends ChannelImpl.DefaultComparator {
         public ChannelComparatorWithDescriptionAsLabel(TvInputManagerHelper manager) {
             super(null, manager);
         }

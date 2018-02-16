@@ -34,7 +34,7 @@ import android.widget.TextView;
 import com.android.tv.R;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.ui.ViewUtils;
-import com.android.tv.util.ImageLoader;
+import com.android.tv.util.images.ImageLoader;
 
 /**
  * A CardView for displaying info about a {@link com.android.tv.dvr.data.ScheduledRecording} or

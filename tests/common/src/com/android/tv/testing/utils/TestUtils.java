@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.android.tv.util;
+package com.android.tv.testing.utils;
 
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Icon;
@@ -186,6 +187,7 @@ public class TestUtils {
         resolveInfo.serviceInfo.packageName = packageName;
         resolveInfo.serviceInfo.name = name;
         resolveInfo.serviceInfo.metaData = new Bundle();
+        resolveInfo.serviceInfo.applicationInfo = new ApplicationInfo();
         return resolveInfo;
     }
 }

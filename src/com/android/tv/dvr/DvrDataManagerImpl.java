@@ -228,7 +228,6 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                     protected void onPostExecute(List<ScheduledRecording> result) {
                         mPendingTasks.remove(this);
                         long maxId = 0;
-                        List<SeriesRecording> seriesRecordingsToAdd = new ArrayList<>();
                         List<ScheduledRecording> toUpdate = new ArrayList<>();
                         List<ScheduledRecording> toDelete = new ArrayList<>();
                         for (ScheduledRecording r : result) {
@@ -273,6 +272,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                                     case ScheduledRecording.STATE_RECORDING_CANCELED:
                                         toDelete.add(r);
                                         break;
+                                    default: // fall out
                                 }
                             }
                             if (maxId < r.getId()) {

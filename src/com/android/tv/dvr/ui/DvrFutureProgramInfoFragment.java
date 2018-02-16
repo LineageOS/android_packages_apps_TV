@@ -37,7 +37,7 @@ public class DvrFutureProgramInfoFragment extends DvrGuidedStepFragment {
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
         long startTime = mProgram.getStartTimeUtcMillis();
-        // TODO(b/71717923): use R.string  whe the strings are finalized
+        // TODO(b/71717923): use R.string when the strings are finalized
         StringBuilder description = new StringBuilder()
                 .append("This program will start at ")
                 .append(Utils.getDurationString(getContext(), startTime, startTime, false));

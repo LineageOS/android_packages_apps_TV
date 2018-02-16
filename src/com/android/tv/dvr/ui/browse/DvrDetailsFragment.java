@@ -40,15 +40,15 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.CommonUtils;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dialog.PinDialogFragment;
 import com.android.tv.dialog.PinDialogFragment.OnPinCheckedListener;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.parental.ParentalControlSettings;
-import com.android.tv.util.ImageLoader;
 import com.android.tv.util.ToastUtils;
+import com.android.tv.util.images.ImageLoader;
 import java.io.File;
 
 abstract class DvrDetailsFragment extends DetailsFragment {

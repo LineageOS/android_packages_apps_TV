@@ -109,7 +109,8 @@ public abstract class BaseDvrSchedulesFragment extends DetailsFragment
     public abstract ScheduleRowPresenter onCreateRowPresenter();
 
     /** Creates rows adapter. */
-    public abstract ScheduleRowAdapter onCreateRowsAdapter(ClassPresenterSelector presenterSelecor);
+    public abstract ScheduleRowAdapter onCreateRowsAdapter(
+        ClassPresenterSelector presenterSelector);
 
     /** Gets the first focus position in schedules list. */
     protected int getFirstItemPosition() {

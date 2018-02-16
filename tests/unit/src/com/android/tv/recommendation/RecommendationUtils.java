@@ -17,7 +17,8 @@
 package com.android.tv.recommendation;
 
 import android.content.Context;
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
+import com.android.tv.data.api.Channel;
 import com.android.tv.testing.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,7 +107,7 @@ public class RecommendationUtils {
          */
         public Channel addChannel() {
             long channelId = size();
-            Channel channel = new Channel.Builder().setId(channelId).build();
+            ChannelImpl channel = new ChannelImpl.Builder().setId(channelId).build();
             ChannelRecord channelRecord = new ChannelRecord(mContext, channel, false);
             put(channelId, channelRecord);
             return channel;
