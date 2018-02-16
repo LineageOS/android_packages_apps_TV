@@ -89,6 +89,11 @@ public class FakeClock implements Clock {
         return mCurrentTimeMillis - mBootTimeMillis;
     }
 
+    @Override
+    public long uptimeMillis() {
+        return elapsedRealtime();
+    }
+
     /** Sleep does not block it just updates the current time. */
     @Override
     public void sleep(long ms) {
