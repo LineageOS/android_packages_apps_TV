@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.media.tv.TvInputInfo;
 import android.os.Build;
 import android.util.ArraySet;
+import android.util.Log;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.actions.InputSetupActionUtils;
@@ -34,6 +35,7 @@ import java.util.Set;
 /** Util class for common use in TV app and inputs. */
 @SuppressWarnings("AndroidApiChecker") // TODO(b/32513850) remove when error prone is updated
 public final class CommonUtils {
+    private static final String TAG = "CommonUtils";
     private static final ThreadLocal<SimpleDateFormat> ISO_8601 =
             new ThreadLocal() {
                 private final SimpleDateFormat value =
@@ -94,6 +96,10 @@ public final class CommonUtils {
         if (sRunningInTest == null) {
             try {
                 Class.forName("com.android.tv.testing.utils.Utils");
+                Log.i(
+                        TAG,
+                        "Assumed to be running in a test because"
+                                + " com.android.tv.testing.utils.Utils is found");
                 sRunningInTest = true;
             } catch (ClassNotFoundException e) {
                 sRunningInTest = false;
