@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv;
+package com.android.tv.testing.activities;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 
@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.support.test.rule.ActivityTestRule;
 import android.text.TextUtils;
+import com.android.tv.MainActivity;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.api.Channel;
 import com.android.tv.testing.data.ChannelInfo;

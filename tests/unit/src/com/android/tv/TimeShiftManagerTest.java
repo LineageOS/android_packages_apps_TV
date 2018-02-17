@@ -26,6 +26,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
+import com.android.tv.testing.activities.BaseMainActivityTestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
