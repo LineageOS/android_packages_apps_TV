@@ -20,6 +20,7 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.tv.TvInputManager;
 import android.os.AsyncTask;
 import com.android.tv.InputSessionManager;
 import com.android.tv.MainActivityWrapper;
@@ -43,6 +44,7 @@ import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.StubPerformanceMonitor;
+import com.android.tv.testing.testdata.TestData;
 import com.android.tv.tuner.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
@@ -59,10 +61,12 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     public FakeTvInputManagerHelper tvInputManagerHelper;
     public SetupUtils setupUtils;
+    public DvrManager dvrManager;
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private TunerInputController mTunerInputController;
     private PerformanceMonitor mPerformanceMonitor;
+    private ChannelDataManager mChannelDataManager;
 
     @Override
     public void onCreate() {
@@ -74,8 +78,17 @@ public class TestSingletonApp extends Application implements TvSingletons {
         tvInputManagerHelper = new FakeTvInputManagerHelper(this);
         setupUtils = SetupUtils.createForTvSingletons(this);
         tvInputManagerHelper.start();
+        mChannelDataManager = new ChannelDataManager(this, tvInputManagerHelper);
+        mChannelDataManager.start();
         // HACK reset the singleton for tests
         BaseApplication.sSingletons = this;
+    }
+
+    public void loadTestData(TestData testData, long durationMs) {
+        tvInputManagerHelper
+                .getFakeTvInputManager()
+                .add(testData.getTvInputInfo(), TvInputManager.INPUT_STATE_CONNECTED);
+        testData.init(this, fakeClock, durationMs);
     }
 
     @Override
@@ -88,7 +101,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     @Override
     public ChannelDataManager getChannelDataManager() {
-        return new ChannelDataManager(this, tvInputManagerHelper);
+        return mChannelDataManager;
     }
 
     @Override
@@ -123,7 +136,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     @Override
     public DvrManager getDvrManager() {
-        return null;
+        return dvrManager;
     }
 
     @Override

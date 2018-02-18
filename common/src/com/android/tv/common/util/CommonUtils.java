@@ -23,6 +23,7 @@ import android.os.Build;
 import android.util.ArraySet;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonConstants;
+import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.experiments.Experiments;
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -58,17 +59,17 @@ public final class CommonUtils {
 
     /**
      * Returns an intent to start the setup activity for the TV input using {@link
-     * CommonConstants#INTENT_ACTION_INPUT_SETUP}.
+     * InputSetupActionUtils#INTENT_ACTION_INPUT_SETUP}.
      */
     public static Intent createSetupIntent(Intent originalSetupIntent, String inputId) {
         if (originalSetupIntent == null) {
             return null;
         }
         Intent setupIntent = new Intent(originalSetupIntent);
-        if (!CommonConstants.INTENT_ACTION_INPUT_SETUP.equals(originalSetupIntent.getAction())) {
-            Intent intentContainer = new Intent(CommonConstants.INTENT_ACTION_INPUT_SETUP);
-            intentContainer.putExtra(CommonConstants.EXTRA_SETUP_INTENT, originalSetupIntent);
-            intentContainer.putExtra(CommonConstants.EXTRA_INPUT_ID, inputId);
+        if (!InputSetupActionUtils.hasInputSetupAction(originalSetupIntent)) {
+            Intent intentContainer = new Intent(InputSetupActionUtils.INTENT_ACTION_INPUT_SETUP);
+            intentContainer.putExtra(InputSetupActionUtils.EXTRA_SETUP_INTENT, originalSetupIntent);
+            intentContainer.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, inputId);
             setupIntent = intentContainer;
         }
         return setupIntent;
@@ -76,7 +77,7 @@ public final class CommonUtils {
 
     /**
      * Returns an intent to start the setup activity for this TV input using {@link
-     * CommonConstants#INTENT_ACTION_INPUT_SETUP}.
+     * InputSetupActionUtils#INTENT_ACTION_INPUT_SETUP}.
      */
     public static Intent createSetupIntent(TvInputInfo input) {
         return createSetupIntent(input.createSetupIntent(), input.getId());

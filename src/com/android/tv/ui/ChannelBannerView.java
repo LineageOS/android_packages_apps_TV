@@ -50,17 +50,17 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.StreamInfo;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.parental.ContentRatingsManager;
-import com.android.tv.util.ImageCache;
-import com.android.tv.util.ImageLoader;
-import com.android.tv.util.ImageLoader.ImageLoaderCallback;
-import com.android.tv.util.ImageLoader.LoadTvInputLogoTask;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.ImageCache;
+import com.android.tv.util.images.ImageLoader;
+import com.android.tv.util.images.ImageLoader.ImageLoaderCallback;
+import com.android.tv.util.images.ImageLoader.LoadTvInputLogoTask;
 
 /** A view to render channel banner. */
 public class ChannelBannerView extends FrameLayout implements TvTransitionManager.TransitionLayout {
@@ -500,7 +500,7 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         return new ImageLoaderCallback<ChannelBannerView>(channelBannerView) {
             @Override
             public void onBitmapLoaded(ChannelBannerView view, @Nullable Bitmap logo) {
-                if (channel != view.mCurrentChannel) {
+                if (channel.equals(view.mCurrentChannel)) {
                     // The logo is obsolete.
                     return;
                 }
@@ -579,7 +579,7 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
             return;
         }
         updateProgramTextView(
-                program == mLockedChannelProgram,
+                program.equals(mLockedChannelProgram),
                 program.getTitle(),
                 program.getEpisodeDisplayTitle(getContext()));
     }

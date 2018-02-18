@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvContract;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.CommonConstants;
+import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.config.DefaultConfigManager;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.util.CommonUtils;
@@ -39,7 +39,7 @@ public class SampleDvbTuner extends BaseApplication {
         Intent intent =
                 CommonUtils.createSetupIntent(
                         new Intent(context, LiveTvTunerSetupActivity.class), mEmbeddedInputId);
-        intent.putExtra(CommonConstants.EXTRA_INPUT_ID, mEmbeddedInputId);
+        intent.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, mEmbeddedInputId);
         return intent;
     }
 

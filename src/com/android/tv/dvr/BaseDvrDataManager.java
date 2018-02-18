@@ -245,6 +245,11 @@ public abstract class BaseDvrDataManager implements WritableDvrDataManager {
     }
 
     @Override
+    public List<ScheduledRecording> getFailedScheduledRecordings() {
+        return getRecordingsWithState(ScheduledRecording.STATE_RECORDING_FAILED);
+    }
+
+    @Override
     public void changeState(ScheduledRecording scheduledRecording, @RecordingState int newState) {
         if (scheduledRecording.getState() != newState) {
             updateScheduledRecording(

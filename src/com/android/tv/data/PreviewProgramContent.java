@@ -23,6 +23,7 @@ import android.support.media.tv.TvContractCompat;
 import android.text.TextUtils;
 import android.util.Pair;
 import com.android.tv.TvSingletons;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.RecordedProgram;
 import java.util.Objects;
 
@@ -104,6 +105,7 @@ public class PreviewProgramContent {
 
     private PreviewProgramContent() {}
 
+    @SuppressWarnings("ReferenceEquality")
     public void copyFrom(PreviewProgramContent other) {
         if (this == other) {
             return;

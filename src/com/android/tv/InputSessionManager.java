@@ -36,7 +36,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.ui.TunableTvView;
 import com.android.tv.ui.TunableTvView.OnTuneListener;
 import com.android.tv.util.TvInputManagerHelper;

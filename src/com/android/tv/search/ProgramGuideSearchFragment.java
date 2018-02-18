@@ -41,7 +41,7 @@ import android.view.ViewGroup;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.common.util.PermissionUtils;
-import com.android.tv.util.ImageLoader;
+import com.android.tv.util.images.ImageLoader;
 import java.util.List;
 
 public class ProgramGuideSearchFragment extends SearchFragment {
@@ -136,8 +136,9 @@ public class ProgramGuideSearchFragment extends SearchFragment {
                     LocalSearchProvider.SearchResult result = (LocalSearchProvider.SearchResult) o;
                     mMainActivity.getFragmentManager().popBackStack();
                     mMainActivity.tuneToChannel(
-                            mMainActivity.getChannelDataManager().getChannel(
-                                    result.getChannelId()));
+                            mMainActivity
+                                    .getChannelDataManager()
+                                    .getChannel(result.getChannelId()));
                 }
             };
 

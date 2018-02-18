@@ -69,7 +69,7 @@ public class WatchedHistoryManagerTest {
         long fakeId = 100000000;
         long time = System.currentTimeMillis();
         long duration = TimeUnit.MINUTES.toMillis(10);
-        Channel channel = new Channel.Builder().setId(fakeId).build();
+        ChannelImpl channel = new ChannelImpl.Builder().setId(fakeId).build();
         mWatchedHistoryManager.logChannelViewStop(channel, time, duration);
 
         WatchedRecord record = mWatchedHistoryManager.getRecord(0);
@@ -90,7 +90,7 @@ public class WatchedHistoryManagerTest {
 
         int size = MAX_HISTORY_SIZE * 2;
         for (int i = 0; i < size; ++i) {
-            Channel channel = new Channel.Builder().setId(startChannelId + i).build();
+            ChannelImpl channel = new ChannelImpl.Builder().setId(startChannelId + i).build();
             mWatchedHistoryManager.logChannelViewStop(channel, time + duration * i, duration);
         }
         for (int i = 0; i < MAX_HISTORY_SIZE; ++i) {

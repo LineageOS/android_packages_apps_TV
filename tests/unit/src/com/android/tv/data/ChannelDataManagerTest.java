@@ -40,6 +40,7 @@ import android.test.mock.MockCursor;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
+import com.android.tv.data.api.Channel;
 import com.android.tv.testing.constants.Constants;
 import com.android.tv.testing.data.ChannelInfo;
 import com.android.tv.util.TvInputManagerHelper;

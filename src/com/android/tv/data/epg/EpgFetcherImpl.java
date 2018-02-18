@@ -49,11 +49,12 @@ import com.android.tv.common.util.LocationUtils;
 import com.android.tv.common.util.NetworkTrafficTags;
 import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.ChannelLogoFetcher;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
@@ -180,13 +181,13 @@ public class EpgFetcherImpl implements EpgFetcher {
                 context.getContentResolver()
                         .query(
                                 TvContract.Channels.CONTENT_URI,
-                                Channel.PROJECTION,
+                                ChannelImpl.PROJECTION,
                                 selection,
                                 selectionArgs,
                                 null)) {
             if (c != null) {
                 while (c.moveToNext()) {
-                    Channel channel = Channel.fromCursor(c);
+                    Channel channel = ChannelImpl.fromCursor(c);
                     if (DEBUG) Log.d(TAG, "Found " + channel);
                     if (myPackageName.equals(channel.getPackageName())) {
                         channels.add(channel);
@@ -543,12 +544,12 @@ public class EpgFetcherImpl implements EpgFetcher {
                     mContext.getContentResolver()
                             .query(
                                     TvContract.buildChannelsUriForInput(inputId),
-                                    Channel.PROJECTION,
+                                    ChannelImpl.PROJECTION,
                                     null,
                                     null,
                                     null)) {
                 while (cursor.moveToNext()) {
-                    result.add(Channel.fromCursor(cursor));
+                    result.add(ChannelImpl.fromCursor(cursor));
                 }
                 return result;
             }

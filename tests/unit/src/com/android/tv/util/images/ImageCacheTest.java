@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.tv.util;
+package com.android.tv.util.images;
 
-import static com.android.tv.util.BitmapUtils.createScaledBitmapInfo;
+import static com.android.tv.util.images.BitmapUtils.createScaledBitmapInfo;
 import static org.junit.Assert.assertSame;
 
 import android.graphics.Bitmap;
 import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
-import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
+import com.android.tv.util.images.BitmapUtils.ScaledBitmapInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

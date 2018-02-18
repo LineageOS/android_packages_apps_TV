@@ -20,7 +20,7 @@ import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.recommendation.RecommendationUtils.ChannelRecordSortedMapHelper;
 import com.android.tv.recommendation.Recommender.Evaluator;
 import com.android.tv.testing.utils.Utils;

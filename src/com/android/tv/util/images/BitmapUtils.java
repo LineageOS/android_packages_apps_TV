@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.util;
+package com.android.tv.util.images;
 
 import android.content.ContentResolver;
 import android.content.Context;

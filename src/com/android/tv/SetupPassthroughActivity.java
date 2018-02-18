@@ -26,8 +26,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
 import android.util.Log;
-import com.android.tv.common.CommonConstants;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.experiments.Experiments;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ChannelDataManager.Listener;
@@ -64,11 +64,10 @@ public class SetupPassthroughActivity extends Activity {
         TvSingletons tvSingletons = TvSingletons.getSingletons(this);
         TvInputManagerHelper inputManager = tvSingletons.getTvInputManagerHelper();
         Intent intent = getIntent();
-        String inputId = intent.getStringExtra(CommonConstants.EXTRA_INPUT_ID);
+        String inputId = intent.getStringExtra(InputSetupActionUtils.EXTRA_INPUT_ID);
         mTvInputInfo = inputManager.getTvInputInfo(inputId);
         mEpgInputWhiteList = new EpgInputWhiteList(tvSingletons.getRemoteConfig());
-        mActivityAfterCompletion =
-                intent.getParcelableExtra(CommonConstants.EXTRA_ACTIVITY_AFTER_COMPLETION);
+        mActivityAfterCompletion = InputSetupActionUtils.getExtraActivityAfter(intent);
         boolean needToFetchEpg =
                 mTvInputInfo != null
                         && Utils.isInternalTvInput(this, mTvInputInfo.getId())
@@ -79,7 +78,7 @@ public class SetupPassthroughActivity extends Activity {
         }
         if (savedInstanceState == null) {
             SoftPreconditions.checkArgument(
-                    CommonConstants.INTENT_ACTION_INPUT_SETUP.equals(intent.getAction()),
+                    InputSetupActionUtils.hasInputSetupAction(intent),
                     TAG,
                     "Unsupported action %s",
                     intent.getAction());
@@ -94,8 +93,7 @@ public class SetupPassthroughActivity extends Activity {
                 finish();
                 return;
             }
-            Intent setupIntent =
-                    intent.getExtras().getParcelable(CommonConstants.EXTRA_SETUP_INTENT);
+            Intent setupIntent = InputSetupActionUtils.getExtraSetupIntent(intent);
             if (DEBUG) Log.d(TAG, "Setup activity launch intent: " + setupIntent);
             if (setupIntent == null) {
                 Log.w(TAG, "The input (" + mTvInputInfo.getId() + ") doesn't have setup.");
@@ -107,7 +105,7 @@ public class SetupPassthroughActivity extends Activity {
             // If EXTRA_SETUP_INTENT is not removed, an infinite recursion happens during
             // setupIntent.putExtras(intent.getExtras()).
             Bundle extras = intent.getExtras();
-            extras.remove(CommonConstants.EXTRA_SETUP_INTENT);
+            InputSetupActionUtils.removeSetupIntent(extras);
             setupIntent.putExtras(extras);
             try {
                 startActivityForResult(setupIntent, REQUEST_START_SETUP_ACTIVITY);

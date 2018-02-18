@@ -28,7 +28,6 @@ import com.android.tv.tuner.data.Cea708Data.CaptionWindow;
 import com.android.tv.tuner.data.Cea708Data.CaptionWindowAttr;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 /** Decodes and renders CEA-708. */
 public class CaptionTrackRenderer implements Handler.Callback {
@@ -46,7 +45,7 @@ public class CaptionTrackRenderer implements Handler.Callback {
     private static final String TAG = "CaptionTrackRenderer";
     private static final boolean DEBUG = false;
 
-    private static final long DELAY_IN_MILLIS = TimeUnit.MILLISECONDS.toMillis(100);
+    private static final long DELAY_IN_MILLIS = 100 /* milliseconds */;
 
     // According to CEA-708B, there can exist up to 8 caption windows.
     private static final int CAPTION_WINDOWS_MAX = 8;

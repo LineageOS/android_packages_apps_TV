@@ -51,21 +51,21 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.CommonUtils;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
 import com.android.tv.data.Program.CriticScore;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.guide.ProgramManager.TableEntriesUpdatedListener;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.ui.HardwareLayerAnimatorListenerAdapter;
-import com.android.tv.util.ImageCache;
-import com.android.tv.util.ImageLoader;
-import com.android.tv.util.ImageLoader.ImageLoaderCallback;
-import com.android.tv.util.ImageLoader.LoadTvInputLogoTask;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.ImageCache;
+import com.android.tv.util.images.ImageLoader;
+import com.android.tv.util.images.ImageLoader.ImageLoaderCallback;
+import com.android.tv.util.images.ImageLoader.LoadTvInputLogoTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -316,7 +316,6 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
                     @Override
                     public void onAccessibilityStateChanged(boolean enable) {
                         enable &= !CommonUtils.isRunningInTest();
-                        mDetailView.setFocusable(enable);
                         mChannelHeaderView.setFocusable(enable);
                     }
                 };
@@ -370,7 +369,6 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
 
             boolean accessibilityEnabled =
                     mAccessibilityManager.isEnabled() && !CommonUtils.isRunningInTest();
-            mDetailView.setFocusable(accessibilityEnabled);
             mChannelHeaderView.setFocusable(accessibilityEnabled);
         }
 
@@ -471,7 +469,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
                 return;
             }
 
-            if (Program.isValid(mSelectedEntry.program)) {
+            if (Program.isProgramValid(mSelectedEntry.program)) {
                 Program program = mSelectedEntry.program;
                 if (getProgramBlock(program) == null) {
                     program.prefetchPosterArt(itemView.getContext(), mImageWidth, mImageHeight);
@@ -543,7 +541,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
             }
             if (DEBUG) Log.d(TAG, "updateDetailView");
             mCriticScoresLayout.removeAllViews();
-            if (Program.isValid(mSelectedEntry.program)) {
+            if (Program.isProgramValid(mSelectedEntry.program)) {
                 mTitleView.setTextColor(mDetailTextColor);
                 Context context = itemView.getContext();
                 Program program = mSelectedEntry.program;

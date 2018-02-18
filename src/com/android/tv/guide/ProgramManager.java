@@ -18,13 +18,14 @@ package com.android.tv.guide;
 
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.ArraySet;
 import android.util.Log;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrScheduleManager.OnConflictStateChangeListener;
@@ -731,7 +732,7 @@ public class ProgramManager {
 
         /** Returns true if this is a gap. */
         boolean isGap() {
-            return !Program.isValid(program);
+            return !Program.isProgramValid(program);
         }
 
         /** Returns true if this channel is blocked. */
@@ -770,6 +771,23 @@ public class ProgramManager {
                     + Utils.toTimeString(entryEndUtcMillis)
                     + "}";
         }
+    }
+
+    @VisibleForTesting
+    public static TableEntry createTableEntryForTest(
+            long channelId,
+            Program program,
+            ScheduledRecording scheduledRecording,
+            long entryStartUtcMillis,
+            long entryEndUtcMillis,
+            boolean isBlocked) {
+        return new TableEntry(
+                channelId,
+                program,
+                scheduledRecording,
+                entryStartUtcMillis,
+                entryEndUtcMillis,
+                isBlocked);
     }
 
     interface Listener {

@@ -30,13 +30,13 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.data.RecordedProgram;
-import com.android.tv.util.ImageLoader;
 import com.android.tv.util.TimeShiftUtils;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.ImageLoader;
 
 class DvrPlaybackMediaSessionHelper {
     private static final String TAG = "DvrPlaybackMediaSessionHelper";

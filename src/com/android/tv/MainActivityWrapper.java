@@ -20,7 +20,7 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.ArraySet;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import java.util.Set;
 
 /**

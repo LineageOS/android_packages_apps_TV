@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.tv.util;
+package com.android.tv.util.images;
 
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.LruCache;
-import com.android.tv.common.MemoryManageable;
-import com.android.tv.util.BitmapUtils.ScaledBitmapInfo;
+import com.android.tv.common.memory.MemoryManageable;
+import com.android.tv.util.images.BitmapUtils.ScaledBitmapInfo;
 
 /** A convenience class for caching bitmap. */
 public class ImageCache implements MemoryManageable {

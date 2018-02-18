@@ -30,12 +30,12 @@ import android.util.Range;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.WeakHandler;
-import com.android.tv.data.Channel;
 import com.android.tv.data.OnCurrentProgramUpdatedListener;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
+import com.android.tv.data.api.Channel;
 import com.android.tv.ui.TunableTvView;
-import com.android.tv.ui.TunableTvView.TimeShiftListener;
+import com.android.tv.ui.TunableTvViewPlayingApi.TimeShiftListener;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.TimeShiftUtils;
 import com.android.tv.util.Utils;
@@ -449,7 +449,7 @@ public class TimeShiftManager {
         SoftPreconditions.checkState(isAvailable(), TAG, "Time shift is not available");
         SoftPreconditions.checkState(mCurrentPositionMediator.mCurrentPositionMs != INVALID_TIME);
         Program currentProgram = getProgramAt(mCurrentPositionMediator.mCurrentPositionMs);
-        if (!Program.isValid(currentProgram)) {
+        if (!Program.isProgramValid(currentProgram)) {
             currentProgram = null;
         }
         if (!Objects.equals(mCurrentProgram, currentProgram)) {

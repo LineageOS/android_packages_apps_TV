@@ -18,7 +18,7 @@ package com.android.tv.analytics;
 
 import android.support.annotation.VisibleForTesting;
 import com.android.tv.TimeShiftManager;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 
 /** A implementation of Tracker that does nothing. */
 @VisibleForTesting

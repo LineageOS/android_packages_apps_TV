@@ -29,8 +29,9 @@ import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.common.util.SharedPreferencesUtils;
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.ChannelNumber;
+import com.android.tv.data.api.Channel;
 import com.android.tv.ui.OnRepeatedKeyInterceptListener;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
@@ -53,7 +54,7 @@ public class CustomizeChannelListFragment extends SideFragment {
 
     private static Integer sGroupingType;
     private TvInputManagerHelper mInputManager;
-    private Channel.DefaultComparator mChannelComparator;
+    private ChannelImpl.DefaultComparator mChannelComparator;
     private boolean mGroupByFragmentRunning;
 
     private final List<Item> mItems = new ArrayList<>();
@@ -63,7 +64,7 @@ public class CustomizeChannelListFragment extends SideFragment {
         super.onCreate(savedInstanceState);
         mInputManager = getMainActivity().getTvInputManagerHelper();
         mInitialChannelId = getMainActivity().getCurrentChannelId();
-        mChannelComparator = new Channel.DefaultComparator(getActivity(), mInputManager);
+        mChannelComparator = new ChannelImpl.DefaultComparator(getActivity(), mInputManager);
         if (sGroupingType == null) {
             SharedPreferences sharedPreferences =
                     getContext()

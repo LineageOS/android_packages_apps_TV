@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.android.tv.R;
 import com.android.tv.SetupPassthroughActivity;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.ui.setup.SetupActivity;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.CommonUtils;
@@ -37,7 +38,8 @@ import com.android.tv.util.TvInputManagerHelper;
 
 /** A activity to start input sources setup fragment for initial setup flow. */
 public class SystemSetupActivity extends SetupActivity {
-    private static final String SYSTEM_SETUP = "com.android.tv.action.LAUNCH_SYSTEM_SETUP";
+    private static final String SYSTEM_SETUP =
+            CommonConstants.BASE_PACKAGE + ".action.LAUNCH_SYSTEM_SETUP";
     private static final int SHOW_RIPPLE_DURATION_MS = 266;
     private static final int REQUEST_CODE_START_SETUP_ACTIVITY = 1;
 

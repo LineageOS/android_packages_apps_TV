@@ -17,10 +17,12 @@
 package com.android.tv.testing.testdata;
 
 import android.content.Context;
+import android.media.tv.TvInputInfo;
 import com.android.tv.common.util.Clock;
 import com.android.tv.testing.data.ChannelInfo;
 import com.android.tv.testing.data.ChannelUtils;
 import com.android.tv.testing.data.ProgramUtils;
+import com.android.tv.testing.utils.TestUtils;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ import java.util.List;
  *   <li>Channel List
  * </ul>
  *
- * Call {@link #init(Context)}, update the TvProvider data base with the given values.
+ * Call {@link #init(Context)}, to update the TvProvider data base with the given values.
  */
 public abstract class TestData {
     private List<ChannelInfo> channelList;
@@ -46,18 +48,39 @@ public abstract class TestData {
         ProgramUtils.updateProgramForAllChannelsOf(context, getInputId(), clock, durationMs);
     }
 
-    protected abstract String getInputId();
+    public abstract TvInputInfo getTvInputInfo();
+
+    public final String getInputId() {
+        return getTvInputInfo().getId();
+    }
 
     public static final TestData DEFAULT_10_CHANNELS =
             new TestData() {
+                private TvInputInfo mTvInputInfo = createTvInputInfo();
+
+                private TvInputInfo createTvInputInfo() {
+                    try {
+                        return TestUtils.createTvInputInfo(
+                                TestUtils.createResolveInfo(
+                                        "com.android.tv.testing.testdata",
+                                        "com.android.tv.testing.testdata.Default10Channels"),
+                                "com.android.tv.testing.testdata/.Default10Channels",
+                                null,
+                                TvInputInfo.TYPE_TUNER,
+                                true);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
                 @Override
                 protected List<ChannelInfo> createChannels(Context context) {
                     return ChannelUtils.createChannelInfos(context, 10);
                 }
 
                 @Override
-                protected String getInputId() {
-                    return "com.android.tv.testing.testdata/.Default10Channels";
+                public TvInputInfo getTvInputInfo() {
+                    return mTvInputInfo;
                 }
             };
 }

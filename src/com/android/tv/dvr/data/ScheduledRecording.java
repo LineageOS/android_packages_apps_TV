@@ -30,8 +30,8 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.CommonUtils;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.provider.DvrContract.Schedules;
 import com.android.tv.util.CompositeComparator;
@@ -836,6 +836,11 @@ public final class ScheduledRecording implements Parcelable {
     /** Returns {@code true} if the recording is in progress, otherwise @{code false}. */
     public boolean isInProgress() {
         return mState == STATE_RECORDING_IN_PROGRESS;
+    }
+
+    /** Returns {@code true} if the recording is finished, otherwise @{code false}. */
+    public boolean isFinished() {
+        return mState == STATE_RECORDING_FINISHED;
     }
 
     @Override

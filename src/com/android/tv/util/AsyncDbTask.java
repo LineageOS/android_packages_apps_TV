@@ -30,8 +30,9 @@ import android.util.Range;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.RecordedProgram;
 import java.util.ArrayList;
 import java.util.List;
@@ -287,7 +288,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                     executor,
                     contentResolver,
                     TvContract.Channels.CONTENT_URI,
-                    Channel.PROJECTION,
+                    ChannelImpl.PROJECTION,
                     null,
                     null,
                     null);
@@ -295,7 +296,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
 
         @Override
         protected final Channel fromCursor(Cursor c) {
-            return Channel.fromCursor(c);
+            return ChannelImpl.fromCursor(c);
         }
     }
 

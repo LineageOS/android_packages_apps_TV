@@ -24,7 +24,7 @@ import android.util.Log;
 import android.util.Range;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.guide.ProgramManager.TableEntry;
 import com.android.tv.util.Utils;
 import java.util.concurrent.TimeUnit;

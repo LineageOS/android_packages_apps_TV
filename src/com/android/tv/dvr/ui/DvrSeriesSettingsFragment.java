@@ -28,9 +28,10 @@ import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.util.LongSparseArray;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -50,7 +51,6 @@ import java.util.Set;
 public class DvrSeriesSettingsFragment extends GuidedStepFragment
         implements DvrDataManager.SeriesRecordingListener {
     private static final String TAG = "SeriesSettingsFragment";
-    private static final boolean DEBUG = false;
 
     private static final long ACTION_ID_PRIORITY = 10;
     private static final long ACTION_ID_CHANNEL = 11;
@@ -127,7 +127,7 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
                 mChannelOption = SeriesRecording.OPTION_CHANNEL_ALL;
             }
         }
-        mChannels.sort(Channel.CHANNEL_NUMBER_COMPARATOR);
+        mChannels.sort(ChannelImpl.CHANNEL_NUMBER_COMPARATOR);
         mFragmentTitle = getString(R.string.dvr_series_settings_title);
         mProrityActionTitle = getString(R.string.dvr_series_settings_priority);
         mProrityActionHighestText = getString(R.string.dvr_series_settings_priority_highest);

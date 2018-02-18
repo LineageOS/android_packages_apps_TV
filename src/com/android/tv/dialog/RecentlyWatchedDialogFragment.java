@@ -31,8 +31,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelDataManager;
+import com.android.tv.data.api.Channel;
 
 /** Displays the watch history */
 public class RecentlyWatchedDialogFragment extends SafeDismissDialogFragment

@@ -23,8 +23,9 @@ import android.os.SystemClock;
  */
 public interface Clock {
     /**
-     * Returns the current time in milliseconds since January 1, 1970 00:00:00.0 UTC. See {@link
-     * System#currentTimeMillis()}.
+     * Returns the current time in milliseconds since January 1, 1970 00:00:00.0 UTC.
+     *
+     * @see System#currentTimeMillis().
      */
     long currentTimeMillis();
 
@@ -34,6 +35,14 @@ public interface Clock {
      * @see SystemClock#elapsedRealtime()
      */
     long elapsedRealtime();
+
+    /**
+     * Returns milliseconds since boot, not counting time spent in deep sleep.
+     *
+     * @return milliseconds of non-sleep uptime since boot.
+     * @see SystemClock#uptimeMillis()
+     */
+    long uptimeMillis();
 
     /**
      * Waits a given number of milliseconds (of uptimeMillis) before returning.
@@ -59,6 +68,11 @@ public interface Clock {
                 @Override
                 public void sleep(long ms) {
                     SystemClock.sleep(ms);
+                }
+
+                @Override
+                public long uptimeMillis() {
+                    return SystemClock.uptimeMillis();
                 }
             };
 }

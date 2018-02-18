@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package com.android.tv.common;
+package com.android.tv.common.memory;
 
 /**
  * Interface for the fine-grained memory management. The class which wants to release memory based

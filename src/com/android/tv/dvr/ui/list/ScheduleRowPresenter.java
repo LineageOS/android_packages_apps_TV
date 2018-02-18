@@ -18,7 +18,6 @@ package com.android.tv.dvr.ui.list;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -38,9 +37,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.tv.R;
+import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dialog.HalfSizedDialogFragment;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
@@ -268,19 +268,11 @@ class ScheduleRowPresenter extends RowPresenter {
                         .translationX(targetTranslationX)
                         .alpha(1f)
                         .setUpdateListener(
-                                new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animation) {
-                                        // Set width to the proper width for this animation step.
-                                        lp.width =
-                                                targetWidth
-                                                        + Math.round(
-                                                                deltaWidth
-                                                                        * (1f
-                                                                                - animation
-                                                                                        .getAnimatedFraction()));
-                                        mSelectorView.requestLayout();
-                                    }
+                                animation -> {
+                                    // Set width to the proper width for this animation step.
+                                    float fraction = 1f - animation.getAnimatedFraction();
+                                    lp.width = targetWidth + Math.round(deltaWidth * fraction);
+                                    mSelectorView.requestLayout();
                                 })
                         .setDuration(animationDuration)
                         .setInterpolator(interpolator)
@@ -430,11 +422,22 @@ class ScheduleRowPresenter extends RowPresenter {
                 case 1:
                     viewHolder.mFirstActionView.setImageResource(getImageForAction(actions[0]));
                     break;
+                default: // fall out
             }
         }
-        if (mDvrManager.isConflicting(row.getSchedule())) {
+        ScheduledRecording schedule = row.getSchedule();
+        if (mDvrManager.isConflicting(schedule)
+                || (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
+                        && schedule != null
+                        && schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED)) {
             String conflictInfo;
-            if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
+            if (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
+                    && schedule != null
+                    && schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+                // TODO(b/72638385): show real error messages
+                // TODO(b/72638385): use a better name for ConflictInfoXXX
+                conflictInfo = "Failed";
+            } else if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
                 conflictInfo = mTunerConflictWillBePartiallyRecordedInfo;
             } else {
                 conflictInfo = mTunerConflictWillNotBeRecordedInfo;
@@ -475,8 +478,13 @@ class ScheduleRowPresenter extends RowPresenter {
 
     /** Returns time text for time view from scheduled recording. */
     protected String onGetRecordingTimeText(ScheduleRow row) {
+        boolean showDate =
+                TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
+                        && row.getSchedule() != null
+                        && row.getSchedule().getState()
+                                == ScheduledRecording.STATE_RECORDING_FAILED;
         return Utils.getDurationString(
-                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, false, true, 0);
+                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, showDate, true, 0);
     }
 
     /** Returns program info text for program title view. */
@@ -502,8 +510,10 @@ class ScheduleRowPresenter extends RowPresenter {
     }
 
     private boolean isInfoClickable(ScheduleRow row) {
-        return row.getSchedule() != null
-                && (row.getSchedule().isNotStarted() || row.getSchedule().isInProgress());
+        ScheduledRecording schedule = row.getSchedule();
+        // TODO: handle onClicked for finished schedules
+        return schedule != null
+                && (schedule.isNotStarted() || schedule.isInProgress() || schedule.isFinished());
     }
 
     /** Called when the button in a row is clicked. */
@@ -521,6 +531,7 @@ class ScheduleRowPresenter extends RowPresenter {
             case ACTION_REMOVE_SCHEDULE:
                 onRemoveSchedule(row);
                 break;
+            default: // fall out
         }
     }
 
@@ -653,6 +664,9 @@ class ScheduleRowPresenter extends RowPresenter {
                         ScheduledRecording.buildFrom(row.getSchedule())
                                 .setState(ScheduledRecording.STATE_RECORDING_CANCELED)
                                 .build());
+            } else if (row.isRecordingFailed()) {
+                deletedInfo = getDeletedInfo(row);
+                mDvrManager.removeScheduledRecording(row.getSchedule());
             }
         }
         if (deletedInfo != null) {
@@ -821,6 +835,10 @@ class ScheduleRowPresenter extends RowPresenter {
                     return new int[] {ACTION_REMOVE_SCHEDULE, ACTION_CREATE_SCHEDULE};
                 } else if (row.isRecordingNotStarted()) {
                     return new int[] {ACTION_REMOVE_SCHEDULE};
+                } else if (row.isRecordingFailed()) {
+                    return new int[] {ACTION_REMOVE_SCHEDULE};
+                } else if (row.isRecordingFinished()) {
+                    return new int[] {};
                 } else {
                     SoftPreconditions.checkState(
                             false,

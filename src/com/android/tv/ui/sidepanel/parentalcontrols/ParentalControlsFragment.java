@@ -20,7 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dialog.PinDialogFragment;
 import com.android.tv.ui.sidepanel.ActionItem;
 import com.android.tv.ui.sidepanel.Item;

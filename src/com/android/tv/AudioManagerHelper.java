@@ -21,6 +21,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.TunableTvView;
+import com.android.tv.ui.TunableTvViewPlayingApi;
 
 /** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
 class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
@@ -29,14 +30,14 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     private static final float AUDIO_DUCKING_VOLUME = 0.3f;
 
     private final Activity mActivity;
-    private final TunableTvView mTvView;
+    private final TunableTvViewPlayingApi mTvView;
     private final AudioManager mAudioManager;
     private final AudioCapabilitiesReceiver mAudioCapabilitiesReceiver;
 
     private boolean mAc3PassthroughSupported;
     private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
 
-    AudioManagerHelper(Activity activity, TunableTvView tvView) {
+    AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
         mActivity = activity;
         mTvView = tvView;
         mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);

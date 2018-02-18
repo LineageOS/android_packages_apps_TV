@@ -26,9 +26,10 @@ import android.util.Log;
 import com.android.tv.R;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.WeakHandler;
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
+import com.android.tv.data.api.Channel;
 import java.util.List;
 
 /** A poster image prefetcher to show the program poster art in the Channels row faster. */
@@ -94,7 +95,7 @@ public class ChannelsPosterPrefetcher {
                     return;
                 }
                 Channel channel = item.getChannel();
-                if (!Channel.isValid(channel)) {
+                if (!ChannelImpl.isValid(channel)) {
                     continue;
                 }
                 channel.prefetchImage(

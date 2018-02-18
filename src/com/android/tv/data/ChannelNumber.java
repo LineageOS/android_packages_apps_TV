@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import com.android.tv.common.util.StringUtils;
+import com.android.tv.data.api.Channel;
 import java.util.Objects;
 
 /** A convenience class to handle channel number. */
@@ -120,8 +121,8 @@ public final class ChannelNumber implements Comparable<ChannelNumber> {
      * Returns the ChannelNumber instance.
      *
      * <p>Note that all the channel number argument should be normalized by {@link
-     * Channel#normalizeDisplayNumber}. The channels retrieved from {@link ChannelDataManager} are
-     * already normalized.
+     * ChannelImpl#normalizeDisplayNumber}. The channels retrieved from {@link ChannelDataManager}
+     * are already normalized.
      */
     public static ChannelNumber parseChannelNumber(String number) {
         if (number == null) {
@@ -151,8 +152,8 @@ public final class ChannelNumber implements Comparable<ChannelNumber> {
      * Compares the channel numbers.
      *
      * <p>Note that all the channel number arguments should be normalized by {@link
-     * Channel#normalizeDisplayNumber}. The channels retrieved from {@link ChannelDataManager} are
-     * already normalized.
+     * ChannelImpl#normalizeDisplayNumber}. The channels retrieved from {@link ChannelDataManager}
+     * are already normalized.
      */
     public static int compare(String lhs, String rhs) {
         ChannelNumber lhsNumber = parseChannelNumber(lhs);

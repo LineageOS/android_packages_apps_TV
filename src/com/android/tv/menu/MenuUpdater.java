@@ -21,7 +21,7 @@ import com.android.tv.ChannelTuner;
 import com.android.tv.TvOptionsManager;
 import com.android.tv.TvOptionsManager.OptionChangedListener;
 import com.android.tv.TvOptionsManager.OptionType;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 import com.android.tv.menu.MenuRowFactory.TvOptionsRow;
 import com.android.tv.ui.TunableTvView;
 import com.android.tv.ui.TunableTvView.OnScreenBlockingChangedListener;

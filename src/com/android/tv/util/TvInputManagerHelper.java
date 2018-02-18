@@ -36,6 +36,8 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
+import com.android.tv.util.images.ImageCache;
+import com.android.tv.util.images.ImageLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -179,7 +181,9 @@ public class TvInputManagerHelper {
                     TvInputInfo info = mTvInputManager.getTvInputInfo(inputId);
                     if (info != null) {
                         mInputMap.put(inputId, info);
-                        mTvInputLabels.put(inputId, info.loadLabel(mContext).toString());
+                        CharSequence label = info.loadLabel(mContext);
+                        // in tests the label may be missing just use the input id
+                        mTvInputLabels.put(inputId, label != null ? label.toString() : inputId);
                         CharSequence inputCustomLabel = info.loadCustomLabel(mContext);
                         if (inputCustomLabel != null) {
                             mTvInputCustomLabels.put(inputId, inputCustomLabel.toString());

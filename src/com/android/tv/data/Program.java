@@ -36,8 +36,9 @@ import com.android.tv.common.BuildConfig;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.CollectionUtils;
 import com.android.tv.common.util.CommonUtils;
-import com.android.tv.util.ImageLoader;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.Utils;
+import com.android.tv.util.images.ImageLoader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -236,7 +237,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     }
 
     /** Returns {@code true} if the program is valid and {@code false} otherwise. */
-    public static boolean isValid(Program program) {
+    public static boolean isProgramValid(Program program) {
         return program != null && program.isValid();
     }
 

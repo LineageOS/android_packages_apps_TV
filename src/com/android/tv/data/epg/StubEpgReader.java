@@ -18,9 +18,9 @@ package com.android.tv.data.epg;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.android.tv.data.Channel;
 import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.SeriesInfo;
 import java.util.Collection;
 import java.util.Collections;

@@ -23,7 +23,7 @@ import android.media.tv.TvInputInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import com.android.tv.data.Channel;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.ui.SelectInputView;
 import com.android.tv.ui.SelectInputView.OnInputSelectedCallback;
 import com.android.tv.util.Utils;
@@ -67,7 +67,8 @@ public class SelectInputActivity extends Activity {
         if (channelUriString != null) {
             Uri channelUri = Uri.parse(channelUriString);
             if (TvContract.isChannelUriForPassthroughInput(channelUri)) {
-                mSelectInputView.setCurrentChannel(Channel.createPassthroughChannel(channelUri));
+                mSelectInputView.setCurrentChannel(
+                        ChannelImpl.createPassthroughChannel(channelUri));
             }
             // No need to set the tuner channel because it's the default selection.
         }

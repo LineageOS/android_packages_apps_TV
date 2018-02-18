@@ -17,6 +17,7 @@
 package com.android.tv.data;
 
 import android.media.tv.TvContentRating;
+import com.android.tv.data.api.Channel;
 
 public interface StreamInfo {
     int VIDEO_DEFINITION_LEVEL_UNKNOWN = 0;

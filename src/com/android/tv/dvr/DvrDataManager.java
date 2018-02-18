@@ -65,6 +65,9 @@ public interface DvrDataManager {
     /** Returns scheduled but not started recordings that have not expired. */
     List<ScheduledRecording> getNonStartedScheduledRecordings();
 
+    /** Returns failed recordings. */
+    List<ScheduledRecording> getFailedScheduledRecordings();
+
     /** Returns series recordings. */
     List<SeriesRecording> getSeriesRecordings();
 

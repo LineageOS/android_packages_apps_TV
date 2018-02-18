@@ -22,6 +22,7 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
+import com.android.tv.common.memory.MemoryManageable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

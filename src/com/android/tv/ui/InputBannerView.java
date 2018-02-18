@@ -25,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.data.Channel;
+import com.android.tv.data.api.Channel;
 
 public class InputBannerView extends LinearLayout implements TvTransitionManager.TransitionLayout {
     private final long mShowDurationMillis;

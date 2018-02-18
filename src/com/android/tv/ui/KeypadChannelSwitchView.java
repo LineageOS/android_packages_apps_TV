@@ -41,8 +41,8 @@ import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.DurationTimer;
-import com.android.tv.data.Channel;
 import com.android.tv.data.ChannelNumber;
+import com.android.tv.data.api.Channel;
 import java.util.ArrayList;
 import java.util.List;
 
