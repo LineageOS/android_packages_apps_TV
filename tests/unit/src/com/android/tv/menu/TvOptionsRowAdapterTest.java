@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import android.media.tv.TvTrackInfo;
 import android.os.SystemClock;
 import android.support.test.filters.MediumTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import com.android.tv.testing.activities.BaseMainActivityTestCase;
 import com.android.tv.testing.constants.Constants;
@@ -32,9 +33,11 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Tests for {@link TvOptionsRowAdapter}. */
 @MediumTest
+@RunWith(AndroidJUnit4.class)
 public class TvOptionsRowAdapterTest extends BaseMainActivityTestCase {
     private static final int WAIT_TRACK_EVENT_TIMEOUT_MS = 300;
     public static final int TRACK_CHECK_INTERVAL_MS = 10;
