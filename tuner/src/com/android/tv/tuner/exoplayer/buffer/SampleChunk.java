@@ -79,7 +79,8 @@ public class SampleChunk {
          * @param startPositionUs the start position of the earliest sample to be stored
          * @param chunkCallback for total storage usage change notification
          */
-        SampleChunk createSampleChunk(
+        @VisibleForTesting
+        public SampleChunk createSampleChunk(
                 SamplePool samplePool,
                 File file,
                 long startPositionUs,
@@ -121,7 +122,8 @@ public class SampleChunk {
      * Handles I/O for SampleChunk. Maintains current SampleChunk and the current offset for next
      * I/O operation.
      */
-    static class IoState {
+    @VisibleForTesting
+    public static class IoState {
         private SampleChunk mChunk;
         private long mCurrentOffset;
 

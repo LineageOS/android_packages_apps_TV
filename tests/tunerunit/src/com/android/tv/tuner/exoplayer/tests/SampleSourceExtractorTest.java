@@ -26,7 +26,7 @@ import com.android.tv.tuner.exoplayer.ExoPlayerSampleExtractor;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager.StorageManager;
 import com.android.tv.tuner.exoplayer.buffer.SampleChunk;
-import com.android.tv.tuner.exoplayer.buffer.VerySlowSampleChunk;
+import com.android.tv.tuner.testing.buffer.VerySlowSampleChunk;
 import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
