@@ -44,6 +44,7 @@ import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.StubPerformanceMonitor;
+import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
 import com.android.tv.tuner.TunerInputController;
 import com.android.tv.util.SetupUtils;
@@ -62,6 +63,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
     public FakeTvInputManagerHelper tvInputManagerHelper;
     public SetupUtils setupUtils;
     public DvrManager dvrManager;
+    public DvrDataManager mDvrDataManager;
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private TunerInputController mTunerInputController;
@@ -80,6 +82,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
         tvInputManagerHelper.start();
         mChannelDataManager = new ChannelDataManager(this, tvInputManagerHelper);
         mChannelDataManager.start();
+        mDvrDataManager = new DvrDataManagerInMemoryImpl(this, fakeClock);
         // HACK reset the singleton for tests
         BaseApplication.sSingletons = this;
     }
@@ -126,7 +129,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     @Override
     public DvrDataManager getDvrDataManager() {
-        return null;
+        return mDvrDataManager;
     }
 
     @Override

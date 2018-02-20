@@ -24,6 +24,8 @@ import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.text.format.DateUtils;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.util.Clock;
+import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.recorder.ScheduledProgramReaper;
@@ -42,12 +44,17 @@ class DvrHistoryRowAdapter extends ArrayObjectAdapter {
     private static final long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
     private static final int MAX_HISTORY_DAYS = ScheduledProgramReaper.DAYS;
 
-    private Context mContext;
+    private final Context mContext;
+    private final Clock mClock;
+    private final DvrDataManager mDvrDataManager;
     private final List<String> mTitles = new ArrayList<>();
 
-    public DvrHistoryRowAdapter(Context context, ClassPresenterSelector classPresenterSelector) {
+    public DvrHistoryRowAdapter(
+            Context context, ClassPresenterSelector classPresenterSelector, Clock clock) {
         super(classPresenterSelector);
         mContext = context;
+        mClock = clock;
+        mDvrDataManager = TvSingletons.getSingletons(mContext).getDvrDataManager();
         mTitles.add(mContext.getString(R.string.dvr_date_today));
         mTitles.add(mContext.getString(R.string.dvr_date_yesterday));
     }
@@ -60,20 +67,14 @@ class DvrHistoryRowAdapter extends ArrayObjectAdapter {
     /** Starts row adapter. */
     public void start() {
         clear();
-        List<ScheduledRecording> recordingList =
-                TvSingletons.getSingletons(mContext)
-                        .getDvrDataManager()
-                        .getFailedScheduledRecordings();
-        List<RecordedProgram> recordedProgramList =
-                TvSingletons.getSingletons(mContext)
-                        .getDvrDataManager()
-                        .getRecordedPrograms();
+        List<ScheduledRecording> recordingList = mDvrDataManager.getFailedScheduledRecordings();
+        List<RecordedProgram> recordedProgramList = mDvrDataManager.getRecordedPrograms();
 
         recordingList.addAll(
                 recordedProgramsToScheduledRecordings(recordedProgramList, MAX_HISTORY_DAYS));
         recordingList
                 .sort(ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR.reversed());
-        long deadLine = Utils.getFirstMillisecondOfDay(System.currentTimeMillis());
+        long deadLine = Utils.getFirstMillisecondOfDay(mClock.currentTimeMillis());
         for (int i = 0; i < recordingList.size(); ) {
             ArrayList<ScheduledRecording> section = new ArrayList<>();
             while (i < recordingList.size() && recordingList.get(i).getStartTimeMs() >= deadLine) {
@@ -102,7 +103,7 @@ class DvrHistoryRowAdapter extends ArrayObjectAdapter {
     private String calculateHeaderDate(long timeMs) {
         int titleIndex =
                 (int)
-                        ((Utils.getFirstMillisecondOfDay(System.currentTimeMillis()) - timeMs)
+                        ((Utils.getFirstMillisecondOfDay(mClock.currentTimeMillis()) - timeMs)
                                 / ONE_DAY_MS);
         String headerDate;
         if (titleIndex < mTitles.size()) {
@@ -122,7 +123,7 @@ class DvrHistoryRowAdapter extends ArrayObjectAdapter {
     private List<ScheduledRecording> recordedProgramsToScheduledRecordings(
             List<RecordedProgram> recordedPrograms, int maxDays) {
         List<ScheduledRecording> result = new ArrayList<>(recordedPrograms.size());
-        long firstMillisecondToday = Utils.getFirstMillisecondOfDay(System.currentTimeMillis());
+        long firstMillisecondToday = Utils.getFirstMillisecondOfDay(mClock.currentTimeMillis());
         for (RecordedProgram recordedProgram : recordedPrograms) {
             if (maxDays
                     < Utils.computeDateDifference(

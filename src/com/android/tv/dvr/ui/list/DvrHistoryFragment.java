@@ -41,10 +41,11 @@ public class DvrHistoryFragment extends DetailsFragment {
                 SchedulesHeaderRow.class, new DateHeaderRowPresenter(getContext()));
         presenterSelector.addClassPresenter(
                 ScheduleRow.class, new ScheduleRowPresenter(getContext()));
-        mRowsAdapter = new DvrHistoryRowAdapter(getContext(), presenterSelector);
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
+        mRowsAdapter = new DvrHistoryRowAdapter(
+                getContext(), presenterSelector, singletons.getClock());
         setAdapter(mRowsAdapter);
         mRowsAdapter.start();
-        TvSingletons singletons = TvSingletons.getSingletons(getContext());
         mEmptyInfoScreenView = (TextView) getActivity().findViewById(R.id.empty_info_screen);
         // TODO: handle show/hide message
     }
