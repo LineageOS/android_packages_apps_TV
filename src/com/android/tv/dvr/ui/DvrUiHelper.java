@@ -587,6 +587,10 @@ public class DvrUiHelper {
                 viewType = DvrDetailsActivity.SCHEDULED_RECORDING_VIEW;
             } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_IN_PROGRESS) {
                 viewType = DvrDetailsActivity.CURRENT_RECORDING_VIEW;
+            } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_FINISHED
+                    && schedule.getRecordedProgramId() != null) {
+                recordingId = schedule.getRecordedProgramId();
+                viewType = DvrDetailsActivity.RECORDED_PROGRAM_VIEW;
             } else {
                 return;
             }

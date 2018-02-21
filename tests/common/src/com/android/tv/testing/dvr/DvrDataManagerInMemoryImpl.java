@@ -145,13 +145,17 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
     /** Add a new scheduled recording. */
     @Override
     public void addScheduledRecording(ScheduledRecording... scheduledRecordings) {
+        addScheduledRecording(false, scheduledRecordings);
+    }
+
+    public void addScheduledRecording(boolean keepIds, ScheduledRecording... scheduledRecordings) {
         for (ScheduledRecording r : scheduledRecordings) {
-            addScheduledRecordingInternal(r);
+            addScheduledRecordingInternal(r, keepIds);
         }
     }
 
     public void addRecordedProgram(RecordedProgram recordedProgram) {
-        addRecordedProgramInternal(recordedProgram);
+        addRecordedProgramInternal(recordedProgram, false);
     }
 
     public void updateRecordedProgram(RecordedProgram r) {
@@ -170,29 +174,42 @@ public final class DvrDataManagerInMemoryImpl extends BaseDvrDataManager {
     }
 
     public ScheduledRecording addScheduledRecordingInternal(ScheduledRecording scheduledRecording) {
-        SoftPreconditions.checkState(
-                scheduledRecording.getId() == ScheduledRecording.ID_NOT_SET,
-                TAG,
-                "expected id of "
-                        + ScheduledRecording.ID_NOT_SET
-                        + " but was "
-                        + scheduledRecording);
-        scheduledRecording =
-                ScheduledRecording.buildFrom(scheduledRecording)
-                        .setId(mNextId.incrementAndGet())
-                        .build();
+        return addScheduledRecordingInternal(scheduledRecording, false);
+    }
+
+    public ScheduledRecording addScheduledRecordingInternal(
+            ScheduledRecording scheduledRecording, boolean keepId) {
+        if (!keepId) {
+            SoftPreconditions.checkState(
+                    scheduledRecording.getId() == ScheduledRecording.ID_NOT_SET,
+                    TAG,
+                    "expected id of "
+                            + ScheduledRecording.ID_NOT_SET
+                            + " but was "
+                            + scheduledRecording);
+            scheduledRecording =
+                    ScheduledRecording.buildFrom(scheduledRecording)
+                            .setId(mNextId.incrementAndGet())
+                            .build();
+        }
         mScheduledRecordings.put(scheduledRecording.getId(), scheduledRecording);
         notifyScheduledRecordingAdded(scheduledRecording);
         return scheduledRecording;
     }
 
-    public RecordedProgram addRecordedProgramInternal(RecordedProgram recordedProgram) {
-        SoftPreconditions.checkState(
-                recordedProgram.getId() == RecordedProgram.ID_NOT_SET,
-                TAG,
-                "expected id of " + RecordedProgram.ID_NOT_SET + " but was " + recordedProgram);
-        recordedProgram =
-                RecordedProgram.buildFrom(recordedProgram).setId(mNextId.incrementAndGet()).build();
+    public RecordedProgram addRecordedProgramInternal(
+            RecordedProgram recordedProgram, boolean keepId) {
+        if (!keepId) {
+            SoftPreconditions.checkState(
+                    recordedProgram.getId() == RecordedProgram.ID_NOT_SET,
+                    TAG,
+                    "expected id of " + RecordedProgram.ID_NOT_SET + " but was " + recordedProgram);
+            recordedProgram =
+                    RecordedProgram
+                            .buildFrom(recordedProgram)
+                            .setId(mNextId.incrementAndGet())
+                            .build();
+        }
         mRecordedPrograms.put(recordedProgram.getId(), recordedProgram);
         notifyRecordedProgramsAdded(recordedProgram);
         return recordedProgram;

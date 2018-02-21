@@ -129,6 +129,12 @@ class ScheduleRow {
                         || mSchedule.getState() == ScheduledRecording.STATE_RECORDING_FINISHED);
     }
 
+    public boolean hasRecordedProgram() {
+        return mSchedule != null
+                && mSchedule.getRecordedProgramId() != null
+                && mSchedule.getState() == ScheduledRecording.STATE_RECORDING_FINISHED;
+    }
+
     /** Creates and returns the new schedule with the existing information. */
     public ScheduledRecording.Builder createNewScheduleBuilder() {
         return mSchedule != null ? ScheduledRecording.buildFrom(mSchedule) : null;

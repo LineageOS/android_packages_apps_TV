@@ -892,7 +892,10 @@
     <string name="dvr_schedules_tuner_conflict_will_not_be_recorded_info">Won\'t be recorded due to tuner conflicts.</string>
     <!-- Description of no schedule recording for now, and ask user to schedule recordings from
          the program guide. -->
-    <string name="dvr_schedules_empty_state">There are no recordings on schedule yet.\nYou can schedule recording from the program guide.</string>
+    <string name="dvr_schedules_empty_state">There are no recordings scheduled yet.\nYou can schedule recordings from the program guide.</string>
+    <!-- Description of no recording history for now, and ask user to schedule recordings from
+         the program guide. -->
+    <string name="dvr_history_empty_state">There is no recording history.\nYou can schedule recordings from the program guide.</string>
     <!-- Description of schedule list header about how many recordings conflict. -->
     <plurals name="dvr_series_schedules_header_description">
         <item quantity="one">%1$d recording conflict</item>

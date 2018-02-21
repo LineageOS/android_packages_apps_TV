@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Range;
 import com.android.tv.R;
@@ -144,7 +145,8 @@ public final class ScheduledRecording implements Parcelable {
                 .setProgramLongDescription(p.getLongDescription())
                 .setProgramPosterArtUri(p.getPosterArtUri())
                 .setProgramThumbnailUri(p.getThumbnailUri())
-                .setState(STATE_RECORDING_FINISHED);
+                .setState(STATE_RECORDING_FINISHED)
+                .setRecordedProgramId(p.getId());
     }
 
     public static final class Builder {
@@ -166,6 +168,7 @@ public final class ScheduledRecording implements Parcelable {
         private String mProgramThumbnailUri;
         private @RecordingState int mState;
         private long mSeriesRecordingId = ID_NOT_SET;
+        private Long mRecodedProgramId;
 
         private Builder() {}
 
@@ -259,6 +262,11 @@ public final class ScheduledRecording implements Parcelable {
             return this;
         }
 
+        public Builder setRecordedProgramId(Long recordedProgramId) {
+            mRecodedProgramId = recordedProgramId;
+            return this;
+        }
+
         public ScheduledRecording build() {
             return new ScheduledRecording(
                     mId,
@@ -278,7 +286,8 @@ public final class ScheduledRecording implements Parcelable {
                     mProgramPosterArtUri,
                     mProgramThumbnailUri,
                     mState,
-                    mSeriesRecordingId);
+                    mSeriesRecordingId,
+                    mRecodedProgramId);
         }
     }
 
@@ -480,6 +489,7 @@ public final class ScheduledRecording implements Parcelable {
     private final String mProgramThumbnailUri;
     @RecordingState private final int mState;
     private final long mSeriesRecordingId;
+    private final Long mRecordedProgramId;
 
     private ScheduledRecording(
             long id,
@@ -499,7 +509,8 @@ public final class ScheduledRecording implements Parcelable {
             String programPosterArtUri,
             String programThumbnailUri,
             @RecordingState int state,
-            long seriesRecordingId) {
+            long seriesRecordingId,
+            Long recordedProgramId) {
         mId = id;
         mPriority = priority;
         mInputId = inputId;
@@ -518,6 +529,7 @@ public final class ScheduledRecording implements Parcelable {
         mProgramThumbnailUri = programThumbnailUri;
         mState = state;
         mSeriesRecordingId = seriesRecordingId;
+        mRecordedProgramId = recordedProgramId;
     }
 
     /**
@@ -613,6 +625,12 @@ public final class ScheduledRecording implements Parcelable {
     /** Returns the ID of the {@link SeriesRecording} including this schedule. */
     public long getSeriesRecordingId() {
         return mSeriesRecordingId;
+    }
+
+    /** Returns the ID of the corresponding {@link RecordedProgram}. */
+    @Nullable
+    public Long getRecordedProgramId() {
+        return mRecordedProgramId;
     }
 
     public long getId() {

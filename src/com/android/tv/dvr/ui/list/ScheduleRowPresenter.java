@@ -511,9 +511,10 @@ class ScheduleRowPresenter extends RowPresenter {
 
     private boolean isInfoClickable(ScheduleRow row) {
         ScheduledRecording schedule = row.getSchedule();
-        // TODO: handle onClicked for finished schedules
         return schedule != null
-                && (schedule.isNotStarted() || schedule.isInProgress() || schedule.isFinished());
+                && (schedule.isNotStarted()
+                        || schedule.isInProgress()
+                        || schedule.isFinished());
     }
 
     /** Called when the button in a row is clicked. */
@@ -810,7 +811,7 @@ class ScheduleRowPresenter extends RowPresenter {
         if (row.getSchedule() != null) {
             if (row.isRecordingInProgress()) {
                 return new int[] {ACTION_STOP_RECORDING};
-            } else if (row.isOnAir()) {
+            } else if (row.isOnAir() && !row.hasRecordedProgram()) {
                 if (row.isRecordingNotStarted()) {
                     if (canResolveConflict()) {
                         // The "START" action can change the conflict states.
@@ -865,8 +866,9 @@ class ScheduleRowPresenter extends RowPresenter {
     /** Checks if the row should be grayed out. */
     protected boolean shouldBeGrayedOut(ScheduleRow row) {
         return row.getSchedule() == null
-                || (row.isOnAir() && !row.isRecordingInProgress())
+                || (row.isOnAir() && !row.isRecordingInProgress() && !row.hasRecordedProgram())
                 || mDvrManager.isConflicting(row.getSchedule())
-                || row.isScheduleCanceled();
+                || row.isScheduleCanceled()
+                || row.isRecordingFailed();
     }
 }
