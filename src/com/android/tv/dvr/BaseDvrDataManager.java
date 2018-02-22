@@ -57,7 +57,7 @@ public abstract class BaseDvrDataManager implements WritableDvrDataManager {
     private final Set<RecordedProgramListener> mRecordedProgramListeners = new ArraySet<>();
     private final HashMap<Long, ScheduledRecording> mDeletedScheduleMap = new HashMap<>();
 
-    BaseDvrDataManager(Context context, Clock clock) {
+    public BaseDvrDataManager(Context context, Clock clock) {
         SoftPreconditions.checkFeatureEnabled(context, CommonFeatures.DVR, TAG);
         mClock = clock;
     }

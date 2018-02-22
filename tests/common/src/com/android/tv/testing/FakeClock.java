@@ -36,6 +36,10 @@ public class FakeClock implements Clock {
     public static FakeClock createWithTimeOne() {
         return new FakeClock(1L, 0L);
     }
+    /** Creates a fake clock with the time set to {@code time}. */
+    public static FakeClock createWithTime(long time) {
+        return new FakeClock(time, 0L);
+    }
 
     private long mCurrentTimeMillis;
 
