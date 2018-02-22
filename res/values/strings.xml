@@ -576,6 +576,8 @@
     <string name="dvr_history_card_view_title">Recording History</string>
     <!-- Description of a card view to show full list of scheduled recordings. [CHAR LIMIT=25] -->
     <string name="dvr_full_schedule_card_view_title">Full schedule</string>
+    <!-- Description of failed recordings. [CHAR LIMIT=25] -->
+    <string name="dvr_recording_failed">Recording Failed</string>
     <!-- Description of how many following days the schedule list will show. [CHAR LIMIT=25] -->
     <plurals name="dvr_full_schedule_card_view_content">
         <item quantity="one">Next %1$d day</item>

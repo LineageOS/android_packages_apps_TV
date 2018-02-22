@@ -478,13 +478,8 @@ class ScheduleRowPresenter extends RowPresenter {
 
     /** Returns time text for time view from scheduled recording. */
     protected String onGetRecordingTimeText(ScheduleRow row) {
-        boolean showDate =
-                TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
-                        && row.getSchedule() != null
-                        && row.getSchedule().getState()
-                                == ScheduledRecording.STATE_RECORDING_FAILED;
         return Utils.getDurationString(
-                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, showDate, true, 0);
+                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, false, true, 0);
     }
 
     /** Returns program info text for program title view. */

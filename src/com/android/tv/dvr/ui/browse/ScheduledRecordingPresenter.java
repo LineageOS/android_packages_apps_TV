@@ -119,13 +119,21 @@ class ScheduledRecordingPresenter extends DvrItemPresenter<ScheduledRecording> {
         DetailsContent details = DetailsContent.createFromScheduledRecording(mContext, recording);
         cardView.setTitle(details.getTitle());
         cardView.setImageUri(details.getLogoImageUri(), details.isUsingChannelLogo());
-        cardView.setAffiliatedIcon(
-                mDvrManager.isConflicting(recording) ? R.drawable.ic_warning_white_32dp : 0);
+        if (mDvrManager.isConflicting(recording)) {
+            cardView.setAffiliatedIcon(R.drawable.ic_warning_white_32dp);
+        } else if (recording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+            cardView.setAffiliatedIcon(R.drawable.ic_error_white_48dp);
+        } else {
+            cardView.setAffiliatedIcon(0);
+        }
         cardView.setContent(generateMajorContent(recording), null);
         cardView.setDetailBackgroundImageUri(details.getBackgroundImageUri());
     }
 
     private String generateMajorContent(ScheduledRecording recording) {
+        if (recording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+            return mContext.getString(R.string.dvr_recording_failed);
+        }
         int dateDifference =
                 Utils.computeDateDifference(System.currentTimeMillis(), recording.getStartTimeMs());
         if (dateDifference <= 0) {
