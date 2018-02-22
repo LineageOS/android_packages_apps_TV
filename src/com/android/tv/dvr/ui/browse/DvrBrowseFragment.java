@@ -148,7 +148,7 @@ public class DvrBrowseFragment extends BrowseFragment
                 }
             };
 
-    private static final Comparator<Object> RECENT_ROW_COMPARATOR =
+    static final Comparator<Object> RECENT_ROW_COMPARATOR =
             new Comparator<Object>() {
                 @Override
                 public int compare(Object lhs, Object rhs) {

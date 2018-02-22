@@ -545,7 +545,7 @@ public class DvrUiHelper {
     }
 
     /** Shows "series recording scheduled" dialog activity. */
-    public static void StartSeriesScheduledDialogActivity(
+    public static void startSeriesScheduledDialogActivity(
             Context context,
             SeriesRecording seriesRecording,
             boolean showViewScheduleOptionInDialog,
