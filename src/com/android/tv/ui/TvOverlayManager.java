@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import com.android.tv.ChannelTuner;
 import com.android.tv.MainActivity;
 import com.android.tv.MainActivity.KeyHandlerResultType;
@@ -78,7 +79,7 @@ import java.util.Set;
 
 /** A class responsible for the life cycle and event handling of the pop-ups over TV view. */
 @UiThread
-public class TvOverlayManager {
+public class TvOverlayManager implements AccessibilityStateChangeListener {
     private static final String TAG = "TvOverlayManager";
     private static final boolean DEBUG = false;
     private static final String INTRO_TRACKER_LABEL = "Intro dialog";
@@ -778,6 +779,14 @@ public class TvOverlayManager {
         } else {
             mProgramGuide.hide();
         }
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+        // Propagate this to all elements that need it
+        mChannelBannerView.onAccessibilityStateChanged(enabled);
+        mProgramGuide.onAccessibilityStateChanged(enabled);
+        mSideFragmentManager.onAccessibilityStateChanged(enabled);
     }
 
     /**

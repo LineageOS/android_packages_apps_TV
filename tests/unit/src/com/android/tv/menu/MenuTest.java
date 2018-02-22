@@ -23,6 +23,7 @@ import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.menu.Menu.OnMenuVisibilityChangeListener;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -49,6 +50,7 @@ public class MenuTest {
         mMenu.disableAnimationForTest();
     }
 
+    @Ignore("b/73727914")
     @Test
     public void testScheduleHide() {
         mMenu.show(Menu.REASON_NONE);

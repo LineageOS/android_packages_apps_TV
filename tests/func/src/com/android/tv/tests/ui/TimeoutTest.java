@@ -19,6 +19,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.uiautomator.Until;
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,12 @@ public class TimeoutTest {
     @Rule public final LiveChannelsTestController controller = new LiveChannelsTestController();
 
     @Test
+    public void placeholder() {
+        // There must be at least one test
+    }
+
+    @Ignore("b/73727914")
+    @Test
     public void testMenu() {
         controller.liveChannelsHelper.assertAppStarted();
         controller.pressMenu();
@@ -47,6 +54,7 @@ public class TimeoutTest {
                 controller.getTargetResources().getInteger(R.integer.menu_show_duration));
     }
 
+    @Ignore("b/73727914")
     @Test
     public void testProgramGuide() {
         controller.liveChannelsHelper.assertAppStarted();

@@ -436,6 +436,8 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAccessibilityManager =
+                (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         TvSingletons tvSingletons = TvSingletons.getSingletons(this);
         mPerformanceMonitor = tvSingletons.getPerformanceMonitor();
         TimerEvent timer = mPerformanceMonitor.startTimer();
@@ -648,6 +650,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                         selectInputView,
                         sceneContainer,
                         mSearchFragment);
+        mAccessibilityManager.addAccessibilityStateChangeListener(mOverlayManager);
 
         mAudioManagerHelper = new AudioManagerHelper(this, mTvView);
         Intent nowPlayingIntent = new Intent(this, MainActivity.class);
@@ -661,8 +664,6 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             return;
         }
 
-        mAccessibilityManager =
-                (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         mSendConfigInfoRecurringRunner =
                 new RecurringRunner(
                         this,
@@ -2044,6 +2045,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             }
         }
         if (mOverlayManager != null) {
+            mAccessibilityManager.removeAccessibilityStateChangeListener(mOverlayManager);
             mOverlayManager.release();
         }
         mMemoryManageables.clear();
