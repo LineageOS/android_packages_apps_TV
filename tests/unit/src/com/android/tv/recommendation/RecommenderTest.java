@@ -17,9 +17,7 @@
 package com.android.tv.recommendation;
 
 import static android.support.test.InstrumentationRegistry.getContext;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
 
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -94,26 +92,26 @@ public class RecommenderTest {
     public void testRecommendChannels_includeRecommendedOnly_allChannelsHaveNoScore() {
         createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
 
-        // Recommender doesn't recommend any channels because all channels are not recommended.
-        assertEquals(0, mRecommender.recommendChannels().size());
-        assertEquals(0, mRecommender.recommendChannels(-5).size());
-        assertEquals(0, mRecommender.recommendChannels(0).size());
-        assertEquals(0, mRecommender.recommendChannels(3).size());
-        assertEquals(0, mRecommender.recommendChannels(4).size());
-        assertEquals(0, mRecommender.recommendChannels(5).size());
+    // Recommender doesn't recommend any channels because all channels are not recommended.
+    assertThat(mRecommender.recommendChannels()).isEmpty();
+    assertThat(mRecommender.recommendChannels(-5)).isEmpty();
+    assertThat(mRecommender.recommendChannels(0)).isEmpty();
+    assertThat(mRecommender.recommendChannels(3)).isEmpty();
+    assertThat(mRecommender.recommendChannels(4)).isEmpty();
+    assertThat(mRecommender.recommendChannels(5)).isEmpty();
     }
 
     @Test
     public void testRecommendChannels_notIncludeRecommendedOnly_allChannelsHaveNoScore() {
         createRecommender(false, mStartDatamanagerRunnableAddFourChannels);
 
-        // Recommender recommends every channel because it recommends not-recommended channels too.
-        assertEquals(4, mRecommender.recommendChannels().size());
-        assertEquals(0, mRecommender.recommendChannels(-5).size());
-        assertEquals(0, mRecommender.recommendChannels(0).size());
-        assertEquals(3, mRecommender.recommendChannels(3).size());
-        assertEquals(4, mRecommender.recommendChannels(4).size());
-        assertEquals(4, mRecommender.recommendChannels(5).size());
+    // Recommender recommends every channel because it recommends not-recommended channels too.
+    assertThat(mRecommender.recommendChannels()).hasSize(4);
+    assertThat(mRecommender.recommendChannels(-5)).isEmpty();
+    assertThat(mRecommender.recommendChannels(0)).isEmpty();
+    assertThat(mRecommender.recommendChannels(3)).hasSize(3);
+    assertThat(mRecommender.recommendChannels(4)).hasSize(4);
+    assertThat(mRecommender.recommendChannels(5)).hasSize(4);
     }
 
     @Test
@@ -126,8 +124,8 @@ public class RecommenderTest {
         // (i.e. sorted by channel ID in decreasing order in this case)
         MoreAsserts.assertContentsInOrder(
                 mRecommender.recommendChannels(), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
-        assertEquals(0, mRecommender.recommendChannels(-5).size());
-        assertEquals(0, mRecommender.recommendChannels(0).size());
+    assertThat(mRecommender.recommendChannels(-5)).isEmpty();
+    assertThat(mRecommender.recommendChannels(0)).isEmpty();
         MoreAsserts.assertContentsInOrder(
                 mRecommender.recommendChannels(3), mChannel_4, mChannel_3, mChannel_2);
         MoreAsserts.assertContentsInOrder(
@@ -146,8 +144,8 @@ public class RecommenderTest {
         // (i.e. sorted by channel ID in decreasing order in this case)
         MoreAsserts.assertContentsInOrder(
                 mRecommender.recommendChannels(), mChannel_4, mChannel_3, mChannel_2, mChannel_1);
-        assertEquals(0, mRecommender.recommendChannels(-5).size());
-        assertEquals(0, mRecommender.recommendChannels(0).size());
+    assertThat(mRecommender.recommendChannels(-5)).isEmpty();
+    assertThat(mRecommender.recommendChannels(0)).isEmpty();
         MoreAsserts.assertContentsInOrder(
                 mRecommender.recommendChannels(3), mChannel_4, mChannel_3, mChannel_2);
         MoreAsserts.assertContentsInOrder(
@@ -166,8 +164,8 @@ public class RecommenderTest {
         // Only two channels are recommended because recommender doesn't recommend other channels.
         MoreAsserts.assertContentsInAnyOrder(
                 mRecommender.recommendChannels(), mChannel_1, mChannel_2);
-        assertEquals(0, mRecommender.recommendChannels(-5).size());
-        assertEquals(0, mRecommender.recommendChannels(0).size());
+    assertThat(mRecommender.recommendChannels(-5)).isEmpty();
+    assertThat(mRecommender.recommendChannels(0)).isEmpty();
         MoreAsserts.assertContentsInAnyOrder(
                 mRecommender.recommendChannels(3), mChannel_1, mChannel_2);
         MoreAsserts.assertContentsInAnyOrder(
@@ -183,22 +181,22 @@ public class RecommenderTest {
         mEvaluator.setChannelScore(mChannel_1.getId(), 1.0);
         mEvaluator.setChannelScore(mChannel_2.getId(), 1.0);
 
-        assertEquals(4, mRecommender.recommendChannels().size());
+    assertThat(mRecommender.recommendChannels()).hasSize(4);
         MoreAsserts.assertContentsInAnyOrder(
                 mRecommender.recommendChannels().subList(0, 2), mChannel_1, mChannel_2);
 
-        assertEquals(0, mRecommender.recommendChannels(-5).size());
-        assertEquals(0, mRecommender.recommendChannels(0).size());
+    assertThat(mRecommender.recommendChannels(-5)).isEmpty();
+    assertThat(mRecommender.recommendChannels(0)).isEmpty();
 
-        assertEquals(3, mRecommender.recommendChannels(3).size());
+    assertThat(mRecommender.recommendChannels(3)).hasSize(3);
         MoreAsserts.assertContentsInAnyOrder(
                 mRecommender.recommendChannels(3).subList(0, 2), mChannel_1, mChannel_2);
 
-        assertEquals(4, mRecommender.recommendChannels(4).size());
+    assertThat(mRecommender.recommendChannels(4)).hasSize(4);
         MoreAsserts.assertContentsInAnyOrder(
                 mRecommender.recommendChannels(4).subList(0, 2), mChannel_1, mChannel_2);
 
-        assertEquals(4, mRecommender.recommendChannels(5).size());
+    assertThat(mRecommender.recommendChannels(5)).hasSize(4);
         MoreAsserts.assertContentsInAnyOrder(
                 mRecommender.recommendChannels(5).subList(0, 2), mChannel_1, mChannel_2);
     }
@@ -226,10 +224,9 @@ public class RecommenderTest {
         setChannelScores_scoreIncreasesAsChannelIdIncreases();
 
         List<Channel> expectedChannelList = mRecommender.recommendChannels(3);
-        // A channel which is not recommended by the recommender has to get an invalid sort key.
-        assertEquals(
-                Recommender.INVALID_CHANNEL_SORT_KEY,
-                mRecommender.getChannelSortKey(mChannel_1.getId()));
+    // A channel which is not recommended by the recommender has to get an invalid sort key.
+    assertThat(mRecommender.getChannelSortKey(mChannel_1.getId()))
+        .isEqualTo(Recommender.INVALID_CHANNEL_SORT_KEY);
 
         List<Channel> channelList = Arrays.asList(mChannel_2, mChannel_3, mChannel_4);
         Collections.sort(channelList, mChannelSortKeyComparator);
@@ -241,9 +238,9 @@ public class RecommenderTest {
     @Test
     public void testListener_onRecommendationChanged() {
         createRecommender(true, mStartDatamanagerRunnableAddFourChannels);
-        // FakeEvaluator doesn't recommend a channel with empty watch log. As every channel
-        // doesn't have a watch log, nothing is recommended and recommendation isn't changed.
-        assertFalse(mOnRecommendationChanged);
+    // FakeEvaluator doesn't recommend a channel with empty watch log. As every channel
+    // doesn't have a watch log, nothing is recommended and recommendation isn't changed.
+    assertThat(mOnRecommendationChanged).isFalse();
 
         // Set lastRecommendationUpdatedTimeUtcMs to check recommendation changed because,
         // recommender has a minimum recommendation update period.
@@ -252,16 +249,17 @@ public class RecommenderTest {
         long latestWatchEndTimeMs = DEFAULT_WATCH_START_TIME_MS;
         for (long channelId : mChannelRecordSortedMap.keySet()) {
             mEvaluator.setChannelScore(channelId, 1.0);
-            // Add a log to recalculate the recommendation score.
-            assertTrue(
-                    mChannelRecordSortedMap.addWatchLog(
-                            channelId, latestWatchEndTimeMs, TimeUnit.MINUTES.toMillis(10)));
+      // Add a log to recalculate the recommendation score.
+      assertThat(
+              mChannelRecordSortedMap.addWatchLog(
+                  channelId, latestWatchEndTimeMs, TimeUnit.MINUTES.toMillis(10)))
+          .isTrue();
             latestWatchEndTimeMs += TimeUnit.MINUTES.toMillis(10);
         }
 
-        // onRecommendationChanged must be called, because recommend channels are not empty,
-        // by setting score to each channel.
-        assertTrue(mOnRecommendationChanged);
+    // onRecommendationChanged must be called, because recommend channels are not empty,
+    // by setting score to each channel.
+    assertThat(mOnRecommendationChanged).isTrue();
     }
 
     @Test
@@ -279,8 +277,8 @@ public class RecommenderTest {
                     }
                 });
 
-        // After loading channels and watch logs are finished, recommender must be available to use.
-        assertTrue(mOnRecommenderReady);
+    // After loading channels and watch logs are finished, recommender must be available to use.
+    assertThat(mOnRecommenderReady).isTrue();
     }
 
     private void assertSortKeyNotInvalid(List<Channel> channelList) {

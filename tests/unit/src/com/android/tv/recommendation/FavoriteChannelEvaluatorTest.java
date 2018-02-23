@@ -16,7 +16,7 @@
 
 package com.android.tv.recommendation;
 
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
 
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -106,7 +106,7 @@ public class FavoriteChannelEvaluatorTest extends EvaluatorTestCase<FavoriteChan
         double previousScore = Recommender.Evaluator.NOT_RECOMMENDED;
         for (long channelId : channelIdList) {
             double score = mEvaluator.evaluateChannel(channelId);
-            assertTrue(previousScore <= score);
+      assertThat(previousScore).isAtMost(score);
             previousScore = score;
         }
     }
@@ -125,8 +125,8 @@ public class FavoriteChannelEvaluatorTest extends EvaluatorTestCase<FavoriteChan
                 TimeUnit.MINUTES.toMillis(30));
         notifyChannelAndWatchLogLoaded();
 
-        assertTrue(
-                mEvaluator.evaluateChannel(channelOne) == mEvaluator.evaluateChannel(channelTwo));
+    assertThat(mEvaluator.evaluateChannel(channelOne) == mEvaluator.evaluateChannel(channelTwo))
+        .isTrue();
     }
 
     @Test
@@ -143,16 +143,18 @@ public class FavoriteChannelEvaluatorTest extends EvaluatorTestCase<FavoriteChan
                 TimeUnit.HOURS.toMillis(1));
         notifyChannelAndWatchLogLoaded();
 
-        // Channel two was watched longer than channel one, so it's score is bigger.
-        assertTrue(mEvaluator.evaluateChannel(channelOne) < mEvaluator.evaluateChannel(channelTwo));
+    // Channel two was watched longer than channel one, so it's score is bigger.
+    assertThat(mEvaluator.evaluateChannel(channelOne))
+        .isLessThan(mEvaluator.evaluateChannel(channelTwo));
 
         addWatchLog(
                 channelOne,
                 System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1),
                 TimeUnit.HOURS.toMillis(1));
 
-        // Now, channel one was watched longer than channel two, so it's score is bigger.
-        assertTrue(mEvaluator.evaluateChannel(channelOne) > mEvaluator.evaluateChannel(channelTwo));
+    // Now, channel one was watched longer than channel two, so it's score is bigger.
+    assertThat(mEvaluator.evaluateChannel(channelOne))
+        .isGreaterThan(mEvaluator.evaluateChannel(channelTwo));
     }
 
     @Test
@@ -169,7 +171,7 @@ public class FavoriteChannelEvaluatorTest extends EvaluatorTestCase<FavoriteChan
 
         addWatchLog(channelId, latestWatchEndTimeMs, TimeUnit.MINUTES.toMillis(10));
 
-        // Score must be increased because total watch duration of the channel increases.
-        assertTrue(previousScore <= mEvaluator.evaluateChannel(channelId));
+    // Score must be increased because total watch duration of the channel increases.
+    assertThat(previousScore).isAtMost(mEvaluator.evaluateChannel(channelId));
     }
 }

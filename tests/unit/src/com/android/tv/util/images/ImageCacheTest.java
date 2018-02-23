@@ -17,7 +17,7 @@
 package com.android.tv.util.images;
 
 import static com.android.tv.util.images.BitmapUtils.createScaledBitmapInfo;
-import static org.junit.Assert.assertSame;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.graphics.Bitmap;
 import android.support.test.filters.MediumTest;
@@ -52,28 +52,28 @@ public class ImageCacheTest {
     public void testPutIfLarger_smaller() throws Exception {
 
         mImageCache.putIfNeeded(INFO_50);
-        assertSame("before", INFO_50, mImageCache.get(KEY));
+    assertWithMessage("before").that(mImageCache.get(KEY)).isSameAs(INFO_50);
 
         mImageCache.putIfNeeded(INFO_25);
-        assertSame("after", INFO_50, mImageCache.get(KEY));
+    assertWithMessage("after").that(mImageCache.get(KEY)).isSameAs(INFO_50);
     }
 
     @Test
     public void testPutIfLarger_larger() throws Exception {
         mImageCache.putIfNeeded(INFO_50);
-        assertSame("before", INFO_50, mImageCache.get(KEY));
+    assertWithMessage("before").that(mImageCache.get(KEY)).isSameAs(INFO_50);
 
         mImageCache.putIfNeeded(INFO_100);
-        assertSame("after", INFO_100, mImageCache.get(KEY));
+    assertWithMessage("after").that(mImageCache.get(KEY)).isSameAs(INFO_100);
     }
 
     @Test
     public void testPutIfLarger_alreadyMax() throws Exception {
 
         mImageCache.putIfNeeded(INFO_100);
-        assertSame("before", INFO_100, mImageCache.get(KEY));
+    assertWithMessage("before").that(mImageCache.get(KEY)).isSameAs(INFO_100);
 
         mImageCache.putIfNeeded(INFO_200);
-        assertSame("after", INFO_100, mImageCache.get(KEY));
+    assertWithMessage("after").that(mImageCache.get(KEY)).isSameAs(INFO_100);
     }
 }

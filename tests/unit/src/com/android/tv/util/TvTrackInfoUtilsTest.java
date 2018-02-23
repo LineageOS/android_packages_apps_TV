@@ -16,7 +16,7 @@
 package com.android.tv.util;
 
 import static com.android.tv.util.TvTrackInfoUtils.getBestTrackInfo;
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.media.tv.TvTrackInfo;
 import android.support.test.filters.SmallTest;
@@ -60,49 +60,49 @@ public class TvTrackInfoUtilsTest {
     @Test
     public void testGetBestTrackInfo_empty() {
         TvTrackInfo result = getBestTrackInfo(Collections.emptyList(), UN_MATCHED_ID, "en", 1);
-        assertEquals("best track ", null, result);
+    assertWithMessage("best track ").that(result).isEqualTo(null);
     }
 
     @Test
     public void testGetBestTrackInfo_exactMatch() {
         TvTrackInfo result = getBestTrackInfo(ALL, "1", "en", 1);
-        assertEquals("best track ", INFO_1_EN_1, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_1_EN_1);
     }
 
     @Test
     public void testGetBestTrackInfo_langAndChannelCountMatch() {
         TvTrackInfo result = getBestTrackInfo(ALL, UN_MATCHED_ID, "en", 5);
-        assertEquals("best track ", INFO_2_EN_5, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_2_EN_5);
     }
 
     @Test
     public void testGetBestTrackInfo_languageOnlyMatch() {
         TvTrackInfo result = getBestTrackInfo(ALL, UN_MATCHED_ID, "fr", 1);
-        assertEquals("best track ", INFO_3_FR_8, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_3_FR_8);
     }
 
     @Test
     public void testGetBestTrackInfo_channelCountOnlyMatchWithNullLanguage() {
         TvTrackInfo result = getBestTrackInfo(ALL, UN_MATCHED_ID, null, 8);
-        assertEquals("best track ", INFO_3_FR_8, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_3_FR_8);
     }
 
     @Test
     public void testGetBestTrackInfo_noMatches() {
         TvTrackInfo result = getBestTrackInfo(ALL, UN_MATCHED_ID, "kr", 1);
-        assertEquals("best track ", INFO_1_EN_1, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_1_EN_1);
     }
 
     @Test
     public void testGetBestTrackInfo_noMatchesWithNullLanguage() {
         TvTrackInfo result = getBestTrackInfo(ALL, UN_MATCHED_ID, null, 0);
-        assertEquals("best track ", INFO_1_EN_1, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_1_EN_1);
     }
 
     @Test
     public void testGetBestTrackInfo_channelCountAndIdMatch() {
         TvTrackInfo result = getBestTrackInfo(NULL_LANGUAGE_TRACKS, "5", null, 6);
-        assertEquals("best track ", INFO_5_NULL_6, result);
+    assertWithMessage("best track ").that(result).isEqualTo(INFO_5_NULL_6);
     }
 
     @Test
