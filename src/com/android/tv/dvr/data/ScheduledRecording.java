@@ -169,6 +169,7 @@ public final class ScheduledRecording implements Parcelable {
         private @RecordingState int mState;
         private long mSeriesRecordingId = ID_NOT_SET;
         private Long mRecodedProgramId;
+        private Integer mFailedReason;
 
         private Builder() {}
 
@@ -267,6 +268,11 @@ public final class ScheduledRecording implements Parcelable {
             return this;
         }
 
+        public Builder setFailedReason(Integer reason) {
+            mFailedReason = reason;
+            return this;
+        }
+
         public ScheduledRecording build() {
             return new ScheduledRecording(
                     mId,
@@ -287,7 +293,8 @@ public final class ScheduledRecording implements Parcelable {
                     mProgramThumbnailUri,
                     mState,
                     mSeriesRecordingId,
-                    mRecodedProgramId);
+                    mRecodedProgramId,
+                    mFailedReason);
         }
     }
 
@@ -311,6 +318,7 @@ public final class ScheduledRecording implements Parcelable {
                 .setProgramPosterArtUri(orig.getProgramPosterArtUri())
                 .setProgramThumbnailUri(orig.getProgramThumbnailUri())
                 .setState(orig.mState)
+                .setFailedReason(orig.getFailedReason())
                 .setType(orig.mType);
     }
 
@@ -333,6 +341,8 @@ public final class ScheduledRecording implements Parcelable {
     public static final int STATE_RECORDING_CLIPPED = 4;
     public static final int STATE_RECORDING_DELETED = 5;
     public static final int STATE_RECORDING_CANCELED = 6;
+
+    public static final int FAILED_REASON_OTHER = 0;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TYPE_TIMED, TYPE_PROGRAM})
@@ -367,6 +377,7 @@ public final class ScheduledRecording implements Parcelable {
         Schedules.COLUMN_PROGRAM_POST_ART_URI,
         Schedules.COLUMN_PROGRAM_THUMBNAIL_URI,
         Schedules.COLUMN_STATE,
+        Schedules.COLUMN_FAILED_REASON,
         Schedules.COLUMN_SERIES_RECORDING_ID
     };
 
@@ -391,6 +402,7 @@ public final class ScheduledRecording implements Parcelable {
                 .setProgramPosterArtUri(c.getString(++index))
                 .setProgramThumbnailUri(c.getString(++index))
                 .setState(recordingState(c.getString(++index)))
+                .setFailedReason(recordingFailedReason(c.getString(++index)))
                 .setSeriesRecordingId(c.getLong(++index))
                 .build();
     }
@@ -415,6 +427,7 @@ public final class ScheduledRecording implements Parcelable {
         values.put(Schedules.COLUMN_PROGRAM_POST_ART_URI, r.getProgramPosterArtUri());
         values.put(Schedules.COLUMN_PROGRAM_THUMBNAIL_URI, r.getProgramThumbnailUri());
         values.put(Schedules.COLUMN_STATE, recordingState(r.getState()));
+        values.put(Schedules.COLUMN_FAILED_REASON, recordingFailedReason(r.getFailedReason()));
         values.put(Schedules.COLUMN_TYPE, recordingType(r.getType()));
         if (r.getSeriesRecordingId() != ID_NOT_SET) {
             values.put(Schedules.COLUMN_SERIES_RECORDING_ID, r.getSeriesRecordingId());
@@ -443,6 +456,7 @@ public final class ScheduledRecording implements Parcelable {
                 .setProgramPosterArtUri(in.readString())
                 .setProgramThumbnailUri(in.readString())
                 .setState(in.readInt())
+                .setFailedReason(recordingFailedReason(in.readString()))
                 .setSeriesRecordingId(in.readLong())
                 .build();
     }
@@ -490,6 +504,7 @@ public final class ScheduledRecording implements Parcelable {
     @RecordingState private final int mState;
     private final long mSeriesRecordingId;
     private final Long mRecordedProgramId;
+    private final Integer mFailedReason;
 
     private ScheduledRecording(
             long id,
@@ -510,7 +525,8 @@ public final class ScheduledRecording implements Parcelable {
             String programThumbnailUri,
             @RecordingState int state,
             long seriesRecordingId,
-            Long recordedProgramId) {
+            Long recordedProgramId,
+            Integer failedReason) {
         mId = id;
         mPriority = priority;
         mInputId = inputId;
@@ -530,6 +546,7 @@ public final class ScheduledRecording implements Parcelable {
         mState = state;
         mSeriesRecordingId = seriesRecordingId;
         mRecordedProgramId = recordedProgramId;
+        mFailedReason = failedReason;
     }
 
     /**
@@ -631,6 +648,12 @@ public final class ScheduledRecording implements Parcelable {
     @Nullable
     public Long getRecordedProgramId() {
         return mRecordedProgramId;
+    }
+
+    /** Returns the failed reason of the {@link ScheduledRecording}. */
+    @Nullable
+    public Integer getFailedReason() {
+        return mFailedReason;
     }
 
     public long getId() {
@@ -761,6 +784,36 @@ public final class ScheduledRecording implements Parcelable {
         }
     }
 
+    /**
+     * Converts a string to a failed reason integer, defaulting to {@link
+     * #FAILED_REASON_OTHER}.
+     */
+    private static Integer recordingFailedReason(String reason) {
+        if (TextUtils.isEmpty(reason)) {
+            return null;
+        }
+        switch (reason) {
+            case Schedules.FAILED_REASON_OTHER:
+            default:
+                return FAILED_REASON_OTHER;
+        }
+    }
+
+    /**
+     * Converts a failed reason integer to string, defaulting to {@link
+     * Schedules#FAILED_REASON_OTHER}.
+     */
+    private static String recordingFailedReason(Integer reason) {
+        if (reason == null) {
+            return null;
+        }
+        switch (reason) {
+            // TODO(b/72638385): add reasons
+            default:
+                return Schedules.FAILED_REASON_OTHER;
+        }
+    }
+
     /** Checks if the {@code period} overlaps with the recording time. */
     public boolean isOverLapping(Range<Long> period) {
         return mStartTimeMs < period.getUpper() && mEndTimeMs > period.getLower();
@@ -812,6 +865,8 @@ public final class ScheduledRecording implements Parcelable {
                 + mProgramThumbnailUri
                 + ",state="
                 + mState
+                + ",failedReason="
+                + mFailedReason
                 + ",priority="
                 + mPriority
                 + ",seriesRecordingId="
@@ -843,6 +898,7 @@ public final class ScheduledRecording implements Parcelable {
         out.writeString(mProgramPosterArtUri);
         out.writeString(mProgramThumbnailUri);
         out.writeInt(mState);
+        out.writeString(recordingFailedReason(mFailedReason));
         out.writeLong(mSeriesRecordingId);
     }
 
@@ -883,6 +939,7 @@ public final class ScheduledRecording implements Parcelable {
                 && Objects.equals(mProgramPosterArtUri, r.getProgramPosterArtUri())
                 && Objects.equals(mProgramThumbnailUri, r.getProgramThumbnailUri())
                 && mState == r.mState
+                && Objects.equals(mFailedReason, r.mFailedReason)
                 && mSeriesRecordingId == r.mSeriesRecordingId;
     }
 
@@ -905,6 +962,7 @@ public final class ScheduledRecording implements Parcelable {
                 mProgramPosterArtUri,
                 mProgramThumbnailUri,
                 mState,
+                mFailedReason,
                 mSeriesRecordingId);
     }
 

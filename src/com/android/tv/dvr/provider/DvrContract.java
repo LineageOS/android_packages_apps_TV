@@ -55,6 +55,9 @@ public final class DvrContract {
         /** The recording marked as canceled. */
         public static final String STATE_RECORDING_CANCELED = "STATE_RECORDING_CANCELED";
 
+        /** The recording failed reason for other reasons */
+        public static final String FAILED_REASON_OTHER = "FAILED_REASON_OTHER";
+
         /**
          * The priority of this recording.
          *
@@ -193,6 +196,13 @@ public final class DvrContract {
          * <p>Type: TEXT
          */
         public static final String COLUMN_STATE = "state";
+
+        /**
+         * The reason of failure of this recording if it's failed.
+         *
+         * <p>Type: TEXT
+         */
+        public static final String COLUMN_FAILED_REASON = "failed_reason";
 
         /**
          * The ID of the parent series recording.
