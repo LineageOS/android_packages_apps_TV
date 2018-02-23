@@ -20,14 +20,17 @@ import static android.support.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.testing.utils.Utils;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Unit tests for {@link ChannelRecord}. */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class ChannelRecordTest {
     private static final int CHANNEL_RECORD_MAX_HISTORY_SIZE = ChannelRecord.MAX_HISTORY_SIZE;
 
