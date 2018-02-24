@@ -108,7 +108,8 @@ class DetailsContent {
         String description;
         if (scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED
                 && errMsg != null) {
-            description = errMsg;
+            description = errMsg
+                    + " (Error code: " + scheduledRecording.getFailedReason() + ")";
         } else {
             description =
                     !TextUtils.isEmpty(scheduledRecording.getProgramDescription())

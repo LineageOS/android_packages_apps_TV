@@ -342,7 +342,35 @@ public final class ScheduledRecording implements Parcelable {
     public static final int STATE_RECORDING_DELETED = 5;
     public static final int STATE_RECORDING_CANCELED = 6;
 
+    /** The reasons of failed recordings */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        FAILED_REASON_OTHER,
+        FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED,
+        FAILED_REASON_NOT_FINISHED,
+        FAILED_REASON_SCHEDULER_STOPPED,
+        FAILED_REASON_INVALID_CHANNEL,
+        FAILED_REASON_MESSAGE_NOT_SENT,
+        FAILED_REASON_CONNECTION_FAILED,
+        FAILED_REASON_RESOURCE_BUSY,
+        FAILED_REASON_INPUT_UNAVAILABLE,
+        FAILED_REASON_INPUT_DVR_UNSUPPORTED,
+        FAILED_REASON_INSUFFICIENT_SPACE
+    })
+    public @interface RecordingFailedReason {}
+
     public static final int FAILED_REASON_OTHER = 0;
+    public static final int FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED = 1;
+    public static final int FAILED_REASON_NOT_FINISHED = 2;
+    public static final int FAILED_REASON_SCHEDULER_STOPPED = 3;
+    public static final int FAILED_REASON_INVALID_CHANNEL = 4;
+    public static final int FAILED_REASON_MESSAGE_NOT_SENT = 5;
+    public static final int FAILED_REASON_CONNECTION_FAILED = 6;
+    public static final int FAILED_REASON_RESOURCE_BUSY = 7;
+    // For the following reasons, show advice to users
+    public static final int FAILED_REASON_INPUT_UNAVAILABLE = 8;
+    public static final int FAILED_REASON_INPUT_DVR_UNSUPPORTED = 9;
+    public static final int FAILED_REASON_INSUFFICIENT_SPACE = 10;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TYPE_TIMED, TYPE_PROGRAM})
@@ -651,7 +679,7 @@ public final class ScheduledRecording implements Parcelable {
     }
 
     /** Returns the failed reason of the {@link ScheduledRecording}. */
-    @Nullable
+    @Nullable @RecordingFailedReason
     public Integer getFailedReason() {
         return mFailedReason;
     }
@@ -793,6 +821,26 @@ public final class ScheduledRecording implements Parcelable {
             return null;
         }
         switch (reason) {
+            case Schedules.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED:
+                return FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED;
+            case Schedules.FAILED_REASON_NOT_FINISHED:
+                return FAILED_REASON_NOT_FINISHED;
+            case Schedules.FAILED_REASON_SCHEDULER_STOPPED:
+                return FAILED_REASON_SCHEDULER_STOPPED;
+            case Schedules.FAILED_REASON_INVALID_CHANNEL:
+                return FAILED_REASON_INVALID_CHANNEL;
+            case Schedules.FAILED_REASON_MESSAGE_NOT_SENT:
+                return FAILED_REASON_MESSAGE_NOT_SENT;
+            case Schedules.FAILED_REASON_CONNECTION_FAILED:
+                return FAILED_REASON_CONNECTION_FAILED;
+            case Schedules.FAILED_REASON_RESOURCE_BUSY:
+                return FAILED_REASON_RESOURCE_BUSY;
+            case Schedules.FAILED_REASON_INPUT_UNAVAILABLE:
+                return FAILED_REASON_INPUT_UNAVAILABLE;
+            case Schedules.FAILED_REASON_INPUT_DVR_UNSUPPORTED:
+                return FAILED_REASON_INPUT_DVR_UNSUPPORTED;
+            case Schedules.FAILED_REASON_INSUFFICIENT_SPACE:
+                return FAILED_REASON_INSUFFICIENT_SPACE;
             case Schedules.FAILED_REASON_OTHER:
             default:
                 return FAILED_REASON_OTHER;
@@ -808,7 +856,27 @@ public final class ScheduledRecording implements Parcelable {
             return null;
         }
         switch (reason) {
-            // TODO(b/72638385): add reasons
+            case FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED:
+                return Schedules.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED;
+            case FAILED_REASON_NOT_FINISHED:
+                return Schedules.FAILED_REASON_NOT_FINISHED;
+            case FAILED_REASON_SCHEDULER_STOPPED:
+                return Schedules.FAILED_REASON_SCHEDULER_STOPPED;
+            case FAILED_REASON_INVALID_CHANNEL:
+                return Schedules.FAILED_REASON_INVALID_CHANNEL;
+            case FAILED_REASON_MESSAGE_NOT_SENT:
+                return Schedules.FAILED_REASON_MESSAGE_NOT_SENT;
+            case FAILED_REASON_CONNECTION_FAILED:
+                return Schedules.FAILED_REASON_CONNECTION_FAILED;
+            case FAILED_REASON_RESOURCE_BUSY:
+                return Schedules.FAILED_REASON_RESOURCE_BUSY;
+            case FAILED_REASON_INPUT_UNAVAILABLE:
+                return Schedules.FAILED_REASON_INPUT_UNAVAILABLE;
+            case FAILED_REASON_INPUT_DVR_UNSUPPORTED:
+                return Schedules.FAILED_REASON_INPUT_DVR_UNSUPPORTED;
+            case FAILED_REASON_INSUFFICIENT_SPACE:
+                return Schedules.FAILED_REASON_INSUFFICIENT_SPACE;
+            case FAILED_REASON_OTHER: // fall through
             default:
                 return Schedules.FAILED_REASON_OTHER;
         }

@@ -437,6 +437,9 @@ class ScheduleRowPresenter extends RowPresenter {
                 // TODO(b/72638385): show real error messages
                 // TODO(b/72638385): use a better name for ConflictInfoXXX
                 conflictInfo = "Failed";
+                if (schedule.getFailedReason() != null) {
+                    conflictInfo += " (Error code: " + schedule.getFailedReason() + ")";
+                }
             } else if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
                 conflictInfo = mTunerConflictWillBePartiallyRecordedInfo;
             } else {

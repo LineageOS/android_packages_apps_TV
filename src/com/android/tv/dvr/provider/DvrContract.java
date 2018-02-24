@@ -58,6 +58,49 @@ public final class DvrContract {
         /** The recording failed reason for other reasons */
         public static final String FAILED_REASON_OTHER = "FAILED_REASON_OTHER";
 
+        /** The recording failed because the program ended before recording started. */
+        public static final String FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED =
+                "FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED";
+
+        /** The recording failed because it was not finished successfully */
+        public static final String FAILED_REASON_NOT_FINISHED = "FAILED_REASON_NOT_FINISHED";
+
+        /** The recording failed because the channel ID was invalid */
+        public static final String FAILED_REASON_INVALID_CHANNEL = "FAILED_REASON_INVALID_CHANNEL";
+
+        /** The recording failed because the scheduler was stopped */
+        public static final String FAILED_REASON_SCHEDULER_STOPPED
+                = "FAILED_REASON_SCHEDULER_STOPPED";
+
+        /** The recording failed because some messages were not sent to the message queue */
+        public static final String FAILED_REASON_MESSAGE_NOT_SENT =
+                "FAILED_REASON_MESSAGE_NOT_SENT";
+
+        /**
+         * The recording failed because it was failed to establish a connection to the recording
+         * session for the corresponding TV input.
+         */
+        public static final String FAILED_REASON_CONNECTION_FAILED =
+                "FAILED_REASON_CONNECTION_FAILED";
+
+        /**
+         * The recording failed because a required recording resource was not able to be
+         * allocated.
+         */
+        public static final String FAILED_REASON_RESOURCE_BUSY = "FAILED_REASON_RESOURCE_BUSY";
+
+        /** The recording failed because the input was not available */
+        public static final String FAILED_REASON_INPUT_UNAVAILABLE =
+                "FAILED_REASON_INPUT_UNAVAILABLE";
+
+        /** The recording failed because the input doesn't support recording */
+        public static final String FAILED_REASON_INPUT_DVR_UNSUPPORTED =
+                "FAILED_REASON_INPUT_DVR_UNSUPPORTED";
+
+        /** The recording failed because the space was not sufficient */
+        public static final String FAILED_REASON_INSUFFICIENT_SPACE =
+                "FAILED_REASON_INSUFFICIENT_SPACE";
+
         /**
          * The priority of this recording.
          *

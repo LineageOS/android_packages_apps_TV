@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
@@ -194,7 +195,7 @@ public class RecordingTask extends RecordingCallback
     public void onDisconnected(String inputId) {
         if (DEBUG) Log.d(TAG, "onDisconnected(" + inputId + ")");
         if (mRecordingSession != null && mState != State.FINISHED) {
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_NOT_FINISHED);
         }
     }
 
@@ -202,7 +203,7 @@ public class RecordingTask extends RecordingCallback
     public void onConnectionFailed(String inputId) {
         if (DEBUG) Log.d(TAG, "onConnectionFailed(" + inputId + ")");
         if (mRecordingSession != null) {
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_CONNECTION_FAILED);
         }
     }
 
@@ -217,7 +218,7 @@ public class RecordingTask extends RecordingCallback
                 || !sendEmptyMessageAtAbsoluteTime(
                         MSG_START_RECORDING,
                         mScheduledRecording.getStartTimeMs() - RECORDING_EARLY_START_OFFSET_MS)) {
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_MESSAGE_NOT_SENT);
         }
     }
 
@@ -249,6 +250,7 @@ public class RecordingTask extends RecordingCallback
         if (mRecordingSession == null) {
             return;
         }
+        int error;
         switch (reason) {
             case TvInputManager.RECORDING_ERROR_INSUFFICIENT_SPACE:
                 Log.i(TAG, "Insufficient space to record " + mScheduledRecording);
@@ -284,23 +286,28 @@ public class RecordingTask extends RecordingCallback
                                 }
                             }
                         });
-                // fall through
+                error = ScheduledRecording.FAILED_REASON_INSUFFICIENT_SPACE;
+                break;
+            case TvInputManager.RECORDING_ERROR_RESOURCE_BUSY:
+                error = ScheduledRecording.FAILED_REASON_RESOURCE_BUSY;
+                break;
             default:
-                failAndQuit();
+                error = ScheduledRecording.FAILED_REASON_OTHER;
                 break;
         }
+        failAndQuit(error);
     }
 
     private void handleInit() {
         if (DEBUG) Log.d(TAG, "handleInit " + mScheduledRecording);
         if (mScheduledRecording.getEndTimeMs() < mClock.currentTimeMillis()) {
             Log.w(TAG, "End time already past, not recording " + mScheduledRecording);
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED);
             return;
         }
         if (mChannel == null) {
             Log.w(TAG, "Null channel for " + mScheduledRecording);
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_INVALID_CHANNEL);
             return;
         }
         if (mChannel.getId() != mScheduledRecording.getChannelId()) {
@@ -310,7 +317,7 @@ public class RecordingTask extends RecordingCallback
                             + mChannel
                             + " does not match scheduled recording "
                             + mScheduledRecording);
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_INVALID_CHANNEL);
             return;
         }
 
@@ -329,8 +336,14 @@ public class RecordingTask extends RecordingCallback
     }
 
     private void failAndQuit() {
+        failAndQuit(ScheduledRecording.FAILED_REASON_OTHER);
+    }
+
+    private void failAndQuit(Integer reason) {
         if (DEBUG) Log.d(TAG, "failAndQuit");
-        updateRecordingState(ScheduledRecording.STATE_RECORDING_FAILED);
+        updateRecordingState(
+                ScheduledRecording.STATE_RECORDING_FAILED,
+                reason);
         mState = State.ERROR;
         sendRemove();
     }
@@ -360,7 +373,7 @@ public class RecordingTask extends RecordingCallback
 
         if (!sendEmptyMessageAtAbsoluteTime(
                 MSG_STOP_RECORDING, mScheduledRecording.getEndTimeMs())) {
-            failAndQuit();
+            failAndQuit(ScheduledRecording.FAILED_REASON_MESSAGE_NOT_SENT);
         }
     }
 
@@ -380,7 +393,7 @@ public class RecordingTask extends RecordingCallback
             if (mState == State.RECORDING_STARTED) {
                 mHandler.removeMessages(MSG_STOP_RECORDING);
                 if (!sendEmptyMessageAtAbsoluteTime(MSG_STOP_RECORDING, schedule.getEndTimeMs())) {
-                    failAndQuit();
+                    failAndQuit(ScheduledRecording.FAILED_REASON_MESSAGE_NOT_SENT);
                 }
             }
         }
@@ -435,7 +448,13 @@ public class RecordingTask extends RecordingCallback
     }
 
     private void updateRecordingState(@ScheduledRecording.RecordingState int state) {
-        if (DEBUG) Log.d(TAG, "Updating the state of " + mScheduledRecording + " to " + state);
+        updateRecordingState(state, null);
+    }
+    private void updateRecordingState(
+            @ScheduledRecording.RecordingState int state, @Nullable Integer reason) {
+        if (DEBUG) {
+            Log.d(TAG, "Updating the state of " + mScheduledRecording + " to " + state);
+        }
         mScheduledRecording =
                 ScheduledRecording.buildFrom(mScheduledRecording).setState(state).build();
         runOnMainThread(
@@ -449,11 +468,17 @@ public class RecordingTask extends RecordingCallback
                             removeRecordedProgram();
                         } else {
                             // Update the state based on the object in DataManager in case when it
-                            // has been
-                            // updated. mScheduledRecording will be updated from
+                            // has been updated. mScheduledRecording will be updated from
                             // onScheduledRecordingStateChanged.
-                            mDataManager.updateScheduledRecording(
-                                    ScheduledRecording.buildFrom(schedule).setState(state).build());
+                            ScheduledRecording.Builder builder =
+                                    ScheduledRecording
+                                            .buildFrom(schedule)
+                                            .setState(state);
+                            if (state == ScheduledRecording.STATE_RECORDING_FAILED
+                                    && reason != null) {
+                                builder.setFailedReason(reason);
+                            }
+                            mDataManager.updateScheduledRecording(builder.build());
                         }
                     }
                 });
@@ -507,7 +532,9 @@ public class RecordingTask extends RecordingCallback
     /** Clean up the task. */
     public void cleanUp() {
         if (mState == State.RECORDING_STARTED || mState == State.RECORDING_STOP_REQUESTED) {
-            updateRecordingState(ScheduledRecording.STATE_RECORDING_FAILED);
+            updateRecordingState(
+                    ScheduledRecording.STATE_RECORDING_FAILED,
+                    ScheduledRecording.FAILED_REASON_SCHEDULER_STOPPED);
         }
         release();
         if (mHandler != null) {
