@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv.tuner.exoplayer.buffer;
+package com.android.tv.tuner.testing.buffer;
 
 import android.os.SystemClock;
+import com.android.tv.tuner.exoplayer.buffer.SampleChunk;
+import com.android.tv.tuner.exoplayer.buffer.SamplePool;
 import com.google.android.exoplayer.SampleHolder;
 import java.io.File;
 import java.io.IOException;
 
+/** A Sample chunk that is slow for testing */
 public class VerySlowSampleChunk extends SampleChunk {
 
+    /** Creates a {@link VerySlowSampleChunk}. */
     public static class VerySlowSampleChunkCreator extends SampleChunkCreator {
         @Override
         public SampleChunk createSampleChunk(

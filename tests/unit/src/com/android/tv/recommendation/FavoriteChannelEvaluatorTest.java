@@ -19,12 +19,15 @@ package com.android.tv.recommendation;
 import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Unit tests for {@link FavoriteChannelEvaluator}. */
 @SmallTest
+@RunWith(AndroidJUnit4.class)
 public class FavoriteChannelEvaluatorTest extends EvaluatorTestCase<FavoriteChannelEvaluator> {
     private static final int DEFAULT_NUMBER_OF_CHANNELS = 4;
     private static final long DEFAULT_WATCH_START_TIME_MS =

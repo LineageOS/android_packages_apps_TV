@@ -23,6 +23,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
@@ -90,6 +91,25 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
             BufferManager bufferManager,
             PlaybackBufferListener bufferListener,
             boolean isRecording) {
+        this(
+                uri,
+                source,
+                bufferManager,
+                bufferListener,
+                isRecording,
+                Looper.myLooper(),
+                new HandlerThread("SourceReaderThread"));
+    }
+
+    @VisibleForTesting
+    public ExoPlayerSampleExtractor(
+            Uri uri,
+            DataSource source,
+            BufferManager bufferManager,
+            PlaybackBufferListener bufferListener,
+            boolean isRecording,
+            Looper workerLooper,
+            HandlerThread sourceReaderThread) {
         // It'll be used as a timeshift file chunk name's prefix.
         mId = System.currentTimeMillis();
 
@@ -101,7 +121,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                     }
                 };
 
-        mSourceReaderThread = new HandlerThread("SourceReaderThread");
+        mSourceReaderThread = sourceReaderThread;
         mSourceReaderWorker =
                 new SourceReaderWorker(
                         new ExtractorMediaSource(
@@ -148,8 +168,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                                     }
                                 },
                                 new ExoPlayerExtractorsFactory(),
-                                // Do not create a handler if we not on a looper. e.g. test.
-                                Looper.myLooper() != null ? new Handler() : null,
+                                new Handler(workerLooper),
                                 eventListener));
         if (isRecording) {
             mSampleBuffer =
