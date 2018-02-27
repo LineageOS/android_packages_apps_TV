@@ -709,11 +709,6 @@ public class TunerSessionWorker
                     clearCallbacksAndMessagesSafely();
                     mChannelDataManager.removeAllCallbacksAndMessages();
                     if (channel != null) {
-                        if (mTvInputManager.isParentalControlsEnabled() && channel.isLocked()) {
-                            Log.i(TAG, "onTune() is failed. Channel is blocked" + channel);
-                            mSession.notifyContentBlocked(TvContentRating.UNRATED);
-                            return true;
-                        }
                         mChannelDataManager.requestProgramsData(channel);
                     }
                     prepareTune(channel, recording);
