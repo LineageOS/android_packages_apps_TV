@@ -204,6 +204,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
         private static final int RETRY_INTERVAL_MS = 50;
 
         private final MediaSource mSampleSource;
+        private final MediaSource.Listener mSampleSourceListener;
         private MediaPeriod mMediaPeriod;
         private SampleStream[] mStreams;
         private boolean[] mTrackMetEos;
@@ -215,17 +216,16 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
 
         public SourceReaderWorker(MediaSource sampleSource) {
             mSampleSource = sampleSource;
-            mSampleSource.prepareSource(
-                    null,
-                    false,
+            mSampleSourceListener =
                     new MediaSource.Listener() {
                         @Override
                         public void onSourceInfoRefreshed(
-                                MediaSource source, Timeline timeline, Object manifest) {
-                            // Dynamic stream change is not supported yet. b/28169263
-                            // For now, this will cause EOS and playback reset.
+                            MediaSource source, Timeline timeline, Object manifest) {
+                          // Dynamic stream change is not supported yet. b/28169263
+                          // For now, this will cause EOS and playback reset.
                         }
-                    });
+                    };
+            mSampleSource.prepareSource(null, false, mSampleSourceListener);
             mDecoderInputBuffer =
                     new DecoderInputBuffer(DecoderInputBuffer.BUFFER_REPLACEMENT_MODE_NORMAL);
             mSampleHolder = new SampleHolder(SampleHolder.BUFFER_REPLACEMENT_MODE_NORMAL);
@@ -382,7 +382,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                 case MSG_RELEASE:
                     if (mMediaPeriod != null) {
                         mSampleSource.releasePeriod(mMediaPeriod);
-                        mSampleSource.releaseSource();
+                        mSampleSource.releaseSource(mSampleSourceListener);
                         mMediaPeriod = null;
                     }
                     cleanUp();
