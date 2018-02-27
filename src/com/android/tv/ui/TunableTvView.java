@@ -96,8 +96,6 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     public static final int VIDEO_UNAVAILABLE_REASON_SCREEN_BLOCKED = -3;
     public static final int VIDEO_UNAVAILABLE_REASON_NONE = -100;
 
-    private OnTalkBackDpadKeyListener mOnTalkBackDpadKeyListener;
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({BLOCK_SCREEN_TYPE_NO_UI, BLOCK_SCREEN_TYPE_SHRUNKEN_TV_VIEW, BLOCK_SCREEN_TYPE_NORMAL})
     public @interface BlockScreenType {}
@@ -502,30 +500,6 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                                 }
                             }
                         });
-        View placeholder = findViewById(R.id.placeholder);
-        placeholder.requestFocus();
-        findViewById(R.id.channel_up)
-                .setOnFocusChangeListener(
-                        (v, hasFocus) -> {
-                            if (hasFocus) {
-                                placeholder.requestFocus();
-                                if (mOnTalkBackDpadKeyListener != null) {
-                                    mOnTalkBackDpadKeyListener.onTalkBackDpadKey(
-                                            KeyEvent.KEYCODE_DPAD_UP);
-                                }
-                            }
-                        });
-        findViewById(R.id.channel_down)
-                .setOnFocusChangeListener(
-                        (v, hasFocus) -> {
-                            if (hasFocus) {
-                                placeholder.requestFocus();
-                                if (mOnTalkBackDpadKeyListener != null) {
-                                    mOnTalkBackDpadKeyListener.onTalkBackDpadKey(
-                                            KeyEvent.KEYCODE_DPAD_DOWN);
-                                }
-                            }
-                        });
     }
 
     public void initialize(
@@ -867,10 +841,6 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     public void setOnUnhandledInputEventListener(OnUnhandledInputEventListener listener) {
         mTvView.setOnUnhandledInputEventListener(listener);
-    }
-
-    public void setOnTalkBackDpadKeyListener(OnTalkBackDpadKeyListener listener) {
-        mOnTalkBackDpadKeyListener = listener;
     }
 
     public void setClosedCaptionEnabled(boolean enabled) {
@@ -1444,12 +1414,6 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                 view.setBackgroundImage(drawablePosterArt);
             }
         };
-    }
-
-    /** Listens for dpad actions that are otherwise trapped by talkback */
-    public interface OnTalkBackDpadKeyListener {
-
-        void onTalkBackDpadKey(int keycode);
     }
 
     /** A listener which receives the notification when the screen is blocked/unblocked. */
