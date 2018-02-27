@@ -57,6 +57,14 @@ public interface WritableDvrDataManager extends DvrDataManager {
     void changeState(ScheduledRecording scheduledRecording, @RecordingState int newState);
 
     /**
+     * Changes the state of the recording.
+     *
+     * @param reason the reason of this change
+     */
+    void changeState(
+            ScheduledRecording scheduledRecording, @RecordingState int newState, int reason);
+
+    /**
      * Remove all the records related to the input.
      *
      * <p>Note that this should be called after the input was removed.

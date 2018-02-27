@@ -41,6 +41,10 @@ abstract class RecordingDetailsFragment extends DvrDetailsFragment {
         return mRecording != null;
     }
 
+    protected ScheduledRecording getScheduledRecording() {
+        return mRecording;
+    }
+
     /** Returns {@link ScheduledRecording} for the current fragment. */
     public ScheduledRecording getRecording() {
         return mRecording;

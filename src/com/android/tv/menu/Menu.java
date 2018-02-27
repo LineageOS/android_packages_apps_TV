@@ -21,24 +21,22 @@ import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.v17.leanback.widget.HorizontalGridView;
 import android.util.Log;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import com.android.tv.ChannelTuner;
 import com.android.tv.R;
 import com.android.tv.TvOptionsManager;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.WeakHandler;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.DurationTimer;
 import com.android.tv.menu.MenuRowFactory.PartnerRow;
 import com.android.tv.menu.MenuRowFactory.TvOptionsRow;
 import com.android.tv.ui.TunableTvView;
+import com.android.tv.ui.hideable.AutoHideScheduler;
 import com.android.tv.util.ViewCache;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 /** A class which controls the menu. */
-public class Menu {
+public class Menu implements AccessibilityStateChangeListener {
     private static final String TAG = "Menu";
     private static final boolean DEBUG = false;
 
@@ -103,15 +101,13 @@ public class Menu {
 
     private static final String SCREEN_NAME = "Menu";
 
-    private static final int MSG_HIDE_MENU = 1000;
-
     private final Context mContext;
     private final IMenuView mMenuView;
     private final Tracker mTracker;
     private final DurationTimer mVisibleTimer = new DurationTimer();
     private final long mShowDurationMillis;
     private final OnMenuVisibilityChangeListener mOnMenuVisibilityChangeListener;
-    private final WeakHandler<Menu> mHandler = new MenuWeakHandler(this, Looper.getMainLooper());
+    private final AutoHideScheduler mAutoHideScheduler;
 
     private final MenuUpdater mMenuUpdater;
     private final List<MenuRow> mMenuRows = new ArrayList<>();
@@ -161,6 +157,7 @@ public class Menu {
         addMenuRow(menuRowFactory.createMenuRow(this, PartnerRow.class));
         addMenuRow(menuRowFactory.createMenuRow(this, TvOptionsRow.class));
         mMenuView.setMenuRows(mMenuRows);
+        mAutoHideScheduler = new AutoHideScheduler(context, () -> hide(true));
     }
 
     /**
@@ -183,7 +180,7 @@ public class Menu {
         for (MenuRow row : mMenuRows) {
             row.release();
         }
-        mHandler.removeCallbacksAndMessages(null);
+        mAutoHideScheduler.cancel();
     }
 
     /** Preloads the item view used for the menu. */
@@ -238,7 +235,7 @@ public class Menu {
         if (mAnimationDisabledForTest) {
             withAnimation = false;
         }
-        mHandler.removeMessages(MSG_HIDE_MENU);
+        mAutoHideScheduler.cancel();
         if (withAnimation) {
             if (!mHideAnimator.isStarted()) {
                 mHideAnimator.start();
@@ -261,10 +258,7 @@ public class Menu {
 
     /** Schedules to hide the menu in some seconds. */
     public void scheduleHide() {
-        mHandler.removeMessages(MSG_HIDE_MENU);
-        if (!mKeepVisible) {
-            mHandler.sendEmptyMessageDelayed(MSG_HIDE_MENU, mShowDurationMillis);
-        }
+        mAutoHideScheduler.schedule(mShowDurationMillis);
     }
 
     /**
@@ -276,7 +270,7 @@ public class Menu {
     public void setKeepVisible(boolean keepVisible) {
         mKeepVisible = keepVisible;
         if (mKeepVisible) {
-            mHandler.removeMessages(MSG_HIDE_MENU);
+            mAutoHideScheduler.cancel();
         } else if (isActive()) {
             scheduleHide();
         }
@@ -284,7 +278,7 @@ public class Menu {
 
     @VisibleForTesting
     boolean isHideScheduled() {
-        return mHandler.hasMessages(MSG_HIDE_MENU);
+        return mAutoHideScheduler.isScheduled();
     }
 
     /** Returns {@code true} if the menu is open and not hiding. */
@@ -326,6 +320,11 @@ public class Menu {
         mMenuUpdater.onStreamInfoChanged();
     }
 
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+        mAutoHideScheduler.onAccessibilityStateChanged(enabled);
+    }
+
     @VisibleForTesting
     void disableAnimationForTest() {
         if (!CommonUtils.isRunningInTest()) {
@@ -338,18 +337,5 @@ public class Menu {
     public abstract static class OnMenuVisibilityChangeListener {
         /** Called when the menu becomes visible/invisible. */
         public abstract void onMenuVisibilityChange(boolean visible);
-    }
-
-    private static class MenuWeakHandler extends WeakHandler<Menu> {
-        public MenuWeakHandler(Menu menu, Looper mainLooper) {
-            super(mainLooper, menu);
-        }
-
-        @Override
-        public void handleMessage(Message msg, @NonNull Menu menu) {
-            if (msg.what == MSG_HIDE_MENU) {
-                menu.hide(true);
-            }
-        }
     }
 }

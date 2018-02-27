@@ -27,14 +27,15 @@ import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.text.format.DateUtils;
 import android.util.ArraySet;
 import android.util.Log;
+
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.list.SchedulesHeaderRow.DateHeaderRow;
 import com.android.tv.util.Utils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -114,33 +115,6 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
                 }
             }
             deadLine += ONE_DAY_MS;
-        }
-        if (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())) {
-            List<ScheduledRecording> failedRecordingList =
-                    TvSingletons.getSingletons(mContext)
-                            .getDvrDataManager()
-                            .getFailedScheduledRecordings();
-            Collections.sort(
-                    failedRecordingList,
-                    ScheduledRecording.START_TIME_COMPARATOR.reversed());
-            if (!failedRecordingList.isEmpty()) {
-                SchedulesHeaderRow headerRow =
-                        // TODO(b/72638385): use R.string
-                        // TODO(b/72638385): define another HeaderRow class
-                        new DateHeaderRow(
-                                "Failed recordings",
-                                mContext.getResources()
-                                        .getQuantityString(
-                                                R.plurals.dvr_schedules_section_subtitle,
-                                                failedRecordingList.size(),
-                                                failedRecordingList.size()),
-                                failedRecordingList.size(),
-                                Long.MAX_VALUE);
-                add(headerRow);
-                for (ScheduledRecording recording : failedRecordingList) {
-                    add(new ScheduleRow(recording, headerRow));
-                }
-            }
         }
         sendNextUpdateMessage(System.currentTimeMillis());
     }
@@ -414,9 +388,7 @@ class ScheduleRowAdapter extends ArrayObjectAdapter {
             Object item = get(i);
             if (item instanceof ScheduleRow) {
                 ScheduleRow row = (ScheduleRow) item;
-                ScheduledRecording recording = row.getSchedule();
-                if (row.getEndTimeMs() <= currentTimeMs && (recording == null
-                        || recording.getState() != ScheduledRecording.STATE_RECORDING_FAILED)) {
+                if (row.getEndTimeMs() <= currentTimeMs) {
                     removeScheduleRow(row);
                 }
             }

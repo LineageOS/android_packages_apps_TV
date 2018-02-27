@@ -278,7 +278,9 @@ public class InputTaskScheduler {
             ScheduledRecording schedule = iter.next();
             if (schedule.getEndTimeMs() - currentTimeMs
                     <= MIN_REMAIN_DURATION_PERCENT * schedule.getDuration()) {
-                fail(schedule);
+                Log.e(TAG, "Error! Program ended before recording started:" + schedule);
+                fail(schedule,
+                        ScheduledRecording.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED);
                 iter.remove();
             }
         }
@@ -389,7 +391,7 @@ public class InputTaskScheduler {
         return candidate;
     }
 
-    private void fail(ScheduledRecording schedule) {
+    private void fail(ScheduledRecording schedule, int reason) {
         // It's called when the scheduling has been failed without creating RecordingTask.
         runOnMainHandler(
                 new Runnable() {
@@ -399,10 +401,11 @@ public class InputTaskScheduler {
                                 mDataManager.getScheduledRecording(schedule.getId());
                         if (scheduleInManager != null) {
                             // The schedule should be updated based on the object from DataManager
-                            // in case
-                            // when it has been updated.
+                            // in case when it has been updated.
                             mDataManager.changeState(
-                                    scheduleInManager, ScheduledRecording.STATE_RECORDING_FAILED);
+                                    scheduleInManager,
+                                    ScheduledRecording.STATE_RECORDING_FAILED,
+                                    reason);
                         }
                     }
                 });

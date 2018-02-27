@@ -280,12 +280,18 @@ public class RecordingScheduler extends TvInputCallback implements ScheduledReco
         TvInputInfo input = Utils.getTvInputInfoForInputId(mContext, schedule.getInputId());
         if (input == null) {
             Log.e(TAG, "Can't find input for " + schedule);
-            mDataManager.changeState(schedule, ScheduledRecording.STATE_RECORDING_FAILED);
+            mDataManager.changeState(
+                    schedule,
+                    ScheduledRecording.STATE_RECORDING_FAILED,
+                    ScheduledRecording.FAILED_REASON_INPUT_UNAVAILABLE);
             return;
         }
         if (!input.canRecord() || input.getTunerCount() <= 0) {
             Log.e(TAG, "TV input doesn't support recording: " + input);
-            mDataManager.changeState(schedule, ScheduledRecording.STATE_RECORDING_FAILED);
+            mDataManager.changeState(
+                    schedule,
+                    ScheduledRecording.STATE_RECORDING_FAILED,
+                    ScheduledRecording.FAILED_REASON_INPUT_DVR_UNSUPPORTED);
             return;
         }
         InputTaskScheduler inputTaskScheduler = mInputSchedulerMap.get(input.getId());

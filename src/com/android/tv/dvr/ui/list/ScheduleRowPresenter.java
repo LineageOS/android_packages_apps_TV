@@ -437,6 +437,9 @@ class ScheduleRowPresenter extends RowPresenter {
                 // TODO(b/72638385): show real error messages
                 // TODO(b/72638385): use a better name for ConflictInfoXXX
                 conflictInfo = "Failed";
+                if (schedule.getFailedReason() != null) {
+                    conflictInfo += " (Error code: " + schedule.getFailedReason() + ")";
+                }
             } else if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
                 conflictInfo = mTunerConflictWillBePartiallyRecordedInfo;
             } else {
@@ -478,13 +481,8 @@ class ScheduleRowPresenter extends RowPresenter {
 
     /** Returns time text for time view from scheduled recording. */
     protected String onGetRecordingTimeText(ScheduleRow row) {
-        boolean showDate =
-                TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
-                        && row.getSchedule() != null
-                        && row.getSchedule().getState()
-                                == ScheduledRecording.STATE_RECORDING_FAILED;
         return Utils.getDurationString(
-                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, showDate, true, 0);
+                mContext, row.getStartTimeMs(), row.getEndTimeMs(), true, false, true, 0);
     }
 
     /** Returns program info text for program title view. */
@@ -511,9 +509,10 @@ class ScheduleRowPresenter extends RowPresenter {
 
     private boolean isInfoClickable(ScheduleRow row) {
         ScheduledRecording schedule = row.getSchedule();
-        // TODO: handle onClicked for finished schedules
         return schedule != null
-                && (schedule.isNotStarted() || schedule.isInProgress() || schedule.isFinished());
+                && (schedule.isNotStarted()
+                        || schedule.isInProgress()
+                        || schedule.isFinished());
     }
 
     /** Called when the button in a row is clicked. */
@@ -810,7 +809,7 @@ class ScheduleRowPresenter extends RowPresenter {
         if (row.getSchedule() != null) {
             if (row.isRecordingInProgress()) {
                 return new int[] {ACTION_STOP_RECORDING};
-            } else if (row.isOnAir()) {
+            } else if (row.isOnAir() && !row.hasRecordedProgram()) {
                 if (row.isRecordingNotStarted()) {
                     if (canResolveConflict()) {
                         // The "START" action can change the conflict states.
@@ -865,8 +864,9 @@ class ScheduleRowPresenter extends RowPresenter {
     /** Checks if the row should be grayed out. */
     protected boolean shouldBeGrayedOut(ScheduleRow row) {
         return row.getSchedule() == null
-                || (row.isOnAir() && !row.isRecordingInProgress())
+                || (row.isOnAir() && !row.isRecordingInProgress() && !row.hasRecordedProgram())
                 || mDvrManager.isConflicting(row.getSchedule())
-                || row.isScheduleCanceled();
+                || row.isScheduleCanceled()
+                || row.isRecordingFailed();
     }
 }

@@ -30,6 +30,7 @@ import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
 import com.android.tv.tests.ui.LiveChannelsTestController;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,6 +106,7 @@ public class CustomizeChannelListFragmentTest {
         assertShrunkenTvView(false);
     }
 
+    @Ignore("b/73727914")
     @Test
     public void testCustomizeChannelList_timeout() {
         // Show customize channel list fragment

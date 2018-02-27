@@ -26,7 +26,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.tv.TvContentRating;
 import android.media.tv.TvInputInfo;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -38,6 +37,8 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
@@ -56,6 +57,8 @@ import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.parental.ContentRatingsManager;
+import com.android.tv.ui.TvTransitionManager.TransitionLayout;
+import com.android.tv.ui.hideable.AutoHideScheduler;
 import com.android.tv.util.Utils;
 import com.android.tv.util.images.ImageCache;
 import com.android.tv.util.images.ImageLoader;
@@ -63,7 +66,8 @@ import com.android.tv.util.images.ImageLoader.ImageLoaderCallback;
 import com.android.tv.util.images.ImageLoader.LoadTvInputLogoTask;
 
 /** A view to render channel banner. */
-public class ChannelBannerView extends FrameLayout implements TvTransitionManager.TransitionLayout {
+public class ChannelBannerView extends FrameLayout
+        implements TransitionLayout, AccessibilityStateChangeListener {
     private static final String TAG = "ChannelBannerView";
     private static final boolean DEBUG = false;
 
@@ -113,7 +117,7 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     private Channel mCurrentChannel;
     private boolean mCurrentChannelLogoExists;
     private Program mLastUpdatedProgram;
-    private final Handler mHandler = new Handler();
+    private final AutoHideScheduler mAutoHideScheduler;
     private final DvrManager mDvrManager;
     private ContentRatingsManager mContentRatingsManager;
     private TvContentRating mBlockingContentRating;
@@ -128,21 +132,6 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     private final Animator mProgramDescriptionFadeInAnimator;
     private final Animator mProgramDescriptionFadeOutAnimator;
 
-    private final Runnable mHideRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    mCurrentHeight = 0;
-                    mMainActivity
-                            .getOverlayManager()
-                            .hideOverlays(
-                                    TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
-                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
-                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
-                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
-                                            | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
-                }
-            };
     private final long mShowDurationMillis;
     private final int mChannelLogoImageViewWidth;
     private final int mChannelLogoImageViewHeight;
@@ -183,7 +172,6 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
     public ChannelBannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mResources = getResources();
-
         mMainActivity = (MainActivity) context;
 
         mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);
@@ -235,6 +223,9 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         if (sClosedCaptionMark == null) {
             sClosedCaptionMark = context.getString(R.string.closed_caption);
         }
+        mAutoHideScheduler = new AutoHideScheduler(context, this::hide);
+        context.getSystemService(AccessibilityManager.class)
+                .addAccessibilityStateChangeListener(mAutoHideScheduler);
     }
 
     @Override
@@ -278,22 +269,13 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         if (fromEmptyScene) {
             ViewUtils.setTransitionAlpha(mChannelView, 1f);
         }
-        scheduleHide();
+        mAutoHideScheduler.schedule(mShowDurationMillis);
     }
 
     @Override
     public void onExitAction() {
         mCurrentHeight = 0;
-        cancelHide();
-    }
-
-    private void scheduleHide() {
-        cancelHide();
-        mHandler.postDelayed(mHideRunnable, mShowDurationMillis);
-    }
-
-    private void cancelHide() {
-        mHandler.removeCallbacks(mHideRunnable);
+        mAutoHideScheduler.cancel();
     }
 
     private void resetAnimationEffects() {
@@ -343,7 +325,7 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         mUpdateOnTune = updateOnTune;
         if (mUpdateOnTune) {
             if (isShown()) {
-                scheduleHide();
+                mAutoHideScheduler.schedule(mShowDurationMillis);
             }
             mBlockingContentRating = null;
             mCurrentChannel = mMainActivity.getCurrentChannel();
@@ -354,6 +336,18 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         }
         updateProgramInfo(mMainActivity.getCurrentProgram());
         mUpdateOnTune = false;
+    }
+
+    private void hide() {
+        mCurrentHeight = 0;
+        mMainActivity
+                .getOverlayManager()
+                .hideOverlays(
+                        TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
     }
 
     /**
@@ -830,5 +824,10 @@ public class ChannelBannerView extends FrameLayout implements TvTransitionManage
         animator.playSequentially(fadeOutAndHeightAnimator, mProgramDescriptionFadeInAnimator);
         animator.addListener(mResizeAnimatorListener);
         return animator;
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+        mAutoHideScheduler.onAccessibilityStateChanged(enabled);
     }
 }

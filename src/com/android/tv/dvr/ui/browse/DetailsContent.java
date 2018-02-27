@@ -99,6 +99,39 @@ class DetailsContent {
                 .build(context);
     }
 
+    static DetailsContent createFromFailedScheduledRecording(
+            Context context, ScheduledRecording scheduledRecording, String errMsg) {
+        Channel channel =
+                TvSingletons.getSingletons(context)
+                        .getChannelDataManager()
+                        .getChannel(scheduledRecording.getChannelId());
+        String description;
+        if (scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED
+                && errMsg != null) {
+            description = errMsg
+                    + " (Error code: " + scheduledRecording.getFailedReason() + ")";
+        } else {
+            description =
+                    !TextUtils.isEmpty(scheduledRecording.getProgramDescription())
+                            ? scheduledRecording.getProgramDescription()
+                            : scheduledRecording.getProgramLongDescription();
+        }
+        if (TextUtils.isEmpty(description)) {
+            description = channel != null ? channel.getDescription() : null;
+        }
+        return new DetailsContent.Builder()
+                .setChannelId(scheduledRecording.getChannelId())
+                .setProgramTitle(scheduledRecording.getProgramTitle())
+                .setSeasonNumber(scheduledRecording.getSeasonNumber())
+                .setEpisodeNumber(scheduledRecording.getEpisodeNumber())
+                .setStartTimeUtcMillis(scheduledRecording.getStartTimeMs())
+                .setEndTimeUtcMillis(scheduledRecording.getEndTimeMs())
+                .setDescription(description)
+                .setPosterArtUri(scheduledRecording.getProgramPosterArtUri())
+                .setThumbnailUri(scheduledRecording.getProgramThumbnailUri())
+                .build(context);
+    }
+
     private DetailsContent() {}
 
     /** Returns title. */

@@ -16,21 +16,20 @@
 
 package com.android.tv.recommendation;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.MoreAsserts;
 import com.android.tv.data.Program;
 import com.android.tv.recommendation.RoutineWatchEvaluator.ProgramTime;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/** Tests for {@link RoutineWatchEvaluator}. */
 @SmallTest
 @RunWith(AndroidJUnit4.class)
 public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEvaluator> {
@@ -67,13 +66,23 @@ public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEva
 
     @Test
     public void testSplitTextToWords() {
-        assertSplitTextToWords("");
-        assertSplitTextToWords("Google", "Google");
-        assertSplitTextToWords("The Big Bang Theory", "The", "Big", "Bang", "Theory");
-        assertSplitTextToWords("Hello, world!", "Hello", "world");
-        assertSplitTextToWords("Adam's Rib", "Adam's", "Rib");
-        assertSplitTextToWords("G.I. Joe", "G.I", "Joe");
-        assertSplitTextToWords("A.I.", "A.I");
+        assertThat(RoutineWatchEvaluator.splitTextToWords("")).containsExactly().inOrder();
+        assertThat(RoutineWatchEvaluator.splitTextToWords("Google"))
+                .containsExactly("Google")
+                .inOrder();
+        assertThat(RoutineWatchEvaluator.splitTextToWords("The Big Bang Theory"))
+                .containsExactly("The", "Big", "Bang", "Theory")
+                .inOrder();
+        assertThat(RoutineWatchEvaluator.splitTextToWords("Hello, world!"))
+                .containsExactly("Hello", "world")
+                .inOrder();
+        assertThat(RoutineWatchEvaluator.splitTextToWords("Adam's Rib"))
+                .containsExactly("Adam's", "Rib")
+                .inOrder();
+        assertThat(RoutineWatchEvaluator.splitTextToWords("G.I. Joe"))
+                .containsExactly("G.I", "Joe")
+                .inOrder();
+        assertThat(RoutineWatchEvaluator.splitTextToWords("A.I.")).containsExactly("A.I").inOrder();
     }
 
     @Test
@@ -112,11 +121,15 @@ public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEva
     @Test
     public void testCalculateTitleMatchScore_longerMatchIsBetter() {
         String base = "foo bar baz";
-        assertInOrder(
-                score(base, ""),
-                score(base, "bar"),
-                score(base, "foo bar"),
-                score(base, "foo bar baz"));
+        assertThat(
+                        new ScoredItem[] {
+                            score(base, ""),
+                            score(base, "bar"),
+                            score(base, "foo bar"),
+                            score(base, "foo bar baz")
+                        })
+                .asList()
+                .isOrdered();
     }
 
     @Test
@@ -229,11 +242,6 @@ public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEva
                 RoutineWatchEvaluator.getTimeOfDayInSec(todayAtHourMinSec(23, 59, 59)));
     }
 
-    private void assertSplitTextToWords(String text, String... words) {
-        List<String> wordList = RoutineWatchEvaluator.splitTextToWords(text);
-        MoreAsserts.assertContentsInOrder(wordList, words);
-    }
-
     private void assertMaximumMatchedWordSequenceLength(
             int expectedLength, String text1, String text2) {
         List<String> wordList1 = RoutineWatchEvaluator.splitTextToWords(text1);
@@ -316,10 +324,5 @@ public class RoutineWatchEvaluatorTest extends EvaluatorTestCase<RoutineWatchEva
                 .setStartTimeUtcMillis(startTimeMs)
                 .setEndTimeUtcMillis(startTimeMs + programDurationMs)
                 .build();
-    }
-
-    private static <T> void assertInOrder(T... items) {
-        TreeSet<T> copy = new TreeSet<>(Arrays.asList(items));
-        MoreAsserts.assertContentsInOrder(copy, items);
     }
 }

@@ -15,7 +15,7 @@
  */
 package com.android.tv.util.images;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.graphics.Bitmap;
 import android.support.test.filters.SmallTest;
@@ -58,10 +58,9 @@ public class ScaledBitmapInfoTest {
 
     private static void assertNeedsToReload(
             boolean expected, ScaledBitmapInfo scaledBitmap, int reqWidth, int reqHeight) {
-        assertEquals(
-                scaledBitmap.id + " needToReload(" + reqWidth + "," + reqHeight + ")",
-                expected,
-                scaledBitmap.needToReload(reqWidth, reqHeight));
+    assertWithMessage(scaledBitmap.id + " needToReload(" + reqWidth + "," + reqHeight + ")")
+        .that(scaledBitmap.needToReload(reqWidth, reqHeight))
+        .isEqualTo(expected);
     }
 
     private static void assertScaledBitmapSize(
@@ -69,8 +68,12 @@ public class ScaledBitmapInfoTest {
             int expectedWidth,
             int expectedHeight,
             ScaledBitmapInfo actual) {
-        assertEquals(actual.id + " inSampleSize", expectedInSampleSize, actual.inSampleSize);
-        assertEquals(actual.id + " width", expectedWidth, actual.bitmap.getWidth());
-        assertEquals(actual.id + " height", expectedHeight, actual.bitmap.getHeight());
+    assertWithMessage(actual.id + " inSampleSize")
+        .that(actual.inSampleSize)
+        .isEqualTo(expectedInSampleSize);
+    assertWithMessage(actual.id + " width").that(actual.bitmap.getWidth()).isEqualTo(expectedWidth);
+    assertWithMessage(actual.id + " height")
+        .that(actual.bitmap.getHeight())
+        .isEqualTo(expectedHeight);
     }
 }

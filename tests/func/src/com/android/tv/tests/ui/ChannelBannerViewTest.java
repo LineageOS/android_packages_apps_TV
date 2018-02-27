@@ -21,6 +21,7 @@ import android.support.test.uiautomator.Until;
 import com.android.tv.R;
 import com.android.tv.testing.uihelper.Constants;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,7 @@ public class ChannelBannerViewTest {
                         + Constants.MAX_SHOW_DELAY_MILLIS;
     }
 
+    @Ignore("b/73727914")
     @Test
     public void testChannelBannerAppearDisappear() {
         controller.pressDPadCenter();

@@ -36,7 +36,7 @@ public class DvrDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DvrDatabaseHelper";
     private static final boolean DEBUG = false;
 
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
     private static final String DB_NAME = "dvr.db";
 
     private static final String SQL_CREATE_SCHEDULES =
@@ -162,6 +162,7 @@ public class DvrDatabaseHelper extends SQLiteOpenHelper {
                 new ColumnInfo(Schedules.COLUMN_PROGRAM_POST_ART_URI, SQL_DATA_TYPE_STRING),
                 new ColumnInfo(Schedules.COLUMN_PROGRAM_THUMBNAIL_URI, SQL_DATA_TYPE_STRING),
                 new ColumnInfo(Schedules.COLUMN_STATE, SQL_DATA_TYPE_STRING),
+                new ColumnInfo(Schedules.COLUMN_FAILED_REASON, SQL_DATA_TYPE_STRING),
                 new ColumnInfo(Schedules.COLUMN_SERIES_RECORDING_ID, SQL_DATA_TYPE_LONG)
             };
 
@@ -254,11 +255,17 @@ public class DvrDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (DEBUG) Log.d(TAG, "Executing SQL: " + SQL_DROP_SCHEDULES);
-        db.execSQL(SQL_DROP_SCHEDULES);
-        if (DEBUG) Log.d(TAG, "Executing SQL: " + SQL_DROP_SERIES_RECORDINGS);
-        db.execSQL(SQL_DROP_SERIES_RECORDINGS);
-        onCreate(db);
+        if (oldVersion < 17) {
+            if (DEBUG) Log.d(TAG, "Executing SQL: " + SQL_DROP_SCHEDULES);
+            db.execSQL(SQL_DROP_SCHEDULES);
+            if (DEBUG) Log.d(TAG, "Executing SQL: " + SQL_DROP_SERIES_RECORDINGS);
+            db.execSQL(SQL_DROP_SERIES_RECORDINGS);
+            onCreate(db);
+        }
+        if (oldVersion < 18) {
+            db.execSQL("ALTER TABLE " + Schedules.TABLE_NAME + " ADD COLUMN "
+                    + Schedules.COLUMN_FAILED_REASON + " TEXT DEFAULT null;");
+        }
     }
 
     /** Handles the query request and returns a {@link Cursor}. */

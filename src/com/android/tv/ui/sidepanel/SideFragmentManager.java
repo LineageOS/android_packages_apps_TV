@@ -22,12 +22,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import com.android.tv.R;
+import com.android.tv.ui.hideable.AutoHideScheduler;
 
-public class SideFragmentManager {
+/** Manages {@link SideFragment}s. */
+public class SideFragmentManager implements AccessibilityStateChangeListener {
     private static final String FIRST_BACKSTACK_RECORD_NAME = "0";
 
     private final Activity mActivity;
@@ -44,14 +46,7 @@ public class SideFragmentManager {
     private final Animator mShowAnimator;
     private final Animator mHideAnimator;
 
-    private final Handler mHandler = new Handler();
-    private final Runnable mHideAllRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    hideAll(true);
-                }
-            };
+    private final AutoHideScheduler mAutoHideScheduler;
     private final long mShowDurationMillis;
 
     public SideFragmentManager(
@@ -77,6 +72,7 @@ public class SideFragmentManager {
 
         mShowDurationMillis =
                 mActivity.getResources().getInteger(R.integer.side_panel_show_duration);
+        mAutoHideScheduler = new AutoHideScheduler(activity, () -> hideAll(true));
     }
 
     public int getCount() {
@@ -176,7 +172,7 @@ public class SideFragmentManager {
     }
 
     private void hideAllInternal() {
-        mHandler.removeCallbacksAndMessages(null);
+        mAutoHideScheduler.cancel();
         if (mFragmentCount == 0) {
             return;
         }
@@ -214,7 +210,7 @@ public class SideFragmentManager {
      * want to empty the back stack, call {@link #hideAll}.
      */
     public void hideSidePanel(boolean withAnimation) {
-        mHandler.removeCallbacks(mHideAllRunnable);
+        mAutoHideScheduler.cancel();
         if (withAnimation) {
             Animator hideAnimator =
                     AnimatorInflater.loadAnimator(mActivity, R.animator.side_panel_exit);
@@ -238,8 +234,7 @@ public class SideFragmentManager {
 
     /** Resets the timer for hiding side fragment. */
     public void scheduleHideAll() {
-        mHandler.removeCallbacks(mHideAllRunnable);
-        mHandler.postDelayed(mHideAllRunnable, mShowDurationMillis);
+        mAutoHideScheduler.schedule(mShowDurationMillis);
     }
 
     /** Should {@code keyCode} hide the current panel. */
@@ -250,5 +245,10 @@ public class SideFragmentManager {
             return current != null && current.isHideKeyForThisPanel(keyCode);
         }
         return false;
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+        mAutoHideScheduler.onAccessibilityStateChanged(enabled);
     }
 }

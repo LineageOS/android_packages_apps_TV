@@ -356,7 +356,7 @@ public class DvrSeriesSettingsFragment extends GuidedStepFragment
     }
 
     private void showConfirmDialog() {
-        DvrUiHelper.StartSeriesScheduledDialogActivity(
+        DvrUiHelper.startSeriesScheduledDialogActivity(
                 getContext(), mSeriesRecording, mShowViewScheduleOptionInDialog, mPrograms);
         finishGuidedStepFragments();
     }

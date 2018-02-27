@@ -436,6 +436,8 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAccessibilityManager =
+                (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         TvSingletons tvSingletons = TvSingletons.getSingletons(this);
         mPerformanceMonitor = tvSingletons.getPerformanceMonitor();
         TimerEvent timer = mPerformanceMonitor.startTimer();
@@ -486,6 +488,9 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                 new OnUnhandledInputEventListener() {
                     @Override
                     public boolean onUnhandledInputEvent(InputEvent event) {
+                        if (DEBUG) {
+                            Log.d(TAG, "onUnhandledInputEvent " + event);
+                        }
                         if (isKeyEventBlocked()) {
                             return true;
                         }
@@ -506,6 +511,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                         return false;
                     }
                 });
+        mTvView.setOnTalkBackDpadKeyListener(keycode -> handleUpDownKeys(keycode, null));
         long channelId = Utils.getLastWatchedChannelId(this);
         String inputId = Utils.getLastWatchedTunerInputId(this);
         if (!isPassthroughInput
@@ -648,6 +654,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                         selectInputView,
                         sceneContainer,
                         mSearchFragment);
+        mAccessibilityManager.addAccessibilityStateChangeListener(mOverlayManager);
 
         mAudioManagerHelper = new AudioManagerHelper(this, mTvView);
         Intent nowPlayingIntent = new Intent(this, MainActivity.class);
@@ -661,8 +668,6 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             return;
         }
 
-        mAccessibilityManager =
-                (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         mSendConfigInfoRecurringRunner =
                 new RecurringRunner(
                         this,
@@ -2044,6 +2049,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             }
         }
         if (mOverlayManager != null) {
+            mAccessibilityManager.removeAccessibilityStateChangeListener(mOverlayManager);
             mOverlayManager.release();
         }
         mMemoryManageables.clear();
@@ -2094,32 +2100,43 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
         if (!mChannelTuner.areAllChannelsLoaded()) {
             return false;
         }
+        if (handleUpDownKeys(keyCode, event)) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private boolean handleUpDownKeys(int keyCode, @Nullable KeyEvent event) {
         if (!mChannelTuner.isCurrentChannelPassthrough()) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_CHANNEL_UP:
                 case KeyEvent.KEYCODE_DPAD_UP:
-                    if (event.getRepeatCount() == 0
+                    if ((event == null || event.getRepeatCount() == 0)
                             && mChannelTuner.getBrowsableChannelCount() > 0) {
                         // message sending should be done before moving channel, because we use the
                         // existence of message to decide if users are switching channel.
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(
-                                        MSG_CHANNEL_UP_PRESSED, System.currentTimeMillis()),
-                                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+                        if (event != null) {
+                            mHandler.sendMessageDelayed(
+                                    mHandler.obtainMessage(
+                                            MSG_CHANNEL_UP_PRESSED, System.currentTimeMillis()),
+                                    CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+                        }
                         moveToAdjacentChannel(true, false);
                         mTracker.sendChannelUp();
                     }
                     return true;
                 case KeyEvent.KEYCODE_CHANNEL_DOWN:
                 case KeyEvent.KEYCODE_DPAD_DOWN:
-                    if (event.getRepeatCount() == 0
+                    if ((event == null || event.getRepeatCount() == 0)
                             && mChannelTuner.getBrowsableChannelCount() > 0) {
                         // message sending should be done before moving channel, because we use the
                         // existence of message to decide if users are switching channel.
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(
-                                        MSG_CHANNEL_DOWN_PRESSED, System.currentTimeMillis()),
-                                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+                        if (event != null) {
+                            mHandler.sendMessageDelayed(
+                                    mHandler.obtainMessage(
+                                            MSG_CHANNEL_DOWN_PRESSED, System.currentTimeMillis()),
+                                    CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+                        }
                         moveToAdjacentChannel(false, false);
                         mTracker.sendChannelDown();
                     }
@@ -2127,7 +2144,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                 default: // fall out
             }
         }
-        return super.onKeyDown(keyCode, event);
+        return false;
     }
 
     @Override

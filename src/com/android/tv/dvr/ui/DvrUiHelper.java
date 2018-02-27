@@ -545,7 +545,7 @@ public class DvrUiHelper {
     }
 
     /** Shows "series recording scheduled" dialog activity. */
-    public static void StartSeriesScheduledDialogActivity(
+    public static void startSeriesScheduledDialogActivity(
             Context context,
             SeriesRecording seriesRecording,
             boolean showViewScheduleOptionInDialog,
@@ -587,6 +587,17 @@ public class DvrUiHelper {
                 viewType = DvrDetailsActivity.SCHEDULED_RECORDING_VIEW;
             } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_IN_PROGRESS) {
                 viewType = DvrDetailsActivity.CURRENT_RECORDING_VIEW;
+            } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_FINISHED
+                    && schedule.getRecordedProgramId() != null) {
+                recordingId = schedule.getRecordedProgramId();
+                viewType = DvrDetailsActivity.RECORDED_PROGRAM_VIEW;
+            } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+                viewType = DvrDetailsActivity.SCHEDULED_RECORDING_VIEW;
+                hideViewSchedule = true;
+                // TODO(b/72638385): pass detailed error message
+                intent.putExtra(
+                        DvrDetailsActivity.EXTRA_FAILED_MESSAGE,
+                        activity.getString(R.string.dvr_recording_failed));
             } else {
                 return;
             }
@@ -681,13 +692,10 @@ public class DvrUiHelper {
             builder =
                     TextUtils.isEmpty(episodeNumber)
                             ? new SpannableStringBuilder(title)
-                            : new SpannableStringBuilder(
-                                    Html.fromHtml(
-                                            context.getString(
-                                                    R.string
-                                                            .program_title_with_episode_number_no_season,
-                                                    title,
-                                                    episodeNumber)));
+                            : new SpannableStringBuilder(Html.fromHtml(context.getString(
+                                    R.string.program_title_with_episode_number_no_season,
+                                    title,
+                                    episodeNumber)));
         } else {
             builder =
                     new SpannableStringBuilder(

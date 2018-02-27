@@ -228,6 +228,9 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                     protected void onPostExecute(List<ScheduledRecording> result) {
                         mPendingTasks.remove(this);
                         long maxId = 0;
+                        int reasonNotStarted =
+                                ScheduledRecording
+                                        .FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED;
                         List<ScheduledRecording> toUpdate = new ArrayList<>();
                         List<ScheduledRecording> toDelete = new ArrayList<>();
                         for (ScheduledRecording r : result) {
@@ -244,11 +247,14 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                                 switch (r.getState()) {
                                     case ScheduledRecording.STATE_RECORDING_IN_PROGRESS:
                                         if (r.getEndTimeMs() <= mClock.currentTimeMillis()) {
+                                            int reason =
+                                                    ScheduledRecording.FAILED_REASON_NOT_FINISHED;
                                             toUpdate.add(
                                                     ScheduledRecording.buildFrom(r)
                                                             .setState(
                                                                     ScheduledRecording
                                                                             .STATE_RECORDING_FAILED)
+                                                            .setFailedReason(reason)
                                                             .build());
                                         } else {
                                             toUpdate.add(
@@ -266,6 +272,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                                                             .setState(
                                                                     ScheduledRecording
                                                                             .STATE_RECORDING_FAILED)
+                                                            .setFailedReason(reasonNotStarted)
                                                             .build());
                                         }
                                         break;

@@ -43,6 +43,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import com.android.tv.ChannelTuner;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
@@ -57,6 +58,7 @@ import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.ui.HardwareLayerAnimatorListenerAdapter;
 import com.android.tv.ui.ViewUtils;
+import com.android.tv.ui.hideable.AutoHideScheduler;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
@@ -64,7 +66,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** The program guide. */
-public class ProgramGuide implements ProgramGrid.ChildFocusListener {
+public class ProgramGuide
+        implements ProgramGrid.ChildFocusListener, AccessibilityStateChangeListener {
     private static final String TAG = "ProgramGuide";
     private static final boolean DEBUG = false;
 
@@ -141,13 +144,7 @@ public class ProgramGuide implements ProgramGrid.ChildFocusListener {
     private final Handler mHandler = new ProgramGuideHandler(this);
     private boolean mActive;
 
-    private final Runnable mHideRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    hide();
-                }
-            };
+    private final AutoHideScheduler mAutoHideScheduler;
     private final long mShowDurationMillis;
     private ViewTreeObserver.OnGlobalLayoutListener mOnLayoutListenerForShow;
 
@@ -415,6 +412,7 @@ public class ProgramGuide implements ProgramGrid.ChildFocusListener {
         mShowGuidePartial =
                 mAccessibilityManager.isEnabled()
                         || mSharedPreference.getBoolean(KEY_SHOW_GUIDE_PARTIAL, true);
+        mAutoHideScheduler = new AutoHideScheduler(activity, this::hide);
     }
 
     @Override
@@ -569,13 +567,12 @@ public class ProgramGuide implements ProgramGrid.ChildFocusListener {
 
     /** Schedules hiding the program guide. */
     public void scheduleHide() {
-        cancelHide();
-        mHandler.postDelayed(mHideRunnable, mShowDurationMillis);
+        mAutoHideScheduler.schedule(mShowDurationMillis);
     }
 
     /** Cancels hiding the program guide. */
     public void cancelHide() {
-        mHandler.removeCallbacks(mHideRunnable);
+        mAutoHideScheduler.cancel();
     }
 
     /** Process the {@code KEYCODE_BACK} key event. */
@@ -926,6 +923,11 @@ public class ProgramGuide implements ProgramGrid.ChildFocusListener {
             mDetailInAnimator = inAnimator;
             inAnimator.start();
         }
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+        mAutoHideScheduler.onAccessibilityStateChanged(enabled);
     }
 
     private class GlobalFocusChangeListener

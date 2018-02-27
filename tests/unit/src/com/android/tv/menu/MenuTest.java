@@ -16,13 +16,13 @@
 package com.android.tv.menu;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 import com.android.tv.menu.Menu.OnMenuVisibilityChangeListener;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -49,26 +49,27 @@ public class MenuTest {
         mMenu.disableAnimationForTest();
     }
 
+    @Ignore("b/73727914")
     @Test
     public void testScheduleHide() {
         mMenu.show(Menu.REASON_NONE);
         setMenuVisible(true);
-        assertTrue("Hide is not scheduled", mMenu.isHideScheduled());
+    assertWithMessage("Hide is not scheduled").that(mMenu.isHideScheduled()).isTrue();
         mMenu.hide(false);
         setMenuVisible(false);
-        assertFalse("Hide is scheduled", mMenu.isHideScheduled());
+    assertWithMessage("Hide is scheduled").that(mMenu.isHideScheduled()).isFalse();
 
         mMenu.setKeepVisible(true);
         mMenu.show(Menu.REASON_NONE);
         setMenuVisible(true);
-        assertFalse("Hide is scheduled", mMenu.isHideScheduled());
+    assertWithMessage("Hide is scheduled").that(mMenu.isHideScheduled()).isFalse();
         mMenu.setKeepVisible(false);
-        assertTrue("Hide is not scheduled", mMenu.isHideScheduled());
+    assertWithMessage("Hide is not scheduled").that(mMenu.isHideScheduled()).isTrue();
         mMenu.setKeepVisible(true);
-        assertFalse("Hide is scheduled", mMenu.isHideScheduled());
+    assertWithMessage("Hide is scheduled").that(mMenu.isHideScheduled()).isFalse();
         mMenu.hide(false);
         setMenuVisible(false);
-        assertFalse("Hide is scheduled", mMenu.isHideScheduled());
+    assertWithMessage("Hide is scheduled").that(mMenu.isHideScheduled()).isFalse();
     }
 
     @Test
