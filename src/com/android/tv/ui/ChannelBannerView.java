@@ -46,8 +46,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.android.tv.ChannelChanger;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
+import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
@@ -89,6 +91,7 @@ public class ChannelBannerView extends FrameLayout
     private static final int DISPLAYED_CONTENT_RATINGS_COUNT = 3;
 
     private static final String EMPTY_STRING = "";
+    private final ChannelChanger mChannelChanger;
 
     private Program mNoProgram;
     private Program mLockedChannelProgram;
@@ -121,6 +124,8 @@ public class ChannelBannerView extends FrameLayout
     private final DvrManager mDvrManager;
     private ContentRatingsManager mContentRatingsManager;
     private TvContentRating mBlockingContentRating;
+    private TextView mChannelUp;
+    private TextView mChannelDown;
 
     private int mLockType;
     private boolean mUpdateOnTune;
@@ -172,6 +177,8 @@ public class ChannelBannerView extends FrameLayout
     public ChannelBannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mResources = getResources();
+
+        // TODO(nchalko): don't depend directly on MainActivity
         mMainActivity = (MainActivity) context;
 
         mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);
@@ -226,6 +233,7 @@ public class ChannelBannerView extends FrameLayout
         mAutoHideScheduler = new AutoHideScheduler(context, this::hide);
         context.getSystemService(AccessibilityManager.class)
                 .addAccessibilityStateChangeListener(mAutoHideScheduler);
+        mChannelChanger = (ChannelChanger) context;
     }
 
     @Override
@@ -261,6 +269,20 @@ public class ChannelBannerView extends FrameLayout
                         mProgramDescriptionTextView.setText(mProgramDescriptionText);
                     }
                 });
+
+        AccessibilityManager a11yManager =
+                getContext().getSystemService(AccessibilityManager.class);
+        boolean a11yEnabled = a11yManager.isEnabled();
+        mChannelUp = (TextView) findViewById(R.id.channel_up);
+        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(getContext())) {
+            mChannelUp.setVisibility(a11yEnabled ? VISIBLE : GONE);
+            mChannelUp.setOnClickListener(v -> mChannelChanger.channelUp());
+        }
+        mChannelDown = (TextView) findViewById(R.id.channel_down);
+        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(getContext())) {
+            mChannelDown.setVisibility(a11yEnabled ? VISIBLE : GONE);
+            mChannelDown.setOnClickListener(v -> mChannelChanger.channelDown());
+        }
     }
 
     @Override
@@ -829,5 +851,9 @@ public class ChannelBannerView extends FrameLayout
     @Override
     public void onAccessibilityStateChanged(boolean enabled) {
         mAutoHideScheduler.onAccessibilityStateChanged(enabled);
+        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(getContext())) {
+            mChannelUp.setVisibility(enabled ? VISIBLE : GONE);
+            mChannelDown.setVisibility(enabled ? VISIBLE : GONE);
+        }
     }
 }

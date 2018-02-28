@@ -44,6 +44,30 @@
             android:textColor="@color/channel_banner_text_color"
             android:fontFamily="@string/thin_font"
             android:textSize="@dimen/channel_banner_channel_number_large_text_size" />
+        <!-- TODO(b/72489749): use proper strings and layout for channel up down -->
+        <TextView android:id="@+id/channel_up"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/channel_number"
+            android:layout_marginTop="@dimen/channel_banner_channel_number_large_margin_top"
+            android:textColor="@color/channel_banner_text_color"
+            android:fontFamily="@string/thin_font"
+            android:textSize="@dimen/channel_banner_channel_number_small_text_size"
+            android:text="U" android:focusableInTouchMode="true"
+            android:visibility="gone"/>
+        <TextView android:id="@+id/channel_down"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/channel_number"
+            android:layout_toRightOf="@id/channel_up"
+            android:layout_marginTop="@dimen/channel_banner_channel_number_large_margin_top"
+            android:textColor="@color/channel_banner_text_color"
+            android:fontFamily="@string/thin_font"
+            android:textSize="@dimen/channel_banner_channel_number_small_text_size"
+            android:focusableInTouchMode="true"
+            android:text="D"
+            android:visibility="gone"/>
+
 
         <ImageView android:id="@+id/channel_logo"
             android:layout_width="@dimen/channel_banner_channel_logo_width"

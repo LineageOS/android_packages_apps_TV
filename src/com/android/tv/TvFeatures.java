@@ -97,6 +97,10 @@ public final class TvFeatures extends CommonFeatures {
     /** Use input blacklist to disable partner's tuner input. */
     public static final Feature USE_PARTNER_INPUT_BLACKLIST = ON;
 
+    /** Adds channel up/down to the channel banner when a11y is turned on. */
+    // TODO(b/72489749): remove when UI finalized
+    public static final Feature A11Y_CHANNEL_CHANGE_UI = ENG_ONLY_FEATURE;
+
     @VisibleForTesting
     public static final Feature TEST_FEATURE = PropertyFeature.create("test_feature", false);
 

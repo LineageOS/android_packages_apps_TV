@@ -152,7 +152,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /** The main activity for the Live TV app. */
-public class MainActivity extends Activity implements OnActionClickListener, OnPinCheckedListener {
+public class MainActivity extends Activity
+        implements OnActionClickListener, OnPinCheckedListener, ChannelChanger {
     private static final String TAG = "MainActivity";
     private static final boolean DEBUG = false;
 
@@ -2103,34 +2104,53 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                 case KeyEvent.KEYCODE_DPAD_UP:
                     if (event.getRepeatCount() == 0
                             && mChannelTuner.getBrowsableChannelCount() > 0) {
-                        // message sending should be done before moving channel, because we use the
-                        // existence of message to decide if users are switching channel.
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(
-                                        MSG_CHANNEL_UP_PRESSED, System.currentTimeMillis()),
-                                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
-                        moveToAdjacentChannel(true, false);
-                        mTracker.sendChannelUp();
+
+                        channelUpPressed();
                     }
                     return true;
                 case KeyEvent.KEYCODE_CHANNEL_DOWN:
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     if (event.getRepeatCount() == 0
                             && mChannelTuner.getBrowsableChannelCount() > 0) {
-                        // message sending should be done before moving channel, because we use the
-                        // existence of message to decide if users are switching channel.
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(
-                                        MSG_CHANNEL_DOWN_PRESSED, System.currentTimeMillis()),
-                                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
-                        moveToAdjacentChannel(false, false);
-                        mTracker.sendChannelDown();
+                        channelDownPressed();
                     }
                     return true;
                 default: // fall out
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void channelDown() {
+        channelDownPressed();
+        finishChannelChangeIfNeeded();
+    }
+
+    private void channelDownPressed() {
+        // message sending should be done before moving channel, because we use the
+        // existence of message to decide if users are switching channel.
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(MSG_CHANNEL_DOWN_PRESSED, System.currentTimeMillis()),
+                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+        moveToAdjacentChannel(false, false);
+        mTracker.sendChannelDown();
+    }
+
+    @Override
+    public void channelUp() {
+        channelUpPressed();
+        finishChannelChangeIfNeeded();
+    }
+
+    private void channelUpPressed() {
+        // message sending should be done before moving channel, because we use the
+        // existence of message to decide if users are switching channel.
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(MSG_CHANNEL_UP_PRESSED, System.currentTimeMillis()),
+                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+        moveToAdjacentChannel(true, false);
+        mTracker.sendChannelUp();
     }
 
     @Override
