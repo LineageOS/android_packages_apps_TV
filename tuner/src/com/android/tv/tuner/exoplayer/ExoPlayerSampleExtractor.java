@@ -204,7 +204,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
         private static final int RETRY_INTERVAL_MS = 50;
 
         private final MediaSource mSampleSource;
-        private final MediaSource.Listener mSampleSourceListener;
+        private final MediaSource.SourceInfoRefreshListener mSampleSourceListener;
         private MediaPeriod mMediaPeriod;
         private SampleStream[] mStreams;
         private boolean[] mTrackMetEos;
@@ -217,7 +217,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
         public SourceReaderWorker(MediaSource sampleSource) {
             mSampleSource = sampleSource;
             mSampleSourceListener =
-                    new MediaSource.Listener() {
+                    new MediaSource.SourceInfoRefreshListener() {
                         @Override
                         public void onSourceInfoRefreshed(
                             MediaSource source, Timeline timeline, Object manifest) {
