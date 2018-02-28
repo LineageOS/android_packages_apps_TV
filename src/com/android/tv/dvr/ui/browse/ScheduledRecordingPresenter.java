@@ -122,7 +122,7 @@ class ScheduledRecordingPresenter extends DvrItemPresenter<ScheduledRecording> {
         if (mDvrManager.isConflicting(recording)) {
             cardView.setAffiliatedIcon(R.drawable.ic_warning_white_32dp);
         } else if (recording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
-            cardView.setAffiliatedIcon(R.drawable.ic_error_white_48dp);
+            cardView.setAffiliatedIcon(R.drawable.ic_error_white_36dp);
         } else {
             cardView.setAffiliatedIcon(0);
         }

@@ -90,18 +90,18 @@ class ScheduleRowPresenter extends RowPresenter {
         private ScheduleRowPresenter mPresenter;
         @ScheduleRowAction private int[] mActions;
         private boolean mLtr;
-        private LinearLayout mInfoContainer;
+        private final LinearLayout mInfoContainer;
         // The first action is on the right of the second action.
-        private RelativeLayout mSecondActionContainer;
-        private RelativeLayout mFirstActionContainer;
-        private View mSelectorView;
-        private TextView mTimeView;
-        private TextView mProgramTitleView;
-        private TextView mInfoSeparatorView;
-        private TextView mChannelNameView;
-        private TextView mConflictInfoView;
-        private ImageView mSecondActionView;
-        private ImageView mFirstActionView;
+        private final RelativeLayout mSecondActionContainer;
+        private final RelativeLayout mFirstActionContainer;
+        private final View mSelectorView;
+        private final TextView mTimeView;
+        private final TextView mProgramTitleView;
+        private final TextView mInfoSeparatorView;
+        private final TextView mChannelNameView;
+        private final TextView mExtraInfoView;
+        private final ImageView mSecondActionView;
+        private final ImageView mFirstActionView;
 
         private Runnable mPendingAnimationRunnable;
 
@@ -146,7 +146,7 @@ class ScheduleRowPresenter extends RowPresenter {
             mProgramTitleView = (TextView) view.findViewById(R.id.program_title);
             mInfoSeparatorView = (TextView) view.findViewById(R.id.info_separator);
             mChannelNameView = (TextView) view.findViewById(R.id.channel_name);
-            mConflictInfoView = (TextView) view.findViewById(R.id.conflict_info);
+            mExtraInfoView = (TextView) view.findViewById(R.id.extra_info);
             Resources res = view.getResources();
             mSelectorTranslationDelta =
                     res.getDimensionPixelSize(R.dimen.dvr_schedules_item_section_margin)
@@ -311,7 +311,7 @@ class ScheduleRowPresenter extends RowPresenter {
                     mInfoContainer
                             .getResources()
                             .getColor(R.color.dvr_schedules_item_info_grey, null));
-            mConflictInfoView.setTextColor(
+            mExtraInfoView.setTextColor(
                     mInfoContainer
                             .getResources()
                             .getColor(R.color.dvr_schedules_item_info_grey, null));
@@ -327,7 +327,7 @@ class ScheduleRowPresenter extends RowPresenter {
                     mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
             mChannelNameView.setTextColor(
                     mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
-            mConflictInfoView.setTextColor(
+            mExtraInfoView.setTextColor(
                     mInfoContainer.getResources().getColor(R.color.dvr_schedules_item_info, null));
         }
     }
@@ -430,25 +430,21 @@ class ScheduleRowPresenter extends RowPresenter {
                 || (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
                         && schedule != null
                         && schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED)) {
-            String conflictInfo;
+            String extraInfo;
             if (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
                     && schedule != null
                     && schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
-                // TODO(b/72638385): show real error messages
-                // TODO(b/72638385): use a better name for ConflictInfoXXX
-                conflictInfo = "Failed";
-                if (schedule.getFailedReason() != null) {
-                    conflictInfo += " (Error code: " + schedule.getFailedReason() + ")";
-                }
+                extraInfo = mContext.getString(R.string.dvr_recording_failed_short)
+                        + " " + getErrorMessage(schedule);
             } else if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
-                conflictInfo = mTunerConflictWillBePartiallyRecordedInfo;
+                extraInfo = mTunerConflictWillBePartiallyRecordedInfo;
             } else {
-                conflictInfo = mTunerConflictWillNotBeRecordedInfo;
+                extraInfo = mTunerConflictWillNotBeRecordedInfo;
             }
-            viewHolder.mConflictInfoView.setText(conflictInfo);
-            viewHolder.mConflictInfoView.setVisibility(View.VISIBLE);
+            viewHolder.mExtraInfoView.setText(extraInfo);
+            viewHolder.mExtraInfoView.setVisibility(View.VISIBLE);
         } else {
-            viewHolder.mConflictInfoView.setVisibility(View.GONE);
+            viewHolder.mExtraInfoView.setVisibility(View.GONE);
         }
         if (shouldBeGrayedOut(row)) {
             viewHolder.greyOutInfo();
@@ -457,6 +453,35 @@ class ScheduleRowPresenter extends RowPresenter {
         }
         viewHolder.mInfoContainer.setFocusable(isInfoClickable(row));
         updateActionContainer(viewHolder, viewHolder.isSelected());
+    }
+
+    private String getErrorMessage(ScheduledRecording recording) {
+        int reason = recording.getFailedReason() == null
+                ? ScheduledRecording.FAILED_REASON_OTHER
+                : recording.getFailedReason();
+        switch (reason) {
+            case ScheduledRecording.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED:
+                return mContext.getString(R.string.dvr_recording_failed_not_started_short);
+            case ScheduledRecording.FAILED_REASON_RESOURCE_BUSY:
+                return mContext.getString(R.string.dvr_recording_failed_resource_busy_short);
+            case ScheduledRecording.FAILED_REASON_INPUT_UNAVAILABLE:
+                return mContext.getString(
+                        R.string.dvr_recording_failed_input_unavailable_short,
+                        recording.getInputId());
+            case ScheduledRecording.FAILED_REASON_INPUT_DVR_UNSUPPORTED:
+                return mContext.getString(
+                        R.string.dvr_recording_failed_input_dvr_unsupported_short);
+            case ScheduledRecording.FAILED_REASON_INSUFFICIENT_SPACE:
+                return mContext.getString(R.string.dvr_recording_failed_insufficient_space_short);
+            case ScheduledRecording.FAILED_REASON_OTHER: // fall through
+            case ScheduledRecording.FAILED_REASON_NOT_FINISHED: // fall through
+            case ScheduledRecording.FAILED_REASON_SCHEDULER_STOPPED: // fall through
+            case ScheduledRecording.FAILED_REASON_INVALID_CHANNEL: // fall through
+            case ScheduledRecording.FAILED_REASON_MESSAGE_NOT_SENT: // fall through
+            case ScheduledRecording.FAILED_REASON_CONNECTION_FAILED: // fall through
+            default:
+                return mContext.getString(R.string.dvr_recording_failed_system_failure, reason);
+        }
     }
 
     private int getImageForAction(@ScheduleRowAction int action) {

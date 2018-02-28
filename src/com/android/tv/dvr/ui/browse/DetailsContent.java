@@ -79,37 +79,10 @@ class DetailsContent {
                 TvSingletons.getSingletons(context)
                         .getChannelDataManager()
                         .getChannel(scheduledRecording.getChannelId());
-        String description =
-                !TextUtils.isEmpty(scheduledRecording.getProgramDescription())
-                        ? scheduledRecording.getProgramDescription()
-                        : scheduledRecording.getProgramLongDescription();
-        if (TextUtils.isEmpty(description)) {
-            description = channel != null ? channel.getDescription() : null;
-        }
-        return new DetailsContent.Builder()
-                .setChannelId(scheduledRecording.getChannelId())
-                .setProgramTitle(scheduledRecording.getProgramTitle())
-                .setSeasonNumber(scheduledRecording.getSeasonNumber())
-                .setEpisodeNumber(scheduledRecording.getEpisodeNumber())
-                .setStartTimeUtcMillis(scheduledRecording.getStartTimeMs())
-                .setEndTimeUtcMillis(scheduledRecording.getEndTimeMs())
-                .setDescription(description)
-                .setPosterArtUri(scheduledRecording.getProgramPosterArtUri())
-                .setThumbnailUri(scheduledRecording.getProgramThumbnailUri())
-                .build(context);
-    }
-
-    static DetailsContent createFromFailedScheduledRecording(
-            Context context, ScheduledRecording scheduledRecording, String errMsg) {
-        Channel channel =
-                TvSingletons.getSingletons(context)
-                        .getChannelDataManager()
-                        .getChannel(scheduledRecording.getChannelId());
         String description;
-        if (scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED
-                && errMsg != null) {
-            description = errMsg
-                    + " (Error code: " + scheduledRecording.getFailedReason() + ")";
+        if (scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+            description = context.getString(R.string.dvr_recording_failed)
+                    + "\n" + getErrorMessage(context, scheduledRecording);
         } else {
             description =
                     !TextUtils.isEmpty(scheduledRecording.getProgramDescription())
@@ -130,6 +103,34 @@ class DetailsContent {
                 .setPosterArtUri(scheduledRecording.getProgramPosterArtUri())
                 .setThumbnailUri(scheduledRecording.getProgramThumbnailUri())
                 .build(context);
+    }
+
+    private static String getErrorMessage(Context context, ScheduledRecording recording) {
+        int reason = recording.getFailedReason() == null
+                ? ScheduledRecording.FAILED_REASON_OTHER
+                : recording.getFailedReason();
+        switch (reason) {
+            case ScheduledRecording.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED:
+                return context.getString(R.string.dvr_recording_failed_not_started);
+            case ScheduledRecording.FAILED_REASON_RESOURCE_BUSY:
+                return context.getString(R.string.dvr_recording_failed_resource_busy);
+            case ScheduledRecording.FAILED_REASON_INPUT_UNAVAILABLE:
+                return context.getString(
+                        R.string.dvr_recording_failed_input_unavailable,
+                        recording.getInputId());
+            case ScheduledRecording.FAILED_REASON_INPUT_DVR_UNSUPPORTED:
+                return context.getString(R.string.dvr_recording_failed_input_dvr_unsupported);
+            case ScheduledRecording.FAILED_REASON_INSUFFICIENT_SPACE:
+                return context.getString(R.string.dvr_recording_failed_insufficient_space);
+            case ScheduledRecording.FAILED_REASON_OTHER: // fall through
+            case ScheduledRecording.FAILED_REASON_NOT_FINISHED: // fall through
+            case ScheduledRecording.FAILED_REASON_SCHEDULER_STOPPED: // fall through
+            case ScheduledRecording.FAILED_REASON_INVALID_CHANNEL: // fall through
+            case ScheduledRecording.FAILED_REASON_MESSAGE_NOT_SENT: // fall through
+            case ScheduledRecording.FAILED_REASON_CONNECTION_FAILED: // fall through
+            default:
+                return context.getString(R.string.dvr_recording_failed_system_failure, reason);
+        }
     }
 
     private DetailsContent() {}

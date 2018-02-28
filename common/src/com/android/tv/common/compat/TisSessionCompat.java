@@ -69,7 +69,9 @@ public abstract class TisSessionCompat extends Session {
     private void onCompat(Commands.PrivateCommand privateCommand) {
         switch (privateCommand.getCommandCase()) {
             case ON_DEV_MESSAGE:
-                onDevMessage(privateCommand.getOnDevMessage().getMessage());
+                if (privateCommand.hasOnDevMessage()) {
+                    onDevMessage(privateCommand.getOnDevMessage().getMessage());
+                }
                 break;
             case COMMAND_NOT_SET:
                 Log.w(TAG, "Command not set ");

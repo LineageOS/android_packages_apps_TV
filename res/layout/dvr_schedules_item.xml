@@ -100,7 +100,7 @@
                             android:lines="1"
                             android:textColor="@color/dvr_schedules_item_info"/>
                     </LinearLayout>
-                    <TextView android:id="@+id/conflict_info"
+                    <TextView android:id="@+id/extra_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="start"

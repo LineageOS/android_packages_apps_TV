@@ -585,7 +585,7 @@
     <!-- Description of a card view to show full list of scheduled recordings. [CHAR LIMIT=25] -->
     <string name="dvr_full_schedule_card_view_title">Full schedule</string>
     <!-- Description of failed recordings. [CHAR LIMIT=25] -->
-    <string name="dvr_recording_failed">Recording Failed</string>
+    <string name="dvr_recording_failed">Recording Failed.</string>
     <!-- Description of how many following days the schedule list will show. [CHAR LIMIT=25] -->
     <plurals name="dvr_full_schedule_card_view_content">
         <item quantity="one">Next %1$d day</item>
@@ -639,6 +639,18 @@
     <string name="dvr_detail_view_schedule">View schedule</string>
     <!-- Text label to indicate there's more text in the details description [CHAR LIMIT=20] -->
     <string name="dvr_detail_read_more">Read more</string>
+    <!-- Description of failed recordings caused by system failures. -->
+    <string name="dvr_recording_failed_system_failure">System failure. (Error code: <xliff:g id="errorCode" example="0">%1$d</xliff:g>)</string>
+    <!-- Description of failed recordings when they are not started correctly. -->
+    <string name="dvr_recording_failed_not_started">Recording was not started. Please check the connections of tuner and external storage (if any).</string>
+    <!-- Description of failed recordings when required resource is busy. -->
+    <string name="dvr_recording_failed_resource_busy">Failed to tune to the channel. Possible causes are: weak signal, poor antenna cable connection, or the tuner is being used by another application.</string>
+    <!-- Description of failed recordings when the input is unavailable. -->
+    <string name="dvr_recording_failed_input_unavailable"><xliff:g id="inputId" example="com.example.partnersupportsampletvinput/.SampleTvInputService">%1$s</xliff:g> unavailable.</string>
+    <!-- Description of failed recordings when the input doesn't support recording. -->
+    <string name="dvr_recording_failed_input_dvr_unsupported">Recording not supported. Recording of this channel is not supported.</string>
+    <!-- Description of failed recordings when the space is insufficient. -->
+    <string name="dvr_recording_failed_insufficient_space">Insufficient space. Please connect an external storage device or delete some existing recordings.</string>
 
 
     <!-- DVR series settings -->
@@ -937,6 +949,20 @@
         <item quantity="one">(%1$d minute) </item>
         <item quantity="other">(%1$d minutes)</item>
     </plurals>
+
+    <!-- DVR history list strings -->
+    <!-- Short description of failed recordings. -->
+    <string name="dvr_recording_failed_short">Failed.</string>
+    <!-- Short description of failed recordings when they are not started correctly. -->
+    <string name="dvr_recording_failed_not_started_short">Failed to start recording.</string>
+    <!-- Short description of failed recordings when required resource is busy. -->
+    <string name="dvr_recording_failed_resource_busy_short">Failed to tune to the channel.</string>
+    <!-- Short description of failed recordings when the input is unavailable. -->
+    <string name="dvr_recording_failed_input_unavailable_short"><xliff:g id="inputId" example="com.example.partnersupportsampletvinput/.SampleTvInputService">%1$s</xliff:g> unavailable.</string>
+    <!-- Short description of failed recordings when the input doesn't support recording. -->
+    <string name="dvr_recording_failed_input_dvr_unsupported_short">Recording not supported.</string>
+    <!-- Short description of failed recordings when the space is insufficient. -->
+    <string name="dvr_recording_failed_insufficient_space_short">Insufficient space.</string>
 
     <!-- DVR date related strings -->
     <eat-comment/>

@@ -43,9 +43,6 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
     /** Name of shared element between activities. */
     public static final String SHARED_ELEMENT_NAME = "shared_element";
 
-    /** Name of error message of a failed recording */
-    public static final String EXTRA_FAILED_MESSAGE = "failed_message";
-
     /** CURRENT_RECORDING_VIEW refers to Current Recordings in DVR. */
     public static final int CURRENT_RECORDING_VIEW = 1;
 
@@ -68,7 +65,6 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
         long recordId = getIntent().getLongExtra(RECORDING_ID, -1);
         int detailsViewType = getIntent().getIntExtra(DETAILS_VIEW_TYPE, -1);
         boolean hideViewSchedule = getIntent().getBooleanExtra(HIDE_VIEW_SCHEDULE, false);
-        String failedMsg = getIntent().getStringExtra(EXTRA_FAILED_MESSAGE);
         if (recordId != -1 && detailsViewType != -1 && savedInstanceState == null) {
             Bundle args = new Bundle();
             args.putLong(RECORDING_ID, recordId);
@@ -77,7 +73,6 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
                 detailsFragment = new CurrentRecordingDetailsFragment();
             } else if (detailsViewType == SCHEDULED_RECORDING_VIEW) {
                 args.putBoolean(HIDE_VIEW_SCHEDULE, hideViewSchedule);
-                args.putString(EXTRA_FAILED_MESSAGE, failedMsg);
                 detailsFragment = new ScheduledRecordingDetailsFragment();
             } else if (detailsViewType == RECORDED_PROGRAM_VIEW) {
                 detailsFragment = new RecordedProgramDetailsFragment();

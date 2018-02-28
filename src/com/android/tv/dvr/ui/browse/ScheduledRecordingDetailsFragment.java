@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
+
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrManager;
@@ -34,14 +35,12 @@ public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment 
     private DvrManager mDvrManager;
     private Action mScheduleAction;
     private boolean mHideViewSchedule;
-    private String mFailedMessage;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         Bundle args = getArguments();
         mDvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
         mHideViewSchedule = args.getBoolean(DvrDetailsActivity.HIDE_VIEW_SCHEDULE);
-        mFailedMessage = args.getString(DvrDetailsActivity.EXTRA_FAILED_MESSAGE);
         super.onCreate(savedInstance);
     }
 
@@ -51,17 +50,6 @@ public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment 
         if (mScheduleAction != null) {
             mScheduleAction.setIcon(getResources().getDrawable(getScheduleIconId()));
         }
-    }
-
-    @Override
-    protected void onCreateInternal() {
-        if (mFailedMessage == null) {
-            super.onCreateInternal();
-            return;
-        }
-        setDetailsOverviewRow(
-                DetailsContent.createFromFailedScheduledRecording(
-                        getContext(), getScheduledRecording(), mFailedMessage));
     }
 
     @Override

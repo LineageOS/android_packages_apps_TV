@@ -594,10 +594,6 @@ public class DvrUiHelper {
             } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
                 viewType = DvrDetailsActivity.SCHEDULED_RECORDING_VIEW;
                 hideViewSchedule = true;
-                // TODO(b/72638385): pass detailed error message
-                intent.putExtra(
-                        DvrDetailsActivity.EXTRA_FAILED_MESSAGE,
-                        activity.getString(R.string.dvr_recording_failed));
             } else {
                 return;
             }

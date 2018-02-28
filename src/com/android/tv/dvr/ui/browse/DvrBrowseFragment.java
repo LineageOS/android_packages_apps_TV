@@ -66,7 +66,7 @@ public class DvrBrowseFragment extends BrowseFragment
     private static final String TAG = "DvrBrowseFragment";
     private static final boolean DEBUG = false;
 
-    private static final int MAX_RECENT_ITEM_COUNT = 10;
+    private static final int MAX_RECENT_ITEM_COUNT = 4;
     private static final int MAX_SCHEDULED_ITEM_COUNT = 4;
 
     private boolean mShouldShowScheduleRow;
@@ -340,6 +340,9 @@ public class DvrBrowseFragment extends BrowseFragment
     public void onScheduledRecordingRemoved(ScheduledRecording... scheduledRecordings) {
         for (ScheduledRecording scheduleRecording : scheduledRecordings) {
             mScheduleAdapter.remove(scheduleRecording);
+            if (scheduleRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+                mRecentAdapter.remove(scheduleRecording);
+            }
         }
     }
 
@@ -350,6 +353,9 @@ public class DvrBrowseFragment extends BrowseFragment
                 mScheduleAdapter.change(scheduleRecording);
             } else {
                 mScheduleAdapter.removeWithId(scheduleRecording);
+            }
+            if (scheduleRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+                mRecentAdapter.change(scheduleRecording);
             }
         }
     }
