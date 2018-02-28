@@ -508,6 +508,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                         return false;
                     }
                 });
+        mTvView.setBlockedInfoOnClickListener(v -> showPinDialogFragment());
         long channelId = Utils.getLastWatchedChannelId(this);
         String inputId = Utils.getLastWatchedTunerInputId(this);
         if (!isPassthroughInput
@@ -2213,24 +2214,7 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                                 this, mChannelTuner.getCurrentChannel());
                         return true;
                     }
-                    if (!PermissionUtils.hasModifyParentalControls(this)) {
-                        return true;
-                    }
-                    PinDialogFragment dialog = null;
-                    if (mTvView.isScreenBlocked()) {
-                        dialog =
-                                PinDialogFragment.create(
-                                        PinDialogFragment.PIN_DIALOG_TYPE_UNLOCK_CHANNEL);
-                    } else if (mTvView.isContentBlocked()) {
-                        dialog =
-                                PinDialogFragment.create(
-                                        PinDialogFragment.PIN_DIALOG_TYPE_UNLOCK_PROGRAM,
-                                        mTvView.getBlockedContentRating().flattenToString());
-                    }
-                    if (dialog != null) {
-                        mOverlayManager.showDialogFragment(
-                                PinDialogFragment.DIALOG_TAG, dialog, false);
-                    }
+                    showPinDialogFragment();
                     return true;
                 case KeyEvent.KEYCODE_WINDOW:
                     enterPictureInPictureMode();
@@ -2374,6 +2358,24 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             }
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    private void showPinDialogFragment() {
+        if (!PermissionUtils.hasModifyParentalControls(this)) {
+            return;
+        }
+        PinDialogFragment dialog = null;
+        if (mTvView.isScreenBlocked()) {
+            dialog = PinDialogFragment.create(PinDialogFragment.PIN_DIALOG_TYPE_UNLOCK_CHANNEL);
+        } else if (mTvView.isContentBlocked()) {
+            dialog =
+                    PinDialogFragment.create(
+                            PinDialogFragment.PIN_DIALOG_TYPE_UNLOCK_PROGRAM,
+                            mTvView.getBlockedContentRating().flattenToString());
+        }
+        if (dialog != null) {
+            mOverlayManager.showDialogFragment(PinDialogFragment.DIALOG_TAG, dialog, false);
+        }
     }
 
     @Override

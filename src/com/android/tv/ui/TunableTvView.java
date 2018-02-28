@@ -55,6 +55,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import com.android.tv.InputSessionManager;
@@ -95,6 +96,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     public static final int VIDEO_UNAVAILABLE_REASON_NO_RESOURCE = -2;
     public static final int VIDEO_UNAVAILABLE_REASON_SCREEN_BLOCKED = -3;
     public static final int VIDEO_UNAVAILABLE_REASON_NONE = -100;
+    private final AccessibilityManager mAccessibilityManager;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({BLOCK_SCREEN_TYPE_NO_UI, BLOCK_SCREEN_TYPE_SHRUNKEN_TV_VIEW, BLOCK_SCREEN_TYPE_NORMAL})
@@ -500,6 +502,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                                 }
                             }
                         });
+        mAccessibilityManager = context.getSystemService(AccessibilityManager.class);
     }
 
     public void initialize(
@@ -1014,6 +1017,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
         if (text != null) {
             mBlockScreenView.setInfoText(text);
         }
+        mBlockScreenView.setInfoTextClickable(mScreenBlocked && mParentControlEnabled);
     }
 
     /**
@@ -1023,6 +1027,8 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     private String getBlockScreenText() {
         // TODO: add a test for this method
         Resources res = getResources();
+        boolean isA11y = mAccessibilityManager.isEnabled();
+
         if (mScreenBlocked && mParentControlEnabled) {
             switch (mBlockScreenType) {
                 case BLOCK_SCREEN_TYPE_NO_UI:
@@ -1030,7 +1036,10 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                     return "";
                 case BLOCK_SCREEN_TYPE_NORMAL:
                     if (mCanModifyParentalControls) {
-                        return res.getString(R.string.tvview_channel_locked);
+                        return res.getString(
+                                isA11y
+                                        ? R.string.tvview_channel_locked_talkback
+                                        : R.string.tvview_channel_locked);
                     } else {
                         return res.getString(R.string.tvview_channel_locked_no_permission);
                     }
@@ -1051,15 +1060,26 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                 case BLOCK_SCREEN_TYPE_NORMAL:
                     if (TextUtils.isEmpty(name)) {
                         if (mCanModifyParentalControls) {
-                            return res.getString(R.string.tvview_content_locked);
+                            return res.getString(
+                                    isA11y
+                                            ? R.string.tvview_content_locked_talkback
+                                            : R.string.tvview_content_locked);
                         } else {
                             return res.getString(R.string.tvview_content_locked_no_permission);
                         }
                     } else {
                         if (mCanModifyParentalControls) {
                             return name.equals(res.getString(R.string.unrated_rating_name))
-                                    ? res.getString(R.string.tvview_content_locked_unrated)
-                                    : res.getString(R.string.tvview_content_locked_format, name);
+                                    ? res.getString(
+                                            isA11y
+                                                    ? R.string
+                                                            .tvview_content_locked_unrated_talkback
+                                                    : R.string.tvview_content_locked_unrated)
+                                    : res.getString(
+                                            isA11y
+                                                    ? R.string.tvview_content_locked_format_talkback
+                                                    : R.string.tvview_content_locked_format,
+                                            name);
                         } else {
                             return name.equals(res.getString(R.string.unrated_rating_name))
                                     ? res.getString(
@@ -1266,6 +1286,10 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     @Override
     public void setTimeShiftListener(TimeShiftListener listener) {
         mTimeShiftListener = listener;
+    }
+
+    public void setBlockedInfoOnClickListener(@Nullable OnClickListener onClickListener) {
+        mBlockScreenView.setInfoTextOnClickListener(onClickListener);
     }
 
     private void setTimeShiftAvailable(boolean isTimeShiftAvailable) {
