@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-package com.android.tv.common.compat;
+package com.android.tv.common.compat.internal;
 /** Static constants use by the TIF compat library */
 final class Constants {
     static final String ACTION_GET_VERSION = "com.android.tv.common.compat.action.GET_VERSION";
