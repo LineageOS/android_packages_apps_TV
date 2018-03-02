@@ -33,6 +33,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent" />
 
+    <include layout="@layout/a11y_tv_controls" />
     <include layout="@layout/menu" />
     <include layout="@layout/option_container" />
     <include layout="@layout/program_guide" />
