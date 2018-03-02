@@ -24,6 +24,7 @@ import android.media.tv.TvTrackInfo;
 import android.media.tv.TvView;
 import android.text.TextUtils;
 import android.util.Log;
+import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.dvr.data.RecordedProgram;
 import java.util.ArrayList;
 import java.util.List;
@@ -440,7 +441,7 @@ class DvrPlayer {
                     }
                 });
         mTvView.setCallback(
-                new TvView.TvInputCallback() {
+                new TvInputCallbackCompat() {
                     @Override
                     public void onTimeShiftStatusChanged(String inputId, int status) {
                         if (DEBUG) Log.d(TAG, "onTimeShiftStatusChanged:" + status);

@@ -41,8 +41,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class TvViewCompat extends TvView {
     private static final String TAG = "TvViewCompat";
 
-    private final ArrayMap<String, Integer> inputCompatVersionMap = new ArrayMap<>();
-
     private TvInputCallbackCompat mTvInputCallbackCompat;
 
     public TvViewCompat(Context context) {
@@ -98,7 +96,8 @@ public class TvViewCompat extends TvView {
      *
      * <p>Extends {@code TvInputCallback} in a backwards compatible way.
      */
-    public class TvInputCallbackCompat extends TvInputCallback {
+    public static class TvInputCallbackCompat extends TvInputCallback {
+        private final ArrayMap<String, Integer> inputCompatVersionMap = new ArrayMap<>();
 
         @Override
         public void onEvent(String inputId, String eventType, Bundle eventArgs) {
@@ -130,22 +129,26 @@ public class TvViewCompat extends TvView {
             }
         }
 
-        public void onDevToast(String inputId, String message) {}
-    }
-
-    private void handle(String inputId, Events.SessionEvent sessionEvent) {
-        switch (sessionEvent.getEventCase()) {
-            case NOTIFY_DEV_MESSAGE:
-                handle(inputId, sessionEvent.getNotifyDevMessage());
-                break;
-            case EVENT_NOT_SET:
-                Log.w(TAG, "Error event not set compat notify  ");
+        public int getTifCompatVersionForInput(String inputId) {
+            return inputCompatVersionMap.containsKey(inputId)
+                    ? inputCompatVersionMap.get(inputId)
+                    : 0;
         }
-    }
 
-    private void handle(String inputId, NotifyDevToast devToast) {
-        if (devToast != null && mTvInputCallbackCompat != null) {
-            mTvInputCallbackCompat.onDevToast(inputId, devToast.getMessage());
+        public void onDevToast(String inputId, String message) {}
+
+        private void handle(String inputId, Events.SessionEvent sessionEvent) {
+            switch (sessionEvent.getEventCase()) {
+                case NOTIFY_DEV_MESSAGE:
+                    handle(inputId, sessionEvent.getNotifyDevMessage());
+                    break;
+                case EVENT_NOT_SET:
+                    Log.w(TAG, "Error event not set compat notify  ");
+            }
+        }
+
+        private void handle(String inputId, NotifyDevToast devToast) {
+            onDevToast(inputId, devToast.getMessage());
         }
     }
 }

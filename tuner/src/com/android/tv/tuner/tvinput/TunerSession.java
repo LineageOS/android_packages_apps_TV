@@ -21,7 +21,6 @@ import android.content.Context;
 import android.media.PlaybackParams;
 import android.media.tv.TvContentRating;
 import android.media.tv.TvInputManager;
-import android.media.tv.TvInputService;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -36,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
+import com.android.tv.common.compat.TisSessionCompat;
 import com.android.tv.common.util.SystemPropertiesProxy;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerPreferences;
@@ -51,7 +51,7 @@ import com.google.android.exoplayer.audio.AudioCapabilities;
  * Provides a tuner TV input session. It handles Overlay UI works. Main tuner input functions are
  * implemented in {@link TunerSessionWorker}.
  */
-public class TunerSession extends TvInputService.Session
+public class TunerSession extends TisSessionCompat
         implements Handler.Callback, CommonPreferencesChangedListener {
     private static final String TAG = "TunerSession";
     private static final boolean DEBUG = false;
