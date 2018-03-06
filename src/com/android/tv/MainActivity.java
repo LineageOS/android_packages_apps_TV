@@ -110,6 +110,7 @@ import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.NotificationService;
 import com.android.tv.search.ProgramGuideSearchFragment;
 import com.android.tv.ui.ChannelBannerView;
+import com.android.tv.ui.DetailsActivity;
 import com.android.tv.ui.InputBannerView;
 import com.android.tv.ui.KeypadChannelSwitchView;
 import com.android.tv.ui.SelectInputView;
@@ -1591,26 +1592,12 @@ public class MainActivity extends Activity
             }
             Channel channel = mChannelDataManager.getChannel(mChannelIdFromIntent);
             if (channel != null) {
-                ScheduledRecording scheduledRecording =
-                        TvSingletons.getSingletons(MainActivity.this)
-                                .getDvrDataManager()
-                                .getScheduledRecordingForProgramId(program.getId());
-                DvrUiHelper.checkStorageStatusAndShowErrorMessage(
-                        MainActivity.this,
-                        channel.getInputId(),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (CommonFeatures.DVR.isEnabled(MainActivity.this)
-                                        && scheduledRecording == null
-                                        && mDvrManager.isProgramRecordable(program)) {
-                                    DvrUiHelper.requestRecordingFutureProgram(
-                                            MainActivity.this, program, false);
-                                } else {
-                                    DvrUiHelper.showProgramInfoDialog(MainActivity.this, program);
-                                }
-                            }
-                        });
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                intent.putExtra(DetailsActivity.CHANNEL_ID, mChannelIdFromIntent);
+                intent.putExtra(DetailsActivity.DETAILS_VIEW_TYPE, DetailsActivity.PROGRAM_VIEW);
+                intent.putExtra(DetailsActivity.PROGRAM, program);
+                intent.putExtra(DetailsActivity.INPUT_ID, channel.getInputId());
+                startActivity(intent);
             }
         }
     }

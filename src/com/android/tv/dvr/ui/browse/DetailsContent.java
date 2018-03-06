@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
+import com.android.tv.data.Program;
 import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
@@ -29,7 +30,7 @@ import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
 
 /** A class for details content. */
-class DetailsContent {
+public class DetailsContent {
     /** Constant for invalid time. */
     public static final long INVALID_TIME = -1;
 
@@ -56,6 +57,23 @@ class DetailsContent {
                                 : recordedProgram.getLongDescription())
                 .setPosterArtUri(recordedProgram.getPosterArtUri())
                 .setThumbnailUri(recordedProgram.getThumbnailUri())
+                .build(context);
+    }
+
+    public static DetailsContent createFromProgram(Context context, Program program) {
+        return new DetailsContent.Builder()
+                .setChannelId(program.getChannelId())
+                .setProgramTitle(program.getTitle())
+                .setSeasonNumber(program.getSeasonNumber())
+                .setEpisodeNumber(program.getEpisodeNumber())
+                .setStartTimeUtcMillis(program.getStartTimeUtcMillis())
+                .setEndTimeUtcMillis(program.getEndTimeUtcMillis())
+                .setDescription(
+                        TextUtils.isEmpty(program.getLongDescription())
+                                ? program.getDescription()
+                                : program.getLongDescription())
+                .setPosterArtUri(program.getPosterArtUri())
+                .setThumbnailUri(program.getThumbnailUri())
                 .build(context);
     }
 

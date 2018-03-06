@@ -41,6 +41,8 @@ import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.dvr.ui.SortedArrayAdapter;
+import com.android.tv.ui.DetailsActivity;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -135,7 +137,7 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
 
     @Override
     protected boolean onLoadRecordingDetails(Bundle args) {
-        long recordId = args.getLong(DvrDetailsActivity.RECORDING_ID);
+        long recordId = args.getLong(DetailsActivity.RECORDING_ID);
         mSeries =
                 TvSingletons.getSingletons(getActivity())
                         .getDvrDataManager()

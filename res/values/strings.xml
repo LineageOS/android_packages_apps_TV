@@ -615,6 +615,8 @@
 
     <!-- DVR detailed page -->
     <eat-comment />
+    <!-- Button label to schedule a recording. -->
+    <string name="dvr_detail_schedule_recording">Schedule recording</string>
     <!-- Button label to cancel the recording schedule. -->
     <string name="dvr_detail_cancel_recording">Cancel recording</string>
     <!-- Button label to stop the current recording. -->

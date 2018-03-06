@@ -26,6 +26,7 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.ui.DvrUiHelper;
+import com.android.tv.ui.DetailsActivity;
 
 /** {@link RecordingDetailsFragment} for scheduled recording in DVR. */
 public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment {
@@ -40,7 +41,7 @@ public class ScheduledRecordingDetailsFragment extends RecordingDetailsFragment 
     public void onCreate(Bundle savedInstance) {
         Bundle args = getArguments();
         mDvrManager = TvSingletons.getSingletons(getContext()).getDvrManager();
-        mHideViewSchedule = args.getBoolean(DvrDetailsActivity.HIDE_VIEW_SCHEDULE);
+        mHideViewSchedule = args.getBoolean(DetailsActivity.HIDE_VIEW_SCHEDULE);
         super.onCreate(savedInstance);
     }
 

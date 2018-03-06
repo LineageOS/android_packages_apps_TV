@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 The Android Open Source Project
+ * Copyright (C) 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,17 @@
  * limitations under the License
  */
 
-package com.android.tv.dvr.ui.browse;
+package com.android.tv.ui;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.tv.TvContentRating;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.DetailsFragment;
+import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
@@ -35,47 +34,62 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.support.v17.leanback.widget.VerticalGridView;
 import android.text.TextUtils;
-import android.widget.Toast;
+
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
-import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.util.CommonUtils;
-import com.android.tv.data.ChannelDataManager;
+import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.data.Program;
 import com.android.tv.data.api.Channel;
-import com.android.tv.dialog.PinDialogFragment;
-import com.android.tv.dialog.PinDialogFragment.OnPinCheckedListener;
-import com.android.tv.dvr.data.RecordedProgram;
+import com.android.tv.dvr.DvrDataManager;
+import com.android.tv.dvr.DvrManager;
+import com.android.tv.dvr.DvrScheduleManager;
+import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
-import com.android.tv.parental.ParentalControlSettings;
-import com.android.tv.ui.DetailsActivity;
-import com.android.tv.util.ToastUtils;
+import com.android.tv.dvr.ui.browse.ActionPresenterSelector;
+import com.android.tv.dvr.ui.browse.DetailsContent;
+import com.android.tv.dvr.ui.browse.DetailsContentPresenter;
+import com.android.tv.dvr.ui.browse.DetailsViewBackgroundHelper;
 import com.android.tv.util.images.ImageLoader;
-import java.io.File;
 
-abstract class DvrDetailsFragment extends DetailsFragment {
+/** A fragment shows the details of a Program */
+public class ProgramDetailsFragment extends DetailsFragment
+        implements DvrDataManager.ScheduledRecordingListener,
+        DvrScheduleManager.OnConflictStateChangeListener {
     private static final int LOAD_LOGO_IMAGE = 1;
     private static final int LOAD_BACKGROUND_IMAGE = 2;
+
+    private static final int ACTION_VIEW_SCHEDULE = 1;
+    private static final int ACTION_CANCEL = 2;
+    private static final int ACTION_SCHEDULE_RECORDING = 3;
 
     protected DetailsViewBackgroundHelper mBackgroundHelper;
     private ArrayObjectAdapter mRowsAdapter;
     private DetailsOverviewRow mDetailsOverview;
+    private Program mProgram;
+    private String mInputId;
+    private ScheduledRecording mScheduledRecording;
+    private DvrManager mDvrManager;
+    private DvrDataManager mDvrDataManager;
+    private DvrScheduleManager mDvrScheduleManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!onLoadRecordingDetails(getArguments())) {
+        if (!onLoadDetails(getArguments())) {
             getActivity().finish();
-            return;
         }
-        mBackgroundHelper = new DetailsViewBackgroundHelper(getActivity());
-        setupAdapter();
-        onCreateInternal();
+    }
+
+    @Override
+    public void onDestroy() {
+        mDvrDataManager.removeScheduledRecordingListener(this);
+        mDvrScheduleManager.removeOnConflictStateChangeListener(this);
+        super.onDestroy();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // TODO: remove the workaround of b/30401180.
         VerticalGridView container =
                 (VerticalGridView) getActivity().findViewById(R.id.container_list);
         // Need to manually modify offset. Please refer DetailsFragment.setVerticalGridViewLayout.
@@ -96,11 +110,6 @@ abstract class DvrDetailsFragment extends DetailsFragment {
         setAdapter(mRowsAdapter);
     }
 
-    /** Returns details views' rows adapter. */
-    protected ArrayObjectAdapter getRowsAdapter() {
-        return mRowsAdapter;
-    }
-
     /** Sets details overview. */
     protected void setDetailsOverviewRow(DetailsContent detailsContent) {
         mDetailsOverview = new DetailsOverviewRow(detailsContent);
@@ -117,35 +126,110 @@ abstract class DvrDetailsFragment extends DetailsFragment {
         return presenterSelector;
     }
 
-    /**
-     * Does customized initialization of subclasses. Since {@link #onCreate(Bundle)} might finish
-     * activity early when it cannot fetch valid recordings, subclasses' onCreate method should not
-     * do anything after calling {@link #onCreate(Bundle)}. If there's something subclasses have to
-     * do after the super class did onCreate, it should override this method and put the codes here.
-     */
-    protected void onCreateInternal() {}
-
     /** Updates actions of details overview. */
     protected void updateActions() {
         mDetailsOverview.setActionsAdapter(onCreateActionsAdapter());
     }
 
     /**
-     * Loads recording details according to the arguments the fragment got.
+     * Loads program details according to the arguments the fragment got.
      *
-     * @return false if cannot find valid recordings, else return true. If the return value is
+     * @return false if cannot find valid programs, else return true. If the return value is
      *     false, the detail activity and fragment will be ended.
      */
-    abstract boolean onLoadRecordingDetails(Bundle args);
+    private boolean onLoadDetails(Bundle args) {
+        Program program = args.getParcelable(DetailsActivity.PROGRAM);
+        long channelId = args.getLong(DetailsActivity.CHANNEL_ID);
+        String inputId = args.getString(DetailsActivity.INPUT_ID);
+        if (program != null && channelId != Channel.INVALID_ID && !TextUtils.isEmpty(inputId)) {
+            mProgram = program;
+            mInputId = inputId;
+            TvSingletons singletons = TvSingletons.getSingletons(getContext());
+            mDvrDataManager = singletons.getDvrDataManager();
+            mDvrManager = singletons.getDvrManager();
+            mDvrScheduleManager = singletons.getDvrScheduleManager();
+            mScheduledRecording =
+                    mDvrDataManager.getScheduledRecordingForProgramId(program.getId());
+            mBackgroundHelper = new DetailsViewBackgroundHelper(getActivity());
+            setupAdapter();
+            setDetailsOverviewRow(
+                    DetailsContent.createFromProgram(getContext(), mProgram));
+            mDvrDataManager.addScheduledRecordingListener(this);
+            mDvrScheduleManager.addOnConflictStateChangeListener(this);
+            return true;
+        }
+        return false;
+    }
+
+    private int getScheduleIconId() {
+        if (mDvrManager.isConflicting(mScheduledRecording)) {
+            return R.drawable.ic_warning_white_32dp;
+        } else {
+            return R.drawable.ic_schedule_32dp;
+        }
+    }
 
     /** Creates actions users can interact with and their adaptor for this fragment. */
-    abstract SparseArrayObjectAdapter onCreateActionsAdapter();
+    private SparseArrayObjectAdapter onCreateActionsAdapter() {
+        SparseArrayObjectAdapter adapter =
+                new SparseArrayObjectAdapter(new ActionPresenterSelector());
+        Resources res = getResources();
+        if (mScheduledRecording != null) {
+            adapter.set(
+                    ACTION_VIEW_SCHEDULE,
+                    new Action(
+                            ACTION_VIEW_SCHEDULE,
+                            res.getString(R.string.dvr_detail_view_schedule),
+                            null,
+                            res.getDrawable(getScheduleIconId())));
+            adapter.set(
+                    ACTION_CANCEL,
+                    new Action(
+                            ACTION_CANCEL,
+                            res.getString(R.string.dvr_detail_cancel_recording),
+                            null,
+                            res.getDrawable(R.drawable.ic_dvr_cancel_32dp)));
+        } else if (CommonFeatures.DVR.isEnabled(getActivity())
+                && mDvrManager.isProgramRecordable(mProgram)) {
+            adapter.set(
+                    ACTION_SCHEDULE_RECORDING,
+                    new Action(
+                            ACTION_SCHEDULE_RECORDING,
+                            res.getString(R.string.dvr_detail_schedule_recording),
+                            null,
+                            res.getDrawable(R.drawable.ic_schedule_32dp)));
+        }
+        return adapter;
+    }
 
     /**
      * Creates actions listeners to implement the behavior of the fragment after users click some
      * action buttons.
      */
-    abstract OnActionClickedListener onCreateOnActionClickedListener();
+    private OnActionClickedListener onCreateOnActionClickedListener() {
+        return new OnActionClickedListener() {
+            @Override
+            public void onActionClicked(Action action) {
+                long actionId = action.getId();
+                if (actionId == ACTION_VIEW_SCHEDULE) {
+                    DvrUiHelper.startSchedulesActivity(getContext(), mScheduledRecording);
+                } else if (actionId == ACTION_CANCEL) {
+                    mDvrManager.removeScheduledRecording(mScheduledRecording);
+                } else if (actionId == ACTION_SCHEDULE_RECORDING) {
+                    DvrUiHelper.checkStorageStatusAndShowErrorMessage(
+                            getActivity(),
+                            mInputId,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    DvrUiHelper.requestRecordingFutureProgram(
+                                            getActivity(), mProgram, false);
+                                }
+                            });
+                }
+            }
+        };
+    }
 
     /** Loads logo and background images for detail fragments. */
     protected void onLoadLogoAndBackgroundImages(DetailsContent detailsContent) {
@@ -195,96 +279,64 @@ abstract class DvrDetailsFragment extends DetailsFragment {
         }
     }
 
-    protected void startPlayback(RecordedProgram recordedProgram, long seekTimeMs) {
-        if (CommonUtils.isInBundledPackageSet(recordedProgram.getPackageName())
-                && !isDataUriAccessible(recordedProgram.getDataUri())) {
-            // Since cleaning RecordedProgram from forgotten storage will take some time,
-            // ignore playback until cleaning is finished.
-            ToastUtils.show(
-                    getContext(),
-                    getContext().getResources().getString(R.string.dvr_toast_recording_deleted),
-                    Toast.LENGTH_SHORT);
-            return;
-        }
-        long programId = recordedProgram.getId();
-        ParentalControlSettings parental =
-                TvSingletons.getSingletons(getActivity())
-                        .getTvInputManagerHelper()
-                        .getParentalControlSettings();
-        if (!parental.isParentalControlsEnabled()) {
-            DvrUiHelper.startPlaybackActivity(getContext(), programId, seekTimeMs, false);
-            return;
-        }
-        ChannelDataManager channelDataManager =
-                TvSingletons.getSingletons(getActivity()).getChannelDataManager();
-        Channel channel = channelDataManager.getChannel(recordedProgram.getChannelId());
-        if (channel != null && channel.isLocked()) {
-            checkPinToPlay(recordedProgram, seekTimeMs);
-            return;
-        }
-        TvContentRating[] ratings = recordedProgram.getContentRatings();
-        TvContentRating blockRatings = parental.getBlockedRating(ratings);
-        if (blockRatings != null) {
-            checkPinToPlay(recordedProgram, seekTimeMs);
-        } else {
-            DvrUiHelper.startPlaybackActivity(getContext(), programId, seekTimeMs, false);
-        }
-    }
-
-    private boolean isDataUriAccessible(Uri dataUri) {
-        if (dataUri == null || dataUri.getPath() == null) {
-            return false;
-        }
-        try {
-            File recordedProgramPath = new File(dataUri.getPath());
-            if (recordedProgramPath.exists()) {
-                return true;
+    @Override
+    public void onScheduledRecordingAdded(ScheduledRecording... scheduledRecordings) {
+        for (ScheduledRecording recording : scheduledRecordings) {
+            if (recording.getProgramId() == mProgram.getId()) {
+                mScheduledRecording = recording;
+                updateActions();
+                return;
             }
-        } catch (SecurityException e) {
         }
-        return false;
     }
 
-    private void checkPinToPlay(RecordedProgram recordedProgram, long seekTimeMs) {
-        SoftPreconditions.checkState(getActivity() instanceof DetailsActivity);
-        if (getActivity() instanceof DetailsActivity) {
-            ((DetailsActivity) getActivity())
-                    .setOnPinCheckListener(
-                            new OnPinCheckedListener() {
-                                @Override
-                                public void onPinChecked(boolean checked, int type, String rating) {
-                                    ((DetailsActivity) getActivity())
-                                            .setOnPinCheckListener(null);
-                                    if (checked
-                                            && type
-                                                    == PinDialogFragment
-                                                            .PIN_DIALOG_TYPE_UNLOCK_PROGRAM) {
-                                        DvrUiHelper.startPlaybackActivity(
-                                                getContext(),
-                                                recordedProgram.getId(),
-                                                seekTimeMs,
-                                                true);
-                                    }
-                                }
-                            });
-            PinDialogFragment.create(PinDialogFragment.PIN_DIALOG_TYPE_UNLOCK_PROGRAM)
-                    .show(getActivity().getFragmentManager(), PinDialogFragment.DIALOG_TAG);
+    @Override
+    public void onScheduledRecordingRemoved(ScheduledRecording... scheduledRecordings) {
+        if (mScheduledRecording == null) {
+            return;
         }
+        for (ScheduledRecording recording : scheduledRecordings) {
+            if (recording.getId() == mScheduledRecording.getId()) {
+                mScheduledRecording = null;
+                updateActions();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onScheduledRecordingStatusChanged(ScheduledRecording... scheduledRecordings) {
+        if (mScheduledRecording == null) {
+            return;
+        }
+        for (ScheduledRecording recording : scheduledRecordings) {
+            if (recording.getId() == mScheduledRecording.getId()) {
+                mScheduledRecording = recording;
+                updateActions();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onConflictStateChange(boolean conflict, ScheduledRecording... scheduledRecordings) {
+        onScheduledRecordingStatusChanged(scheduledRecordings);
     }
 
     private static class MyImageLoaderCallback
-            extends ImageLoader.ImageLoaderCallback<DvrDetailsFragment> {
+            extends ImageLoader.ImageLoaderCallback<ProgramDetailsFragment> {
         private final Context mContext;
         private final int mLoadType;
 
-        public MyImageLoaderCallback(DvrDetailsFragment fragment, int loadType, Context context) {
+        public MyImageLoaderCallback(
+                ProgramDetailsFragment fragment, int loadType, Context context) {
             super(fragment);
             mLoadType = loadType;
             mContext = context;
         }
 
         @Override
-        public void onBitmapLoaded(DvrDetailsFragment fragment, @Nullable Bitmap bitmap) {
+        public void onBitmapLoaded(ProgramDetailsFragment fragment, @Nullable Bitmap bitmap) {
             Drawable drawable;
             int loadType = mLoadType;
             if (bitmap == null) {

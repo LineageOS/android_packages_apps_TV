@@ -45,7 +45,7 @@ import com.android.tv.util.Utils;
  * The latter class are re-used to provide a customized version of {@link
  * android.support.v17.leanback.widget.DetailsOverviewRow}.
  */
-class DetailsContentPresenter extends Presenter {
+public class DetailsContentPresenter extends Presenter {
     /** The ViewHolder for the {@link DetailsContentPresenter}. */
     public static class ViewHolder extends Presenter.ViewHolder {
         final TextView mTitle;
