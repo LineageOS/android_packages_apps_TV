@@ -20,7 +20,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvInputInfo;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
+import com.android.tv.ChannelChanger;
 import com.android.tv.R;
+import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.feature.CommonFeatures;
@@ -35,7 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** An adapter of the Channels row. */
-public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<ChannelsRowItem> {
+public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<ChannelsRowItem>
+        implements AccessibilityStateChangeListener {
 
     private final Context mContext;
     private final Tracker mTracker;
@@ -44,6 +49,9 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
     private final int mMaxCount;
     private final int mMinCount;
     private final TvOverlayManager mOverlayManager;
+    private final ChannelChanger mChannelChanger;
+
+    private boolean mShowChannelUpDown;
 
     public ChannelsRowAdapter(
             Context context, Recommender recommender, int minCount, int maxCount) {
@@ -61,6 +69,11 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         mMaxCount = maxCount;
         setHasStableIds(true);
         mOverlayManager = getMainActivity().getOverlayManager();
+        mChannelChanger = (ChannelChanger) (context);
+        AccessibilityManager accessibilityManager =
+                context.getSystemService(AccessibilityManager.class);
+        mShowChannelUpDown = accessibilityManager.isEnabled();
+        accessibilityManager.addAccessibilityStateChangeListener(this);
     }
 
     @Override
@@ -83,6 +96,10 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         int viewType = getItemViewType(position);
         if (viewType == R.layout.menu_card_guide) {
             viewHolder.itemView.setOnClickListener(this::onGuideClicked);
+        } else if (viewType == R.layout.menu_card_up) {
+            viewHolder.itemView.setOnClickListener(this::onChannelUpClicked);
+        } else if (viewType == R.layout.menu_card_down) {
+            viewHolder.itemView.setOnClickListener(this::onChannelDownClicked);
         } else if (viewType == R.layout.menu_card_setup) {
             viewHolder.itemView.setOnClickListener(this::onSetupClicked);
         } else if (viewType == R.layout.menu_card_app_link) {
@@ -110,6 +127,14 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
     private void onGuideClicked(View unused) {
         mTracker.sendMenuClicked(R.string.channels_item_program_guide);
         getMainActivity().getOverlayManager().showProgramGuide();
+    }
+
+    private void onChannelDownClicked(View unused) {
+        mChannelChanger.channelDown();
+    }
+
+    private void onChannelUpClicked(View unused) {
+        mChannelChanger.channelUp();
     }
 
     private void onSetupClicked(View unused) {
@@ -141,6 +166,11 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
     private void createItems() {
         List<ChannelsRowItem> items = new ArrayList<>();
         items.add(ChannelsRowItem.GUIDE_ITEM);
+        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(mContext) && mShowChannelUpDown) {
+            items.add(ChannelsRowItem.UP_ITEM);
+            items.add(ChannelsRowItem.DOWN_ITEM);
+        }
+
         if (needToShowSetupItem()) {
             items.add(ChannelsRowItem.SETUP_ITEM);
         }
@@ -163,6 +193,14 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         // The current index of the item list to iterate. It starts from 1 because the first item
         // (GUIDE) is always visible and not updated.
         int currentIndex = 1;
+        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(mContext)) {
+            if (updateItem(mShowChannelUpDown, ChannelsRowItem.UP_ITEM, currentIndex)) {
+                ++currentIndex;
+            }
+            if (updateItem(mShowChannelUpDown, ChannelsRowItem.DOWN_ITEM, currentIndex)) {
+                ++currentIndex;
+            }
+        }
         if (updateItem(needToShowSetupItem(), ChannelsRowItem.SETUP_ITEM, currentIndex)) {
             ++currentIndex;
         }
@@ -277,5 +315,11 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         }
         channelList.add(channel);
         return true;
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+        mShowChannelUpDown = enabled;
+        update();
     }
 }
