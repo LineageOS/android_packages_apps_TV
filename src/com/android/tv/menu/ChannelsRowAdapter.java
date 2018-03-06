@@ -24,7 +24,6 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import com.android.tv.ChannelChanger;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.feature.CommonFeatures;
@@ -166,7 +165,7 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
     private void createItems() {
         List<ChannelsRowItem> items = new ArrayList<>();
         items.add(ChannelsRowItem.GUIDE_ITEM);
-        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(mContext) && mShowChannelUpDown) {
+        if (mShowChannelUpDown) {
             items.add(ChannelsRowItem.UP_ITEM);
             items.add(ChannelsRowItem.DOWN_ITEM);
         }
@@ -193,13 +192,11 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         // The current index of the item list to iterate. It starts from 1 because the first item
         // (GUIDE) is always visible and not updated.
         int currentIndex = 1;
-        if (TvFeatures.A11Y_CHANNEL_CHANGE_UI.isEnabled(mContext)) {
-            if (updateItem(mShowChannelUpDown, ChannelsRowItem.UP_ITEM, currentIndex)) {
-                ++currentIndex;
-            }
-            if (updateItem(mShowChannelUpDown, ChannelsRowItem.DOWN_ITEM, currentIndex)) {
-                ++currentIndex;
-            }
+        if (updateItem(mShowChannelUpDown, ChannelsRowItem.UP_ITEM, currentIndex)) {
+            ++currentIndex;
+        }
+        if (updateItem(mShowChannelUpDown, ChannelsRowItem.DOWN_ITEM, currentIndex)) {
+            ++currentIndex;
         }
         if (updateItem(needToShowSetupItem(), ChannelsRowItem.SETUP_ITEM, currentIndex)) {
             ++currentIndex;
