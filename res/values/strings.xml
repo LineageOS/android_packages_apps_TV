@@ -372,17 +372,21 @@
     <eat-comment />
     <!-- Description on the locked screen when current channel is locked by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_channel_locked">To watch this channel, press Right and enter your PIN</string>
-    <!-- Description on the locked screen when current channel is locked by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen when current channel is locked by parental control and talk back is turned on.
+        "press select" refers to a button on the remote.  [CHAR LIMIT=NONE] -->
     <string name="tvview_channel_locked_talkback">To watch this channel, press select and enter your PIN</string>
     <!-- Description on the locked screen when the rating of the current content is restricted by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked">To watch this program, press Right and enter your PIN</string>
-    <!-- Description on the locked screen when the rating of the current content is restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen when the rating of the current content is restricted by parental control and talk back is turned on.
+     "press select" refers to a button on the remote.[CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_talkback">To watch this program, press select and enter your PIN</string>
     <!-- Description on the locked screen when the current content is unrated and it's restricted by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_unrated">This program is unrated.\nTo watch this program, press Right and enter your PIN</string>
-    <!-- Description on the locked screen when the current content is unrated and it's restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen when the current content is unrated and it's restricted by parental control and talk back is turned on.
+    "press select" refers to a button on the remote.[CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_unrated_talkback">This program is unrated.\nTo watch this program, press select and enter your PIN</string>
-    <!-- Description on the locked screen with the rating when the rating of the current content is restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen with the rating when the rating of the current content is restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE]
+     "press select" refers to a button on the remote.-->
     <string name="tvview_content_locked_format_talkback">This program is rated <xliff:g id="rating" example="TV_MA">%1$s</xliff:g>.\nTo watch this program, press select and enter your PIN.</string>
     <!-- Description on the locked screen with the rating when the rating of the current content is restricted by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_format">This program is rated <xliff:g id="rating" example="TV_MA">%1$s</xliff:g>.\nTo watch this program, press Right and enter your PIN.</string>
