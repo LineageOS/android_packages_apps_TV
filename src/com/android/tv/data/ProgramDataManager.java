@@ -42,6 +42,7 @@ import com.android.tv.common.util.Clock;
 import com.android.tv.data.api.Channel;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.MultiLongSparseArray;
+import com.android.tv.util.TvProviderUtils;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -497,8 +498,15 @@ public class ProgramDataManager implements MemoryManageable {
                     return null;
                 }
                 programMap.clear();
+
+                String[] projection = Program.PROJECTION;
+                if (TvProviderUtils.updateDbColumnsIfNeeded(mContentResolver)) {
+                    if (Utils.isProgramsUri(uri)) {
+                        projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+                    }
+                }
                 try (Cursor c =
-                        mContentResolver.query(uri, Program.PROJECTION, null, null, SORT_BY_TIME)) {
+                        mContentResolver.query(uri, projection, null, null, SORT_BY_TIME)) {
                     if (c == null) {
                         continue;
                     }

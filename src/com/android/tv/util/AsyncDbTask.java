@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Range;
+
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
@@ -34,6 +35,7 @@ import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.Program;
 import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.RecordedProgram;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -69,10 +71,10 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     public abstract static class AsyncQueryTask<Result> extends AsyncDbTask<Void, Void, Result> {
         private final ContentResolver mContentResolver;
         private final Uri mUri;
-        private final String[] mProjection;
         private final String mSelection;
         private final String[] mSelectionArgs;
         private final String mOrderBy;
+        private String[] mProjection;
 
         public AsyncQueryTask(
                 Executor executor,
@@ -109,6 +111,11 @@ public abstract class AsyncDbTask<Params, Progress, Result>
             if (isCancelled()) {
                 // This is guaranteed to never call onPostExecute because the task is canceled.
                 return null;
+            }
+            if (TvProviderUtils.updateDbColumnsIfNeeded(mContentResolver)) {
+                if (Utils.isProgramsUri(mUri)) {
+                    mProjection = TvProviderUtils.addExtraColumnsToProjection(mProjection);
+                }
             }
             if (DEBUG) {
                 Log.v(TAG, "Starting query for " + this);

@@ -325,8 +325,16 @@ public class Utils {
         Uri uri =
                 TvContract.buildProgramsUriForChannel(
                         TvContract.buildChannelUri(channelId), timeMs, timeMs);
+        ContentResolver resolver = context.getContentResolver();
+
+        String[] projection = Program.PROJECTION;
+        if (TvProviderUtils.updateDbColumnsIfNeeded(context.getContentResolver())) {
+            if (Utils.isProgramsUri(uri)) {
+                projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+            }
+        }
         try (Cursor cursor =
-                context.getContentResolver().query(uri, Program.PROJECTION, null, null, null)) {
+                resolver.query(uri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToNext()) {
                 return Program.fromCursor(cursor);
             }

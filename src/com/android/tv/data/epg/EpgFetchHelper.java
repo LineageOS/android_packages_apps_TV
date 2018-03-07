@@ -27,9 +27,12 @@ import android.preference.PreferenceManager;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.Program;
+import com.android.tv.util.TvProviderUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -101,7 +104,9 @@ class EpgFetchHelper {
                     ops.add(
                             ContentProviderOperation.newUpdate(
                                             TvContract.buildProgramUri(oldProgram.getId()))
-                                    .withValues(Program.toContentValues(newProgram))
+                                    .withValues(Program.toContentValues(
+                                            newProgram,
+                                            context.getContentResolver()))
                                     .build());
                     oldProgramsIndex++;
                     newProgramsIndex++;
@@ -127,7 +132,9 @@ class EpgFetchHelper {
             if (addNewProgram) {
                 ops.add(
                         ContentProviderOperation.newInsert(Programs.CONTENT_URI)
-                                .withValues(Program.toContentValues(newProgram))
+                                .withValues(Program.toContentValues(
+                                        newProgram,
+                                        context.getContentResolver()))
                                 .build());
             }
             // Throttle the batch operation not to cause TransactionTooLargeException.
@@ -155,14 +162,19 @@ class EpgFetchHelper {
         return updated;
     }
 
+    @WorkerThread
     private static List<Program> queryPrograms(
             Context context, long channelId, long startTimeMs, long endTimeMs) {
+        String[] projection = Program.PROJECTION;
+        if (TvProviderUtils.updateDbColumnsIfNeeded(context.getContentResolver())) {
+            projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+        }
         try (Cursor c =
                 context.getContentResolver()
                         .query(
                                 TvContract.buildProgramsUriForChannel(
                                         channelId, startTimeMs, endTimeMs),
-                                Program.PROJECTION,
+                                projection,
                                 null,
                                 null,
                                 Programs.COLUMN_START_TIME_UTC_MILLIS)) {
