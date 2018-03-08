@@ -31,7 +31,6 @@ import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.recommendation.Recommender;
-import com.android.tv.ui.TvOverlayManager;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
     private final DvrDataManager mDvrDataManager;
     private final int mMaxCount;
     private final int mMinCount;
-    private final TvOverlayManager mOverlayManager;
     private final ChannelChanger mChannelChanger;
 
     private boolean mShowChannelUpDown;
@@ -67,7 +65,6 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
         mMinCount = minCount;
         mMaxCount = maxCount;
         setHasStableIds(true);
-        mOverlayManager = getMainActivity().getOverlayManager();
         mChannelChanger = (ChannelChanger) (context);
         AccessibilityManager accessibilityManager =
                 context.getSystemService(AccessibilityManager.class);
@@ -138,12 +135,12 @@ public class ChannelsRowAdapter extends ItemListRowView.ItemListAdapter<Channels
 
     private void onSetupClicked(View unused) {
         mTracker.sendMenuClicked(R.string.channels_item_setup);
-        mOverlayManager.showSetupFragment();
+        getMainActivity().getOverlayManager().showSetupFragment();
     }
 
     private void onDvrClicked(View unused) {
         mTracker.sendMenuClicked(R.string.channels_item_dvr);
-        mOverlayManager.showDvrManager();
+        getMainActivity().getOverlayManager().showDvrManager();
     }
 
     private void onAppLinkClicked(View view) {
