@@ -22,7 +22,6 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -1497,7 +1496,6 @@ public class MainActivity extends Activity
             if (programUriFromIntent != null && channelIdFromIntent != Channel.INVALID_ID) {
                 new AsyncQueryProgramTask(
                                 TvSingletons.getSingletons(this).getDbExecutor(),
-                                getContentResolver(),
                                 programUriFromIntent,
                                 Program.PROJECTION,
                                 null,
@@ -1564,14 +1562,13 @@ public class MainActivity extends Activity
 
         public AsyncQueryProgramTask(
                 Executor executor,
-                ContentResolver contentResolver,
                 Uri uri,
                 String[] projection,
                 String selection,
                 String[] selectionArgs,
                 String orderBy,
                 long channelId) {
-            super(executor, contentResolver, uri, projection, selection, selectionArgs, orderBy);
+            super(executor, MainActivity.this, uri, projection, selection, selectionArgs, orderBy);
             mChannelIdFromIntent = channelId;
         }
 

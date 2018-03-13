@@ -27,12 +27,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.Program;
 import com.android.tv.util.TvProviderUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -106,7 +104,7 @@ class EpgFetchHelper {
                                             TvContract.buildProgramUri(oldProgram.getId()))
                                     .withValues(Program.toContentValues(
                                             newProgram,
-                                            context.getContentResolver()))
+                                            context))
                                     .build());
                     oldProgramsIndex++;
                     newProgramsIndex++;
@@ -134,7 +132,7 @@ class EpgFetchHelper {
                         ContentProviderOperation.newInsert(Programs.CONTENT_URI)
                                 .withValues(Program.toContentValues(
                                         newProgram,
-                                        context.getContentResolver()))
+                                        context))
                                 .build());
             }
             // Throttle the batch operation not to cause TransactionTooLargeException.
@@ -166,7 +164,7 @@ class EpgFetchHelper {
     private static List<Program> queryPrograms(
             Context context, long channelId, long startTimeMs, long endTimeMs) {
         String[] projection = Program.PROJECTION;
-        if (TvProviderUtils.updateDbColumnsIfNeeded(context.getContentResolver())) {
+        if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
             projection = TvProviderUtils.addExtraColumnsToProjection(projection);
         }
         try (Cursor c =

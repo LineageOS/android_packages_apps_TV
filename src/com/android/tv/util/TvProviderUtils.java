@@ -16,13 +16,12 @@
 
 package com.android.tv.util;
 
-import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
-
 import com.android.tv.data.Program;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +34,10 @@ public class TvProviderUtils {
     private static final int VERSION = 1;
 
     public static final String EXTRA_PROGRAM_COLUMN = Program.COLUMN_SERIES_ID;
+    public static final String PREF_KEY_TV_PROVIDER_DB_CUSTOMIZATION_VERSION_CODE =
+            "tv_provider_db_customization.version_code";
 
-    private static boolean sIsLatestVersion;
+    private static Boolean sIsLatestVersion;
 
     /**
      * Updates database columns if necessary.
@@ -45,15 +46,30 @@ public class TvProviderUtils {
      * otherwise.
      */
     @WorkerThread
-    public static boolean updateDbColumnsIfNeeded(ContentResolver contentResolver) {
+    public static synchronized boolean updateDbColumnsIfNeeded(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return false;
+        }
+        if (sIsLatestVersion == null) {
+            int version =
+                    PreferenceManager.getDefaultSharedPreferences(context)
+                            .getInt(PREF_KEY_TV_PROVIDER_DB_CUSTOMIZATION_VERSION_CODE, 0);
+            setIsLatestVersion(version == VERSION);
         }
         if (sIsLatestVersion) {
             return true;
         }
         // TODO(b/73342889): implement add_column
         return false;
+    }
+
+    public static synchronized boolean isLatestVersion() {
+        return Boolean.TRUE.equals(sIsLatestVersion)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    private static synchronized void setIsLatestVersion(boolean isLatestVersion) {
+        sIsLatestVersion = isLatestVersion;
     }
 
     public static String[] addExtraColumnsToProjection(String[] projection) {
@@ -63,12 +79,5 @@ public class TvProviderUtils {
         }
         projection = projectionList.toArray(projection);
         return projection;
-    }
-    public static synchronized boolean isLatestVersion() {
-        return sIsLatestVersion && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
-
-    private static synchronized void onUpgraded() {
-        sIsLatestVersion = true;
     }
 }

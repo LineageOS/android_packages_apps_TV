@@ -17,7 +17,6 @@
 package com.android.tv.data;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,7 +33,6 @@ import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.CollectionUtils;
@@ -43,7 +41,6 @@ import com.android.tv.data.api.Channel;
 import com.android.tv.util.TvProviderUtils;
 import com.android.tv.util.Utils;
 import com.android.tv.util.images.ImageLoader;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -484,7 +481,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     @SuppressLint("InlinedApi")
     @SuppressWarnings("deprecation")
     @WorkerThread
-    public static ContentValues toContentValues(Program program, ContentResolver resolver) {
+    public static ContentValues toContentValues(Program program, Context context) {
         ContentValues values = new ContentValues();
         values.put(TvContract.Programs.COLUMN_CHANNEL_ID, program.getChannelId());
         if (!TextUtils.isEmpty(program.getPackageName())) {
@@ -505,7 +502,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
             putValue(values, TvContract.Programs.COLUMN_SEASON_NUMBER, program.getSeasonNumber());
             putValue(values, TvContract.Programs.COLUMN_EPISODE_NUMBER, program.getEpisodeNumber());
         }
-        if (TvProviderUtils.updateDbColumnsIfNeeded(resolver)) {
+        if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
             putValue(values, COLUMN_SERIES_ID, program.getSeriesId());
         }
 

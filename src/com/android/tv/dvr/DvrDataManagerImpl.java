@@ -107,7 +107,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                 @Override
                 public void onChange(boolean selfChange, final @Nullable Uri uri) {
                     RecordedProgramsQueryTask task =
-                            new RecordedProgramsQueryTask(mContext.getContentResolver(), uri);
+                            new RecordedProgramsQueryTask(uri);
                     task.executeOnDbThread();
                     mPendingTasks.add(task);
                 }
@@ -308,7 +308,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         dvrQueryScheduleTask.executeOnDbThread();
         mPendingTasks.add(dvrQueryScheduleTask);
         RecordedProgramsQueryTask mRecordedProgramQueryTask =
-                new RecordedProgramsQueryTask(mContext.getContentResolver(), null);
+                new RecordedProgramsQueryTask(null);
         mRecordedProgramQueryTask.executeOnDbThread();
         ContentResolver cr = mContext.getContentResolver();
         cr.registerContentObserver(RecordedPrograms.CONTENT_URI, true, mContentObserver);
@@ -1046,8 +1046,8 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
     private final class RecordedProgramsQueryTask extends AsyncRecordedProgramQueryTask {
         private final Uri mUri;
 
-        public RecordedProgramsQueryTask(ContentResolver contentResolver, Uri uri) {
-            super(mDbExecutor, contentResolver, uri == null ? RecordedPrograms.CONTENT_URI : uri);
+        public RecordedProgramsQueryTask(Uri uri) {
+            super(mDbExecutor, mContext, uri == null ? RecordedPrograms.CONTENT_URI : uri);
             mUri = uri;
         }
 

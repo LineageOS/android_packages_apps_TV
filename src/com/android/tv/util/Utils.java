@@ -328,7 +328,7 @@ public class Utils {
         ContentResolver resolver = context.getContentResolver();
 
         String[] projection = Program.PROJECTION;
-        if (TvProviderUtils.updateDbColumnsIfNeeded(context.getContentResolver())) {
+        if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
             if (Utils.isProgramsUri(uri)) {
                 projection = TvProviderUtils.addExtraColumnsToProjection(projection);
             }
@@ -716,7 +716,6 @@ public class Utils {
         if (fullFormat) {
             return new Date(timeMillis).toString();
         } else {
-            long currentTime = System.currentTimeMillis();
             return (String)
                     DateUtils.formatSameDayTime(
                             timeMillis,
