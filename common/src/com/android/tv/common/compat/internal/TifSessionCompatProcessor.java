@@ -68,9 +68,7 @@ public final class TifSessionCompatProcessor implements SessionCompatEvents {
     private void onCompat(Commands.PrivateCommand privateCommand) {
         switch (privateCommand.getCommandCase()) {
             case ON_DEV_MESSAGE:
-                if (privateCommand.hasOnDevMessage()) {
-                    mSessionOnCompat.onDevMessage(privateCommand.getOnDevMessage().getMessage());
-                }
+                mSessionOnCompat.onDevMessage(privateCommand.getOnDevMessage().getMessage());
                 break;
             case COMMAND_NOT_SET:
                 Log.w(TAG, "Command not set ");
