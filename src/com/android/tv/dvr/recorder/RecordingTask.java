@@ -340,10 +340,8 @@ public class RecordingTask extends RecordingCallback
     }
 
     private void failAndQuit(Integer reason) {
-        if (DEBUG) Log.d(TAG, "failAndQuit");
-        updateRecordingState(
-                ScheduledRecording.STATE_RECORDING_FAILED,
-                reason);
+        Log.w(TAG, "Recording " + mScheduledRecording + " failed with code " + reason);
+        updateRecordingState(ScheduledRecording.STATE_RECORDING_FAILED, reason);
         mState = State.ERROR;
         sendRemove();
     }
@@ -450,6 +448,7 @@ public class RecordingTask extends RecordingCallback
     private void updateRecordingState(@ScheduledRecording.RecordingState int state) {
         updateRecordingState(state, null);
     }
+
     private void updateRecordingState(
             @ScheduledRecording.RecordingState int state, @Nullable Integer reason) {
         if (DEBUG) {
@@ -471,9 +470,7 @@ public class RecordingTask extends RecordingCallback
                             // has been updated. mScheduledRecording will be updated from
                             // onScheduledRecordingStateChanged.
                             ScheduledRecording.Builder builder =
-                                    ScheduledRecording
-                                            .buildFrom(schedule)
-                                            .setState(state);
+                                    ScheduledRecording.buildFrom(schedule).setState(state);
                             if (state == ScheduledRecording.STATE_RECORDING_FAILED
                                     && reason != null) {
                                 builder.setFailedReason(reason);
