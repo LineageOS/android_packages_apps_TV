@@ -3,11 +3,16 @@ include $(CLEAR_VARS)
 
 # Include all common java files.
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_SRC_FILES += $(call all-proto-files-under, src)
 
 LOCAL_MODULE := tv-common
 LOCAL_MODULE_CLASS := STATIC_JAVA_LIBRARIES
 LOCAL_MODULE_TAGS := optional
 LOCAL_SDK_VERSION := system_current
+
+LOCAL_PROTOC_OPTIMIZE_TYPE := lite
+LOCAL_PROTOC_FLAGS := --proto_path=$(LOCAL_PATH)/src/
+
 
 LOCAL_USE_AAPT2 := true
 

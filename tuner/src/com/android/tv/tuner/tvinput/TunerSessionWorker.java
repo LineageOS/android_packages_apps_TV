@@ -47,6 +47,7 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.customization.CustomizationManager;
 import com.android.tv.common.customization.CustomizationManager.TRICKPLAY_MODE;
+import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.SystemPropertiesProxy;
 import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.data.Cea708Data;
@@ -708,11 +709,6 @@ public class TunerSessionWorker
                     clearCallbacksAndMessagesSafely();
                     mChannelDataManager.removeAllCallbacksAndMessages();
                     if (channel != null) {
-                        if (mTvInputManager.isParentalControlsEnabled() && channel.isLocked()) {
-                            Log.i(TAG, "onTune() is failed. Channel is blocked" + channel);
-                            mSession.notifyContentBlocked(TvContentRating.UNRATED);
-                            return true;
-                        }
                         mChannelDataManager.requestProgramsData(channel);
                     }
                     prepareTune(channel, recording);
@@ -1795,7 +1791,8 @@ public class TunerSessionWorker
         }
         TvContentRating[] ratings =
                 mTvContentRatingCache.getRatings(currentProgram.getContentRating());
-        if (ratings == null || ratings.length == 0) {
+        if ((ratings == null || ratings.length == 0)
+                && Experiments.ENABLE_UNRATED_CONTENT_SETTINGS.get()) {
             ratings = new TvContentRating[] {TvContentRating.UNRATED};
         }
         for (TvContentRating rating : ratings) {
