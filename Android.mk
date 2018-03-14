@@ -37,6 +37,7 @@ LOCAL_USE_AAPT2 := true
 
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
+    $(LOCAL_PATH)/material-res \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
