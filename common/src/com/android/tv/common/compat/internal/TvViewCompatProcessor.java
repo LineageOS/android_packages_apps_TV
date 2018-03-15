@@ -25,6 +25,7 @@ import com.android.tv.common.compat.api.TvViewCompatCommands;
 import com.android.tv.common.compat.internal.Commands.OnDevMessage;
 import com.android.tv.common.compat.internal.Commands.PrivateCommand;
 import com.android.tv.common.compat.internal.Events.NotifyDevToast;
+import com.android.tv.common.compat.internal.Events.NotifySignalStrength;
 import com.android.tv.common.compat.internal.Events.SessionEvent;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -108,10 +109,15 @@ public final class TvViewCompatProcessor implements TvViewCompatCommands {
 
     public void onDevToast(String inputId, String message) {}
 
+    public void onSignalStrength(String inputId, int value) {}
+
     private void handleSessionEvent(String inputId, Events.SessionEvent sessionEvent) {
         switch (sessionEvent.getEventCase()) {
             case NOTIFY_DEV_MESSAGE:
                 handle(inputId, sessionEvent.getNotifyDevMessage());
+                break;
+            case NOTIFY_SIGNAL_STRENGTH:
+                handle(inputId, sessionEvent.getNotifySignalStrength());
                 break;
             case EVENT_NOT_SET:
                 Log.w(TAG, "Error event not set compat notify  ");
@@ -121,6 +127,12 @@ public final class TvViewCompatProcessor implements TvViewCompatCommands {
     private void handle(String inputId, NotifyDevToast devToast) {
         if (devToast != null && mCallback != null) {
             mCallback.onDevToast(inputId, devToast.getMessage());
+        }
+    }
+
+    private void handle(String inputId, NotifySignalStrength signalStrength) {
+        if (signalStrength != null && mCallback != null) {
+            mCallback.onSignalStrength(inputId, signalStrength.getSignalStrength());
         }
     }
 

@@ -21,6 +21,7 @@ import com.android.tv.common.compat.api.SessionCompatCommands;
 import com.android.tv.common.compat.api.SessionCompatEvents;
 import com.android.tv.common.compat.api.SessionEventNotifier;
 import com.android.tv.common.compat.internal.Events.NotifyDevToast;
+import com.android.tv.common.compat.internal.Events.NotifySignalStrength;
 import com.android.tv.common.compat.internal.Events.SessionEvent;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -79,6 +80,15 @@ public final class TifSessionCompatProcessor implements SessionCompatEvents {
     public void notifyDevToast(String message) {
         NotifyDevToast devMessage = NotifyDevToast.newBuilder().setMessage(message).build();
         SessionEvent sessionEvent = createSessionEvent().setNotifyDevMessage(devMessage).build();
+        notifyCompat(sessionEvent);
+    }
+
+    @Override
+    public void notifySignalStrength(int value) {
+        NotifySignalStrength signalStrength =
+                NotifySignalStrength.newBuilder().setSignalStrength(value).build();
+        SessionEvent sessionEvent =
+                createSessionEvent().setNotifySignalStrength(signalStrength).build();
         notifyCompat(sessionEvent);
     }
 

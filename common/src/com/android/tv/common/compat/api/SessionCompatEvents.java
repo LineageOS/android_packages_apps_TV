@@ -19,4 +19,6 @@ package com.android.tv.common.compat.api;
 public interface SessionCompatEvents {
 
     void notifyDevToast(String message);
+
+    void notifySignalStrength(int value);
 }

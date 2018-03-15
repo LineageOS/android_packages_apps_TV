@@ -29,6 +29,7 @@ message SessionEvent {
 
   oneof event {
     NotifyDevToast notify_dev_message = 2;
+    NotifySignalStrength notify_signal_strength = 3;
   }
 }
 
@@ -36,4 +37,11 @@ message SessionEvent {
 // only
 message NotifyDevToast {
   string message = 1;
+}
+
+// Notifies the TV Application the current signal strength.
+message NotifySignalStrength {
+  // The signal strength as a percent (0 to 100),
+  // with -1 meaning unknown, -2 meaning not used.
+  int32 signal_strength = 1;
 }
