@@ -504,7 +504,7 @@ public class ProgramDataManager implements MemoryManageable {
                 programMap.clear();
 
                 String[] projection = Program.PROJECTION;
-                if (TvProviderUtils.updateDbColumnsIfNeeded(mContext)) {
+                if (TvProviderUtils.checkSeriesIdColumn(mContext, Programs.CONTENT_URI)) {
                     if (Utils.isProgramsUri(uri)) {
                         projection = TvProviderUtils.addExtraColumnsToProjection(projection);
                     }

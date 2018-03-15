@@ -53,8 +53,6 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     private static final boolean DEBUG_DUMP_DESCRIPTION = false;
     private static final String TAG = "Program";
 
-    public static final String COLUMN_SERIES_ID = "com.android.tv.data.Program.series_id";
-
     private static final String[] PROJECTION_BASE = {
         // Columns must match what is read in Program.fromCursor()
         TvContract.Programs._ID,
@@ -146,8 +144,11 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
             builder.setSeasonNumber(cursor.getString(index++));
             builder.setEpisodeNumber(cursor.getString(index++));
         }
-        if (TvProviderUtils.isLatestVersion()) {
-            builder.setSeriesId(cursor.getString(index++));
+        if (TvProviderUtils.getProgramHasSeriesIdColumn()) {
+            String seriesId = cursor.getString(index);
+            if (!TextUtils.isEmpty(seriesId)) {
+                builder.setSeriesId(seriesId);
+            }
         }
         return builder.build();
     }
@@ -502,7 +503,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
             putValue(values, TvContract.Programs.COLUMN_SEASON_NUMBER, program.getSeasonNumber());
             putValue(values, TvContract.Programs.COLUMN_EPISODE_NUMBER, program.getEpisodeNumber());
         }
-        if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
+        if (TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI)) {
             putValue(values, COLUMN_SERIES_ID, program.getSeriesId());
         }
 

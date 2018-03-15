@@ -16,60 +16,83 @@
 
 package com.android.tv.util;
 
+import static java.lang.Boolean.TRUE;
+
 import android.content.Context;
+import android.media.tv.TvContract;
+import android.net.Uri;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
+import android.os.Bundle;
 import android.support.annotation.WorkerThread;
-import com.android.tv.data.Program;
+import android.util.Log;
+
+import com.android.tv.TvFeatures;
+import com.android.tv.data.BaseProgram;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** A utility class related to TvProvider. */
-@RequiresApi(26)
-public class TvProviderUtils {
+public final class TvProviderUtils {
     private static final String TAG = "TvProviderUtils";
 
-    private static final int VERSION = 1;
+    public static final String EXTRA_PROGRAM_COLUMN = BaseProgram.COLUMN_SERIES_ID;
 
-    public static final String EXTRA_PROGRAM_COLUMN = Program.COLUMN_SERIES_ID;
-    public static final String PREF_KEY_TV_PROVIDER_DB_CUSTOMIZATION_VERSION_CODE =
-            "tv_provider_db_customization.version_code";
-
-    private static Boolean sIsLatestVersion;
+    private static Boolean sProgramHasSeriesIdColumn;
+    private static Boolean sRecordedProgramHasSeriesIdColumn;
 
     /**
-     * Updates database columns if necessary.
+     * Checks whether a table contains a series ID column.
      *
-     * @return {@code true} if it's latest or it's successfully updated. {@code false}
+     * This method is different from {@link #getProgramHasSeriesIdColumn()} and
+     * {@link #getRecordedProgramHasSeriesIdColumn()} because it may access to database, so it
+     * should be run in worker thread.
+     *
+     * @return {@code true} if the corresponding table contains a series ID column; {@code false}
      * otherwise.
      */
     @WorkerThread
-    public static synchronized boolean updateDbColumnsIfNeeded(Context context) {
+    public static synchronized boolean checkSeriesIdColumn(Context context, Uri uri) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return false;
         }
-        if (sIsLatestVersion == null) {
-            int version =
-                    PreferenceManager.getDefaultSharedPreferences(context)
-                            .getInt(PREF_KEY_TV_PROVIDER_DB_CUSTOMIZATION_VERSION_CODE, 0);
-            setIsLatestVersion(version == VERSION);
+        if (Utils.isProgramsUri(uri)) {
+            return checkProgramTable(context, uri);
         }
-        if (sIsLatestVersion) {
-            return true;
+        if (Utils.isRecordedProgramsUri(uri)) {
+            return checkRecordedProgramTable(context, uri);
         }
-        // TODO(b/73342889): implement add_column
         return false;
     }
 
-    public static synchronized boolean isLatestVersion() {
-        return Boolean.TRUE.equals(sIsLatestVersion)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    @WorkerThread
+    private static synchronized boolean checkProgramTable(Context context, Uri uri) {
+        if (sProgramHasSeriesIdColumn == null) {
+            sProgramHasSeriesIdColumn = getExistingColumns(context, uri)
+                    .contains(EXTRA_PROGRAM_COLUMN);
+        }
+        return sProgramHasSeriesIdColumn;
     }
 
-    private static synchronized void setIsLatestVersion(boolean isLatestVersion) {
-        sIsLatestVersion = isLatestVersion;
+    @WorkerThread
+    private static synchronized boolean checkRecordedProgramTable(Context context, Uri uri) {
+        if (sRecordedProgramHasSeriesIdColumn == null) {
+            sRecordedProgramHasSeriesIdColumn = getExistingColumns(context, uri)
+                    .contains(EXTRA_PROGRAM_COLUMN);
+        }
+        return sRecordedProgramHasSeriesIdColumn;
+    }
+
+    public static synchronized boolean getProgramHasSeriesIdColumn() {
+        return TRUE.equals(sProgramHasSeriesIdColumn);
+    }
+
+    public static synchronized boolean getRecordedProgramHasSeriesIdColumn() {
+        return TRUE.equals(sRecordedProgramHasSeriesIdColumn);
     }
 
     public static String[] addExtraColumnsToProjection(String[] projection) {
@@ -80,4 +103,26 @@ public class TvProviderUtils {
         projection = projectionList.toArray(projection);
         return projection;
     }
+
+    /**
+     * Gets column names of a table
+     *
+     * @param uri the corresponding URI of the table
+     */
+    private static Set<String> getExistingColumns(Context context, Uri uri) {
+        Bundle result =
+                context
+                        .getContentResolver()
+                        .call(uri, TvContract.METHOD_GET_COLUMNS, uri.toString(), null);
+        if (result != null) {
+            String[] columns = result.getStringArray(TvContract.EXTRA_EXISTING_COLUMN_NAMES);
+            if (columns != null) {
+                return new HashSet<>(Arrays.asList(columns));
+            }
+        }
+        Log.e(TAG, "Query existing column names from " + uri + " returned null");
+        return Collections.emptySet();
+    }
+
+    private TvProviderUtils() {}
 }

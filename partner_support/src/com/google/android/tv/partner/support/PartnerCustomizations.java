@@ -32,12 +32,20 @@ public final class PartnerCustomizations extends BaseCustomization {
     public static final String TVPROVIDER_ALLOWS_SYSTEM_INSERTS_TO_PROGRAM_TABLE =
             "tvprovider_allows_system_inserts_to_program_table";
 
+    public static final String TVPROVIDER_HAS_SERIES_ID_COLUMN =
+            "tvprovider_has_series_id_column";
+
     public PartnerCustomizations(Context context) {
         super(context, CUSTOMIZE_PERMISSIONS);
     }
 
     public boolean doesTvProviderAllowSystemInsertsToProgramTable(Context context) {
         return getBooleanResource(context, TVPROVIDER_ALLOWS_SYSTEM_INSERTS_TO_PROGRAM_TABLE)
+                .orElse(false);
+    }
+
+    public boolean doesTvProviderHaveSeriesIdColumn(Context context) {
+        return getBooleanResource(context, TVPROVIDER_HAS_SERIES_ID_COLUMN)
                 .orElse(false);
     }
 }

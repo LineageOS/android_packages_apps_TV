@@ -328,7 +328,7 @@ public class Utils {
         ContentResolver resolver = context.getContentResolver();
 
         String[] projection = Program.PROJECTION;
-        if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
+        if (TvProviderUtils.checkSeriesIdColumn(context, TvContract.Programs.CONTENT_URI)) {
             if (Utils.isProgramsUri(uri)) {
                 projection = TvProviderUtils.addExtraColumnsToProjection(projection);
             }

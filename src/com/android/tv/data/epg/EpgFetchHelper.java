@@ -164,7 +164,7 @@ class EpgFetchHelper {
     private static List<Program> queryPrograms(
             Context context, long channelId, long startTimeMs, long endTimeMs) {
         String[] projection = Program.PROJECTION;
-        if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
+        if (TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI)) {
             projection = TvProviderUtils.addExtraColumnsToProjection(projection);
         }
         try (Cursor c =

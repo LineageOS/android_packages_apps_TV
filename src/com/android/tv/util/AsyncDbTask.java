@@ -116,10 +116,12 @@ public abstract class AsyncDbTask<Params, Progress, Result>
             if (context == null) {
                 return null;
             }
-            if (TvProviderUtils.updateDbColumnsIfNeeded(context)) {
-                if (Utils.isProgramsUri(mUri)) {
-                    mProjection = TvProviderUtils.addExtraColumnsToProjection(mProjection);
-                }
+            if ((Utils.isProgramsUri(mUri)
+                    && TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI))
+                            || (Utils.isRecordedProgramsUri(mUri)
+                                    && TvProviderUtils.checkSeriesIdColumn(context,
+                                            TvContract.RecordedPrograms.CONTENT_URI))) {
+                mProjection = TvProviderUtils.addExtraColumnsToProjection(mProjection);
             }
             if (DEBUG) {
                 Log.v(TAG, "Starting query for " + this);
