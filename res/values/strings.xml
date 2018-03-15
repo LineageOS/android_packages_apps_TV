@@ -90,11 +90,11 @@
 
     <!-- Label of Program guide item in the channel list row. [CHAR LIMIT=23] -->
     <string name="channels_item_program_guide">Program guide</string>
-    <!-- Label of the item in the channel list row that changes the channel "up",
-    to a higher number. [CHAR LIMIT=23] -->
+    <!-- Label of the item in the "channel menu" that changes the current TV channel in the "up"
+         direction, to the next larger channel number. [CHAR LIMIT=23] -->
     <string name="channels_item_up">Channel up</string>
-    <!-- Label of the item in the channel list row that changes the channel "down",
-    to a lower number. [CHAR LIMIT=23] -->
+    <!-- Label of the item in the "channel menu" that changes the current TV channel in the "down"
+         direction, to the next smaller channel number. [CHAR LIMIT=23] -->
     <string name="channels_item_down">Channel down</string>
     <!-- Label of setup item in the channel list row. The item is shown only
          when new inputs are installed. [CHAR LIMIT=23] -->
