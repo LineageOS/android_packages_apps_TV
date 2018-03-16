@@ -18,13 +18,14 @@ package com.google.android.tv.partner.support;
 
 import android.content.ContentValues;
 import android.support.annotation.Nullable;
-import com.google.auto.value.AutoValue;
+import com.google.auto.value.AutoValue; // AOSP_MASTER:strip_line
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** Value class for {@link com.google.android.tv.partner.support.EpgContract.Lineups} */
-@AutoValue
+// TODO(b/72052568): Get autovalue to work in aosp master
+@AutoValue // AOSP_MASTER:strip_line
 public abstract class Lineup {
     /** Lineup type for cable. */
     public static final int LINEUP_CABLE = 0;

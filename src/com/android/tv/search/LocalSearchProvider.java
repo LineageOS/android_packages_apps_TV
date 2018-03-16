@@ -37,7 +37,7 @@ import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.TvUriMatcher;
-import com.google.auto.value.AutoValue;
+import com.google.auto.value.AutoValue; // AOSP_MASTER:strip_line
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -224,7 +224,8 @@ public class LocalSearchProvider extends ContentProvider {
     }
 
     /** A placeholder to a search result. */
-    @AutoValue
+    // TODO(b/72052568): Get autovalue to work in aosp master
+    @AutoValue // AOSP_MASTER:strip_line
     public abstract static class SearchResult {
         public static Builder builder() {
             // primitive fields cannot be nullable. Set to default;
@@ -237,7 +238,8 @@ public class LocalSearchProvider extends ContentProvider {
                     .setProgressPercentage(0);
         }
 
-        @AutoValue.Builder
+        // TODO(b/72052568): Get autovalue to work in aosp master
+        @AutoValue.Builder // AOSP_MASTER:strip_line
         abstract static class Builder {
             abstract Builder setChannelId(long value);
 
