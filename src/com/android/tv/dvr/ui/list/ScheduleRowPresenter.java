@@ -537,7 +537,8 @@ class ScheduleRowPresenter extends RowPresenter {
         return schedule != null
                 && (schedule.isNotStarted()
                         || schedule.isInProgress()
-                        || schedule.isFinished());
+                        || schedule.isFinished()
+                        || schedule.isFailed());
     }
 
     /** Called when the button in a row is clicked. */
