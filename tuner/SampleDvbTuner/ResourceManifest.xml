@@ -18,7 +18,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.tv.tuner.sample.dvb" xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-sdk android:targetSdkVersion="26" android:minSdkVersion="23"/>
+    <uses-sdk android:targetSdkVersion="27" android:minSdkVersion="23"/>
 
    <!-- Only used for resources-->
 </manifest>
