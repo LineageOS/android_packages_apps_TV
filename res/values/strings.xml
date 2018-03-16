@@ -90,6 +90,12 @@
 
     <!-- Label of Program guide item in the channel list row. [CHAR LIMIT=23] -->
     <string name="channels_item_program_guide">Program guide</string>
+    <!-- Label of the item in the "channel menu" that changes the current TV channel in the "up"
+         direction, to the next larger channel number. [CHAR LIMIT=23] -->
+    <string name="channels_item_up">Channel up</string>
+    <!-- Label of the item in the "channel menu" that changes the current TV channel in the "down"
+         direction, to the next smaller channel number. [CHAR LIMIT=23] -->
+    <string name="channels_item_down">Channel down</string>
     <!-- Label of setup item in the channel list row. The item is shown only
          when new inputs are installed. [CHAR LIMIT=23] -->
     <string name="channels_item_setup">New channels available</string>
@@ -366,17 +372,21 @@
     <eat-comment />
     <!-- Description on the locked screen when current channel is locked by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_channel_locked">To watch this channel, press Right and enter your PIN</string>
-    <!-- Description on the locked screen when current channel is locked by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen when current channel is locked by parental control and talk back is turned on.
+        "press select" refers to a button on the remote.  [CHAR LIMIT=NONE] -->
     <string name="tvview_channel_locked_talkback">To watch this channel, press select and enter your PIN</string>
     <!-- Description on the locked screen when the rating of the current content is restricted by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked">To watch this program, press Right and enter your PIN</string>
-    <!-- Description on the locked screen when the rating of the current content is restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen when the rating of the current content is restricted by parental control and talk back is turned on.
+     "press select" refers to a button on the remote.[CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_talkback">To watch this program, press select and enter your PIN</string>
     <!-- Description on the locked screen when the current content is unrated and it's restricted by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_unrated">This program is unrated.\nTo watch this program, press Right and enter your PIN</string>
-    <!-- Description on the locked screen when the current content is unrated and it's restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen when the current content is unrated and it's restricted by parental control and talk back is turned on.
+    "press select" refers to a button on the remote.[CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_unrated_talkback">This program is unrated.\nTo watch this program, press select and enter your PIN</string>
-    <!-- Description on the locked screen with the rating when the rating of the current content is restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE] -->
+    <!-- Description on the locked screen with the rating when the rating of the current content is restricted by parental control and talk back is turned on. [CHAR LIMIT=NONE]
+     "press select" refers to a button on the remote.-->
     <string name="tvview_content_locked_format_talkback">This program is rated <xliff:g id="rating" example="TV_MA">%1$s</xliff:g>.\nTo watch this program, press select and enter your PIN.</string>
     <!-- Description on the locked screen with the rating when the rating of the current content is restricted by parental control. [CHAR LIMIT=NONE] -->
     <string name="tvview_content_locked_format">This program is rated <xliff:g id="rating" example="TV_MA">%1$s</xliff:g>.\nTo watch this program, press Right and enter your PIN.</string>
@@ -585,7 +595,7 @@
     <!-- Description of a card view to show full list of scheduled recordings. [CHAR LIMIT=25] -->
     <string name="dvr_full_schedule_card_view_title">Full schedule</string>
     <!-- Description of failed recordings. [CHAR LIMIT=25] -->
-    <string name="dvr_recording_failed">Recording Failed</string>
+    <string name="dvr_recording_failed">Recording Failed.</string>
     <!-- Description of how many following days the schedule list will show. [CHAR LIMIT=25] -->
     <plurals name="dvr_full_schedule_card_view_content">
         <item quantity="one">Next %1$d day</item>
@@ -615,6 +625,8 @@
 
     <!-- DVR detailed page -->
     <eat-comment />
+    <!-- Button label to schedule a recording. -->
+    <string name="dvr_detail_schedule_recording">Schedule recording</string>
     <!-- Button label to cancel the recording schedule. -->
     <string name="dvr_detail_cancel_recording">Cancel recording</string>
     <!-- Button label to stop the current recording. -->
@@ -639,6 +651,18 @@
     <string name="dvr_detail_view_schedule">View schedule</string>
     <!-- Text label to indicate there's more text in the details description [CHAR LIMIT=20] -->
     <string name="dvr_detail_read_more">Read more</string>
+    <!-- Description of failed recordings caused by system failures. -->
+    <string name="dvr_recording_failed_system_failure">System failure. (Error code: <xliff:g id="errorCode" example="0">%1$d</xliff:g>)</string>
+    <!-- Description of failed recordings when they are not started correctly. -->
+    <string name="dvr_recording_failed_not_started">Recording was not started. Please check the connections of tuner and external storage (if any).</string>
+    <!-- Description of failed recordings when required resource is busy. -->
+    <string name="dvr_recording_failed_resource_busy">Failed to tune to the channel. Possible causes are: weak signal, poor antenna cable connection, or the tuner is being used by another application.</string>
+    <!-- Description of failed recordings when the input is unavailable. -->
+    <string name="dvr_recording_failed_input_unavailable"><xliff:g id="inputId" example="com.example.partnersupportsampletvinput/.SampleTvInputService">%1$s</xliff:g> unavailable.</string>
+    <!-- Description of failed recordings when the input doesn't support recording. -->
+    <string name="dvr_recording_failed_input_dvr_unsupported">Recording not supported. Recording of this channel is not supported.</string>
+    <!-- Description of failed recordings when the space is insufficient. -->
+    <string name="dvr_recording_failed_insufficient_space">Insufficient space. Please connect an external storage device or delete some existing recordings.</string>
 
 
     <!-- DVR series settings -->
@@ -937,6 +961,20 @@
         <item quantity="one">(%1$d minute) </item>
         <item quantity="other">(%1$d minutes)</item>
     </plurals>
+
+    <!-- DVR history list strings -->
+    <!-- Short description of failed recordings. -->
+    <string name="dvr_recording_failed_short">Failed.</string>
+    <!-- Short description of failed recordings when they are not started correctly. -->
+    <string name="dvr_recording_failed_not_started_short">Failed to start recording.</string>
+    <!-- Short description of failed recordings when required resource is busy. -->
+    <string name="dvr_recording_failed_resource_busy_short">Failed to tune to the channel.</string>
+    <!-- Short description of failed recordings when the input is unavailable. -->
+    <string name="dvr_recording_failed_input_unavailable_short"><xliff:g id="inputId" example="com.example.partnersupportsampletvinput/.SampleTvInputService">%1$s</xliff:g> unavailable.</string>
+    <!-- Short description of failed recordings when the input doesn't support recording. -->
+    <string name="dvr_recording_failed_input_dvr_unsupported_short">Recording not supported.</string>
+    <!-- Short description of failed recordings when the space is insufficient. -->
+    <string name="dvr_recording_failed_insufficient_space_short">Insufficient space.</string>
 
     <!-- DVR date related strings -->
     <eat-comment/>

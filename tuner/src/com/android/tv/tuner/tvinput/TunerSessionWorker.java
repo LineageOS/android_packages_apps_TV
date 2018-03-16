@@ -88,6 +88,7 @@ public class TunerSessionWorker
                 EventDetector.EventListener,
                 ChannelDataManager.ProgramInfoListener,
                 Handler.Callback {
+
     private static final String TAG = "TunerSessionWorker";
     private static final boolean DEBUG = false;
     private static final boolean ENABLE_PROFILER = true;
@@ -163,6 +164,7 @@ public class TunerSessionWorker
     private static final int TRICKPLAY_MONITOR_INTERVAL_MS = 250;
     private static final int RELEASE_WAIT_INTERVAL_MS = 50;
     private static final long TRICKPLAY_OFF_DURATION_MS = TimeUnit.DAYS.toMillis(14);
+    public static final TvContentRating[] NO_CONTENT_RATINGS = new TvContentRating[0];
 
     // Since release() is done asynchronously, synchronization between multiple TunerSessionWorker
     // creation/release is required.
@@ -1791,9 +1793,12 @@ public class TunerSessionWorker
         }
         TvContentRating[] ratings =
                 mTvContentRatingCache.getRatings(currentProgram.getContentRating());
-        if ((ratings == null || ratings.length == 0)
-                && Experiments.ENABLE_UNRATED_CONTENT_SETTINGS.get()) {
-            ratings = new TvContentRating[] {TvContentRating.UNRATED};
+        if ((ratings == null || ratings.length == 0)) {
+            if (Experiments.ENABLE_UNRATED_CONTENT_SETTINGS.get()) {
+                ratings = new TvContentRating[] {TvContentRating.UNRATED};
+            } else {
+                ratings = NO_CONTENT_RATINGS;
+            }
         }
         for (TvContentRating rating : ratings) {
             if (!Objects.equals(mUnblockedContentRating, rating)

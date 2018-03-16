@@ -22,7 +22,6 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -110,6 +109,7 @@ import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.NotificationService;
 import com.android.tv.search.ProgramGuideSearchFragment;
 import com.android.tv.ui.ChannelBannerView;
+import com.android.tv.ui.DetailsActivity;
 import com.android.tv.ui.InputBannerView;
 import com.android.tv.ui.KeypadChannelSwitchView;
 import com.android.tv.ui.SelectInputView;
@@ -152,7 +152,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /** The main activity for the Live TV app. */
-public class MainActivity extends Activity implements OnActionClickListener, OnPinCheckedListener {
+public class MainActivity extends Activity
+        implements OnActionClickListener, OnPinCheckedListener, ChannelChanger {
     private static final String TAG = "MainActivity";
     private static final boolean DEBUG = false;
 
@@ -1495,7 +1496,6 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             if (programUriFromIntent != null && channelIdFromIntent != Channel.INVALID_ID) {
                 new AsyncQueryProgramTask(
                                 TvSingletons.getSingletons(this).getDbExecutor(),
-                                getContentResolver(),
                                 programUriFromIntent,
                                 Program.PROJECTION,
                                 null,
@@ -1562,14 +1562,13 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
 
         public AsyncQueryProgramTask(
                 Executor executor,
-                ContentResolver contentResolver,
                 Uri uri,
                 String[] projection,
                 String selection,
                 String[] selectionArgs,
                 String orderBy,
                 long channelId) {
-            super(executor, contentResolver, uri, projection, selection, selectionArgs, orderBy);
+            super(executor, MainActivity.this, uri, projection, selection, selectionArgs, orderBy);
             mChannelIdFromIntent = channelId;
         }
 
@@ -1590,26 +1589,12 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
             }
             Channel channel = mChannelDataManager.getChannel(mChannelIdFromIntent);
             if (channel != null) {
-                ScheduledRecording scheduledRecording =
-                        TvSingletons.getSingletons(MainActivity.this)
-                                .getDvrDataManager()
-                                .getScheduledRecordingForProgramId(program.getId());
-                DvrUiHelper.checkStorageStatusAndShowErrorMessage(
-                        MainActivity.this,
-                        channel.getInputId(),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (CommonFeatures.DVR.isEnabled(MainActivity.this)
-                                        && scheduledRecording == null
-                                        && mDvrManager.isProgramRecordable(program)) {
-                                    DvrUiHelper.requestRecordingFutureProgram(
-                                            MainActivity.this, program, false);
-                                } else {
-                                    DvrUiHelper.showProgramInfoDialog(MainActivity.this, program);
-                                }
-                            }
-                        });
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                intent.putExtra(DetailsActivity.CHANNEL_ID, mChannelIdFromIntent);
+                intent.putExtra(DetailsActivity.DETAILS_VIEW_TYPE, DetailsActivity.PROGRAM_VIEW);
+                intent.putExtra(DetailsActivity.PROGRAM, program);
+                intent.putExtra(DetailsActivity.INPUT_ID, channel.getInputId());
+                startActivity(intent);
             }
         }
     }
@@ -2103,34 +2088,53 @@ public class MainActivity extends Activity implements OnActionClickListener, OnP
                 case KeyEvent.KEYCODE_DPAD_UP:
                     if (event.getRepeatCount() == 0
                             && mChannelTuner.getBrowsableChannelCount() > 0) {
-                        // message sending should be done before moving channel, because we use the
-                        // existence of message to decide if users are switching channel.
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(
-                                        MSG_CHANNEL_UP_PRESSED, System.currentTimeMillis()),
-                                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
-                        moveToAdjacentChannel(true, false);
-                        mTracker.sendChannelUp();
+
+                        channelUpPressed();
                     }
                     return true;
                 case KeyEvent.KEYCODE_CHANNEL_DOWN:
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     if (event.getRepeatCount() == 0
                             && mChannelTuner.getBrowsableChannelCount() > 0) {
-                        // message sending should be done before moving channel, because we use the
-                        // existence of message to decide if users are switching channel.
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(
-                                        MSG_CHANNEL_DOWN_PRESSED, System.currentTimeMillis()),
-                                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
-                        moveToAdjacentChannel(false, false);
-                        mTracker.sendChannelDown();
+                        channelDownPressed();
                     }
                     return true;
                 default: // fall out
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void channelDown() {
+        channelDownPressed();
+        finishChannelChangeIfNeeded();
+    }
+
+    private void channelDownPressed() {
+        // message sending should be done before moving channel, because we use the
+        // existence of message to decide if users are switching channel.
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(MSG_CHANNEL_DOWN_PRESSED, System.currentTimeMillis()),
+                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+        moveToAdjacentChannel(false, false);
+        mTracker.sendChannelDown();
+    }
+
+    @Override
+    public void channelUp() {
+        channelUpPressed();
+        finishChannelChangeIfNeeded();
+    }
+
+    private void channelUpPressed() {
+        // message sending should be done before moving channel, because we use the
+        // existence of message to decide if users are switching channel.
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(MSG_CHANNEL_UP_PRESSED, System.currentTimeMillis()),
+                CHANNEL_CHANGE_INITIAL_DELAY_MILLIS);
+        moveToAdjacentChannel(true, false);
+        mTracker.sendChannelUp();
     }
 
     @Override

@@ -21,12 +21,10 @@ import android.media.tv.TvInputService.Session;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
-import com.android.tv.common.compat.internal.Commands;
-import com.android.tv.common.compat.internal.Events;
-import com.android.tv.common.compat.internal.Events.NotifyDevToast;
-import com.android.tv.common.compat.internal.Events.SessionEvent;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.android.tv.common.compat.api.SessionCompatCommands;
+import com.android.tv.common.compat.api.SessionCompatEvents;
+import com.android.tv.common.compat.api.SessionEventNotifier;
+import com.android.tv.common.compat.internal.TifSessionCompatProcessor;
 
 /**
  * TIF Compatibility for {@link TisSessionCompat}.
@@ -34,79 +32,29 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * <p>Extends {@code TisSessionCompat} in a backwards compatible way.
  */
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
-public abstract class TisSessionCompat extends Session {
+public abstract class TisSessionCompat extends Session
+        implements SessionEventNotifier, SessionCompatCommands, SessionCompatEvents {
     private static final String TAG = "TisSessionCompat";
+
+    private final TifSessionCompatProcessor mTifCompatProcessor;
 
     public TisSessionCompat(Context context) {
         super(context);
+        mTifCompatProcessor = new TifSessionCompatProcessor(this, this);
     }
 
     @Override
     public void onAppPrivateCommand(String action, Bundle data) {
-
-        switch (action) {
-            case Constants.ACTION_GET_VERSION:
-                Bundle response = new Bundle();
-                response.putInt(Constants.EVENT_GET_VERSION, getTifCompatVersion());
-                notifySessionEvent(Constants.EVENT_GET_VERSION, response);
-                break;
-            case Constants.ACTION_COMPAT_ON:
-                byte[] bytes = data.getByteArray(Constants.ACTION_COMPAT_ON);
-                try {
-                    Commands.PrivateCommand privateCommand =
-                            Commands.PrivateCommand.parseFrom(bytes);
-                    onCompat(privateCommand);
-                } catch (InvalidProtocolBufferException e) {
-                    Log.w(TAG, "Error parsing compat data", e);
-                }
-
-                break;
-            default:
-                super.onAppPrivateCommand(action, data);
+        if (!mTifCompatProcessor.handleAppPrivateCommand(action, data)) {
+            super.onAppPrivateCommand(action, data);
         }
     }
 
-    private void onCompat(Commands.PrivateCommand privateCommand) {
-        switch (privateCommand.getCommandCase()) {
-            case ON_DEV_MESSAGE:
-                onDevMessage(privateCommand.getOnDevMessage().getMessage());
-                break;
-            case COMMAND_NOT_SET:
-                Log.w(TAG, "Command not set ");
-        }
-    }
+    @Override
+    public void onDevMessage(String message) {}
 
-    protected void onDevMessage(String message) {}
-
-    public final int getTifCompatVersion() {
-        return Constants.TIF_COMPAT_VERSION;
-    }
-
+    @Override
     public void notifyDevToast(String message) {
-        NotifyDevToast devMessage = NotifyDevToast.newBuilder().setMessage(message).build();
-        SessionEvent sessionEvent = createSessionEvent().setNotifyDevMessage(devMessage).build();
-        notifyCompat(sessionEvent);
-    }
-
-    private SessionEvent.Builder createSessionEvent() {
-        return SessionEvent.newBuilder().setCompatVersion(getTifCompatVersion());
-    }
-
-    private void notifyCompat(Events.SessionEvent sessionEvent) {
-        Bundle response = new Bundle();
-        try {
-            byte[] bytes = sessionEvent.toByteArray();
-            response.putByteArray(Constants.EVENT_COMPAT_NOTIFY, bytes);
-        } catch (Exception e) {
-            Log.w(
-                    TAG,
-                    "Failed to send sessionEvent version "
-                            + sessionEvent.getCompatVersion()
-                            + " event "
-                            + sessionEvent.getEventCase(),
-                    e);
-            response.putString(Constants.EVENT_COMPAT_NOTIFY_ERROR, e.getMessage());
-        }
-        notifySessionEvent(Constants.EVENT_COMPAT_NOTIFY, response);
+        mTifCompatProcessor.notifyDevToast(message);
     }
 }

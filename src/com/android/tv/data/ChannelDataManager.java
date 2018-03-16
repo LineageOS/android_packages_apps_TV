@@ -515,7 +515,7 @@ public class ChannelDataManager {
         if (mChannelsUpdateTask != null) {
             mChannelsUpdateTask.cancel(true);
         }
-        mChannelsUpdateTask = new QueryAllChannelsTask(mContentResolver);
+        mChannelsUpdateTask = new QueryAllChannelsTask();
         mChannelsUpdateTask.executeOnDbThread();
     }
 
@@ -616,8 +616,8 @@ public class ChannelDataManager {
 
     private final class QueryAllChannelsTask extends AsyncDbTask.AsyncChannelQueryTask {
 
-        QueryAllChannelsTask(ContentResolver contentResolver) {
-            super(mDbExecutor, contentResolver);
+        QueryAllChannelsTask() {
+            super(mDbExecutor, mContext);
         }
 
         @Override

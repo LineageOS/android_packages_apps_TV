@@ -47,6 +47,7 @@ import com.android.tv.dialog.PinDialogFragment.OnPinCheckedListener;
 import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.parental.ParentalControlSettings;
+import com.android.tv.ui.DetailsActivity;
 import com.android.tv.util.ToastUtils;
 import com.android.tv.util.images.ImageLoader;
 import java.io.File;
@@ -89,7 +90,7 @@ abstract class DvrDetailsFragment extends DetailsFragment {
         rowPresenter.setBackgroundColor(
                 getResources().getColor(R.color.common_tv_background, null));
         rowPresenter.setSharedElementEnterTransition(
-                getActivity(), DvrDetailsActivity.SHARED_ELEMENT_NAME);
+                getActivity(), DetailsActivity.SHARED_ELEMENT_NAME);
         rowPresenter.setOnActionClickedListener(onCreateOnActionClickedListener());
         mRowsAdapter = new ArrayObjectAdapter(onCreatePresenterSelector(rowPresenter));
         setAdapter(mRowsAdapter);
@@ -245,14 +246,14 @@ abstract class DvrDetailsFragment extends DetailsFragment {
     }
 
     private void checkPinToPlay(RecordedProgram recordedProgram, long seekTimeMs) {
-        SoftPreconditions.checkState(getActivity() instanceof DvrDetailsActivity);
-        if (getActivity() instanceof DvrDetailsActivity) {
-            ((DvrDetailsActivity) getActivity())
+        SoftPreconditions.checkState(getActivity() instanceof DetailsActivity);
+        if (getActivity() instanceof DetailsActivity) {
+            ((DetailsActivity) getActivity())
                     .setOnPinCheckListener(
                             new OnPinCheckedListener() {
                                 @Override
                                 public void onPinChecked(boolean checked, int type, String rating) {
-                                    ((DvrDetailsActivity) getActivity())
+                                    ((DetailsActivity) getActivity())
                                             .setOnPinCheckListener(null);
                                     if (checked
                                             && type

@@ -42,6 +42,7 @@ import com.android.tv.common.util.Clock;
 import com.android.tv.data.api.Channel;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.MultiLongSparseArray;
+import com.android.tv.util.TvProviderUtils;
 import com.android.tv.util.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,6 +91,7 @@ public class ProgramDataManager implements MemoryManageable {
     private static final int MSG_UPDATE_ONE_CURRENT_PROGRAM = 1001;
     private static final int MSG_UPDATE_PREFETCH_PROGRAM = 1002;
 
+    private final Context mContext;
     private final Clock mClock;
     private final ContentResolver mContentResolver;
     private final Executor mDbExecutor;
@@ -125,6 +127,7 @@ public class ProgramDataManager implements MemoryManageable {
     @MainThread
     public ProgramDataManager(Context context) {
         this(
+                context,
                 TvSingletons.getSingletons(context).getDbExecutor(),
                 context.getContentResolver(),
                 Clock.SYSTEM,
@@ -134,11 +137,13 @@ public class ProgramDataManager implements MemoryManageable {
 
     @VisibleForTesting
     ProgramDataManager(
+            Context context,
             Executor executor,
             ContentResolver contentResolver,
             Clock time,
             Looper looper,
             RemoteConfig remoteConfig) {
+        mContext = context;
         mDbExecutor = executor;
         mClock = time;
         mContentResolver = contentResolver;
@@ -451,7 +456,7 @@ public class ProgramDataManager implements MemoryManageable {
         }
         clearTask(mProgramUpdateTaskMap);
         mHandler.removeMessages(MSG_UPDATE_ONE_CURRENT_PROGRAM);
-        mProgramsUpdateTask = new ProgramsUpdateTask(mContentResolver, mClock.currentTimeMillis());
+        mProgramsUpdateTask = new ProgramsUpdateTask(mClock.currentTimeMillis());
         mProgramsUpdateTask.executeOnDbThread();
     }
 
@@ -497,8 +502,15 @@ public class ProgramDataManager implements MemoryManageable {
                     return null;
                 }
                 programMap.clear();
+
+                String[] projection = Program.PROJECTION;
+                if (TvProviderUtils.checkSeriesIdColumn(mContext, Programs.CONTENT_URI)) {
+                    if (Utils.isProgramsUri(uri)) {
+                        projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+                    }
+                }
                 try (Cursor c =
-                        mContentResolver.query(uri, Program.PROJECTION, null, null, SORT_BY_TIME)) {
+                        mContentResolver.query(uri, projection, null, null, SORT_BY_TIME)) {
                     if (c == null) {
                         continue;
                     }
@@ -578,10 +590,10 @@ public class ProgramDataManager implements MemoryManageable {
     }
 
     private class ProgramsUpdateTask extends AsyncDbTask.AsyncQueryTask<List<Program>> {
-        public ProgramsUpdateTask(ContentResolver contentResolver, long time) {
+        public ProgramsUpdateTask(long time) {
             super(
                     mDbExecutor,
-                    contentResolver,
+                    mContext,
                     Programs.CONTENT_URI
                             .buildUpon()
                             .appendQueryParameter(PARAM_START_TIME, String.valueOf(time))
@@ -645,11 +657,10 @@ public class ProgramDataManager implements MemoryManageable {
     private class UpdateCurrentProgramForChannelTask extends AsyncDbTask.AsyncQueryTask<Program> {
         private final long mChannelId;
 
-        private UpdateCurrentProgramForChannelTask(
-                ContentResolver contentResolver, long channelId, long time) {
+        private UpdateCurrentProgramForChannelTask(long channelId, long time) {
             super(
                     mDbExecutor,
-                    contentResolver,
+                    mContext,
                     TvContract.buildProgramsUriForChannel(channelId, time, time),
                     Program.PROJECTION,
                     null,
@@ -695,7 +706,7 @@ public class ProgramDataManager implements MemoryManageable {
                         }
                         UpdateCurrentProgramForChannelTask task =
                                 new UpdateCurrentProgramForChannelTask(
-                                        mContentResolver, channelId, mClock.currentTimeMillis());
+                                        channelId, mClock.currentTimeMillis());
                         mProgramUpdateTaskMap.put(channelId, task);
                         task.executeOnDbThread();
                         break;

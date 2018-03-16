@@ -24,7 +24,6 @@ import android.media.tv.TvRecordingClient;
 import android.media.tv.TvRecordingClient.RecordingCallback;
 import android.media.tv.TvTrackInfo;
 import android.media.tv.TvView;
-import android.media.tv.TvView.TvInputCallback;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
+import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.data.api.Channel;
 import com.android.tv.ui.TunableTvView;
 import com.android.tv.ui.TunableTvView.OnTuneListener;
@@ -87,7 +87,7 @@ public class InputSessionManager {
     @MainThread
     @NonNull
     public TvViewSession createTvViewSession(
-            TvView tvView, TunableTvView tunableTvView, TvInputCallback callback) {
+            TvView tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
         TvViewSession session = new TvViewSession(tvView, tunableTvView, callback);
         mTvViewSessions.add(session);
         if (DEBUG) Log.d(TAG, "TvView session created: " + session);
@@ -239,7 +239,7 @@ public class InputSessionManager {
     public class TvViewSession {
         private final TvView mTvView;
         private final TunableTvView mTunableTvView;
-        private final TvInputCallback mCallback;
+        private final TvInputCallbackCompat mCallback;
         private Channel mChannel;
         private String mInputId;
         private Uri mChannelUri;
@@ -248,7 +248,7 @@ public class InputSessionManager {
         private boolean mTuned;
         private boolean mNeedToBeRetuned;
 
-        TvViewSession(TvView tvView, TunableTvView tunableTvView, TvInputCallback callback) {
+        TvViewSession(TvView tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
             mTvView = tvView;
             mTunableTvView = tunableTvView;
             mCallback = callback;
@@ -504,10 +504,10 @@ public class InputSessionManager {
         }
     }
 
-    private static class DelegateTvInputCallback extends TvInputCallback {
-        private final TvInputCallback mDelegate;
+    private static class DelegateTvInputCallback extends TvInputCallbackCompat {
+        private final TvInputCallbackCompat mDelegate;
 
-        DelegateTvInputCallback(TvInputCallback delegate) {
+        DelegateTvInputCallback(TvInputCallbackCompat delegate) {
             mDelegate = delegate;
         }
 

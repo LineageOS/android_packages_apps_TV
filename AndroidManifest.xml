@@ -202,9 +202,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.tv.dvr.ui.browse.DvrDetailsActivity"
+            android:name="com.android.tv.ui.DetailsActivity"
             android:configChanges="keyboard|keyboardHidden"
-            android:theme="@style/Theme.TV.Dvr.Browse.Details" />
+            android:theme="@style/Theme.TV.Dvr.Browse.Details"
+            android:exported="true" />
         <activity
             android:name="com.android.tv.dvr.ui.DvrSeriesSettingsActivity"
             android:configChanges="keyboard|keyboardHidden"

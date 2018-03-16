@@ -172,6 +172,8 @@ public class ChannelBannerView extends FrameLayout
     public ChannelBannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mResources = getResources();
+
+        // TODO(nchalko): don't depend directly on MainActivity
         mMainActivity = (MainActivity) context;
 
         mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);

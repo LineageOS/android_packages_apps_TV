@@ -325,8 +325,16 @@ public class Utils {
         Uri uri =
                 TvContract.buildProgramsUriForChannel(
                         TvContract.buildChannelUri(channelId), timeMs, timeMs);
+        ContentResolver resolver = context.getContentResolver();
+
+        String[] projection = Program.PROJECTION;
+        if (TvProviderUtils.checkSeriesIdColumn(context, TvContract.Programs.CONTENT_URI)) {
+            if (Utils.isProgramsUri(uri)) {
+                projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+            }
+        }
         try (Cursor cursor =
-                context.getContentResolver().query(uri, Program.PROJECTION, null, null, null)) {
+                resolver.query(uri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToNext()) {
                 return Program.fromCursor(cursor);
             }
@@ -708,7 +716,6 @@ public class Utils {
         if (fullFormat) {
             return new Date(timeMillis).toString();
         } else {
-            long currentTime = System.currentTimeMillis();
             return (String)
                     DateUtils.formatSameDayTime(
                             timeMillis,

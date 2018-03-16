@@ -37,6 +37,7 @@ import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
@@ -66,14 +67,15 @@ import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrScheduleDialogFragmen
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrSmallSizedStorageErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrStopRecordingDialogFragment;
 import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
-import com.android.tv.dvr.ui.browse.DvrDetailsActivity;
 import com.android.tv.dvr.ui.list.DvrHistoryActivity;
 import com.android.tv.dvr.ui.list.DvrSchedulesActivity;
 import com.android.tv.dvr.ui.list.DvrSchedulesFragment;
 import com.android.tv.dvr.ui.list.DvrSeriesSchedulesFragment;
 import com.android.tv.dvr.ui.playback.DvrPlaybackActivity;
+import com.android.tv.ui.DetailsActivity;
 import com.android.tv.util.ToastUtils;
 import com.android.tv.util.Utils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -577,47 +579,43 @@ public class DvrUiHelper {
         if (dvrItem == null) {
             return;
         }
-        Intent intent = new Intent(activity, DvrDetailsActivity.class);
+        Intent intent = new Intent(activity, DetailsActivity.class);
         long recordingId;
         int viewType;
         if (dvrItem instanceof ScheduledRecording) {
             ScheduledRecording schedule = (ScheduledRecording) dvrItem;
             recordingId = schedule.getId();
             if (schedule.getState() == ScheduledRecording.STATE_RECORDING_NOT_STARTED) {
-                viewType = DvrDetailsActivity.SCHEDULED_RECORDING_VIEW;
+                viewType = DetailsActivity.SCHEDULED_RECORDING_VIEW;
             } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_IN_PROGRESS) {
-                viewType = DvrDetailsActivity.CURRENT_RECORDING_VIEW;
+                viewType = DetailsActivity.CURRENT_RECORDING_VIEW;
             } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_FINISHED
                     && schedule.getRecordedProgramId() != null) {
                 recordingId = schedule.getRecordedProgramId();
-                viewType = DvrDetailsActivity.RECORDED_PROGRAM_VIEW;
+                viewType = DetailsActivity.RECORDED_PROGRAM_VIEW;
             } else if (schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
-                viewType = DvrDetailsActivity.SCHEDULED_RECORDING_VIEW;
+                viewType = DetailsActivity.SCHEDULED_RECORDING_VIEW;
                 hideViewSchedule = true;
-                // TODO(b/72638385): pass detailed error message
-                intent.putExtra(
-                        DvrDetailsActivity.EXTRA_FAILED_MESSAGE,
-                        activity.getString(R.string.dvr_recording_failed));
             } else {
                 return;
             }
         } else if (dvrItem instanceof RecordedProgram) {
             recordingId = ((RecordedProgram) dvrItem).getId();
-            viewType = DvrDetailsActivity.RECORDED_PROGRAM_VIEW;
+            viewType = DetailsActivity.RECORDED_PROGRAM_VIEW;
         } else if (dvrItem instanceof SeriesRecording) {
             recordingId = ((SeriesRecording) dvrItem).getId();
-            viewType = DvrDetailsActivity.SERIES_RECORDING_VIEW;
+            viewType = DetailsActivity.SERIES_RECORDING_VIEW;
         } else {
             return;
         }
-        intent.putExtra(DvrDetailsActivity.RECORDING_ID, recordingId);
-        intent.putExtra(DvrDetailsActivity.DETAILS_VIEW_TYPE, viewType);
-        intent.putExtra(DvrDetailsActivity.HIDE_VIEW_SCHEDULE, hideViewSchedule);
+        intent.putExtra(DetailsActivity.RECORDING_ID, recordingId);
+        intent.putExtra(DetailsActivity.DETAILS_VIEW_TYPE, viewType);
+        intent.putExtra(DetailsActivity.HIDE_VIEW_SCHEDULE, hideViewSchedule);
         Bundle bundle = null;
         if (imageView != null) {
             bundle =
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    activity, imageView, DvrDetailsActivity.SHARED_ELEMENT_NAME)
+                                    activity, imageView, DetailsActivity.SHARED_ELEMENT_NAME)
                             .toBundle();
         }
         activity.startActivity(intent, bundle);

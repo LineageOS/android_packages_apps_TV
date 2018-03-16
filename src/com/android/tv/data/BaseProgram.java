@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.R;
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * Base class for {@link com.android.tv.data.Program} and {@link
@@ -42,6 +43,8 @@ public abstract class BaseProgram {
      */
     public static final Comparator<BaseProgram> SEASON_REVERSED_EPISODE_COMPARATOR =
             new EpisodeComparator(true);
+
+    public static final String COLUMN_SERIES_ID = "series_id";
 
     private static class EpisodeComparator implements Comparator<BaseProgram> {
         private final boolean mReversedSeason;
@@ -66,7 +69,7 @@ public abstract class BaseProgram {
 
     /** Compares two strings represent season numbers or episode numbers of programs. */
     public static int numberCompare(String s1, String s2) {
-        if (s1 == s2) {
+        if (Objects.equals(s1, s2)) {
             return 0;
         } else if (s1 == null) {
             return -1;

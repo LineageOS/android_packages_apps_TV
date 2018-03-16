@@ -25,12 +25,14 @@ import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.media.tv.TvContract;
 import android.media.tv.TvContract.Channels;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.MoreAsserts;
@@ -44,6 +46,7 @@ import com.android.tv.data.api.Channel;
 import com.android.tv.testing.constants.Constants;
 import com.android.tv.testing.data.ChannelInfo;
 import com.android.tv.util.TvInputManagerHelper;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -98,9 +101,20 @@ public class ChannelDataManagerTest {
                                         Mockito.mock(TvInputManagerHelper.class);
                                 Mockito.when(mockHelper.hasTvInputInfo(Matchers.anyString()))
                                         .thenReturn(true);
+                                Context mockContext = Mockito.mock(Context.class);
+                                Mockito.when(mockContext.getContentResolver())
+                                        .thenReturn(mContentResolver);
+                                Mockito.when(mockContext.checkSelfPermission(Matchers.anyString()))
+                                  .thenAnswer(
+                                          invocation -> {
+                                              Object[] args = invocation.getArguments();
+                                              return getTargetContext()
+                                                      .checkSelfPermission(((String) args[0]));
+                                          });
+
                                 mChannelDataManager =
                                         new ChannelDataManager(
-                                                getTargetContext(),
+                                                mockContext,
                                                 mockHelper,
                                                 AsyncTask.SERIAL_EXECUTOR,
                                                 mContentResolver);
@@ -414,6 +428,15 @@ public class ChannelDataManagerTest {
             for (int i = 1; i <= Constants.UNIT_TEST_CHANNEL_COUNT; i++) {
                 mChannelInfoList.put(
                         i, new ChannelInfoWrapper(ChannelInfo.create(getTargetContext(), i)));
+            }
+        }
+
+        @Override
+        public AssetFileDescriptor openTypedAssetFile(Uri url, String mimeType, Bundle opts) {
+            try {
+                return getTargetContext().getContentResolver().openAssetFileDescriptor(url, "r");
+            } catch (FileNotFoundException e) {
+                return null;
             }
         }
 

@@ -28,6 +28,7 @@ import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.data.RecordedProgram;
+import com.android.tv.ui.DetailsActivity;
 
 /** {@link android.support.v17.leanback.app.DetailsFragment} for recorded program in DVR. */
 public class RecordedProgramDetailsFragment extends DvrDetailsFragment
@@ -80,7 +81,7 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
 
     @Override
     protected boolean onLoadRecordingDetails(Bundle args) {
-        long recordedProgramId = args.getLong(DvrDetailsActivity.RECORDING_ID);
+        long recordedProgramId = args.getLong(DetailsActivity.RECORDING_ID);
         mRecordedProgram = mDvrDataManager.getRecordedProgram(recordedProgramId);
         return mRecordedProgram != null;
     }

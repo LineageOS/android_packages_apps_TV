@@ -17,7 +17,6 @@
 package com.android.tv;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -978,7 +977,7 @@ public class TimeShiftManager {
             }
             if (mChannel != null) {
                 mProgramLoadTask =
-                        new LoadProgramsForCurrentChannelTask(mContext.getContentResolver(), next);
+                        new LoadProgramsForCurrentChannelTask(next);
                 mProgramLoadTask.executeOnDbThread();
             }
         }
@@ -1225,10 +1224,10 @@ public class TimeShiftManager {
         private class LoadProgramsForCurrentChannelTask
                 extends AsyncDbTask.LoadProgramsForChannelTask {
 
-            LoadProgramsForCurrentChannelTask(ContentResolver contentResolver, Range<Long> period) {
+            LoadProgramsForCurrentChannelTask(Range<Long> period) {
                 super(
                         TvSingletons.getSingletons(mContext).getDbExecutor(),
-                        contentResolver,
+                        mContext,
                         mChannel.getId(),
                         period);
             }

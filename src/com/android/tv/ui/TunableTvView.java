@@ -38,7 +38,6 @@ import android.media.tv.TvInputManager;
 import android.media.tv.TvTrackInfo;
 import android.media.tv.TvView;
 import android.media.tv.TvView.OnUnhandledInputEventListener;
-import android.media.tv.TvView.TvInputCallback;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -66,6 +65,7 @@ import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonConstants;
+import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.Debug;
@@ -190,8 +190,8 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     private final ConnectivityManager mConnectivityManager;
     private final InputSessionManager mInputSessionManager;
 
-    private final TvInputCallback mCallback =
-            new TvInputCallback() {
+    private final TvInputCallbackCompat mCallback =
+            new TvInputCallbackCompat() {
                 @Override
                 public void onConnectionFailed(String inputId) {
                     Log.w(TAG, "Failed to bind an input");

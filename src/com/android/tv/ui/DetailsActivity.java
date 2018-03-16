@@ -14,10 +14,11 @@
  * limitations under the License
  */
 
-package com.android.tv.dvr.ui.browse;
+package com.android.tv.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v17.leanback.app.DetailsFragment;
 import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
@@ -25,11 +26,21 @@ import android.view.View;
 import com.android.tv.R;
 import com.android.tv.Starter;
 import com.android.tv.dialog.PinDialogFragment;
+import com.android.tv.dvr.ui.browse.CurrentRecordingDetailsFragment;
+import com.android.tv.dvr.ui.browse.RecordedProgramDetailsFragment;
+import com.android.tv.dvr.ui.browse.ScheduledRecordingDetailsFragment;
+import com.android.tv.dvr.ui.browse.SeriesRecordingDetailsFragment;
 
-/** Activity to show details view in DVR. */
-public class DvrDetailsActivity extends Activity implements PinDialogFragment.OnPinCheckedListener {
+/** Activity to show details view. */
+public class DetailsActivity extends Activity implements PinDialogFragment.OnPinCheckedListener {
     /** Name of record id added to the Intent. */
     public static final String RECORDING_ID = "record_id";
+    /** Name of program uri added to the Intent. */
+    public static final String PROGRAM = "program";
+    /** Name of channel id added to the Intent. */
+    public static final String CHANNEL_ID = "channel_id";
+    /** Name of input id added to the Intent. */
+    public static final String INPUT_ID = "input_id";
 
     /**
      * Name of flag added to the Intent to determine if details view should hide "View schedule"
@@ -43,9 +54,6 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
     /** Name of shared element between activities. */
     public static final String SHARED_ELEMENT_NAME = "shared_element";
 
-    /** Name of error message of a failed recording */
-    public static final String EXTRA_FAILED_MESSAGE = "failed_message";
-
     /** CURRENT_RECORDING_VIEW refers to Current Recordings in DVR. */
     public static final int CURRENT_RECORDING_VIEW = 1;
 
@@ -58,6 +66,9 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
     /** SERIES_RECORDING_VIEW refers to series recording in DVR. */
     public static final int SERIES_RECORDING_VIEW = 4;
 
+    /** SERIES_RECORDING_VIEW refers to program. */
+    public static final int PROGRAM_VIEW = 5;
+
     private PinDialogFragment.OnPinCheckedListener mOnPinCheckedListener;
 
     @Override
@@ -68,27 +79,38 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
         long recordId = getIntent().getLongExtra(RECORDING_ID, -1);
         int detailsViewType = getIntent().getIntExtra(DETAILS_VIEW_TYPE, -1);
         boolean hideViewSchedule = getIntent().getBooleanExtra(HIDE_VIEW_SCHEDULE, false);
-        String failedMsg = getIntent().getStringExtra(EXTRA_FAILED_MESSAGE);
-        if (recordId != -1 && detailsViewType != -1 && savedInstanceState == null) {
-            Bundle args = new Bundle();
-            args.putLong(RECORDING_ID, recordId);
-            DetailsFragment detailsFragment = null;
-            if (detailsViewType == CURRENT_RECORDING_VIEW) {
-                detailsFragment = new CurrentRecordingDetailsFragment();
-            } else if (detailsViewType == SCHEDULED_RECORDING_VIEW) {
-                args.putBoolean(HIDE_VIEW_SCHEDULE, hideViewSchedule);
-                args.putString(EXTRA_FAILED_MESSAGE, failedMsg);
-                detailsFragment = new ScheduledRecordingDetailsFragment();
-            } else if (detailsViewType == RECORDED_PROGRAM_VIEW) {
-                detailsFragment = new RecordedProgramDetailsFragment();
-            } else if (detailsViewType == SERIES_RECORDING_VIEW) {
-                detailsFragment = new SeriesRecordingDetailsFragment();
+        long channelId = getIntent().getLongExtra(CHANNEL_ID, -1);
+        DetailsFragment detailsFragment = null;
+        Bundle args = new Bundle();
+        if (detailsViewType != -1 && savedInstanceState == null) {
+            if (recordId != -1) {
+                args.putLong(RECORDING_ID, recordId);
+                if (detailsViewType == CURRENT_RECORDING_VIEW) {
+                    detailsFragment = new CurrentRecordingDetailsFragment();
+                } else if (detailsViewType == SCHEDULED_RECORDING_VIEW) {
+                    args.putBoolean(HIDE_VIEW_SCHEDULE, hideViewSchedule);
+                    detailsFragment = new ScheduledRecordingDetailsFragment();
+                } else if (detailsViewType == RECORDED_PROGRAM_VIEW) {
+                    detailsFragment = new RecordedProgramDetailsFragment();
+                } else if (detailsViewType == SERIES_RECORDING_VIEW) {
+                    detailsFragment = new SeriesRecordingDetailsFragment();
+                }
+            } else if (detailsViewType == PROGRAM_VIEW && channelId != -1) {
+                Parcelable program = getIntent().getParcelableExtra(PROGRAM);
+                if (program != null) {
+                    args.putLong(CHANNEL_ID, channelId);
+                    args.putParcelable(PROGRAM, program);
+                    args.putString(INPUT_ID, getIntent().getStringExtra(INPUT_ID));
+                    detailsFragment = new ProgramDetailsFragment();
+                }
             }
-            detailsFragment.setArguments(args);
-            getFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.dvr_details_view_frame, detailsFragment)
-                    .commit();
+            if (detailsFragment != null) {
+                detailsFragment.setArguments(args);
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.dvr_details_view_frame, detailsFragment)
+                        .commit();
+            }
         }
 
         // This is a workaround for the focus on O device
@@ -102,7 +124,7 @@ public class DvrDetailsActivity extends Activity implements PinDialogFragment.On
         }
     }
 
-    void setOnPinCheckListener(PinDialogFragment.OnPinCheckedListener listener) {
+    public void setOnPinCheckListener(PinDialogFragment.OnPinCheckedListener listener) {
         mOnPinCheckedListener = listener;
     }
 

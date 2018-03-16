@@ -359,15 +359,22 @@ public final class ScheduledRecording implements Parcelable {
     })
     public @interface RecordingFailedReason {}
 
+    // next number for failed reason: 11
     public static final int FAILED_REASON_OTHER = 0;
-    public static final int FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED = 1;
     public static final int FAILED_REASON_NOT_FINISHED = 2;
     public static final int FAILED_REASON_SCHEDULER_STOPPED = 3;
     public static final int FAILED_REASON_INVALID_CHANNEL = 4;
     public static final int FAILED_REASON_MESSAGE_NOT_SENT = 5;
     public static final int FAILED_REASON_CONNECTION_FAILED = 6;
+
+    // for the following reasons, show advice to users
+    // TODO(b/72638597): add failure condition of "weak signal"
+
+    // failed reason is FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED when tuner or external
+    // storage is disconnected
+    public static final int FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED = 1;
+    // failed reason is FAILED_REASON_RESOURCE_BUSY when antenna is disconnected or signal is weak
     public static final int FAILED_REASON_RESOURCE_BUSY = 7;
-    // For the following reasons, show advice to users
     public static final int FAILED_REASON_INPUT_UNAVAILABLE = 8;
     public static final int FAILED_REASON_INPUT_DVR_UNSUPPORTED = 9;
     public static final int FAILED_REASON_INSUFFICIENT_SPACE = 10;
