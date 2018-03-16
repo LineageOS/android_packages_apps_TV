@@ -24,6 +24,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_HDMI_CEC_ACTIVE_SOURCE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.GLOBAL_SEARCH" />
     <uses-permission android:name="android.permission.HDMI_CEC" />
     <uses-permission android:name="android.permission.INTERNET" />
