@@ -27,9 +27,9 @@ import com.android.tv.common.compat.api.SessionEventNotifier;
 import com.android.tv.common.compat.internal.TifSessionCompatProcessor;
 
 /**
- * TIF Compatibility for {@link TisSessionCompat}.
+ * TIF Compatibility for {@link Session}.
  *
- * <p>Extends {@code TisSessionCompat} in a backwards compatible way.
+ * <p>Extends {@code Session} in a backwards compatible way.
  */
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public abstract class TisSessionCompat extends Session
@@ -56,5 +56,33 @@ public abstract class TisSessionCompat extends Session
     @Override
     public void notifyDevToast(String message) {
         mTifCompatProcessor.notifyDevToast(message);
+    }
+
+    /**
+     * Notify the application with current signal strength.
+     *
+     * <p>Prior to calling this method, the application assumes the status
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}. Right after the session is created, it
+     * is important to invoke the method with the status.
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED} if the tuner hal
+     * does not support signal strength query.
+     *
+     * <p>If the value {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN} or
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED} is reported, the
+     * application won't show signal strength on the banner.
+     *
+     * <p>If the value is between 0 - 100, which represents the strength percentage,
+     * {@link TvViewCompat.TvInputCallbackCompat#onSignalStrength} will be called.
+     *
+     * @param value The current signal strength. Should be one of the followings.
+     * <ul>
+     * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}
+     * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}
+     * <li>int between 0 - 100 inclusive
+     * </ul>
+     */
+    @Override
+    public void notifySignalStrength(int value) {
+        mTifCompatProcessor.notifySignalStrength(value);
     }
 }

@@ -21,4 +21,6 @@ package com.android.tv.common.compat.api;
  */
 public interface TvInputCallbackCompatEvents {
     void onDevToast(String inputId, String message);
+
+    void onSignalStrength(String inputId, int value);
 }

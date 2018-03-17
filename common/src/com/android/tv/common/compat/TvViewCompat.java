@@ -93,5 +93,20 @@ public class TvViewCompat extends TvView implements TvViewCompatCommands, Privat
 
         @Override
         public void onDevToast(String inputId, String message) {}
+
+        /**
+         * This is called when the signal strength is notified.
+         *
+         * @param inputId The ID of the TV input bound to this view.
+         * @param value The current signal strength. Should be one of the followings.
+         * <ul>
+         * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}
+         * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_ERROR}
+         * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}
+         * <li>{int [0, 100]}
+         * </ul>
+         */
+        @Override
+        public void onSignalStrength(String inputId, int value) {}
     }
 }
