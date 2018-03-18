@@ -23,7 +23,7 @@ import com.android.tv.data.Lineup;
 import com.android.tv.data.Program;
 import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.SeriesInfo;
-import com.google.auto.value.AutoValue; // AOSP_MASTER:strip_line
+import com.google.auto.value.AutoValue;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +34,7 @@ import java.util.Set;
 public interface EpgReader {
 
     /** Value class that holds a EpgChannelId and its corresponding {@link Channel} */
-    // TODO(b/72052568): Get autovalue to work in aosp master
-    @AutoValue // AOSP_MASTER:strip_line
+    @AutoValue
     abstract class EpgChannel {
         public static EpgChannel createEpgChannel(Channel channel, String epgChannelId) {
             return new AutoValue_EpgReader_EpgChannel(channel, epgChannelId);
