@@ -39,6 +39,9 @@ LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
     $(LOCAL_PATH)/material_res \
 
+LOCAL_JAVA_LIBRARIES := \
+    auto-value-jar \
+
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     lib-exoplayer \
@@ -60,6 +63,12 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     live-channels-partner-support \
     live-tv-tuner \
     tv-common \
+
+LOCAL_ANNOTATION_PROCESSORS := \
+    auto-value-jar-host \
+
+LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
+    com.google.auto.value.processor.AutoValueProcessor
 
 
 LOCAL_JAVACFLAGS := -Xlint:deprecation -Xlint:unchecked
@@ -92,7 +101,10 @@ define define-prebuilt
   $(eval LOCAL_SRC_FILES := $(word 2,$(tw))) \
   $(eval LOCAL_UNINSTALLABLE_MODULE := true) \
   $(eval LOCAL_SDK_VERSION := current) \
-  $(eval include $(BUILD_PREBUILT))
+  $(eval include $(BUILD_PREBUILT)) \
+  $(eval include $(CLEAR_VARS)) \
+  $(eval LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := $(word 1,$(tw))-host:$(word 2,$(tw))) \
+  $(eval include $(BUILD_HOST_PREBUILT))
 endef
 
 $(foreach p,$(prebuilts),\

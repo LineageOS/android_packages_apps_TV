@@ -15,6 +15,16 @@ LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-annotations
 
+LOCAL_JAVA_LIBRARIES := \
+    auto-value-jar \
+
+LOCAL_ANNOTATION_PROCESSORS := \
+    auto-value-jar-host \
+
+LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
+    com.google.auto.value.processor.AutoValueProcessor
+
+
 include $(LOCAL_PATH)/buildconfig.mk
 
 include $(BUILD_STATIC_JAVA_LIBRARY)
