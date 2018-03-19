@@ -49,8 +49,6 @@ public final class TvFeatures extends CommonFeatures {
     /** When enabled use system setting for turning on analytics. */
     public static final Feature ANALYTICS_OPT_IN =
             ExperimentFeature.from(Experiments.ENABLE_ANALYTICS_VIA_CHECKBOX);
-    /** When enabled shows a list of failed recordings */
-    public static final Feature DVR_FAILED_LIST = ENG_ONLY_FEATURE;
     /**
      * Analytics that include sensitive information such as channel or program identifiers.
      *

@@ -31,9 +31,7 @@ import android.support.v17.leanback.widget.TitleViewAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
-
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.data.GenreItems;
 import com.android.tv.dvr.DvrDataManager;
@@ -47,7 +45,6 @@ import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.SortedArrayAdapter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -233,13 +230,11 @@ public class DvrBrowseFragment extends BrowseFragment
                                 SeriesRecording.class, new SeriesRecordingPresenter(context))
                         .addClassPresenter(
                                 FullScheduleCardHolder.class,
-                                new FullSchedulesCardPresenter(context));
-
-        if (TvFeatures.DVR_FAILED_LIST.isEnabled(context)) {
-            mPresenterSelector.addClassPresenter(
+                                new FullSchedulesCardPresenter(context))
+                        .addClassPresenter(
                                 DvrHistoryCardHolder.class,
                                 new DvrHistoryCardPresenter(context));
-        }
+
         mGenreLabels = new ArrayList<>(Arrays.asList(GenreItems.getLabels(context)));
         mGenreLabels.add(getString(R.string.dvr_main_others));
         prepareUiElements();
@@ -451,14 +446,13 @@ public class DvrBrowseFragment extends BrowseFragment
             for (RecordedProgram recordedProgram : mDvrDataManager.getRecordedPrograms()) {
                 handleRecordedProgramAdded(recordedProgram, false);
             }
-            if (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())) {
-                // only get failed recordings
-                for (ScheduledRecording scheduledRecording
-                        : mDvrDataManager.getFailedScheduledRecordings()) {
-                    onScheduledRecordingAdded(scheduledRecording);
-                }
-                mRecentAdapter.addExtraItem(DvrHistoryCardHolder.DVR_HISTORY_CARD_HOLDER);
+            // only get failed recordings
+            for (ScheduledRecording scheduledRecording
+                    : mDvrDataManager.getFailedScheduledRecordings()) {
+                onScheduledRecordingAdded(scheduledRecording);
             }
+            mRecentAdapter.addExtraItem(DvrHistoryCardHolder.DVR_HISTORY_CARD_HOLDER);
+
             // Series Recordings. Series recordings should be added after recorded programs, because
             // we build series recordings' latest program information while adding recorded
             // programs.
@@ -648,8 +642,8 @@ public class DvrBrowseFragment extends BrowseFragment
 
     private void updateRows() {
         int visibleRowsCount = 1; // Schedule's Row will never be empty
-        int recentRowMinSize = TvFeatures.DVR_FAILED_LIST.isEnabled(getContext()) ? 1 : 0;
-        if (mRecentAdapter.size() <= recentRowMinSize) {
+        if (mRecentAdapter.size() <= 1) {
+            // remove the row if there is only the DVR history card
             mRowsAdapter.remove(mRecentRow);
         } else {
             if (mRowsAdapter.indexOf(mRecentRow) < 0) {

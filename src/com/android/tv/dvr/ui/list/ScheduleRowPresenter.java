@@ -37,7 +37,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.api.Channel;
@@ -461,8 +460,7 @@ class ScheduleRowPresenter extends RowPresenter {
     }
 
     private boolean isFailedRecording(ScheduledRecording scheduledRecording) {
-        return TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
-                && scheduledRecording != null
+        return scheduledRecording != null
                 && scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED;
     }
 
