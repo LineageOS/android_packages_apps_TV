@@ -42,8 +42,8 @@ public final class TvProviderUtils {
 
     public static final String EXTRA_PROGRAM_COLUMN = BaseProgram.COLUMN_SERIES_ID;
 
-    private static Boolean sProgramHasSeriesIdColumn;
-    private static Boolean sRecordedProgramHasSeriesIdColumn;
+    private static boolean sProgramHasSeriesIdColumn;
+    private static boolean sRecordedProgramHasSeriesIdColumn;
 
     /**
      * Checks whether a table contains a series ID column.
@@ -57,32 +57,34 @@ public final class TvProviderUtils {
      */
     @WorkerThread
     public static synchronized boolean checkSeriesIdColumn(Context context, Uri uri) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        boolean oTvProvider = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!oTvProvider) {
             return false;
         }
-        if (Utils.isProgramsUri(uri)) {
-            return checkProgramTable(context, uri);
-        }
-        if (Utils.isRecordedProgramsUri(uri)) {
-            return checkRecordedProgramTable(context, uri);
-        }
-        return false;
+        return (Utils.isRecordedProgramsUri(uri) && checkRecordedProgramTable(context, uri))
+                        || (Utils.isProgramsUri(uri) && checkProgramTable(context, uri));
     }
 
     @WorkerThread
     private static synchronized boolean checkProgramTable(Context context, Uri uri) {
-        if (sProgramHasSeriesIdColumn == null) {
-            sProgramHasSeriesIdColumn = getExistingColumns(context, uri)
-                    .contains(EXTRA_PROGRAM_COLUMN);
+        if (!sProgramHasSeriesIdColumn) {
+            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN)) {
+                sProgramHasSeriesIdColumn = true;
+            } else if (addColumnToTable(context, uri)) {
+                sProgramHasSeriesIdColumn = true;
+            }
         }
         return sProgramHasSeriesIdColumn;
     }
 
     @WorkerThread
     private static synchronized boolean checkRecordedProgramTable(Context context, Uri uri) {
-        if (sRecordedProgramHasSeriesIdColumn == null) {
-            sRecordedProgramHasSeriesIdColumn = getExistingColumns(context, uri)
-                    .contains(EXTRA_PROGRAM_COLUMN);
+        if (!sRecordedProgramHasSeriesIdColumn) {
+            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN)) {
+                sRecordedProgramHasSeriesIdColumn = true;
+            } else if (addColumnToTable(context, uri)) {
+                sRecordedProgramHasSeriesIdColumn = true;
+            }
         }
         return sRecordedProgramHasSeriesIdColumn;
     }
@@ -122,6 +124,24 @@ public final class TvProviderUtils {
         }
         Log.e(TAG, "Query existing column names from " + uri + " returned null");
         return Collections.emptySet();
+    }
+
+    /**
+     * Add a column to the table
+     *
+     * @return {@code true} if the column is added successfully; {@code false} otherwise.
+     */
+    private static boolean addColumnToTable(Context context, Uri contentUri) {
+        Bundle extra = new Bundle();
+        extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, EXTRA_PROGRAM_COLUMN);
+        extra.putCharSequence(TvContract.EXTRA_DATA_TYPE, "TEXT");
+        // If the add operation fails, the following just returns null without crashing.
+        Bundle allColumns = context.getContentResolver().call(
+                contentUri, TvContract.METHOD_ADD_COLUMN, contentUri.toString(), extra);
+        if (allColumns == null) {
+            Log.w(TAG, "Adding new column failed. Uri=" + contentUri);
+        }
+        return allColumns != null;
     }
 
     private TvProviderUtils() {}

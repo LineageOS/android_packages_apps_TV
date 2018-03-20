@@ -17,5 +17,5 @@
 
 <resources>
     <bool name="tvprovider_allows_system_inserts_to_program_table">true</bool>
-    <bool name="tvprovider_has_series_id_column">true</bool>
+    <bool name="has_o_level_tv_provider">true</bool>
 </resources>

@@ -37,6 +37,7 @@ import android.support.annotation.Nullable;
 import android.support.media.tv.Program;
 import android.util.Log;
 import android.util.Pair;
+
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.recording.RecordingCapability;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
@@ -53,6 +54,7 @@ import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
 import com.google.android.exoplayer.C;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -95,8 +97,8 @@ public class TunerRecordingSessionWorker
     private static final int MSG_UPDATE_CC_INFO = 7;
     private static final String COLUMN_SERIES_ID = "series_id";
 
-    private Boolean mProgramHasSeriesIdColumn;
-    private Boolean mRecordedProgramHasSeriesIdColumn;
+    private boolean mProgramHasSeriesIdColumn;
+    private boolean mRecordedProgramHasSeriesIdColumn;
 
     private final RecordingCapability mCapabilities;
 
@@ -593,25 +595,33 @@ public class TunerRecordingSessionWorker
     }
 
     private boolean checkProgramTable() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        boolean oTvProvider = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!oTvProvider) {
             return false;
         }
         Uri uri = TvContract.Programs.CONTENT_URI;
-        if (mProgramHasSeriesIdColumn == null) {
-            mProgramHasSeriesIdColumn = getExistingColumns(uri)
-                    .contains(COLUMN_SERIES_ID);
+        if (!mProgramHasSeriesIdColumn) {
+            if (getExistingColumns(uri).contains(COLUMN_SERIES_ID)) {
+                mProgramHasSeriesIdColumn = true;
+            } else if (addColumnToTable(uri)) {
+                mProgramHasSeriesIdColumn = true;
+            }
         }
         return mProgramHasSeriesIdColumn;
     }
 
     private boolean checkRecordedProgramTable() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        boolean oTvProvider = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!oTvProvider) {
             return false;
         }
         Uri uri = TvContract.RecordedPrograms.CONTENT_URI;
-        if (mRecordedProgramHasSeriesIdColumn == null) {
-            mRecordedProgramHasSeriesIdColumn = getExistingColumns(uri)
-                    .contains(COLUMN_SERIES_ID);
+        if (!mRecordedProgramHasSeriesIdColumn) {
+            if (getExistingColumns(uri).contains(COLUMN_SERIES_ID)) {
+                mRecordedProgramHasSeriesIdColumn = true;
+            } else if (addColumnToTable(uri)) {
+                mRecordedProgramHasSeriesIdColumn = true;
+            }
         }
         return mRecordedProgramHasSeriesIdColumn;
     }
@@ -629,6 +639,24 @@ public class TunerRecordingSessionWorker
         }
         Log.e(TAG, "Query existing column names from " + uri + " returned null");
         return Collections.emptySet();
+    }
+
+    /**
+     * Add a column to the table
+     *
+     * @return {@code true} if the column is added successfully; {@code false} otherwise.
+     */
+    private boolean addColumnToTable(Uri contentUri) {
+        Bundle extra = new Bundle();
+        extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, COLUMN_SERIES_ID);
+        extra.putCharSequence(TvContract.EXTRA_DATA_TYPE, "TEXT");
+        // If the add operation fails, the following just returns null without crashing.
+        Bundle allColumns = mContext.getContentResolver().call(
+                contentUri, TvContract.METHOD_ADD_COLUMN, contentUri.toString(), extra);
+        if (allColumns == null) {
+            Log.w(TAG, "Adding new column failed. Uri=" + contentUri);
+        }
+        return allColumns != null;
     }
 
     private static String[] createProjectionWithSeriesId() {
