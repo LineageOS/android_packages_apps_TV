@@ -141,8 +141,11 @@ public final class CommonUtils {
     /** Deletes a file or a directory. */
     public static void deleteDirOrFile(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()) {
-            for (File child : fileOrDirectory.listFiles()) {
-                deleteDirOrFile(child);
+            File[] files = fileOrDirectory.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    deleteDirOrFile(child);
+                }
             }
         }
         fileOrDirectory.delete();
