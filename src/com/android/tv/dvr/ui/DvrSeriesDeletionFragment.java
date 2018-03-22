@@ -17,18 +17,22 @@
 package com.android.tv.dvr.ui;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.tv.TvInputManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Toast;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
@@ -52,11 +56,15 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
     private static final long ACTION_ID_SELECT_WATCHED = -110;
     private static final long ACTION_ID_SELECT_ALL = -111;
     private static final long ACTION_ID_DELETE = -112;
+    private static final String TAG = "DvrSeriesDeletionFragment";
+    private static final int REQUEST_DELETE = 1;
 
+    private DvrManager mDvrManager;
     private DvrDataManager mDvrDataManager;
     private DvrWatchedPositionManager mDvrWatchedPositionManager;
     private List<RecordedProgram> mRecordings;
     private final Set<Long> mWatchedRecordings = new HashSet<>();
+    private final List<Long> mIdsToDelete = new ArrayList<>();
     private boolean mAllSelected;
     private long mSeriesRecordingId;
     private int mOneLineActionHeight;
@@ -67,9 +75,10 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
         mSeriesRecordingId =
                 getArguments().getLong(DvrSeriesDeletionActivity.SERIES_RECORDING_ID, -1);
         SoftPreconditions.checkArgument(mSeriesRecordingId != -1);
-        mDvrDataManager = TvSingletons.getSingletons(context).getDvrDataManager();
-        mDvrWatchedPositionManager =
-                TvSingletons.getSingletons(context).getDvrWatchedPositionManager();
+        TvSingletons singletons = TvSingletons.getSingletons(context);
+        mDvrManager = singletons.getDvrManager();
+        mDvrDataManager = singletons.getDvrDataManager();
+        mDvrWatchedPositionManager = singletons.getDvrWatchedPositionManager();
         mRecordings = mDvrDataManager.getRecordedPrograms(mSeriesRecordingId);
         mOneLineActionHeight =
                 getResources()
@@ -158,28 +167,7 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
     public void onGuidedActionClicked(GuidedAction action) {
         long actionId = action.getId();
         if (actionId == ACTION_ID_DELETE) {
-            List<Long> idsToDelete = new ArrayList<>();
-            for (GuidedAction guidedAction : getActions()) {
-                if (guidedAction.getCheckSetId() == GuidedAction.CHECKBOX_CHECK_SET_ID
-                        && guidedAction.isChecked()) {
-                    idsToDelete.add(guidedAction.getId());
-                }
-            }
-            if (!idsToDelete.isEmpty()) {
-                DvrManager dvrManager = TvSingletons.getSingletons(getActivity()).getDvrManager();
-                dvrManager.removeRecordedPrograms(idsToDelete);
-            }
-            Toast.makeText(
-                            getContext(),
-                            getResources()
-                                    .getQuantityString(
-                                            R.plurals.dvr_msg_episodes_deleted,
-                                            idsToDelete.size(),
-                                            idsToDelete.size(),
-                                            mRecordings.size()),
-                            Toast.LENGTH_LONG)
-                    .show();
-            finishGuidedStepFragments();
+            delete();
         } else if (actionId == GuidedAction.ACTION_ID_CANCEL) {
             finishGuidedStepFragments();
         } else if (actionId == ACTION_ID_SELECT_WATCHED) {
@@ -232,6 +220,75 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
                 }
             }
         };
+    }
+
+    private void delete() {
+        mIdsToDelete.clear();
+        for (GuidedAction guidedAction : getActions()) {
+            if (guidedAction.getCheckSetId() == GuidedAction.CHECKBOX_CHECK_SET_ID
+                    && guidedAction.isChecked()) {
+                mIdsToDelete.add(guidedAction.getId());
+            }
+        }
+        if (!PermissionUtils.hasWriteExternalStorage(getContext())
+                && doesAnySelectedRecordedProgramNeedWritePermission()) {
+            requestPermissions(
+                    new String[] {"android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_DELETE);
+        } else {
+            deleteSelectedIds(true);
+        }
+    }
+
+    private boolean doesAnySelectedRecordedProgramNeedWritePermission() {
+        for (RecordedProgram r : mRecordings) {
+            if (mIdsToDelete.contains(r.getId())
+                    && DvrManager.isFile(r.getDataUri())
+                    && !DvrManager.isFromBundledInput(r)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void deleteSelectedIds(boolean deleteFiles) {
+        if (!mIdsToDelete.isEmpty()) {
+            mDvrManager.removeRecordedPrograms(mIdsToDelete, deleteFiles);
+        }
+        Toast.makeText(
+                        getContext(),
+                        getResources()
+                                .getQuantityString(
+                                        R.plurals.dvr_msg_episodes_deleted,
+                                        mIdsToDelete.size(),
+                                        mIdsToDelete.size(),
+                                        mRecordings.size()),
+                        Toast.LENGTH_LONG)
+                .show();
+        finishGuidedStepFragments();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_DELETE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    deleteSelectedIds(true);
+                } else {
+                    // NOTE: If Live TV ever supports both embedded and separate DVR inputs
+                    // then we should try to do the delete regardless.
+                    Log.i(
+                            TAG,
+                            "Write permission denied, Not trying to delete the files for series "
+                                    + mSeriesRecordingId);
+                    deleteSelectedIds(false);
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     private String getWatchedString(long watchedPositionMs, long durationMs) {

@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.support.annotation.AnyThread;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -484,26 +485,26 @@ public class DvrManager {
     }
 
     /** Removes the recorded program. It deletes the file if possible. */
-    public void removeRecordedProgram(Uri recordedProgramUri) {
+    public void removeRecordedProgram(Uri recordedProgramUri, boolean deleteFile) {
         if (!SoftPreconditions.checkState(mDataManager.isInitialized())) {
             return;
         }
-        removeRecordedProgram(ContentUris.parseId(recordedProgramUri));
+        removeRecordedProgram(ContentUris.parseId(recordedProgramUri), deleteFile);
     }
 
     /** Removes the recorded program. It deletes the file if possible. */
-    public void removeRecordedProgram(long recordedProgramId) {
+    public void removeRecordedProgram(long recordedProgramId, boolean deleteFile) {
         if (!SoftPreconditions.checkState(mDataManager.isInitialized())) {
             return;
         }
         RecordedProgram recordedProgram = mDataManager.getRecordedProgram(recordedProgramId);
         if (recordedProgram != null) {
-            removeRecordedProgram(recordedProgram);
+            removeRecordedProgram(recordedProgram, deleteFile);
         }
     }
 
     /** Removes the recorded program. It deletes the file if possible. */
-    public void removeRecordedProgram(final RecordedProgram recordedProgram) {
+    public void removeRecordedProgram(final RecordedProgram recordedProgram, boolean deleteFile) {
         if (!SoftPreconditions.checkState(mDataManager.isInitialized())) {
             return;
         }
@@ -516,7 +517,7 @@ public class DvrManager {
 
             @Override
             protected void onPostExecute(Integer deletedCounts) {
-                if (deletedCounts > 0) {
+                if (deletedCounts > 0 && deleteFile) {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
@@ -529,7 +530,7 @@ public class DvrManager {
         }.executeOnDbThread();
     }
 
-    public void removeRecordedPrograms(List<Long> recordedProgramIds) {
+    public void removeRecordedPrograms(List<Long> recordedProgramIds, boolean deleteFiles) {
         final ArrayList<ContentProviderOperation> dbOperations = new ArrayList<>();
         final List<Uri> dataUris = new ArrayList<>();
         for (Long rId : recordedProgramIds) {
@@ -554,7 +555,7 @@ public class DvrManager {
 
             @Override
             protected void onPostExecute(Boolean success) {
-                if (success) {
+                if (success && deleteFiles) {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
@@ -829,9 +830,7 @@ public class DvrManager {
     @WorkerThread
     private void removeRecordedData(Uri dataUri) {
         try {
-            if (dataUri != null
-                    && ContentResolver.SCHEME_FILE.equals(dataUri.getScheme())
-                    && dataUri.getPath() != null) {
+            if (isFile(dataUri)) {
                 File recordedProgramPath = new File(dataUri.getPath());
                 if (!recordedProgramPath.exists()) {
                     if (DEBUG) Log.d(TAG, "File to delete not exist: " + recordedProgramPath);
@@ -851,6 +850,18 @@ public class DvrManager {
         } catch (SecurityException e) {
             Log.w(TAG, "Unable to delete recording data at " + dataUri, e);
         }
+    }
+
+    @AnyThread
+    public static boolean isFromBundledInput(RecordedProgram mRecordedProgram) {
+        return CommonUtils.isInBundledPackageSet(mRecordedProgram.getPackageName());
+    }
+
+    @AnyThread
+    public static boolean isFile(Uri dataUri) {
+        return dataUri != null
+                && ContentResolver.SCHEME_FILE.equals(dataUri.getScheme())
+                && dataUri.getPath() != null;
     }
 
     /**
