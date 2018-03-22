@@ -138,8 +138,13 @@ public final class CommonUtils {
         return ISO_8601.get().format(new Date(timeMillis));
     }
 
-    /** Deletes a file or a directory. */
-    public static void deleteDirOrFile(File fileOrDirectory) {
+    /**
+     * Deletes a file or a directory.
+     *
+     * @return <code>true</code> if and only if the file or directory is successfully deleted;
+     *     <code>false</code> otherwise
+     */
+    public static boolean deleteDirOrFile(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()) {
             File[] files = fileOrDirectory.listFiles();
             if (files != null) {
@@ -148,7 +153,8 @@ public final class CommonUtils {
                 }
             }
         }
-        fileOrDirectory.delete();
+        // If earlier deletes failed this will also
+        return fileOrDirectory.delete();
     }
 
     public static boolean isRoboTest() {

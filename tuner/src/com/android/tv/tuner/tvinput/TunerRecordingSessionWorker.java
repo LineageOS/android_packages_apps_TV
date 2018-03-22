@@ -37,7 +37,6 @@ import android.support.annotation.Nullable;
 import android.support.media.tv.Program;
 import android.util.Log;
 import android.util.Pair;
-
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.recording.RecordingCapability;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
@@ -54,7 +53,6 @@ import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
 import com.google.android.exoplayer.C;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -502,9 +500,8 @@ public class TunerRecordingSessionWorker
             long avg = mRecordStartTime / 2 + mRecordEndTime / 2;
             programUri = TvContract.buildProgramsUriForChannel(mChannel.getChannelId(), avg, avg);
         }
-    String[] projection = checkProgramTable()
-                ? PROGRAM_PROJECTION_WITH_SERIES_ID
-                : PROGRAM_PROJECTION;
+        String[] projection =
+                checkProgramTable() ? PROGRAM_PROJECTION_WITH_SERIES_ID : PROGRAM_PROJECTION;
         try (Cursor c = resolver.query(programUri, projection, null, null, SORT_BY_TIME)) {
             if (c != null && c.moveToNext()) {
                 Program result = Program.fromCursor(c);
@@ -628,8 +625,7 @@ public class TunerRecordingSessionWorker
 
     private Set<String> getExistingColumns(Uri uri) {
         Bundle result =
-                mContext
-                        .getContentResolver()
+                mContext.getContentResolver()
                         .call(uri, TvContract.METHOD_GET_COLUMNS, uri.toString(), null);
         if (result != null) {
             String[] columns = result.getStringArray(TvContract.EXTRA_EXISTING_COLUMN_NAMES);
@@ -651,8 +647,13 @@ public class TunerRecordingSessionWorker
         extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, COLUMN_SERIES_ID);
         extra.putCharSequence(TvContract.EXTRA_DATA_TYPE, "TEXT");
         // If the add operation fails, the following just returns null without crashing.
-        Bundle allColumns = mContext.getContentResolver().call(
-                contentUri, TvContract.METHOD_ADD_COLUMN, contentUri.toString(), extra);
+        Bundle allColumns =
+                mContext.getContentResolver()
+                        .call(
+                                contentUri,
+                                TvContract.METHOD_ADD_COLUMN,
+                                contentUri.toString(),
+                                extra);
         if (allColumns == null) {
             Log.w(TAG, "Adding new column failed. Uri=" + contentUri);
         }
@@ -673,7 +674,9 @@ public class TunerRecordingSessionWorker
                 return null;
             }
             for (File file : files) {
-                CommonUtils.deleteDirOrFile(file);
+                if (!CommonUtils.deleteDirOrFile(file)) {
+                    Log.w(TAG, "Unable to delete recording data at " + file);
+                }
             }
             return null;
         }
