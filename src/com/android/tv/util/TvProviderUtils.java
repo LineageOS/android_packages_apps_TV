@@ -57,8 +57,8 @@ public final class TvProviderUtils {
      */
     @WorkerThread
     public static synchronized boolean checkSeriesIdColumn(Context context, Uri uri) {
-        boolean oTvProvider = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
-        if (!oTvProvider) {
+        boolean canCreateColumn = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!canCreateColumn) {
             return false;
         }
         return (Utils.isRecordedProgramsUri(uri) && checkRecordedProgramTable(context, uri))

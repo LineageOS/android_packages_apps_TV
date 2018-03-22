@@ -29,7 +29,7 @@ Indicate TvProvider is patched by including the following in their TV
 customization resource
 
 ```
-<bool name="has_o_level_tv_provider">true</bool>
+<bool name="tvprovider_allows_column_creation">true</bool>
 ```
 
 See https://source.android.com/devices/tv/customize-tv-app

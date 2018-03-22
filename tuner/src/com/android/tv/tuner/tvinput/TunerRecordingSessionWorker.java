@@ -595,8 +595,8 @@ public class TunerRecordingSessionWorker
     }
 
     private boolean checkProgramTable() {
-        boolean oTvProvider = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
-        if (!oTvProvider) {
+        boolean canCreateColumn = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!canCreateColumn) {
             return false;
         }
         Uri uri = TvContract.Programs.CONTENT_URI;
@@ -611,8 +611,8 @@ public class TunerRecordingSessionWorker
     }
 
     private boolean checkRecordedProgramTable() {
-        boolean oTvProvider = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
-        if (!oTvProvider) {
+        boolean canCreateColumn = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!canCreateColumn) {
             return false;
         }
         Uri uri = TvContract.RecordedPrograms.CONTENT_URI;
