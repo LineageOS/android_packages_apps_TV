@@ -21,6 +21,7 @@ import static com.android.tv.common.feature.FeatureUtils.AND;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.ON;
 import static com.android.tv.common.feature.FeatureUtils.OR;
+import static com.android.tv.common.feature.FeatureUtils.not;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -59,12 +60,13 @@ public final class TvFeatures extends CommonFeatures {
 
     /** Enables Embedded tuner */
     public static final Feature TUNER =
-            OR(
-                    ENG_ONLY_FEATURE,
-                    // This is special handling just for USB Tuner.
-                    // It does not require any N API's but relies on a improvements in N for AC3
-                    // support
-                    Sdk.AT_LEAST_N);
+            AND(
+                    OR(
+                            ENG_ONLY_FEATURE,
+                            // This is special handling just for USB Tuner.
+                            // It does not require any N API's but relies on a improvements in N for
+                            // AC3 support
+                            Sdk.AT_LEAST_N));
 
     // TODO(b/76149661): Fix EPG search or remove it
     public static final Feature EPG_SEARCH = OFF;

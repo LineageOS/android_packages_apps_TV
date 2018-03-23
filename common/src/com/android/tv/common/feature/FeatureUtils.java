@@ -71,14 +71,33 @@ public class FeatureUtils {
             }
         };
     }
-  /**
-   * A feature available in AOSP.
-   * @param aospFeature the feature used in AOSP builds
-   */
-  public static Feature aospFeature(
-      final Feature aospFeature) {
-      return aospFeature;
-  }
+    /**
+     * A feature available in AOSP.
+     * @param aospFeature the feature used in AOSP builds
+     */
+    public static Feature aospFeature(
+            final Feature aospFeature) {
+        return aospFeature;
+    }
+
+    /**
+     * Returns a feature that is opposite of the given {@code feature}.
+     *
+     * @param feature the feature to invert
+     */
+    public static Feature not(final Feature feature) {
+        return new Feature() {
+            @Override
+            public boolean isEnabled(Context context) {
+                return !feature.isEnabled(context);
+            }
+
+            @Override
+            public String toString() {
+                return "not(" + feature + ")";
+            }
+        };
+    }
 
     /** A feature that is always enabled. */
     public static final Feature ON =
