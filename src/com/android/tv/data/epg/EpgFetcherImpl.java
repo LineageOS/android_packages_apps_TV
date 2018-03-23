@@ -548,8 +548,10 @@ public class EpgFetcherImpl implements EpgFetcher {
                                     null,
                                     null,
                                     null)) {
-                while (cursor.moveToNext()) {
-                    result.add(ChannelImpl.fromCursor(cursor));
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        result.add(ChannelImpl.fromCursor(cursor));
+                    }
                 }
                 return result;
             }
