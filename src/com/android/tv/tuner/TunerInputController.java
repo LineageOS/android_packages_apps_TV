@@ -16,6 +16,9 @@
 
 package com.android.tv.tuner;
 
+import static com.android.tv.TvFeatures.TUNER;
+import static com.android.tv.tuner.TunerFeatures.NETWORK_TUNER;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -50,7 +53,6 @@ import com.android.tv.Starter;
 import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
-import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.SystemPropertiesProxy;
 
 
@@ -210,7 +212,7 @@ public class TunerInputController {
         Set<ComponentName> serviceToDisable = new HashSet<>();
         serviceToDisable.add(builtInTunerComponent);
         serviceToDisable.add(networkTunerComponent);
-        if (TunerFeatures.TUNER.isEnabled(context)) {
+        if (TUNER.isEnabled(context)) {
             // TODO: support both built-in tuner and other tuners at the same time?
             if (TunerHal.useBuiltInTuner(context)) {
                 enableTunerTvInputService(
@@ -224,7 +226,7 @@ public class TunerInputController {
             }
         }
         for (TunerDevice device : TUNER_DEVICES) {
-            if (TunerFeatures.TUNER.isEnabled(context) && connectedUsbTuners.contains(device)) {
+            if (TUNER.isEnabled(context) && connectedUsbTuners.contains(device)) {
                 serviceToEnable.put(mTunerServiceMapping.get(device), TunerHal.TUNER_TYPE_USB);
             } else {
                 serviceToDisable.add(mTunerServiceMapping.get(device));
@@ -330,8 +332,7 @@ public class TunerInputController {
     private void executeNetworkTunerDiscoveryAsyncTask(
             final Context context, final long repeatedDurationMs, final int deviceIp) {
         // TODO(76197781): Allow network tuner separate from DVB tuner
-        if (!TunerFeatures.NETWORK_TUNER.isEnabled(context)
-                || !CommonFeatures.TUNER.isEnabled(context)) {
+        if (!NETWORK_TUNER.isEnabled(context) || !TUNER.isEnabled(context)) {
             return;
         }
         final Intent networkCheckingIntent = new Intent(context, IntentReceiver.class);
@@ -457,7 +458,7 @@ public class TunerInputController {
             Starter.start(context);
             TunerInputController tunerInputController =
                     TvSingletons.getSingletons(context).getTunerInputController();
-            if (!TunerFeatures.TUNER.isEnabled(context)) {
+            if (!TUNER.isEnabled(context)) {
                 tunerInputController.handleTunerStatusChanged(
                         context, false, Collections.emptySet(), null);
                 return;

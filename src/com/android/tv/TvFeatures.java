@@ -32,6 +32,7 @@ import com.android.tv.common.feature.ExperimentFeature;
 import com.android.tv.common.feature.Feature;
 import com.android.tv.common.feature.FeatureUtils;
 import com.android.tv.common.feature.GServiceFeature;
+
 import com.android.tv.common.feature.PropertyFeature;
 import com.android.tv.common.feature.Sdk;
 import com.android.tv.common.feature.TestableFeature;
@@ -55,6 +56,15 @@ public final class TvFeatures extends CommonFeatures {
      * <p>See <a href="http://b/22062676">b/22062676</a>
      */
     public static final Feature ANALYTICS_V2 = AND(ON, ANALYTICS_OPT_IN);
+
+    /** Enables Embedded tuner */
+    public static final Feature TUNER =
+            OR(
+                    ENG_ONLY_FEATURE,
+                    // This is special handling just for USB Tuner.
+                    // It does not require any N API's but relies on a improvements in N for AC3
+                    // support
+                    Sdk.AT_LEAST_N);
 
     // TODO(b/76149661): Fix EPG search or remove it
     public static final Feature EPG_SEARCH = OFF;
