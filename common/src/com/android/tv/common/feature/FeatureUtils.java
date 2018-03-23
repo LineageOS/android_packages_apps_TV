@@ -17,6 +17,7 @@
 package com.android.tv.common.feature;
 
 import android.content.Context;
+import com.android.tv.common.BuildConfig;
 import com.android.tv.common.util.CommonUtils;
 import java.util.Arrays;
 
@@ -70,6 +71,14 @@ public class FeatureUtils {
             }
         };
     }
+  /**
+   * A feature available in AOSP.
+   * @param aospFeature the feature used in AOSP builds
+   */
+  public static Feature aospFeature(
+      final Feature aospFeature) {
+      return aospFeature;
+  }
 
     /** A feature that is always enabled. */
     public static final Feature ON =
