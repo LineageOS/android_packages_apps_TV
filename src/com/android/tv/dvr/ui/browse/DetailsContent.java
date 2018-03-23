@@ -41,6 +41,7 @@ public class DetailsContent {
     private String mLogoImageUri;
     private String mBackgroundImageUri;
     private boolean mUsingChannelLogo;
+    private boolean mShowErrorMessage;
 
     static DetailsContent createFromRecordedProgram(
             Context context, RecordedProgram recordedProgram) {
@@ -99,8 +100,7 @@ public class DetailsContent {
                         .getChannel(scheduledRecording.getChannelId());
         String description;
         if (scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
-            description = context.getString(R.string.dvr_recording_failed)
-                    + "\n" + getErrorMessage(context, scheduledRecording);
+            description = getErrorMessage(context, scheduledRecording);
         } else {
             description =
                     !TextUtils.isEmpty(scheduledRecording.getProgramDescription())
@@ -120,6 +120,8 @@ public class DetailsContent {
                 .setDescription(description)
                 .setPosterArtUri(scheduledRecording.getProgramPosterArtUri())
                 .setThumbnailUri(scheduledRecording.getProgramThumbnailUri())
+                .setShowErrorMessage(
+                        scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED)
                 .build(context);
     }
 
@@ -188,6 +190,11 @@ public class DetailsContent {
         return mUsingChannelLogo;
     }
 
+    /** Returns if the error message should be shown. */
+    public boolean shouldShowErrorMessage() {
+        return mShowErrorMessage;
+    }
+
     /** Copies other details content. */
     public void copyFrom(DetailsContent other) {
         if (this == other) {
@@ -200,6 +207,7 @@ public class DetailsContent {
         mLogoImageUri = other.mLogoImageUri;
         mBackgroundImageUri = other.mBackgroundImageUri;
         mUsingChannelLogo = other.mUsingChannelLogo;
+        mShowErrorMessage = other.mShowErrorMessage;
     }
 
     /** A class for building details content. */
@@ -282,6 +290,11 @@ public class DetailsContent {
 
         private Builder setThumbnailUri(String thumbnailUri) {
             mThumbnailUri = thumbnailUri;
+            return this;
+        }
+
+        private Builder setShowErrorMessage(boolean showErrorMessage) {
+            mDetailsContent.mShowErrorMessage = showErrorMessage;
             return this;
         }
 

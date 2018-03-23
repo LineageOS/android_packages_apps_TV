@@ -51,6 +51,7 @@ public class DetailsContentPresenter extends Presenter {
         final TextView mTitle;
         final TextView mSubtitle;
         final LinearLayout mDescriptionContainer;
+        final LinearLayout mErrorMessage;
         final TextView mBody;
         final TextView mReadMoreView;
         final int mTitleMargin;
@@ -150,6 +151,8 @@ public class DetailsContentPresenter extends Presenter {
                     });
             mTitle = (TextView) view.findViewById(R.id.dvr_details_description_title);
             mSubtitle = (TextView) view.findViewById(R.id.dvr_details_description_subtitle);
+            mErrorMessage =
+                    (LinearLayout) view.findViewById(R.id.dvr_details_description_error_message);
             mBody = (TextView) view.findViewById(R.id.dvr_details_description_body);
             mDescriptionContainer =
                     (LinearLayout) view.findViewById(R.id.dvr_details_description_container);
@@ -321,6 +324,9 @@ public class DetailsContentPresenter extends Presenter {
         if (TextUtils.isEmpty(detailsContent.getDescription())) {
             vh.mBody.setVisibility(View.GONE);
         } else {
+            if (detailsContent.shouldShowErrorMessage()) {
+                vh.mErrorMessage.setVisibility(View.VISIBLE);
+            }
             vh.mBody.setText(detailsContent.getDescription());
             vh.mBody.setVisibility(View.VISIBLE);
             vh.mBody.setLineSpacing(

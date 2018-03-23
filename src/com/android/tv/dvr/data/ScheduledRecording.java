@@ -992,6 +992,11 @@ public final class ScheduledRecording implements Parcelable {
         return mState == STATE_RECORDING_FINISHED;
     }
 
+    /** Returns {@code true} if the recording is failed, otherwise @{code false}. */
+    public boolean isFailed() {
+        return mState == STATE_RECORDING_FAILED;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof ScheduledRecording)) {

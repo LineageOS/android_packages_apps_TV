@@ -49,8 +49,6 @@ public final class TvFeatures extends CommonFeatures {
     /** When enabled use system setting for turning on analytics. */
     public static final Feature ANALYTICS_OPT_IN =
             ExperimentFeature.from(Experiments.ENABLE_ANALYTICS_VIA_CHECKBOX);
-    /** When enabled shows a list of failed recordings */
-    public static final Feature DVR_FAILED_LIST = ENG_ONLY_FEATURE;
     /**
      * Analytics that include sensitive information such as channel or program identifiers.
      *
@@ -58,8 +56,8 @@ public final class TvFeatures extends CommonFeatures {
      */
     public static final Feature ANALYTICS_V2 = AND(ON, ANALYTICS_OPT_IN);
 
-    public static final Feature EPG_SEARCH =
-            PropertyFeature.create("feature_tv_use_epg_search", false);
+    // TODO(b/76149661): Fix EPG search or remove it
+    public static final Feature EPG_SEARCH = OFF;
 
     private static final String GSERVICE_KEY_UNHIDE = "live_channels_unhide";
     /** A flag which indicates that LC app is unhidden even when there is no input. */

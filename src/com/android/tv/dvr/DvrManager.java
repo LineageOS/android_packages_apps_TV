@@ -836,20 +836,20 @@ public class DvrManager {
                 if (!recordedProgramPath.exists()) {
                     if (DEBUG) Log.d(TAG, "File to delete not exist: " + recordedProgramPath);
                 } else {
-                    CommonUtils.deleteDirOrFile(recordedProgramPath);
-                    if (DEBUG) {
-                        Log.d(TAG, "Sucessfully deleted files of the recorded program: " + dataUri);
+                    if (CommonUtils.deleteDirOrFile(recordedProgramPath)) {
+                        if (DEBUG) {
+                            Log.d(
+                                    TAG,
+                                    "Successfully deleted files of the recorded program: "
+                                            + dataUri);
+                        }
+                    } else {
+                        Log.w(TAG, "Unable to delete recording data at " + dataUri);
                     }
                 }
             }
         } catch (SecurityException e) {
-            if (DEBUG) {
-                Log.d(
-                        TAG,
-                        "To delete this recorded program, please manually delete video data at"
-                                + "\nadb shell rm -rf "
-                                + dataUri);
-            }
+            Log.w(TAG, "Unable to delete recording data at " + dataUri, e);
         }
     }
 

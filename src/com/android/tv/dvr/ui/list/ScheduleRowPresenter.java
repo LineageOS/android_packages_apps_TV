@@ -37,7 +37,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.data.api.Channel;
@@ -99,6 +98,7 @@ class ScheduleRowPresenter extends RowPresenter {
         private final TextView mProgramTitleView;
         private final TextView mInfoSeparatorView;
         private final TextView mChannelNameView;
+        private final ImageView mExtraInfoIcon;
         private final TextView mExtraInfoView;
         private final ImageView mSecondActionView;
         private final ImageView mFirstActionView;
@@ -146,6 +146,7 @@ class ScheduleRowPresenter extends RowPresenter {
             mProgramTitleView = (TextView) view.findViewById(R.id.program_title);
             mInfoSeparatorView = (TextView) view.findViewById(R.id.info_separator);
             mChannelNameView = (TextView) view.findViewById(R.id.channel_name);
+            mExtraInfoIcon = (ImageView) view.findViewById(R.id.extra_info_icon);
             mExtraInfoView = (TextView) view.findViewById(R.id.extra_info);
             Resources res = view.getResources();
             mSelectorTranslationDelta =
@@ -426,16 +427,13 @@ class ScheduleRowPresenter extends RowPresenter {
             }
         }
         ScheduledRecording schedule = row.getSchedule();
-        if (mDvrManager.isConflicting(schedule)
-                || (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
-                        && schedule != null
-                        && schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED)) {
+        viewHolder.mExtraInfoIcon.setVisibility(View.GONE);
+        if (mDvrManager.isConflicting(schedule) || isFailedRecording(schedule)) {
             String extraInfo;
-            if (TvFeatures.DVR_FAILED_LIST.isEnabled(getContext())
-                    && schedule != null
-                    && schedule.getState() == ScheduledRecording.STATE_RECORDING_FAILED) {
+            if (isFailedRecording(schedule)) {
                 extraInfo = mContext.getString(R.string.dvr_recording_failed_short)
                         + " " + getErrorMessage(schedule);
+                viewHolder.mExtraInfoIcon.setVisibility(View.VISIBLE);
             } else if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
                 extraInfo = mTunerConflictWillBePartiallyRecordedInfo;
             } else {
@@ -451,8 +449,19 @@ class ScheduleRowPresenter extends RowPresenter {
         } else {
             viewHolder.whiteBackInfo();
         }
+        if (isFailedRecording(schedule)) {
+            viewHolder.mExtraInfoView.setTextColor(
+                    viewHolder.mInfoContainer
+                            .getResources()
+                            .getColor(R.color.dvr_recording_failed_text_color, null));
+        }
         viewHolder.mInfoContainer.setFocusable(isInfoClickable(row));
         updateActionContainer(viewHolder, viewHolder.isSelected());
+    }
+
+    private boolean isFailedRecording(ScheduledRecording scheduledRecording) {
+        return scheduledRecording != null
+                && scheduledRecording.getState() == ScheduledRecording.STATE_RECORDING_FAILED;
     }
 
     private String getErrorMessage(ScheduledRecording recording) {
@@ -537,7 +546,8 @@ class ScheduleRowPresenter extends RowPresenter {
         return schedule != null
                 && (schedule.isNotStarted()
                         || schedule.isInProgress()
-                        || schedule.isFinished());
+                        || schedule.isFinished()
+                        || schedule.isFailed());
     }
 
     /** Called when the button in a row is clicked. */
