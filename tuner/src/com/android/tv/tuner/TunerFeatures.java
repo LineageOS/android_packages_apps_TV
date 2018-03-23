@@ -18,8 +18,8 @@ package com.android.tv.tuner;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
-import static com.android.tv.common.feature.FeatureUtils.OR;
 import static com.android.tv.common.feature.FeatureUtils.aospFeature;
+import static com.android.tv.common.feature.FeatureUtils.or;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -45,7 +45,7 @@ public class TunerFeatures extends CommonFeatures {
 
     /** Use network tuner if it is available and there is no other tuner types. */
     public static final Feature NETWORK_TUNER =
-            OR(
+            or(
                     ENG_ONLY_FEATURE,
                     aospFeature(
                             context ->

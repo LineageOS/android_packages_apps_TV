@@ -29,7 +29,7 @@ public class FeatureUtils {
      *
      * @param features the features to or
      */
-    public static Feature OR(final Feature... features) {
+    public static Feature or(final Feature... features) {
         return new Feature() {
             @Override
             public boolean isEnabled(Context context) {
@@ -53,7 +53,7 @@ public class FeatureUtils {
      *
      * @param features the features to and
      */
-    public static Feature AND(final Feature... features) {
+    public static Feature and(final Feature... features) {
         return new Feature() {
             @Override
             public boolean isEnabled(Context context) {

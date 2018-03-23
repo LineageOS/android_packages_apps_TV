@@ -17,11 +17,11 @@
 package com.android.tv;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
-import static com.android.tv.common.feature.FeatureUtils.AND;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.ON;
-import static com.android.tv.common.feature.FeatureUtils.OR;
+import static com.android.tv.common.feature.FeatureUtils.and;
 import static com.android.tv.common.feature.FeatureUtils.not;
+import static com.android.tv.common.feature.FeatureUtils.or;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -56,12 +56,12 @@ public final class TvFeatures extends CommonFeatures {
      *
      * <p>See <a href="http://b/22062676">b/22062676</a>
      */
-    public static final Feature ANALYTICS_V2 = AND(ON, ANALYTICS_OPT_IN);
+    public static final Feature ANALYTICS_V2 = and(ON, ANALYTICS_OPT_IN);
 
     /** Enables Embedded tuner */
     public static final Feature TUNER =
-            AND(
-                    OR(
+            and(
+                    or(
                             ENG_ONLY_FEATURE,
                             // This is special handling just for USB Tuner.
                             // It does not require any N API's but relies on a improvements in N for
@@ -74,7 +74,7 @@ public final class TvFeatures extends CommonFeatures {
     private static final String GSERVICE_KEY_UNHIDE = "live_channels_unhide";
     /** A flag which indicates that LC app is unhidden even when there is no input. */
     public static final Feature UNHIDE =
-            OR(
+            or(
                     new GServiceFeature(GSERVICE_KEY_UNHIDE, false),
                     new Feature() {
                         @Override
