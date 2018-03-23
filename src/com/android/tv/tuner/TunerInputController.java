@@ -50,6 +50,7 @@ import com.android.tv.Starter;
 import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
+import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.SystemPropertiesProxy;
 
 
@@ -328,7 +329,9 @@ public class TunerInputController {
      */
     private void executeNetworkTunerDiscoveryAsyncTask(
             final Context context, final long repeatedDurationMs, final int deviceIp) {
-        if (!TunerFeatures.NETWORK_TUNER.isEnabled(context)) {
+        // TODO(76197781): Allow network tuner separate from DVB tuner
+        if (!TunerFeatures.NETWORK_TUNER.isEnabled(context)
+                || !CommonFeatures.TUNER.isEnabled(context)) {
             return;
         }
         final Intent networkCheckingIntent = new Intent(context, IntentReceiver.class);

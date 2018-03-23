@@ -17,7 +17,6 @@
 package com.android.tv.tuner;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
-import static com.android.tv.common.feature.FeatureUtils.AND;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.OR;
 import static com.android.tv.common.feature.FeatureUtils.aospFeature;
@@ -44,17 +43,16 @@ public class TunerFeatures extends CommonFeatures {
     private static final String TAG = "TunerFeatures";
     private static final boolean DEBUG = false;
 
-  /** Use network tuner if it is available and there is no other tuner types. */
-  public static final Feature NETWORK_TUNER =
-      AND(
-          TUNER,
-          OR(
-              ENG_ONLY_FEATURE,
-              aospFeature(
-                  context ->
-                      Locale.US
-                          .getCountry()
-                          .equalsIgnoreCase(LocationUtils.getCurrentCountry(context)))));
+    /** Use network tuner if it is available and there is no other tuner types. */
+    public static final Feature NETWORK_TUNER =
+            OR(
+                    ENG_ONLY_FEATURE,
+                    aospFeature(
+                            context ->
+                                    Locale.US
+                                            .getCountry()
+                                            .equalsIgnoreCase(
+                                                    LocationUtils.getCurrentCountry(context))));
 
     /**
      * USE_SW_CODEC_FOR_SD
