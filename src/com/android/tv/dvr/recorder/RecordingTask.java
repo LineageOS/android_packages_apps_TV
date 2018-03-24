@@ -550,7 +550,7 @@ public class RecordingTask extends RecordingCallback
                     @Override
                     public void run() {
                         if (mRecordedProgramUri != null) {
-                            mDvrManager.removeRecordedProgram(mRecordedProgramUri);
+                            mDvrManager.removeRecordedProgram(mRecordedProgramUri, true);
                         }
                     }
                 });

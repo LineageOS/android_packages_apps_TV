@@ -11,17 +11,12 @@ To enable series recording with Nougat you will need the following changes.
 
 ### Patch TVProvider
 
-To run in Nougat you must get ALL of the changes up to and including [this version]
-(https://partner-android.googlesource.com/platform/packages/providers/TvProvider/+/079e905399549351fda402a21d15696a85211f6e)
-of TV Provider (version 34 or above).
+To run in Nougat you must backport the following changes
 
-Indicate the SDK version of N is used by adding the following line to AndroidManifest.xml
-
-Change "24" to "25" if it's N MR1 (7.1 or 7.1.1)
-
-```
-<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="24"/>
-```
+*   [Filter out non-existing customized columns in
+    DB](https://partner-android.googlesource.com/platform/packages/providers/TvProvider/+/142162af889b2c124bb012eea608c6a65eed54bb)
+*   [Add TvProvider methods to get and add
+    columns](https://partner-android.googlesource.com/platform/packages/providers/TvProvider/+/cda6788ae903513a555fd3e07a5a1c14218c40a2)
 
 ### Customisation
 

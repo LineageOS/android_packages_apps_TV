@@ -31,6 +31,7 @@
     <uses-permission android:name="android.permission.MODIFY_PARENTAL_CONTROLS" />
     <uses-permission android:name="android.permission.READ_CONTENT_RATING_SYSTEMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />
@@ -103,6 +104,26 @@
             android:authorities="com.android.tv.common.preferences"
             android:exported="false"
             android:process="com.android.tv.common" />
+
+        <receiver
+            android:name="com.android.tv.livetv.receiver.GlobalKeyReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.GLOBAL_BUTTON" />
+            </intent-filter>
+
+            <!--
+             Not directly related to GlobalKeyReceiver but needed to be able to provide our
+            content rating definitions to the system service.
+            -->
+            <intent-filter>
+                <action android:name="android.media.tv.action.QUERY_CONTENT_RATING_SYSTEMS" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.media.tv.metadata.CONTENT_RATING_SYSTEMS"
+                android:resource="@xml/tv_content_rating_systems" />
+        </receiver>
 
         <activity android:name="com.android.tv.TvActivity" >
             <intent-filter>
@@ -205,8 +226,8 @@
         <activity
             android:name="com.android.tv.ui.DetailsActivity"
             android:configChanges="keyboard|keyboardHidden"
-            android:theme="@style/Theme.TV.Dvr.Browse.Details"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.TV.Dvr.Browse.Details" />
         <activity
             android:name="com.android.tv.dvr.ui.DvrSeriesSettingsActivity"
             android:configChanges="keyboard|keyboardHidden"
@@ -296,27 +317,6 @@
         <service
             android:name="com.android.tv.data.epg.EpgFetchService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <receiver
-            android:name="com.android.tv.livetv.receiver.GlobalKeyReceiver"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.GLOBAL_BUTTON" />
-            </intent-filter>
-
-            <!--
-             Not directly related to GlobalKeyReceiver but needed to be able to provide our
-            content rating definitions to the system service.
-            -->
-            <intent-filter>
-                <action android:name="android.media.tv.action.QUERY_CONTENT_RATING_SYSTEMS" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.media.tv.metadata.CONTENT_RATING_SYSTEMS"
-                android:resource="@xml/tv_content_rating_systems" />
-        </receiver>
-
         <service
             android:name="com.android.tv.tuner.livetuner.LiveTvTunerTvInputService"
             android:enabled="false"

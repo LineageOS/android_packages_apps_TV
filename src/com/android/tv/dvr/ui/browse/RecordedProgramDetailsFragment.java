@@ -16,14 +16,18 @@
 
 package com.android.tv.dvr.ui.browse;
 
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.media.tv.TvInputManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
+import android.util.Log;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
@@ -36,6 +40,8 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
     private static final int ACTION_RESUME_PLAYING = 1;
     private static final int ACTION_PLAY_FROM_BEGINNING = 2;
     private static final int ACTION_DELETE_RECORDING = 3;
+    private static final int REQUEST_DELETE = 4;
+    private static final String TAG = "RecordedProgramDetailsFragment";
 
     private DvrWatchedPositionManager mDvrWatchedPositionManager;
 
@@ -139,13 +145,49 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
                             mDvrWatchedPositionManager.getWatchedPosition(
                                     mRecordedProgram.getId()));
                 } else if (action.getId() == ACTION_DELETE_RECORDING) {
-                    DvrManager dvrManager =
-                            TvSingletons.getSingletons(getActivity()).getDvrManager();
-                    dvrManager.removeRecordedProgram(mRecordedProgram);
-                    getActivity().finish();
+                    delete();
                 }
             }
         };
+    }
+
+    private void delete() {
+        if (PermissionUtils.hasWriteExternalStorage(getContext())
+                && DvrManager.isFile(mRecordedProgram.getDataUri())
+                && !DvrManager.isFromBundledInput(mRecordedProgram)) {
+            requestPermissions(
+                    new String[] {"android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_DELETE);
+        } else {
+            delete(true);
+        }
+    }
+
+    private void delete(boolean deleteFile) {
+        DvrManager dvrManager = TvSingletons.getSingletons(getActivity()).getDvrManager();
+        dvrManager.removeRecordedProgram(mRecordedProgram, deleteFile);
+        getActivity().finish();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_DELETE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    delete(true);
+                } else {
+                    Log.i(
+                            TAG,
+                            "Write permission denied, Not trying to delete the file for "
+                                    + mRecordedProgram);
+                    delete(false);
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override
