@@ -38,8 +38,8 @@ import com.android.tv.common.feature.PropertyFeature;
 import com.android.tv.common.feature.Sdk;
 import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.common.util.PermissionUtils;
+import com.android.tv.features.PartnerFeatures;
 
-import com.google.android.tv.partner.support.PartnerCustomizations;
 
 /**
  * List of {@link Feature} for the Live TV App.
@@ -61,6 +61,7 @@ public final class TvFeatures extends CommonFeatures {
     /** Enables Embedded tuner */
     public static final Feature TUNER =
             and(
+
                     or(
                             ENG_ONLY_FEATURE,
                             // This is special handling just for USB Tuner.
