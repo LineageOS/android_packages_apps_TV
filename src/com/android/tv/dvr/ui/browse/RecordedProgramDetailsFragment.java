@@ -152,7 +152,7 @@ public class RecordedProgramDetailsFragment extends DvrDetailsFragment
     }
 
     private void delete() {
-        if (PermissionUtils.hasWriteExternalStorage(getContext())
+        if (!PermissionUtils.hasWriteExternalStorage(getContext())
                 && DvrManager.isFile(mRecordedProgram.getDataUri())
                 && !DvrManager.isFromBundledInput(mRecordedProgram)) {
             requestPermissions(
