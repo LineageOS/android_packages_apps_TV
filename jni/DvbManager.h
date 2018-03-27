@@ -49,7 +49,7 @@ class DvbManager {
     static const int DELIVERY_SYSTEM_ATSC =
         com_android_tv_tuner_TunerHal_DELIVERY_SYSTEM_ATSC;
     static const int DELIVERY_SYSTEM_DVBC =
-        com_android_tv_tuner_TunerHal_DDELIVERY_SYSTEM_DVBC;
+        com_android_tv_tuner_TunerHal_DELIVERY_SYSTEM_DVBC;
     static const int DELIVERY_SYSTEM_DVBS =
         com_android_tv_tuner_TunerHal_DELIVERY_SYSTEM_DVBS;
     static const int DELIVERY_SYSTEM_DVBS2 =
