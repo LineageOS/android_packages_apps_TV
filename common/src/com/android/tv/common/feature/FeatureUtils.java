@@ -77,7 +77,7 @@ public class FeatureUtils {
      */
     public static Feature aospFeature(
             final Feature aospFeature) {
-        return aospFeature;
+            return aospFeature;
     }
 
     /**
