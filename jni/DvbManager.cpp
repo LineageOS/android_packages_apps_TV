@@ -82,6 +82,10 @@ bool DvbManager::isFeLocked() {
     return false;
 }
 
+int DvbManager::getSignalStrength() {
+    return -1;
+}
+
 int DvbManager::tune(JNIEnv *env, jobject thiz,
         const int frequency, const char *modulationStr, int timeout_ms) {
     resetExceptFe();

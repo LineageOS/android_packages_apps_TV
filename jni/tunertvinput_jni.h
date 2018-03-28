@@ -106,6 +106,15 @@ Java_com_android_tv_tuner_TunerHal_nativeGetDeliverySystemType
 
 /*
  * Class:     com_android_tv_tuner_TunerHal
+ * Method:    nativeGetSignalStrength
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL
+Java_com_android_tv_tuner_TunerHal_nativeGetSignalStrength
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_android_tv_tuner_TunerHal
  * Method:    nativeStopTune
  * Signature: (J)V
  */

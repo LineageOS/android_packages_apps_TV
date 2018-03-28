@@ -85,6 +85,7 @@ public:
     void closeAllDvbPidFilter();
     void setHasPendingTune(bool hasPendingTune);
     int getDeliverySystemType(JNIEnv *env, jobject thiz);
+    int getSignalStrength();
 
 private:
     int openDvbFe(JNIEnv *env, jobject thiz);
