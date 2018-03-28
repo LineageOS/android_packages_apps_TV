@@ -46,7 +46,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
@@ -60,6 +59,7 @@ import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.ui.TvTransitionManager.TransitionLayout;
 import com.android.tv.ui.hideable.AutoHideScheduler;
+import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import com.android.tv.util.images.ImageCache;
 import com.android.tv.util.images.ImageLoader;
@@ -81,6 +81,12 @@ public class ChannelBannerView extends FrameLayout
         Provider<Channel> getCurrentChannelProvider();
 
         Provider<Program> getCurrentProgramProvider();
+
+        TvOverlayManager getOverlayManagerSingleton();
+
+        TvInputManagerHelper getTvInputManagerHelperSingleton();
+
+        Provider<Long> getCurrentPlayingPositionProvider();
     }
 
     /**
@@ -103,10 +109,13 @@ public class ChannelBannerView extends FrameLayout
     private Program mLockedChannelProgram;
     private static String sClosedCaptionMark;
 
-    private final MainActivity mMainActivity;
     private final Resources mResources;
     private final Provider<Channel> mCurrentChannelProvider;
     private final Provider<Program> mCurrentProgramProvider;
+    private final Provider<Long> mCurrentPlayingPositionProvider;
+    private final TvInputManagerHelper mTvInputManagerHelper;
+    private final TvOverlayManager mTvOverlayManager;
+
     private View mChannelView;
 
     private TextView mChannelNumberTextView;
@@ -184,12 +193,13 @@ public class ChannelBannerView extends FrameLayout
         super(context, attrs, defStyle);
         mResources = getResources();
 
-        // TODO(nchalko): don't depend directly on MainActivity
-        mMainActivity = (MainActivity) context;
         @SuppressWarnings("unchecked") // injection
         MySingletons singletons = ((HasSingletons<MySingletons>) context).singletons();
         mCurrentChannelProvider = singletons.getCurrentChannelProvider();
         mCurrentProgramProvider = singletons.getCurrentProgramProvider();
+        mCurrentPlayingPositionProvider = singletons.getCurrentPlayingPositionProvider();
+        mTvInputManagerHelper = singletons.getTvInputManagerHelperSingleton();
+        mTvOverlayManager = singletons.getOverlayManagerSingleton();
 
         mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);
         mChannelLogoImageViewWidth =
@@ -212,13 +222,13 @@ public class ChannelBannerView extends FrameLayout
 
         mProgramDescriptionFadeInAnimator =
                 AnimatorInflater.loadAnimator(
-                        mMainActivity, R.animator.channel_banner_program_description_fade_in);
+                    context, R.animator.channel_banner_program_description_fade_in);
         mProgramDescriptionFadeOutAnimator =
                 AnimatorInflater.loadAnimator(
-                        mMainActivity, R.animator.channel_banner_program_description_fade_out);
+                    context, R.animator.channel_banner_program_description_fade_out);
 
-        if (CommonFeatures.DVR.isEnabled(mMainActivity)) {
-            mDvrManager = TvSingletons.getSingletons(mMainActivity).getDvrManager();
+        if (CommonFeatures.DVR.isEnabled(context)) {
+            mDvrManager = TvSingletons.getSingletons(context).getDvrManager();
         } else {
             mDvrManager = null;
         }
@@ -357,14 +367,12 @@ public class ChannelBannerView extends FrameLayout
 
     private void hide() {
         mCurrentHeight = 0;
-        mMainActivity
-                .getOverlayManager()
-                .hideOverlays(
-                        TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
-                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
-                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
-                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
-                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
+        mTvOverlayManager.hideOverlays(
+            TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
+                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
+                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
+                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
+                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
     }
 
     /**
@@ -384,10 +392,10 @@ public class ChannelBannerView extends FrameLayout
             updateText(
                     mResolutionTextView,
                     Utils.getVideoDefinitionLevelString(
-                            mMainActivity, info.getVideoDefinitionLevel()));
+                        getContext(), info.getVideoDefinitionLevel()));
             updateText(
                     mAudioChannelTextView,
-                    Utils.getAudioChannelString(mMainActivity, info.getAudioChannelCount()));
+                    Utils.getAudioChannelString(getContext(), info.getAudioChannelCount()));
         } else {
             // Channel change has been requested. But, StreamInfo hasn't been updated yet.
             mClosedCaptionTextView.setVisibility(View.GONE);
@@ -435,8 +443,7 @@ public class ChannelBannerView extends FrameLayout
         }
         mChannelNumberTextView.setText(displayNumber);
         mChannelNameTextView.setText(displayName);
-        TvInputInfo info =
-                mMainActivity.getTvInputManagerHelper().getTvInputInfo(getCurrentInputId());
+        TvInputInfo info = mTvInputManagerHelper.getTvInputInfo(getCurrentInputId());
         if (info == null
                 || !ImageLoader.loadBitmap(
                         createTvInputLogoLoaderCallback(info, this),
@@ -730,7 +737,7 @@ public class ChannelBannerView extends FrameLayout
             Program program, @Nullable ScheduledRecording recording) {
         long programStartTime = program.getStartTimeUtcMillis();
         long programEndTime = program.getEndTimeUtcMillis();
-        long currentPosition = mMainActivity.getCurrentPlayingPosition();
+        long currentPosition = mCurrentPlayingPositionProvider.get();
         updateRecordingIndicator(recording);
         if (recording != null) {
             // Recording now. Use recording-style progress bar.
@@ -751,12 +758,12 @@ public class ChannelBannerView extends FrameLayout
         if (recording != null) {
             if (mRemainingTimeView.getVisibility() == View.GONE) {
                 mRecordingIndicatorView.setText(
-                        mMainActivity
+                        getContext()
                                 .getResources()
                                 .getString(
                                         R.string.dvr_recording_till_format,
                                         DateUtils.formatDateTime(
-                                                mMainActivity,
+                                            getContext(),
                                                 recording.getEndTimeMs(),
                                                 DateUtils.FORMAT_SHOW_TIME)));
                 mRecordingIndicatorView.setCompoundDrawablePadding(mRecordingIconPadding);
@@ -771,7 +778,7 @@ public class ChannelBannerView extends FrameLayout
     }
 
     private boolean isCurrentProgram(ScheduledRecording recording, Program program) {
-        long currentPosition = mMainActivity.getCurrentPlayingPosition();
+        long currentPosition = mCurrentPlayingPositionProvider.get();
         return (recording.getType() == ScheduledRecording.TYPE_PROGRAM
                         && recording.getProgramId() == program.getId())
                 || (recording.getType() == ScheduledRecording.TYPE_TIMED

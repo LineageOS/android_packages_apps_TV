@@ -2921,5 +2921,20 @@ public class MainActivity extends Activity
         public Provider<Program> getCurrentProgramProvider() {
             return () -> getCurrentProgram();
         }
+
+        @Override
+        public TvOverlayManager getOverlayManagerSingleton(){
+            return getOverlayManager();
+        }
+
+        @Override
+        public TvInputManagerHelper getTvInputManagerHelperSingleton(){
+            return getTvInputManagerHelper();
+        }
+
+        @Override
+        public Provider<Long> getCurrentPlayingPositionProvider(){
+            return () -> getCurrentPlayingPosition();
+        }
     }
 }
