@@ -51,6 +51,7 @@ import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.data.Program;
 import com.android.tv.data.StreamInfo;
 import com.android.tv.data.api.Channel;
@@ -64,6 +65,7 @@ import com.android.tv.util.images.ImageCache;
 import com.android.tv.util.images.ImageLoader;
 import com.android.tv.util.images.ImageLoader.ImageLoaderCallback;
 import com.android.tv.util.images.ImageLoader.LoadTvInputLogoTask;
+import javax.inject.Provider;
 
 /** A view to render channel banner. */
 public class ChannelBannerView extends FrameLayout
@@ -73,6 +75,13 @@ public class ChannelBannerView extends FrameLayout
 
     /** Show all information at the channel banner. */
     public static final int LOCK_NONE = 0;
+
+    /** Singletons needed for this class. */
+    public interface MySingletons {
+        Provider<Channel> getCurrentChannelProvider();
+
+        Provider<Program> getCurrentProgramProvider();
+    }
 
     /**
      * Lock program details at the channel banner. This is used when a content is locked so we don't
@@ -96,6 +105,8 @@ public class ChannelBannerView extends FrameLayout
 
     private final MainActivity mMainActivity;
     private final Resources mResources;
+    private final Provider<Channel> mCurrentChannelProvider;
+    private final Provider<Program> mCurrentProgramProvider;
     private View mChannelView;
 
     private TextView mChannelNumberTextView;
@@ -175,6 +186,10 @@ public class ChannelBannerView extends FrameLayout
 
         // TODO(nchalko): don't depend directly on MainActivity
         mMainActivity = (MainActivity) context;
+        @SuppressWarnings("unchecked") // injection
+        MySingletons singletons = ((HasSingletons<MySingletons>) context).singletons();
+        mCurrentChannelProvider = singletons.getCurrentChannelProvider();
+        mCurrentProgramProvider = singletons.getCurrentProgramProvider();
 
         mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);
         mChannelLogoImageViewWidth =
@@ -312,7 +327,7 @@ public class ChannelBannerView extends FrameLayout
      */
     public void setBlockingContentRating(TvContentRating rating) {
         mBlockingContentRating = rating;
-        updateProgramRatings(mMainActivity.getCurrentProgram());
+        updateProgramRatings(mCurrentProgramProvider.get());
     }
 
     /**
@@ -330,13 +345,13 @@ public class ChannelBannerView extends FrameLayout
                 mAutoHideScheduler.schedule(mShowDurationMillis);
             }
             mBlockingContentRating = null;
-            mCurrentChannel = mMainActivity.getCurrentChannel();
+            mCurrentChannel = mCurrentChannelProvider.get();
             mCurrentChannelLogoExists =
                     mCurrentChannel != null && mCurrentChannel.channelLogoExists();
             updateStreamInfo(null);
             updateChannelInfo();
         }
-        updateProgramInfo(mMainActivity.getCurrentProgram());
+        updateProgramInfo(mCurrentProgramProvider.get());
         mUpdateOnTune = false;
     }
 
@@ -442,7 +457,7 @@ public class ChannelBannerView extends FrameLayout
     }
 
     private String getCurrentInputId() {
-        Channel channel = mMainActivity.getCurrentChannel();
+        Channel channel = mCurrentChannelProvider.get();
         return channel != null ? channel.getInputId() : null;
     }
 

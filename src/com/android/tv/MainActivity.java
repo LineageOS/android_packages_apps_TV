@@ -64,6 +64,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import com.android.tv.MainActivity.MySingletons;
 import com.android.tv.analytics.SendChannelStatusRunnable;
 import com.android.tv.analytics.SendConfigInfoRunnable;
 import com.android.tv.analytics.Tracker;
@@ -74,6 +75,7 @@ import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.memory.MemoryManageable;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.ui.setup.OnActionClickListener;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.ContentUriUtils;
@@ -150,12 +152,19 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Provider;
 
 /** The main activity for the Live TV app. */
 public class MainActivity extends Activity
-        implements OnActionClickListener, OnPinCheckedListener, ChannelChanger {
+        implements OnActionClickListener,
+                OnPinCheckedListener,
+                ChannelChanger,
+                HasSingletons<MySingletons> {
     private static final String TAG = "MainActivity";
     private static final boolean DEBUG = false;
+
+    /** Singletons needed for this class. */
+    public interface MySingletons extends ChannelBannerView.MySingletons {}
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -232,6 +241,8 @@ public class MainActivity extends Activity
 
     private static final int UNDEFINED_TRACK_INDEX = -1;
     private static final long START_UP_TIMER_RESET_THRESHOLD_MS = TimeUnit.SECONDS.toMillis(3);
+
+    private final MySingletonsImpl mMySingletons = new MySingletonsImpl();
 
     private AccessibilityManager mAccessibilityManager;
     private ChannelDataManager mChannelDataManager;
@@ -433,6 +444,11 @@ public class MainActivity extends Activity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ChannelPreviewUpdater.getInstance(this).updatePreviewDataForChannelsImmediately();
         }
+    }
+
+    @Override
+    public MySingletons singletons() {
+        return mMySingletons;
     }
 
     @Override
@@ -2891,6 +2907,19 @@ public class MainActivity extends Activity
             }
             mOverlayManager.setBlockingContentRating(null);
             mMediaSessionWrapper.update(false, getCurrentChannel(), getCurrentProgram());
+        }
+    }
+
+    private class MySingletonsImpl implements MySingletons {
+
+        @Override
+        public Provider<Channel> getCurrentChannelProvider() {
+            return () -> getCurrentChannel();
+        }
+
+        @Override
+        public Provider<Program> getCurrentProgramProvider() {
+            return () -> getCurrentProgram();
         }
     }
 }
