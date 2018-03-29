@@ -2923,8 +2923,8 @@ public class MainActivity extends Activity
         }
 
         @Override
-        public TvOverlayManager getOverlayManagerSingleton(){
-            return getOverlayManager();
+        public Provider<TvOverlayManager> getOverlayManagerProvider(){
+            return () -> getOverlayManager();
         }
 
         @Override

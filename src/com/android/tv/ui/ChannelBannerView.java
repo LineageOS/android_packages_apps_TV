@@ -82,7 +82,7 @@ public class ChannelBannerView extends FrameLayout
 
         Provider<Program> getCurrentProgramProvider();
 
-        TvOverlayManager getOverlayManagerSingleton();
+        Provider<TvOverlayManager> getOverlayManagerProvider();
 
         TvInputManagerHelper getTvInputManagerHelperSingleton();
 
@@ -114,7 +114,8 @@ public class ChannelBannerView extends FrameLayout
     private final Provider<Program> mCurrentProgramProvider;
     private final Provider<Long> mCurrentPlayingPositionProvider;
     private final TvInputManagerHelper mTvInputManagerHelper;
-    private final TvOverlayManager mTvOverlayManager;
+    // TvOverlayManager is always created after ChannelBannerView
+    private final Provider<TvOverlayManager> mTvOverlayManager;
 
     private View mChannelView;
 
@@ -199,7 +200,7 @@ public class ChannelBannerView extends FrameLayout
         mCurrentProgramProvider = singletons.getCurrentProgramProvider();
         mCurrentPlayingPositionProvider = singletons.getCurrentPlayingPositionProvider();
         mTvInputManagerHelper = singletons.getTvInputManagerHelperSingleton();
-        mTvOverlayManager = singletons.getOverlayManagerSingleton();
+        mTvOverlayManager = singletons.getOverlayManagerProvider();
 
         mShowDurationMillis = mResources.getInteger(R.integer.channel_banner_show_duration);
         mChannelLogoImageViewWidth =
@@ -367,7 +368,7 @@ public class ChannelBannerView extends FrameLayout
 
     private void hide() {
         mCurrentHeight = 0;
-        mTvOverlayManager.hideOverlays(
+        mTvOverlayManager.get().hideOverlays(
             TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
                 | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
                 | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
