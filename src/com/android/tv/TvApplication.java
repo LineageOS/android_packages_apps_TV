@@ -34,6 +34,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.common.feature.CommonFeatures;
@@ -118,6 +119,12 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
 
     @Override
     public void onCreate() {
+        if (getSystemService(TvInputManager.class) == null) {
+            String msg = "Not an Android TV device.";
+            Toast.makeText(this, msg, Toast.LENGTH_LONG);
+            Log.wtf(TAG, msg);
+            throw new IllegalStateException(msg);
+        }
         super.onCreate();
         SharedPreferencesUtils.initialize(
                 this,
