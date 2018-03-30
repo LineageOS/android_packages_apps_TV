@@ -262,22 +262,22 @@ public class ChannelBannerView extends FrameLayout
 
         mChannelView = findViewById(R.id.channel_banner_view);
 
-        mChannelNumberTextView = (TextView) findViewById(R.id.channel_number);
-        mChannelLogoImageView = (ImageView) findViewById(R.id.channel_logo);
-        mProgramTextView = (TextView) findViewById(R.id.program_text);
-        mTvInputLogoImageView = (ImageView) findViewById(R.id.tvinput_logo);
-        mChannelNameTextView = (TextView) findViewById(R.id.channel_name);
-        mProgramTimeTextView = (TextView) findViewById(R.id.program_time_text);
-        mRemainingTimeView = (ProgressBar) findViewById(R.id.remaining_time);
-        mRecordingIndicatorView = (TextView) findViewById(R.id.recording_indicator);
-        mClosedCaptionTextView = (TextView) findViewById(R.id.closed_caption);
-        mAspectRatioTextView = (TextView) findViewById(R.id.aspect_ratio);
-        mResolutionTextView = (TextView) findViewById(R.id.resolution);
-        mAudioChannelTextView = (TextView) findViewById(R.id.audio_channel);
-        mContentRatingsTextViews[0] = (TextView) findViewById(R.id.content_ratings_0);
-        mContentRatingsTextViews[1] = (TextView) findViewById(R.id.content_ratings_1);
-        mContentRatingsTextViews[2] = (TextView) findViewById(R.id.content_ratings_2);
-        mProgramDescriptionTextView = (TextView) findViewById(R.id.program_description);
+        mChannelNumberTextView = findViewById(R.id.channel_number);
+        mChannelLogoImageView = findViewById(R.id.channel_logo);
+        mProgramTextView = findViewById(R.id.program_text);
+        mTvInputLogoImageView = findViewById(R.id.tvinput_logo);
+        mChannelNameTextView = findViewById(R.id.channel_name);
+        mProgramTimeTextView = findViewById(R.id.program_time_text);
+        mRemainingTimeView = findViewById(R.id.remaining_time);
+        mRecordingIndicatorView = findViewById(R.id.recording_indicator);
+        mClosedCaptionTextView = findViewById(R.id.closed_caption);
+        mAspectRatioTextView = findViewById(R.id.aspect_ratio);
+        mResolutionTextView = findViewById(R.id.resolution);
+        mAudioChannelTextView = findViewById(R.id.audio_channel);
+        mContentRatingsTextViews[0] = findViewById(R.id.content_ratings_0);
+        mContentRatingsTextViews[1] = findViewById(R.id.content_ratings_1);
+        mContentRatingsTextViews[2] = findViewById(R.id.content_ratings_2);
+        mProgramDescriptionTextView = findViewById(R.id.program_description);
         mAnchorView = findViewById(R.id.anchor);
 
         mProgramDescriptionFadeInAnimator.setTarget(mProgramDescriptionTextView);
