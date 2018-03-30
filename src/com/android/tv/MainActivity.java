@@ -2936,5 +2936,10 @@ public class MainActivity extends Activity
         public Provider<Long> getCurrentPlayingPositionProvider(){
             return () -> getCurrentPlayingPosition();
         }
+
+        @Override
+        public DvrManager getDvrManagerSingleton() {
+            return TvSingletons.getSingletons(getApplicationContext()).getDvrManager();
+        }
     }
 }
