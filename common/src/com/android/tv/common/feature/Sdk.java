@@ -29,7 +29,7 @@ public final class Sdk {
 
     public static final Feature AT_LEAST_O = new AtLeast(VERSION_CODES.O);
 
-    public static final Feature AT_LEAST_P = new AtLeast(VERSION_CODES.P);
+    public static final Feature AT_LEAST_P = new AtLeast(VERSION_CODES.P); //AOSP_OC:strip_line
 
     private static final class AtLeast implements Feature {
 
