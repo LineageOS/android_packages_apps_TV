@@ -221,7 +221,6 @@ public class PinDialogFragment extends SafeDismissDialogFragment {
             mWrongPinView.setVisibility(View.INVISIBLE);
             mEnterPinView.setVisibility(View.VISIBLE);
             mWrongPinCount = 0;
-            showToast(R.string.pin_toast_wrong);
         } else {
             mEnterPinView.setVisibility(View.INVISIBLE);
             mWrongPinView.setVisibility(View.VISIBLE);

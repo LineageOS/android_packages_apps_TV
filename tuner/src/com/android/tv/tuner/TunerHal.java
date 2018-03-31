@@ -293,6 +293,8 @@ public abstract class TunerHal implements AutoCloseable {
 
     protected native int nativeGetDeliverySystemType(long deviceId);
 
+    protected native int nativeGetSignalStrength(long deviceId);
+
     /**
      * Stops current tuning. The tuner device and pid filters will be reset by this call and make
      * the tuner ready to accept another tune request.

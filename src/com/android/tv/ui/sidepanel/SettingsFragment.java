@@ -16,8 +16,6 @@
 
 package com.android.tv.ui.sidepanel;
 
-import static com.android.tv.TvFeatures.TUNER;
-
 import android.app.ApplicationErrorReport;
 import android.content.Intent;
 import android.media.tv.TvInputInfo;
@@ -26,6 +24,7 @@ import android.widget.Toast;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvApplication;
+import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.customization.CustomizationManager;
@@ -127,7 +126,7 @@ public class SettingsFragment extends SideFragment {
             // It's TBD.
         }
         boolean showTrickplaySetting = false;
-        if (TUNER.isEnabled(getContext())) {
+        if (TvFeatures.TUNER.isEnabled(getContext())) {
             for (TvInputInfo inputInfo :
                     TvSingletons.getSingletons(getContext())
                             .getTvInputManagerHelper()

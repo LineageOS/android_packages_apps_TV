@@ -25,10 +25,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
-
-import com.android.tv.TvFeatures;
 import com.android.tv.data.BaseProgram;
-
+import com.android.tv.features.PartnerFeatures;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,12 +46,12 @@ public final class TvProviderUtils {
     /**
      * Checks whether a table contains a series ID column.
      *
-     * This method is different from {@link #getProgramHasSeriesIdColumn()} and
-     * {@link #getRecordedProgramHasSeriesIdColumn()} because it may access to database, so it
-     * should be run in worker thread.
+     * <p>This method is different from {@link #getProgramHasSeriesIdColumn()} and {@link
+     * #getRecordedProgramHasSeriesIdColumn()} because it may access to database, so it should be
+     * run in worker thread.
      *
      * @return {@code true} if the corresponding table contains a series ID column; {@code false}
-     * otherwise.
+     *     otherwise.
      */
     @WorkerThread
     public static synchronized boolean checkSeriesIdColumn(Context context, Uri uri) {
@@ -62,7 +60,7 @@ public final class TvProviderUtils {
             return false;
         }
         return (Utils.isRecordedProgramsUri(uri) && checkRecordedProgramTable(context, uri))
-                        || (Utils.isProgramsUri(uri) && checkProgramTable(context, uri));
+                || (Utils.isProgramsUri(uri) && checkProgramTable(context, uri));
     }
 
     @WorkerThread
@@ -113,8 +111,7 @@ public final class TvProviderUtils {
      */
     private static Set<String> getExistingColumns(Context context, Uri uri) {
         Bundle result =
-                context
-                        .getContentResolver()
+                context.getContentResolver()
                         .call(uri, TvContract.METHOD_GET_COLUMNS, uri.toString(), null);
         if (result != null) {
             String[] columns = result.getStringArray(TvContract.EXTRA_EXISTING_COLUMN_NAMES);
@@ -136,8 +133,13 @@ public final class TvProviderUtils {
         extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, EXTRA_PROGRAM_COLUMN);
         extra.putCharSequence(TvContract.EXTRA_DATA_TYPE, "TEXT");
         // If the add operation fails, the following just returns null without crashing.
-        Bundle allColumns = context.getContentResolver().call(
-                contentUri, TvContract.METHOD_ADD_COLUMN, contentUri.toString(), extra);
+        Bundle allColumns =
+                context.getContentResolver()
+                        .call(
+                                contentUri,
+                                TvContract.METHOD_ADD_COLUMN,
+                                contentUri.toString(),
+                                extra);
         if (allColumns == null) {
             Log.w(TAG, "Adding new column failed. Uri=" + contentUri);
         }

@@ -16,9 +16,7 @@
 
 package com.android.tv.common.feature;
 
-import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
-import static com.android.tv.common.feature.FeatureUtils.AND;
-import static com.android.tv.common.feature.FeatureUtils.OR;
+import static com.android.tv.common.feature.FeatureUtils.and;
 import static com.android.tv.common.feature.TestableFeature.createTestableFeature;
 
 import android.content.Context;
@@ -26,7 +24,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.common.config.api.RemoteConfig.HasRemoteConfig;
 import com.android.tv.common.experiments.Experiments;
-
 import com.android.tv.common.util.LocationUtils;
 
 /**
@@ -46,7 +43,7 @@ public class CommonFeatures {
      * <p>DVR API is introduced in N, it only works when app runs as a system app.
      */
     public static final TestableFeature DVR =
-            createTestableFeature(AND(Sdk.AT_LEAST_N, SystemAppFeature.SYSTEM_APP_FEATURE));
+            createTestableFeature(and(Sdk.AT_LEAST_N, SystemAppFeature.SYSTEM_APP_FEATURE));
 
     /**
      * ENABLE_RECORDING_REGARDLESS_OF_STORAGE_STATUS
@@ -55,14 +52,6 @@ public class CommonFeatures {
      */
     public static final Feature FORCE_RECORDING_UNTIL_NO_SPACE =
             PropertyFeature.create("force_recording_until_no_space", false);
-
-    public static final Feature TUNER =
-            OR(
-                    ENG_ONLY_FEATURE,
-                    // This is special handling just for USB Tuner.
-                    // It does not require any N API's but relies on a improvements in N for AC3
-                    // support
-                    Sdk.AT_LEAST_N);
 
     /** Show postal code fragment before channel scan. */
     public static final Feature ENABLE_CLOUD_EPG_REGION =
