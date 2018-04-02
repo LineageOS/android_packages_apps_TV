@@ -16,6 +16,7 @@
 
 package com.android.tv.common.feature;
 
+import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.and;
 import static com.android.tv.common.feature.TestableFeature.createTestableFeature;
 
@@ -76,4 +77,8 @@ public class CommonFeatures {
                     return false;
                 }
             };
+
+    // TODO(b/74197177): remove when UI and API finalized.
+    /** Show channel signal strength. */
+    public static final Feature TUNER_SIGNAL_STRENGTH = ENG_ONLY_FEATURE;
 }

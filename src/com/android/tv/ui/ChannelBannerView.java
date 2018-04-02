@@ -48,6 +48,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.android.tv.R;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.compat.TvInputConstantCompat;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.data.Program;
@@ -124,6 +125,7 @@ public class ChannelBannerView extends FrameLayout
     private ImageView mChannelLogoImageView;
     private TextView mProgramTextView;
     private ImageView mTvInputLogoImageView;
+    private ImageView mChannelSignalStrengthView;
     private TextView mChannelNameTextView;
     private TextView mProgramTimeTextView;
     private ProgressBar mRemainingTimeView;
@@ -266,6 +268,7 @@ public class ChannelBannerView extends FrameLayout
         mChannelLogoImageView = findViewById(R.id.channel_logo);
         mProgramTextView = findViewById(R.id.program_text);
         mTvInputLogoImageView = findViewById(R.id.tvinput_logo);
+        mChannelSignalStrengthView = findViewById(R.id.channel_signal_strength);
         mChannelNameTextView = findViewById(R.id.channel_name);
         mProgramTimeTextView = findViewById(R.id.program_time_text);
         mRemainingTimeView = findViewById(R.id.remaining_time);
@@ -526,6 +529,34 @@ public class ChannelBannerView extends FrameLayout
                 view.updateLogo(logo);
             }
         };
+    }
+
+    public void updateChannelSignalStrengthView(int value) {
+        int resId = signalStrenghtToResId(value);
+        if (resId != 0) {
+            mChannelSignalStrengthView.setVisibility(View.VISIBLE);
+            mChannelSignalStrengthView.setImageResource(resId);
+        } else {
+            mChannelSignalStrengthView.setVisibility(View.GONE);
+        }
+    }
+
+    private int signalStrenghtToResId(int value) {
+        int signal = 0;
+        if (value >= 0 && value <= 100) {
+            if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND) {
+                signal = R.drawable.quantum_ic_signal_cellular_0_bar_white_24;
+            } else if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND) {
+                signal = R.drawable.quantum_ic_signal_cellular_1_bar_white_24;
+            } else if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND) {
+                signal = R.drawable.quantum_ic_signal_cellular_2_bar_white_24;
+            } else if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND) {
+                signal = R.drawable.quantum_ic_signal_cellular_3_bar_white_24;
+            } else {
+                signal = R.drawable.quantum_ic_signal_cellular_4_bar_white_24;
+            }
+        }
+        return signal;
     }
 
     private void updateLogo(@Nullable Bitmap logo) {

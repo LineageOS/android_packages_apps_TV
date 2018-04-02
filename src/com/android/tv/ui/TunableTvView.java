@@ -65,6 +65,7 @@ import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonConstants;
+import com.android.tv.common.compat.TvInputConstantCompat;
 import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.util.CommonUtils;
@@ -189,6 +190,8 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     private final TvInputManagerHelper mInputManager;
     private final ConnectivityManager mConnectivityManager;
     private final InputSessionManager mInputSessionManager;
+
+    private int mChannelSignalStrength;
 
     private final TvInputCallbackCompat mCallback =
             new TvInputCallbackCompat() {
@@ -441,6 +444,12 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                     boolean available = status == TvInputManager.TIME_SHIFT_STATUS_AVAILABLE;
                     setTimeShiftAvailable(available);
                 }
+
+                @Override
+                public void onSignalStrength(String inputId, int value) {
+                    mChannelSignalStrength = value;
+                    mOnTuneListener.onChannelSignalStrength();
+                }
             };
 
     public TunableTvView(Context context) {
@@ -507,7 +516,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     public void initialize(
             ProgramDataManager programDataManager, TvInputManagerHelper tvInputManagerHelper) {
-        mTvView = (AppLayerTvView) findViewById(R.id.tv_view);
+        mTvView = findViewById(R.id.tv_view);
         mProgramDataManager = programDataManager;
         mInputManagerHelper = tvInputManagerHelper;
         mContentRatingsManager = tvInputManagerHelper.getContentRatingsManager();
@@ -596,6 +605,14 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     /** Sets if the TunableTvView is under shrunken. */
     public void setIsUnderShrunken(boolean isUnderShrunken) {
         mIsUnderShrunken = isUnderShrunken;
+    }
+
+    public int getChannelSignalStrength() {
+        return mChannelSignalStrength;
+    }
+
+    public void resetChannelSignalStrength() {
+        mChannelSignalStrength = TvInputConstantCompat.SIGNAL_STRENGTH_NOT_USED;
     }
 
     @Override
@@ -779,6 +796,8 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
         void onContentBlocked();
 
         void onContentAllowed();
+
+        void onChannelSignalStrength();
     }
 
     public void unblockContent(TvContentRating rating) {

@@ -1669,6 +1669,11 @@ public class MainActivity extends Activity
             return;
         }
         mTunePending = false;
+        if (CommonFeatures.TUNER_SIGNAL_STRENGTH.isEnabled(this)) {
+            mTvView.resetChannelSignalStrength();
+            mOverlayManager.updateChannelBannerAndShowIfNeeded(
+                TvOverlayManager.UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH);
+        }
         final Channel channel = mChannelTuner.getCurrentChannel();
         SoftPreconditions.checkState(channel != null);
         if (channel == null) {
@@ -2907,6 +2912,14 @@ public class MainActivity extends Activity
             }
             mOverlayManager.setBlockingContentRating(null);
             mMediaSessionWrapper.update(false, getCurrentChannel(), getCurrentProgram());
+        }
+
+        @Override
+        public void onChannelSignalStrength() {
+            if (CommonFeatures.TUNER_SIGNAL_STRENGTH.isEnabled(getApplicationContext())) {
+                mOverlayManager.updateChannelBannerAndShowIfNeeded(
+                    TvOverlayManager.UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH);
+            }
         }
     }
 
