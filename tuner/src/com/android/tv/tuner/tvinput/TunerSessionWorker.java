@@ -34,6 +34,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.AnyThread;
 import android.support.annotation.MainThread;
+import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.text.Html;
 import android.text.TextUtils;
@@ -220,14 +221,23 @@ public class TunerSessionWorker
 
     public TunerSessionWorker(
             Context context, ChannelDataManager channelDataManager, TunerSession tunerSession) {
+        this(context, channelDataManager, tunerSession, null);
+    }
+
+    @VisibleForTesting
+    protected TunerSessionWorker(Context context, ChannelDataManager channelDataManager,
+        TunerSession tunerSession, Handler handler) {
         if (DEBUG) Log.d(TAG, "TunerSessionWorker created");
         mContext = context;
-
-        // HandlerThread should be set up before it is registered as a listener in the all other
-        // components.
-        HandlerThread handlerThread = new HandlerThread(TAG);
-        handlerThread.start();
-        mHandler = new Handler(handlerThread.getLooper(), this);
+        if (handler != null) {
+            mHandler = handler;
+        } else {
+            // HandlerThread should be set up before it is registered as a listener in the all other
+            // components.
+            HandlerThread handlerThread = new HandlerThread(TAG);
+            handlerThread.start();
+            mHandler = new Handler(handlerThread.getLooper(), this);
+        }
         mSession = tunerSession;
         mChannelDataManager = channelDataManager;
         mChannelDataManager.setListener(this);
@@ -1284,6 +1294,7 @@ public class TunerSessionWorker
         if (capabilities == null) {
             Log.w(TAG, "No Audio Capabilities");
         }
+        mSourceManager.setKeepTuneStatus(true);
         long now = System.currentTimeMillis();
         if (mTrickplayModeCustomization == CustomizationManager.TRICKPLAY_MODE_ENABLED
                 && mTrickplaySetting == TunerPreferences.TRICKPLAY_SETTING_NOT_SET) {
@@ -1324,6 +1335,12 @@ public class TunerSessionWorker
                         this);
         Log.i(TAG, "Passthrough AC3 renderer");
         if (DEBUG) Log.d(TAG, "ExoPlayer created");
+        player.setCaptionServiceNumber(Cea708Data.EMPTY_SERVICE_NUMBER);
+        player.setVideoEventListener(this);
+        player.setCaptionServiceNumber(
+            mCaptionTrack != null
+                ? mCaptionTrack.serviceNumber
+                : Cea708Data.EMPTY_SERVICE_NUMBER);
         return player;
     }
 
@@ -1592,18 +1609,7 @@ public class TunerSessionWorker
     }
 
     private void preparePlayback() {
-        SoftPreconditions.checkState(mPlayer == null);
-        if (mChannel == null && mRecordingId == null) {
-            return;
-        }
-        mSourceManager.setKeepTuneStatus(true);
         MpegTsPlayer player = createPlayer(mAudioCapabilities);
-        player.setCaptionServiceNumber(Cea708Data.EMPTY_SERVICE_NUMBER);
-        player.setVideoEventListener(this);
-        player.setCaptionServiceNumber(
-                mCaptionTrack != null
-                        ? mCaptionTrack.serviceNumber
-                        : Cea708Data.EMPTY_SERVICE_NUMBER);
         if (!player.prepare(mContext, mChannel, mHasSoftwareAudioDecoder, this)) {
             mSourceManager.setKeepTuneStatus(false);
             player.release();
@@ -1636,9 +1642,10 @@ public class TunerSessionWorker
             timestamp = SystemClock.elapsedRealtime();
             Log.i(TAG, "[Profiler] stopPlayback() takes " + (timestamp - oldTimestamp) + " ms");
         }
-        if (mChannelBlocked || mSurface == null) {
+        if (mChannelBlocked || mSurface == null || (mChannel == null && mRecordingId == null)) {
             return;
         }
+        SoftPreconditions.checkState(mPlayer == null);
         preparePlayback();
     }
 
