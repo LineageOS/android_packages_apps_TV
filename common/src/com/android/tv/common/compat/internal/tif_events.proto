@@ -22,6 +22,7 @@ package android.tv.common.compat.internal;
 
 option java_outer_classname = "Events";
 option java_package = "com.android.tv.common.compat.internal";
+// on oc-tv-dev optimize_for = LITE_RUNTIME;
 
 // Wraps messages for sending from a session as an Event.
 message SessionEvent {

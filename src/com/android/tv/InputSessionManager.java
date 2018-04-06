@@ -35,6 +35,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
+import com.android.tv.common.compat.TvViewCompat;
 import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.data.api.Channel;
 import com.android.tv.ui.TunableTvView;
@@ -87,7 +88,7 @@ public class InputSessionManager {
     @MainThread
     @NonNull
     public TvViewSession createTvViewSession(
-            TvView tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
+            TvViewCompat tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
         TvViewSession session = new TvViewSession(tvView, tunableTvView, callback);
         mTvViewSessions.add(session);
         if (DEBUG) Log.d(TAG, "TvView session created: " + session);
@@ -237,7 +238,7 @@ public class InputSessionManager {
      */
     @MainThread
     public class TvViewSession {
-        private final TvView mTvView;
+        private final TvViewCompat mTvView;
         private final TunableTvView mTunableTvView;
         private final TvInputCallbackCompat mCallback;
         private Channel mChannel;
@@ -248,11 +249,14 @@ public class InputSessionManager {
         private boolean mTuned;
         private boolean mNeedToBeRetuned;
 
-        TvViewSession(TvView tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
-            mTvView = tvView;
-            mTunableTvView = tunableTvView;
-            mCallback = callback;
-            mTvView.setCallback(
+        TvViewSession(
+            TvViewCompat tvView,
+            TunableTvView tunableTvView,
+            TvInputCallbackCompat callback) {
+                mTvView = tvView;
+                mTunableTvView = tunableTvView;
+                mCallback = callback;
+                mTvView.setCallback(
                     new DelegateTvInputCallback(mCallback) {
                         @Override
                         public void onConnectionFailed(String inputId) {
@@ -564,6 +568,11 @@ public class InputSessionManager {
         @Override
         public void onTimeShiftStatusChanged(String inputId, int status) {
             mDelegate.onTimeShiftStatusChanged(inputId, status);
+        }
+
+        @Override
+        public void onSignalStrength(String inputId, int value) {
+            mDelegate.onSignalStrength(inputId, value);
         }
     }
 

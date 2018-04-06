@@ -176,6 +176,8 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
     public static final int UPDATE_CHANNEL_BANNER_REASON_LOCK_OR_UNLOCK = 5;
     /** Updates channel banner because of stream info updating. */
     public static final int UPDATE_CHANNEL_BANNER_REASON_UPDATE_STREAM_INFO = 6;
+    /** Updates channel banner because of channel signal updating. */
+    public static final int UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH = 7;
 
     private static final String FRAGMENT_TAG_SETUP_SOURCES = "tag_setup_sources";
     private static final String FRAGMENT_TAG_NEW_SOURCES = "tag_new_sources";
@@ -855,6 +857,10 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
                         && lockType != ChannelBannerView.LOCK_PROGRAM_DETAIL) {
                     mChannelBannerView.updateViews(false);
                 }
+            } else if (CommonFeatures.TUNER_SIGNAL_STRENGTH.isEnabled(mMainActivity)
+                        && reason == UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH) {
+                mChannelBannerView.updateChannelSignalStrengthView(
+                        mTvView.getChannelSignalStrength());
             } else {
                 mChannelBannerView.updateViews(
                         reason == UPDATE_CHANNEL_BANNER_REASON_TUNE

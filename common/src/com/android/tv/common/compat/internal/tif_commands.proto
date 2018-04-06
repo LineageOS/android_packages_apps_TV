@@ -23,6 +23,7 @@ package android.tv.common.compat.internal;
 
 option java_outer_classname = "Commands";
 option java_package = "com.android.tv.common.compat.internal";
+// on oc-tv-dev optimize_for = LITE_RUNTIME;
 
 // Wraps messages for sending to a session a private command.
 message PrivateCommand {
