@@ -144,6 +144,14 @@ public class SetupPassthroughActivity extends Activity {
             finish();
             return;
         }
+        if (mTvInputInfo == null) {
+            Log.w(TAG, "There is no input with ID "
+                + getIntent().getStringExtra(InputSetupActionUtils.EXTRA_INPUT_ID)
+                + ".");
+            setResult(resultCode, data);
+            finish();
+            return;
+        }
         TvSingletons.getSingletons(this)
                 .getSetupUtils()
                 .onTvInputSetupFinished(
