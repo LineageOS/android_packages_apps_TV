@@ -49,8 +49,8 @@ public class TvInputConstantCompat {
      * {@link TvViewCompat.TvInputCallback#onTimeShiftStatusChanged(String, int)}:
      *
      * <p>0 - 100 represents signal strength percentage. Strength is divided into 5 levels. (0 - 4)
-     * SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND is the upper boundary of level 0. [0%, 15%] And the lower
-     * boundary of level 1. (15%, 30%]
+     * SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND is the upper boundary of level 0. [0%, 20%] And the lower
+     * boundary of level 1. (20%, 40%]
      */
     public static final int SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND = 20;
 
@@ -59,8 +59,8 @@ public class TvInputConstantCompat {
      * {@link TvViewCompat.TvInputCallback#onTimeShiftStatusChanged(String, int)}:
      *
      * <p>0 - 100 represents strength percentage. Strength is divided into 5 levels. (0 - 4)
-     * SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND is the upper boundary of level 1. (15%, 30%] And the lower
-     * boundary of level 2. (30%, 45%]
+     * SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND is the upper boundary of level 1. (20%, 40%] And the lower
+     * boundary of level 2. (40%, 60%]
      */
     public static final int SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND = 40;
 
@@ -69,8 +69,8 @@ public class TvInputConstantCompat {
      * {@link TvViewCompat.TvInputCallback#onTimeShiftStatusChanged(String, int)}:
      *
      * <p>0 - 100 represents strength percentage. Strength is divided into 5 levels. (0 - 4)
-     * SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND is the upper boundary of level 3. (30%, 45%] And the lower
-     * boundary of level 3. (45%, 60%]
+     * SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND is the upper boundary of level 3. (40%, 60%] And the lower
+     * boundary of level 3. (60%, 80%]
      */
     public static final int SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND = 60;
 
@@ -79,8 +79,8 @@ public class TvInputConstantCompat {
      * {@link TvViewCompat.TvInputCallback#onTimeShiftStatusChanged(String, int)}:
      *
      * <p>0 - 100 represents strength percentage. Strength is divided into 5 levels. (0 - 4)
-     * SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND is the upper boundary of level 3. (45%, 60%] And the lower
-     * boundary of level 4. (60%, 100%]
+     * SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND is the upper boundary of level 3. (60%, 80%] And the lower
+     * boundary of level 4. (80%, 100%]
      */
     public static final int SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND = 80;
 }

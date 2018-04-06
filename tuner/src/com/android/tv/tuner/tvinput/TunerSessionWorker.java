@@ -1283,6 +1283,7 @@ public class TunerSessionWorker
     protected boolean handleSignal(int signal) {
         if (signal == TvInputConstantCompat.SIGNAL_STRENGTH_NOT_USED
             || signal == TvInputConstantCompat.SIGNAL_STRENGTH_ERROR) {
+            notifySignal(signal);
             return true;
         }
         if (signal != mSignalStrength && signal >= 0) {
