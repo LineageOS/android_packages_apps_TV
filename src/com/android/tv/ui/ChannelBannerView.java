@@ -48,7 +48,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.android.tv.R;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.compat.TvInputConstantCompat;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.data.Program;
@@ -166,6 +165,32 @@ public class ChannelBannerView extends FrameLayout
     private final int mResizeAnimDuration;
     private final int mRecordingIconPadding;
     private final Interpolator mResizeInterpolator;
+
+    /**
+     * 0 - 100 represent signal strength percentage. Strength is divided into 5 levels (0 - 4).
+     *
+     * <p>This is the upper boundary of level 0 [0%, 20%],
+     * and the lower boundary of level 1 (20%, 40%].
+     */
+    private static final int SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND = 20;
+
+    /**
+     * This is the upper boundary of level 1 (20%, 40%],
+     * and the lower boundary of level 2 (40%, 60%].
+     */
+    private static final int SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND = 40;
+
+    /**
+     * This is the upper boundary of level of level 2. (40%, 60%],
+     * and the lower boundary of level 3 (60%, 80%].
+     */
+    private static final int SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND = 60;
+
+    /**
+     * This is the upper boundary of level of level 3 (60%, 80%],
+     * and the lower boundary of level 4 (80%, 100%].
+     */
+    private static final int SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND = 80;
 
     private final AnimatorListenerAdapter mResizeAnimatorListener =
             new AnimatorListenerAdapter() {
@@ -544,13 +569,13 @@ public class ChannelBannerView extends FrameLayout
     private int signalStrenghtToResId(int value) {
         int signal = 0;
         if (value >= 0 && value <= 100) {
-            if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND) {
+            if (value <= SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND) {
                 signal = R.drawable.quantum_ic_signal_cellular_0_bar_white_24;
-            } else if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND) {
+            } else if (value <= SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND) {
                 signal = R.drawable.quantum_ic_signal_cellular_1_bar_white_24;
-            } else if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND) {
+            } else if (value <= SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND) {
                 signal = R.drawable.quantum_ic_signal_cellular_2_bar_white_24;
-            } else if (value <= TvInputConstantCompat.SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND) {
+            } else if (value <= SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND) {
                 signal = R.drawable.quantum_ic_signal_cellular_3_bar_white_24;
             } else {
                 signal = R.drawable.quantum_ic_signal_cellular_4_bar_white_24;

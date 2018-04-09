@@ -201,8 +201,7 @@ public class DvbTunerHal extends TunerHal {
      */
     private int getCurvedSignalStrength(int signalStrength) {
         /**
-         * When value < 80% of 65535, it will be recognized as level 0,
-         * which is lower than {@link TvInputConstantCompat#SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND
+         * When value < 80% of 65535, it will be recognized as level 0.
          */
         if (signalStrength < 65535 * 0.8) {
             return 0;
