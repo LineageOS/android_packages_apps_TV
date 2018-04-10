@@ -121,6 +121,11 @@ public class TunerTsStreamer implements TsStreamer {
             }
             return ret;
         }
+
+        @Override
+        public int getSignalStrength() {
+            return mTsStreamer.getSignalStrength();
+        }
     }
     /**
      * Creates {@link TsStreamer} for playing or recording the specified channel.
@@ -301,6 +306,10 @@ public class TunerTsStreamer implements TsStreamer {
                 mEventListenerActions.add(new Pair(listener, false));
             }
         }
+    }
+
+    public int getSignalStrength() {
+        return mTunerHal.getSignalStrength();
     }
 
     private class StreamingThread extends Thread {

@@ -408,7 +408,7 @@ public class Utils {
             long startUtcMillis,
             long endUtcMillis,
             boolean useShortFormat,
-            int flag) {
+            int flags) {
         return getDurationString(
                 context,
                 startUtcMillis,
@@ -416,7 +416,7 @@ public class Utils {
                 useShortFormat,
                 !isInGivenDay(baseMillis, startUtcMillis),
                 true,
-                flag);
+                flags);
     }
 
     /**
@@ -430,16 +430,20 @@ public class Utils {
             boolean useShortFormat,
             boolean showDate,
             boolean showTime,
-            int flag) {
-        flag |=
+            int flags) {
+        flags |=
                 DateUtils.FORMAT_ABBREV_MONTH
                         | ((useShortFormat) ? DateUtils.FORMAT_NUMERIC_DATE : 0);
         SoftPreconditions.checkArgument(showTime || showDate);
         if (showTime) {
-            flag |= DateUtils.FORMAT_SHOW_TIME;
+            flags |= DateUtils.FORMAT_SHOW_TIME;
         }
         if (showDate) {
-            flag |= DateUtils.FORMAT_SHOW_DATE;
+            flags |= DateUtils.FORMAT_SHOW_DATE;
+        }
+        if (!showDate || (flags & DateUtils.FORMAT_SHOW_YEAR) == 0) {
+            // year is not shown unless DateUtils.FORMAT_SHOW_YEAR is set explicitly
+            flags |= DateUtils.FORMAT_NO_YEAR;
         }
         if (startUtcMillis != endUtcMillis && useShortFormat) {
             // Do special handling for 12:00 AM when checking if it's in the given day.
@@ -451,15 +455,15 @@ public class Utils {
                 // Subtracting one day is needed because {@link DateUtils@formatDateRange}
                 // automatically shows date if the duration covers multiple days.
                 return DateUtils.formatDateRange(
-                        context, startUtcMillis, endUtcMillis - TimeUnit.DAYS.toMillis(1), flag);
+                        context, startUtcMillis, endUtcMillis - TimeUnit.DAYS.toMillis(1), flags);
             }
         }
         // Workaround of b/28740989.
         // Add 1 msec to endUtcMillis to avoid DateUtils' bug with a duration of 12:00AM~12:00AM.
-        String dateRange = DateUtils.formatDateRange(context, startUtcMillis, endUtcMillis, flag);
+        String dateRange = DateUtils.formatDateRange(context, startUtcMillis, endUtcMillis, flags);
         return startUtcMillis == endUtcMillis || dateRange.contains("–")
                 ? dateRange
-                : DateUtils.formatDateRange(context, startUtcMillis, endUtcMillis + 1, flag);
+                : DateUtils.formatDateRange(context, startUtcMillis, endUtcMillis + 1, flags);
     }
 
     /**

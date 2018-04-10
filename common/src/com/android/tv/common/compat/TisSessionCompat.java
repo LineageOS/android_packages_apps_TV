@@ -61,25 +61,16 @@ public abstract class TisSessionCompat extends Session
     /**
      * Notify the application with current signal strength.
      *
-     * <p>Prior to calling this method, the application assumes the status
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}. Right after the session is created, it
-     * is important to invoke the method with the status.
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED} if the tuner hal
-     * does not support signal strength query.
+     * <p>At each {MainActivity#tune(boolean)}, the signal strength is implicitly reset to
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}.  If a TV input supports reporting
+     * signal strength, it should set the signal strength to
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN} in
+     * {TunerSessionWorker#prepareTune(TunerChannel, String)}, until a valid strength is available.
      *
-     * <p>If the value {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN} or
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED} is reported, the
-     * application won't show signal strength on the banner.
-     *
-     * <p>If the value is between 0 - 100, which represents the strength percentage,
-     * {@link TvViewCompat.TvInputCallbackCompat#onSignalStrength} will be called.
-     *
-     * @param value The current signal strength. Should be one of the followings.
-     * <ul>
-     * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}
-     * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}
-     * <li>int between 0 - 100 inclusive
-     * </ul>
+     * @param value The current signal strength. Valid values are
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED},
+     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN},
+     * and 0 - 100 inclusive.
      */
     @Override
     public void notifySignalStrength(int value) {
