@@ -17,6 +17,7 @@
 package com.android.tv.data.epg;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -27,13 +28,17 @@ import android.preference.PreferenceManager;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.android.tv.TvFeatures;
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.Program;
+import com.android.tv.data.api.Channel;
 import com.android.tv.util.TvProviderUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** The helper class for {@link EpgFetcher} */
@@ -158,6 +163,44 @@ class EpgFetchHelper {
             Log.d(TAG, "Updated " + fetchedProgramsCount + " programs for channel " + channelId);
         }
         return updated;
+    }
+
+    @WorkerThread
+    static void updateNetworkAffiliation(Context context, Set<EpgReader.EpgChannel> channels) {
+        if (!TvFeatures.STORE_NETWORK_AFFILIATION.isEnabled(context)) {
+            return;
+        }
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        for (EpgReader.EpgChannel epgChannel : channels) {
+            if (!epgChannel.getDbUpdateNeeded()) {
+                continue;
+            }
+            Channel channel = epgChannel.getChannel();
+
+            ContentValues values = new ContentValues();
+            values.put(
+                    TvContract.Channels.COLUMN_NETWORK_AFFILIATION,
+                    channel.getNetworkAffiliation());
+            ops.add(
+                    ContentProviderOperation.newUpdate(
+                            TvContract.buildChannelUri(channel.getId()))
+                            .withValues(values)
+                            .build());
+            if (ops.size() >= BATCH_OPERATION_COUNT) {
+                try {
+                    context.getContentResolver().applyBatch(TvContract.AUTHORITY, ops);
+                } catch (RemoteException | OperationApplicationException e) {
+                    Log.e(TAG, "Failed to update channels.", e);
+                }
+                ops.clear();
+            }
+        }
+        try {
+            context.getContentResolver().applyBatch(TvContract.AUTHORITY, ops);
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e(TAG, "Failed to update channels.", e);
+        }
+
     }
 
     @WorkerThread

@@ -34,6 +34,7 @@ public abstract class EpgTestData {
             new android.support.media.tv.Channel.Builder()
                     .setDisplayName("Channel TEN")
                     .setDisplayNumber("10")
+                    .setNetworkAffiliation("Channel 10 Network Affiliation")
                     .build();
     public static final android.support.media.tv.Channel CHANNEL_11 =
             new android.support.media.tv.Channel.Builder()
@@ -177,6 +178,7 @@ public abstract class EpgTestData {
         return new ChannelImpl.Builder()
                 .setDisplayName(original.getDisplayName())
                 .setDisplayNumber(original.getDisplayNumber())
+                .setNetworkAffiliation(original.getNetworkAffiliation())
                 // TODO implement the reset
                 .build();
     }
