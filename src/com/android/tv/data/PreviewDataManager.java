@@ -21,7 +21,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -283,7 +282,7 @@ public class PreviewDataManager {
                         }
                     }
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 Log.w(TAG, "Unable to get preview data", e);
             }
             return previewData;
