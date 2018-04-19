@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.android.tv.perf;
+package com.android.tv.perf.stub;
 
 import android.app.Application;
 import android.content.Context;
+import com.android.tv.perf.PerformanceMonitor;
+import com.android.tv.perf.TimerEvent;
 
 /** Do nothing implementation of {@link PerformanceMonitor}. */
 public final class StubPerformanceMonitor implements PerformanceMonitor {
