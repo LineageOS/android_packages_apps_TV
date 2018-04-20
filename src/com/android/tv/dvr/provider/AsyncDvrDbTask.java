@@ -20,6 +20,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
@@ -179,6 +180,8 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
     /** Returns all {@link SeriesRecording}s. */
     public abstract static class AsyncDvrQuerySeriesRecordingTask
             extends AsyncDvrDbTask<Void, Void, List<SeriesRecording>> {
+        private static final String TAG = "DvrQuerySeriesRecording";
+
         public AsyncDvrQuerySeriesRecordingTask(Context context) {
             super(context);
         }
@@ -195,6 +198,8 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
                 while (c.moveToNext() && !isCancelled()) {
                     scheduledRecordings.add(SeriesRecording.fromCursor(c));
                 }
+            } catch (Exception e) {
+                Log.w(TAG, "Can't query dvr series recording data", e);
             }
             return scheduledRecordings;
         }

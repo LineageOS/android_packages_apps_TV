@@ -74,6 +74,7 @@ public final class ChannelImpl implements Channel {
         TvContract.Channels.COLUMN_APP_LINK_ICON_URI,
         TvContract.Channels.COLUMN_APP_LINK_POSTER_ART_URI,
         TvContract.Channels.COLUMN_APP_LINK_INTENT_URI,
+        TvContract.Channels.COLUMN_NETWORK_AFFILIATION,
         TvContract.Channels.COLUMN_INTERNAL_PROVIDER_FLAG2, // Only used in bundled input
     };
 
@@ -102,6 +103,7 @@ public final class ChannelImpl implements Channel {
         channel.mAppLinkIconUri = cursor.getString(index++);
         channel.mAppLinkPosterArtUri = cursor.getString(index++);
         channel.mAppLinkIntentUri = cursor.getString(index++);
+        channel.mNetworkAffiliation = cursor.getString(index++);
         if (CommonUtils.isBundledInput(channel.mInputId)) {
             channel.mRecordingProhibited = cursor.getInt(index++) != 0;
         }
@@ -146,6 +148,7 @@ public final class ChannelImpl implements Channel {
     private String mAppLinkPosterArtUri;
     private String mAppLinkIntentUri;
     private Intent mAppLinkIntent;
+    private String mNetworkAffiliation;
     private int mAppLinkType;
     private String mLogoUri;
     private boolean mRecordingProhibited;
@@ -247,6 +250,11 @@ public final class ChannelImpl implements Channel {
         return mAppLinkIntentUri;
     }
 
+    @Override
+    public String getNetworkAffiliation() {
+        return mNetworkAffiliation;
+    }
+
     /** Returns channel logo uri which is got from cloud, it's used only for ChannelLogoFetcher. */
     @Override
     public String getLogoUri() {
@@ -309,6 +317,11 @@ public final class ChannelImpl implements Channel {
     /** Sets channel logo uri which is got from cloud. */
     public void setLogoUri(String logoUri) {
         mLogoUri = logoUri;
+    }
+
+    @Override
+    public void setNetworkAffiliation(String networkAffiliation) {
+        mNetworkAffiliation = networkAffiliation;
     }
 
     /**
@@ -393,8 +406,10 @@ public final class ChannelImpl implements Channel {
             mAppLinkIconUri = channel.getAppLinkIconUri();
             mAppLinkPosterArtUri = channel.getAppLinkPosterArtUri();
             mAppLinkIntentUri = channel.getAppLinkIntentUri();
+            mNetworkAffiliation = channel.getNetworkAffiliation();
             mRecordingProhibited = channel.isRecordingProhibited();
             mChannelLogoExist = channel.channelLogoExists();
+            mNetworkAffiliation = channel.getNetworkAffiliation();
         }
     }
 
@@ -421,6 +436,7 @@ public final class ChannelImpl implements Channel {
         mAppLinkIconUri = other.mAppLinkIconUri;
         mAppLinkPosterArtUri = other.mAppLinkPosterArtUri;
         mAppLinkIntentUri = other.mAppLinkIntentUri;
+        mNetworkAffiliation = channel.mNetworkAffiliation;
         mAppLinkIntent = other.mAppLinkIntent;
         mAppLinkType = other.mAppLinkType;
         mRecordingProhibited = other.mRecordingProhibited;
@@ -540,6 +556,12 @@ public final class ChannelImpl implements Channel {
         @VisibleForTesting
         public Builder setAppLinkText(String appLinkText) {
             mChannel.mAppLinkText = appLinkText;
+            return this;
+        }
+
+        @VisibleForTesting
+        public Builder setNetworkAffiliation(String networkAffiliation) {
+            mChannel.mNetworkAffiliation = networkAffiliation;
             return this;
         }
 

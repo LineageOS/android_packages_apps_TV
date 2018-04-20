@@ -33,6 +33,8 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
+
 import com.android.tv.TvSingletons;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.util.PermissionUtils;
@@ -52,6 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** Manages teh data need to make recommendations. */
 public class RecommendationDataManager implements WatchedHistoryManager.Listener {
+    private static final String TAG = "RecommendationDataManag";
     private static final int MSG_START = 1000;
     private static final int MSG_STOP = 1001;
     private static final int MSG_UPDATE_CHANNELS = 1002;
@@ -347,6 +350,9 @@ public class RecommendationDataManager implements WatchedHistoryManager.Listener
                     history.add(createWatchedProgramFromWatchedProgramCursor(cursor));
                 } while (cursor.moveToPrevious());
             }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Error trying to load watch history from " + uri, e);
+            return;
         }
         for (WatchedProgram watchedProgram : history) {
             final ChannelRecord channelRecord =

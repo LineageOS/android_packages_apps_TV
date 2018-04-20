@@ -20,7 +20,6 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
 import com.android.tv.receiver.AudioCapabilitiesReceiver;
-import com.android.tv.ui.TunableTvView;
 import com.android.tv.ui.TunableTvViewPlayingApi;
 
 /** A helper class to help {@link MainActivity} to handle audio-related stuffs. */

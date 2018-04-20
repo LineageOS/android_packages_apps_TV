@@ -36,13 +36,16 @@ public interface EpgReader {
     /** Value class that holds a EpgChannelId and its corresponding {@link Channel} */
     @AutoValue
     abstract class EpgChannel {
-        public static EpgChannel createEpgChannel(Channel channel, String epgChannelId) {
-            return new AutoValue_EpgReader_EpgChannel(channel, epgChannelId);
+        public static EpgChannel createEpgChannel(Channel channel, String epgChannelId,
+                boolean dbUpdateNeeded) {
+            return new AutoValue_EpgReader_EpgChannel(channel, epgChannelId, dbUpdateNeeded);
         }
 
         public abstract Channel getChannel();
 
         public abstract String getEpgChannelId();
+
+        public abstract boolean getDbUpdateNeeded();
     }
 
     /** Checks if the reader is available. */

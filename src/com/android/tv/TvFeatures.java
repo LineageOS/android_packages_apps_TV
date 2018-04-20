@@ -48,6 +48,9 @@ import com.android.tv.features.PartnerFeatures;
  */
 public final class TvFeatures extends CommonFeatures {
 
+    /** When enabled store network affiliation information to TV provider */
+    public static final Feature STORE_NETWORK_AFFILIATION = ENG_ONLY_FEATURE;
+
     /** When enabled use system setting for turning on analytics. */
     public static final Feature ANALYTICS_OPT_IN =
             ExperimentFeature.from(Experiments.ENABLE_ANALYTICS_VIA_CHECKBOX);

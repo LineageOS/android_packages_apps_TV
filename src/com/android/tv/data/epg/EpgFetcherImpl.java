@@ -608,6 +608,7 @@ public class EpgFetcherImpl implements EpgFetcher {
                 Log.i(TAG, "Failed to get EPG channels for " + lineupId);
                 return REASON_NO_EPG_DATA_RETURNED;
             }
+            EpgFetchHelper.updateNetworkAffiliation(mContext, channels);
             if (mClock.currentTimeMillis() - EpgFetchHelper.getLastEpgUpdatedTimestamp(mContext)
                     > mEpgDataExpiredTimeLimitMs) {
                 batchFetchEpg(channels, mFastFetchDurationSec);
@@ -781,6 +782,9 @@ public class EpgFetcherImpl implements EpgFetcher {
                     newChannels.add(epgChannel);
                     mFetchedChannelIdsDuringScan.add(epgChannel.getChannel().getId());
                 }
+            }
+            if (!newChannels.isEmpty()) {
+                EpgFetchHelper.updateNetworkAffiliation(mContext, newChannels);
             }
             batchFetchEpg(newChannels, FETCH_DURING_SCAN_DURATION_SEC);
         }
