@@ -169,18 +169,23 @@ public class ChannelPreviewUpdater {
             @Override
             protected Set<Program> doInBackground(Void... params) {
                 Set<Program> programs = new HashSet<>();
-                List<Channel> channels = new ArrayList<>(mRecommender.recommendChannels());
-                for (Channel channel : channels) {
-                    if (channel.isPhysicalTunerChannel()) {
-                        final Program program = Utils.getCurrentProgram(mContext, channel.getId());
-                        if (program != null
-                                && isChannelRecommendationApplicable(channel, program)) {
-                            programs.add(program);
-                            if (programs.size() >= RECOMMENDATION_COUNT) {
-                                break;
+                try {
+                    List<Channel> channels = new ArrayList<>(mRecommender.recommendChannels());
+                    for (Channel channel : channels) {
+                        if (channel.isPhysicalTunerChannel()) {
+                            final Program program =
+                                Utils.getCurrentProgram(mContext, channel.getId());
+                            if (program != null
+                                    && isChannelRecommendationApplicable(channel, program)) {
+                                programs.add(program);
+                                if (programs.size() >= RECOMMENDATION_COUNT) {
+                                    break;
+                                }
                             }
                         }
                     }
+                } catch (Exception e) {
+                    Log.w(TAG, "Can't update preview data", e);
                 }
                 return programs;
             }
