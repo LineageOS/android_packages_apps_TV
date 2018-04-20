@@ -45,6 +45,10 @@ public class LiveTvApplication extends TvApplication {
     protected static final String TV_ACTIVITY_CLASS_NAME =
             CommonConstants.BASE_PACKAGE + ".TvActivity";
 
+    static {
+        PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppClassLoaded();
+    }
+
     private final Provider<EpgReader> mEpgReaderProvider =
             new Provider<EpgReader>() {
 
@@ -60,7 +64,13 @@ public class LiveTvApplication extends TvApplication {
     private String mEmbeddedInputId;
     private RemoteConfig mRemoteConfig;
     private ExperimentLoader mExperimentLoader;
-  private PerformanceMonitor mPerformanceMonitor;
+    private PerformanceMonitor mPerformanceMonitor;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppCreate(this);
+    }
 
     /** Returns the {@link AccountHelperImpl}. */
     @Override
@@ -73,10 +83,10 @@ public class LiveTvApplication extends TvApplication {
 
     @Override
     public synchronized PerformanceMonitor getPerformanceMonitor() {
-    if (mPerformanceMonitor == null) {
-      mPerformanceMonitor = PerformanceMonitorManagerFactory.create().initialize(this);
-    }
-    return mPerformanceMonitor;
+        if (mPerformanceMonitor == null) {
+            mPerformanceMonitor = PerformanceMonitorManagerFactory.create().initialize(this);
+        }
+        return mPerformanceMonitor;
     }
 
     @Override

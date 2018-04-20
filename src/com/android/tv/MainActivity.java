@@ -105,9 +105,7 @@ import com.android.tv.menu.Menu;
 import com.android.tv.onboarding.OnboardingActivity;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
-import com.android.tv.perf.EventNames;
-import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.perf.TimerEvent;
+import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.NotificationService;
 import com.android.tv.search.ProgramGuideSearchFragment;
@@ -243,6 +241,10 @@ public class MainActivity extends Activity
     private static final int UNDEFINED_TRACK_INDEX = -1;
     private static final long START_UP_TIMER_RESET_THRESHOLD_MS = TimeUnit.SECONDS.toMillis(3);
 
+    {
+        PerformanceMonitorManagerFactory.create().getStartupMeasure().onActivityInit();
+    }
+
     private final MySingletonsImpl mMySingletons = new MySingletonsImpl();
 
     private AccessibilityManager mAccessibilityManager;
@@ -290,7 +292,6 @@ public class MainActivity extends Activity
     private boolean mShowNewSourcesFragment = true;
     private String mTunerInputId;
     private boolean mOtherActivityLaunched;
-    private PerformanceMonitor mPerformanceMonitor;
 
     private boolean mIsInPIPMode;
     private boolean mIsFilmModeSet;
@@ -458,8 +459,6 @@ public class MainActivity extends Activity
         mAccessibilityManager =
                 (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         TvSingletons tvSingletons = TvSingletons.getSingletons(this);
-        mPerformanceMonitor = tvSingletons.getPerformanceMonitor();
-        TimerEvent timer = mPerformanceMonitor.startTimer();
         DurationTimer startUpDebugTimer = Debug.getTimer(Debug.TAG_START_UP_TIMER);
         if (!startUpDebugTimer.isStarted()
                 || startUpDebugTimer.getDuration() > START_UP_TIMER_RESET_THRESHOLD_MS) {
@@ -478,7 +477,6 @@ public class MainActivity extends Activity
             finishAndRemoveTask();
             return;
         }
-        mPerformanceMonitor = tvSingletons.getPerformanceMonitor();
         mSetupUtils = tvSingletons.getSetupUtils();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
@@ -703,7 +701,6 @@ public class MainActivity extends Activity
         }
         initForTest();
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onCreate end");
-        mPerformanceMonitor.stopTimer(timer, EventNames.MAIN_ACTIVITY_ONCREATE);
     }
 
     private void startOnboardingActivity() {
@@ -794,7 +791,6 @@ public class MainActivity extends Activity
 
     @Override
     protected void onStart() {
-        TimerEvent timer = mPerformanceMonitor.startTimer();
         if (DEBUG) {
             Log.d(TAG, "onStart()");
         }
@@ -815,12 +811,10 @@ public class MainActivity extends Activity
         TvSingletons singletons = TvSingletons.getSingletons(this);
         singletons.getTunerInputController().executeNetworkTunerDiscoveryAsyncTask(this);
         singletons.getEpgFetcher().fetchImmediatelyIfNeeded();
-        mPerformanceMonitor.stopTimer(timer, EventNames.MAIN_ACTIVITY_ONSTART);
     }
 
     @Override
     protected void onResume() {
-        TimerEvent timer = mPerformanceMonitor.startTimer();
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume start");
         if (DEBUG) Log.d(TAG, "onResume()");
         super.onResume();
@@ -902,7 +896,6 @@ public class MainActivity extends Activity
             mDvrConflictChecker.start();
         }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume end");
-        mPerformanceMonitor.stopTimer(timer, EventNames.MAIN_ACTIVITY_ONRESUME);
     }
 
     @Override
@@ -1674,7 +1667,7 @@ public class MainActivity extends Activity
         if (CommonFeatures.TUNER_SIGNAL_STRENGTH.isEnabled(this)) {
             mTvView.resetChannelSignalStrength();
             mOverlayManager.updateChannelBannerAndShowIfNeeded(
-                TvOverlayManager.UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH);
+                    TvOverlayManager.UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH);
         }
         final Channel channel = mChannelTuner.getCurrentChannel();
         SoftPreconditions.checkState(channel != null);
@@ -2923,7 +2916,7 @@ public class MainActivity extends Activity
         public void onChannelSignalStrength() {
             if (CommonFeatures.TUNER_SIGNAL_STRENGTH.isEnabled(getApplicationContext())) {
                 mOverlayManager.updateChannelBannerAndShowIfNeeded(
-                    TvOverlayManager.UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH);
+                        TvOverlayManager.UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH);
             }
         }
     }
@@ -2941,17 +2934,17 @@ public class MainActivity extends Activity
         }
 
         @Override
-        public Provider<TvOverlayManager> getOverlayManagerProvider(){
+        public Provider<TvOverlayManager> getOverlayManagerProvider() {
             return () -> getOverlayManager();
         }
 
         @Override
-        public TvInputManagerHelper getTvInputManagerHelperSingleton(){
+        public TvInputManagerHelper getTvInputManagerHelperSingleton() {
             return getTvInputManagerHelper();
         }
 
         @Override
-        public Provider<Long> getCurrentPlayingPositionProvider(){
+        public Provider<Long> getCurrentPlayingPositionProvider() {
             return () -> getCurrentPlayingPosition();
         }
 
