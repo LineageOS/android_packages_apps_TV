@@ -48,6 +48,7 @@ import android.provider.Settings;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
@@ -259,8 +260,9 @@ public class MainActivity extends Activity
     private ConflictChecker mDvrConflictChecker;
     private SetupUtils mSetupUtils;
 
+    @VisibleForTesting
+    protected TunableTvView mTvView;
     private View mContentView;
-    private TunableTvView mTvView;
     private Bundle mTuneParams;
     @Nullable private Uri mInitChannelUri;
     @Nullable private String mParentInputIdWhenScreenOff;
@@ -479,7 +481,7 @@ public class MainActivity extends Activity
         mPerformanceMonitor = tvSingletons.getPerformanceMonitor();
         mSetupUtils = tvSingletons.getSetupUtils();
 
-        TvApplication tvApplication = (TvApplication) getApplication();
+        TvSingletons tvApplication = (TvSingletons) getApplication();
         mChannelDataManager = tvApplication.getChannelDataManager();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.
         boolean isPassthroughInput =
@@ -1921,7 +1923,8 @@ public class MainActivity extends Activity
         window.setAttributes(layoutParams);
     }
 
-    private void applyMultiAudio() {
+    @VisibleForTesting
+    protected void applyMultiAudio() {
         List<TvTrackInfo> tracks = getTracks(TvTrackInfo.TYPE_AUDIO);
         if (tracks == null) {
             mTvOptionsManager.onMultiAudioChanged(null);
@@ -2805,7 +2808,9 @@ public class MainActivity extends Activity
         }
     }
 
-    private class MyOnTuneListener implements OnTuneListener {
+    /** {@link OnTuneListener} implementation */
+    @VisibleForTesting
+    protected class MyOnTuneListener implements OnTuneListener {
         boolean mUnlockAllowedRatingBeforeShrunken = true;
         boolean mWasUnderShrunkenTvView;
         Channel mChannel;
