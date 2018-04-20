@@ -33,7 +33,7 @@ import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
 import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.perf.stub.StubPerformanceMonitor;
+import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.util.account.AccountHelper;
@@ -45,7 +45,6 @@ public class LiveTvApplication extends TvApplication {
     protected static final String TV_ACTIVITY_CLASS_NAME =
             CommonConstants.BASE_PACKAGE + ".TvActivity";
 
-    private final StubPerformanceMonitor performanceMonitor = new StubPerformanceMonitor();
     private final Provider<EpgReader> mEpgReaderProvider =
             new Provider<EpgReader>() {
 
@@ -61,6 +60,7 @@ public class LiveTvApplication extends TvApplication {
     private String mEmbeddedInputId;
     private RemoteConfig mRemoteConfig;
     private ExperimentLoader mExperimentLoader;
+  private PerformanceMonitor mPerformanceMonitor;
 
     /** Returns the {@link AccountHelperImpl}. */
     @Override
@@ -73,7 +73,10 @@ public class LiveTvApplication extends TvApplication {
 
     @Override
     public synchronized PerformanceMonitor getPerformanceMonitor() {
-        return performanceMonitor;
+    if (mPerformanceMonitor == null) {
+      mPerformanceMonitor = PerformanceMonitorManagerFactory.create().initialize(this);
+    }
+    return mPerformanceMonitor;
     }
 
     @Override
