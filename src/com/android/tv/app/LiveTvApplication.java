@@ -33,7 +33,7 @@ import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
 import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.perf.StubPerformanceMonitor;
+import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.util.account.AccountHelper;
