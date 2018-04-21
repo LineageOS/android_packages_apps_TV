@@ -42,6 +42,7 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -250,7 +251,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                     }
                 }
                 if (mOnTuneListener != null) {
-                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this);
+                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this, true);
                 }
             }
 
@@ -303,7 +304,10 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                     }
                 }
                 if (mOnTuneListener != null) {
-                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this);
+                    // should not change audio track automatically when an audio track or a
+                    // subtitle track is selected
+                    mOnTuneListener.onStreamInfoChanged(
+                            TunableTvView.this, type == TvTrackInfo.TYPE_VIDEO);
                 }
             }
 
@@ -314,12 +318,12 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                     .log(
                         "Start up of Live TV ends,"
                             + " TunableTvView.onVideoAvailable resets timer");
-                long startUpDurationTime = Debug.getTimer(Debug.TAG_START_UP_TIMER).reset();
+                Debug.getTimer(Debug.TAG_START_UP_TIMER).reset();
                 Debug.removeTimer(Debug.TAG_START_UP_TIMER);
                 mVideoUnavailableReason = VIDEO_UNAVAILABLE_REASON_NONE;
                 updateBlockScreenAndMuting();
                 if (mOnTuneListener != null) {
-                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this);
+                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this, true);
                 }
             }
 
@@ -343,7 +347,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                 }
                 updateBlockScreenAndMuting();
                 if (mOnTuneListener != null) {
-                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this);
+                    mOnTuneListener.onStreamInfoChanged(TunableTvView.this, true);
                 }
                 switch (reason) {
                     case TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN:
@@ -658,7 +662,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
         }
         updateBlockScreenAndMuting();
         if (mOnTuneListener != null) {
-            mOnTuneListener.onStreamInfoChanged(this);
+            mOnTuneListener.onStreamInfoChanged(this, true);
         }
         return true;
     }
@@ -739,7 +743,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
         void onUnexpectedStop(Channel channel);
 
-        void onStreamInfoChanged(StreamInfo info);
+        void onStreamInfoChanged(StreamInfo info, boolean allowAutoSelectionOfTrack);
 
         void onChannelRetuned(Uri channel);
 
@@ -817,6 +821,11 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     public void setClosedCaptionEnabled(boolean enabled) {
         mTvView.setCaptionEnabled(enabled);
+    }
+
+    @VisibleForTesting
+    public void setOnTuneListener(OnTuneListener listener) {
+        mOnTuneListener = listener;
     }
 
     public List<TvTrackInfo> getTracks(int type) {

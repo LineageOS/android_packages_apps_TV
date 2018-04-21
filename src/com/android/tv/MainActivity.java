@@ -1917,18 +1917,28 @@ public class MainActivity extends Activity
     }
 
     @VisibleForTesting
-    protected void applyMultiAudio() {
+    protected void applyMultiAudio(String trackId) {
         List<TvTrackInfo> tracks = getTracks(TvTrackInfo.TYPE_AUDIO);
         if (tracks == null) {
             mTvOptionsManager.onMultiAudioChanged(null);
             return;
         }
 
-        String id = TvSettings.getMultiAudioId(this);
-        String language = TvSettings.getMultiAudioLanguage(this);
-        int channelCount = TvSettings.getMultiAudioChannelCount(this);
-        TvTrackInfo bestTrack =
-                TvTrackInfoUtils.getBestTrackInfo(tracks, id, language, channelCount);
+        TvTrackInfo bestTrack = null;
+        if (trackId != null) {
+            for (TvTrackInfo track : tracks) {
+                if (trackId.equals(track.getId())) {
+                    bestTrack = track;
+                    break;
+                }
+            }
+        }
+        if (bestTrack == null) {
+            String id = TvSettings.getMultiAudioId(this);
+            String language = TvSettings.getMultiAudioLanguage(this);
+            int channelCount = TvSettings.getMultiAudioChannelCount(this);
+            bestTrack = TvTrackInfoUtils.getBestTrackInfo(tracks, id, language, channelCount);
+        }
         if (bestTrack != null) {
             String selectedTrack = getSelectedTrack(TvTrackInfo.TYPE_AUDIO);
             if (!bestTrack.getId().equals(selectedTrack)) {
@@ -2602,7 +2612,7 @@ public class MainActivity extends Activity
 
     public void selectAudioTrack(String trackId) {
         saveMultiAudioSetting(trackId);
-        applyMultiAudio();
+        applyMultiAudio(trackId);
     }
 
     private void saveMultiAudioSetting(String trackId) {
@@ -2808,10 +2818,10 @@ public class MainActivity extends Activity
         boolean mWasUnderShrunkenTvView;
         Channel mChannel;
 
-        private void onTune(Channel channel, boolean wasUnderShrukenTvView) {
+        private void onTune(Channel channel, boolean wasUnderShrunkenTvView) {
             Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.MyOnTuneListener.onTune");
             mChannel = channel;
-            mWasUnderShrunkenTvView = wasUnderShrukenTvView;
+            mWasUnderShrunkenTvView = wasUnderShrunkenTvView;
         }
 
         @Override
@@ -2834,7 +2844,7 @@ public class MainActivity extends Activity
         }
 
         @Override
-        public void onStreamInfoChanged(StreamInfo info) {
+        public void onStreamInfoChanged(StreamInfo info, boolean allowAutoSelectionOfTrack) {
             if (info.isVideoAvailable() && mTuneDurationTimer.isRunning()) {
                 mTracker.sendChannelTuneTime(info.getCurrentChannel(), mTuneDurationTimer.reset());
             }
@@ -2844,7 +2854,8 @@ public class MainActivity extends Activity
             }
             applyDisplayRefreshRate(info.getVideoFrameRate());
             mTvViewUiManager.updateTvAspectRatio();
-            applyMultiAudio();
+            applyMultiAudio(allowAutoSelectionOfTrack
+                    ? null : getSelectedTrack(TvTrackInfo.TYPE_AUDIO));
             applyClosedCaption();
             mOverlayManager.getMenu().onStreamInfoChanged();
             if (mTvView.isVideoAvailable()) {
