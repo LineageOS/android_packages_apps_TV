@@ -826,8 +826,12 @@ public class Utils {
 
     /** Checks whether the input is internal or not. */
     public static boolean isInternalTvInput(Context context, String inputId) {
+        ComponentName unflattenInputId = ComponentName.unflattenFromString(inputId);
+        if (unflattenInputId == null) {
+            return false;
+        }
         return context.getPackageName()
-                .equals(ComponentName.unflattenFromString(inputId).getPackageName());
+                .equals(unflattenInputId.getPackageName());
     }
 
     /** Returns the TV input for the given {@code program}. */
