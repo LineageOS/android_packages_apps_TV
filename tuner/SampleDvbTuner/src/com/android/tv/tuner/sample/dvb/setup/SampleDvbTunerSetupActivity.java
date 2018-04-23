@@ -72,13 +72,7 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
     private EpgInput epgInput;
     private String postalCode;
     private final Handler handler = new Handler();
-    private final Runnable cancelFetchLineupTaskRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    cancelFetchLineup();
-                }
-            };
+    private final Runnable cancelFetchLineupTaskRunnable = this::cancelFetchLineup;
     private String embeddedInputId;
 
     @Override

@@ -40,7 +40,6 @@ import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.util.ConvertUtils;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,13 +305,7 @@ public class ChannelDataManager implements Handler.Callback {
             }
         }
         if (mChannelScanListener != null && mChannelScanHandler != null) {
-            mChannelScanHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mChannelScanListener.onChannelHandlingDone();
-                        }
-                    });
+            mChannelScanHandler.post(() -> mChannelScanListener.onChannelHandlingDone());
         } else {
             Log.e(TAG, "Error. mChannelScanListener is null.");
         }
@@ -441,14 +434,10 @@ public class ChannelDataManager implements Handler.Callback {
                             Collections.binarySearch(
                                     oldItems,
                                     newItem,
-                                    new Comparator<EitItem>() {
-                                        @Override
-                                        public int compare(EitItem lhs, EitItem rhs) {
-                                            return Long.compare(
+                                    (EitItem lhs, EitItem rhs) ->
+                                            Long.compare(
                                                     lhs.getStartTimeUtcMillis(),
-                                                    rhs.getStartTimeUtcMillis());
-                                        }
-                                    });
+                                                    rhs.getStartTimeUtcMillis()));
                     if (pos >= 0) {
                         // Same start Time found. Overlapped.
                         continue;

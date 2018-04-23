@@ -662,26 +662,14 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
         if (mEventHandler == null || mEventListener == null) {
             return;
         }
-        mEventHandler.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mEventListener.onAudioTrackInitializationError(e);
-                    }
-                });
+        mEventHandler.post(() -> mEventListener.onAudioTrackInitializationError(e));
     }
 
     private void notifyAudioTrackWriteError(final AudioTrack.WriteException e) {
         if (mEventHandler == null || mEventListener == null) {
             return;
         }
-        mEventHandler.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mEventListener.onAudioTrackWriteError(e);
-                    }
-                });
+        mEventHandler.post(() -> mEventListener.onAudioTrackWriteError(e));
     }
 
     @Override

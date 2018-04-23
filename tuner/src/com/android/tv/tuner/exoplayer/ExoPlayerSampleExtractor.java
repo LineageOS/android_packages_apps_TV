@@ -220,9 +220,9 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                     new MediaSource.SourceInfoRefreshListener() {
                         @Override
                         public void onSourceInfoRefreshed(
-                            MediaSource source, Timeline timeline, Object manifest) {
-                          // Dynamic stream change is not supported yet. b/28169263
-                          // For now, this will cause EOS and playback reset.
+                                MediaSource source, Timeline timeline, Object manifest) {
+                            // Dynamic stream change is not supported yet. b/28169263
+                            // For now, this will cause EOS and playback reset.
                         }
                     };
             mSampleSource.prepareSource(null, false, mSampleSourceListener);
@@ -607,12 +607,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
             final long lastExtractedPositionUs = getLastExtractedPositionUs();
             if (mOnCompletionListenerHandler != null && mOnCompletionListener != null) {
                 mOnCompletionListenerHandler.post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onCompletion(result, lastExtractedPositionUs);
-                            }
-                        });
+                        () -> listener.onCompletion(result, lastExtractedPositionUs));
             }
         }
     }
