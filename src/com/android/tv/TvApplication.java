@@ -133,12 +133,9 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         super.onCreate();
         SharedPreferencesUtils.initialize(
                 this,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mRunningInMainProcess != null && mRunningInMainProcess) {
-                            checkTunerServiceOnFirstLaunch();
-                        }
+                () -> {
+                    if (mRunningInMainProcess != null && mRunningInMainProcess) {
+                        checkTunerServiceOnFirstLaunch();
                     }
                 });
         try {
@@ -294,13 +291,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
             return mProgramDataManager;
         }
         Utils.runInMainThreadAndWait(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mProgramDataManager == null) {
-                            mProgramDataManager = new ProgramDataManager(TvApplication.this);
-                            mProgramDataManager.start();
-                        }
+                () -> {
+                    if (mProgramDataManager == null) {
+                        mProgramDataManager = new ProgramDataManager(TvApplication.this);
+                        mProgramDataManager.start();
                     }
                 });
         return mProgramDataManager;

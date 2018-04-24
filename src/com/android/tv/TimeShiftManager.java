@@ -86,16 +86,15 @@ public class TimeShiftManager {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(
-        flag = true,
-        value = {
-            TIME_SHIFT_ACTION_ID_PLAY,
-            TIME_SHIFT_ACTION_ID_PAUSE,
-            TIME_SHIFT_ACTION_ID_REWIND,
-            TIME_SHIFT_ACTION_ID_FAST_FORWARD,
-            TIME_SHIFT_ACTION_ID_JUMP_TO_PREVIOUS,
-            TIME_SHIFT_ACTION_ID_JUMP_TO_NEXT
-        }
-    )
+            flag = true,
+            value = {
+                TIME_SHIFT_ACTION_ID_PLAY,
+                TIME_SHIFT_ACTION_ID_PAUSE,
+                TIME_SHIFT_ACTION_ID_REWIND,
+                TIME_SHIFT_ACTION_ID_FAST_FORWARD,
+                TIME_SHIFT_ACTION_ID_JUMP_TO_PREVIOUS,
+                TIME_SHIFT_ACTION_ID_JUMP_TO_NEXT
+            })
     public @interface TimeShiftActionId {}
 
     public static final int TIME_SHIFT_ACTION_ID_PLAY = 1;
@@ -976,8 +975,7 @@ public class TimeShiftManager {
                 }
             }
             if (mChannel != null) {
-                mProgramLoadTask =
-                        new LoadProgramsForCurrentChannelTask(next);
+                mProgramLoadTask = new LoadProgramsForCurrentChannelTask(next);
                 mProgramLoadTask.executeOnDbThread();
             }
         }
@@ -1308,13 +1306,7 @@ public class TimeShiftManager {
                     mProgramLoadTask = null;
                 }
                 // Need to post to handler, because the task is still running.
-                mHandler.post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                startTaskIfNeeded();
-                            }
-                        });
+                mHandler.post(ProgramManager.this::startTaskIfNeeded);
             }
 
             boolean overlaps(Queue<Range<Long>> programLoadQueue) {

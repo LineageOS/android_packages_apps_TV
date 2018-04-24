@@ -73,24 +73,20 @@ public class WatchedHistoryManager {
                         // onNewRecordAdded will be called in the same thread as the thread
                         // which created this instance.
                         mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        for (long i = mLastIndex + 1; i <= lastIndex; ++i) {
-                                            WatchedRecord record =
-                                                    decode(
-                                                            mSharedPreferences.getString(
-                                                                    getSharedPreferencesKey(i),
-                                                                    null));
-                                            if (record != null) {
-                                                mWatchedHistory.add(record);
-                                                if (mListener != null) {
-                                                    mListener.onNewRecordAdded(record);
-                                                }
+                                () -> {
+                                    for (long i = mLastIndex + 1; i <= lastIndex; ++i) {
+                                        WatchedRecord record =
+                                                decode(
+                                                        mSharedPreferences.getString(
+                                                                getSharedPreferencesKey(i), null));
+                                        if (record != null) {
+                                            mWatchedHistory.add(record);
+                                            if (mListener != null) {
+                                                mListener.onNewRecordAdded(record);
                                             }
                                         }
-                                        mLastIndex = lastIndex;
                                     }
+                                    mLastIndex = lastIndex;
                                 });
                     }
                 }

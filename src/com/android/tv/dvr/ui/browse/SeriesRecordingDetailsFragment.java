@@ -42,7 +42,6 @@ import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.DvrUiHelper;
 import com.android.tv.dvr.ui.SortedArrayAdapter;
 import com.android.tv.ui.DetailsActivity;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -341,14 +340,7 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
                 new ListRow(
                         header,
                         new SeasonRowAdapter(
-                                selector,
-                                new Comparator<RecordedProgram>() {
-                                    @Override
-                                    public int compare(RecordedProgram lhs, RecordedProgram rhs) {
-                                        return BaseProgram.EPISODE_COMPARATOR.compare(lhs, rhs);
-                                    }
-                                },
-                                seasonNumber));
+                                selector, BaseProgram.EPISODE_COMPARATOR::compare, seasonNumber));
         getRowsAdapter().add(position, row);
         return row;
     }

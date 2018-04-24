@@ -145,9 +145,11 @@ public class SetupPassthroughActivity extends Activity {
             return;
         }
         if (mTvInputInfo == null) {
-            Log.w(TAG, "There is no input with ID "
-                + getIntent().getStringExtra(InputSetupActionUtils.EXTRA_INPUT_ID)
-                + ".");
+            Log.w(
+                    TAG,
+                    "There is no input with ID "
+                            + getIntent().getStringExtra(InputSetupActionUtils.EXTRA_INPUT_ID)
+                            + ".");
             setResult(resultCode, data);
             finish();
             return;
@@ -156,19 +158,16 @@ public class SetupPassthroughActivity extends Activity {
                 .getSetupUtils()
                 .onTvInputSetupFinished(
                         mTvInputInfo.getId(),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mActivityAfterCompletion != null) {
-                                    try {
-                                        startActivity(mActivityAfterCompletion);
-                                    } catch (ActivityNotFoundException e) {
-                                        Log.w(TAG, "Activity launch failed", e);
-                                    }
+                        () -> {
+                            if (mActivityAfterCompletion != null) {
+                                try {
+                                    startActivity(mActivityAfterCompletion);
+                                } catch (ActivityNotFoundException e) {
+                                    Log.w(TAG, "Activity launch failed", e);
                                 }
-                                setResult(resultCode, data);
-                                finish();
                             }
+                            setResult(resultCode, data);
+                            finish();
                         });
     }
 
@@ -186,15 +185,12 @@ public class SetupPassthroughActivity extends Activity {
         private final ChannelDataManager mChannelDataManager;
         private final Handler mHandler = new Handler(Looper.getMainLooper());
         private final Runnable mScanTimeoutRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.w(
-                                TAG,
-                                "No channels has been added for a while."
-                                        + " The scan might have finished unexpectedly.");
-                        onScanTimedOut();
-                    }
+                () -> {
+                    Log.w(
+                            TAG,
+                            "No channels has been added for a while."
+                                    + " The scan might have finished unexpectedly.");
+                    onScanTimedOut();
                 };
         private final Listener mChannelDataManagerListener =
                 new Listener() {

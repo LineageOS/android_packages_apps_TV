@@ -29,7 +29,6 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
-
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.CommonUtils;
@@ -37,7 +36,6 @@ import com.android.tv.data.BaseProgram;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.InternalDataUtils;
 import com.android.tv.util.TvProviderUtils;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -509,16 +507,12 @@ public class RecordedProgram extends BaseProgram {
     }
 
     public static final Comparator<RecordedProgram> START_TIME_THEN_ID_COMPARATOR =
-            new Comparator<RecordedProgram>() {
-                @Override
-                public int compare(RecordedProgram lhs, RecordedProgram rhs) {
-                    int res =
-                            Long.compare(lhs.getStartTimeUtcMillis(), rhs.getStartTimeUtcMillis());
-                    if (res != 0) {
-                        return res;
-                    }
-                    return Long.compare(lhs.mId, rhs.mId);
+            (RecordedProgram lhs, RecordedProgram rhs) -> {
+                int res = Long.compare(lhs.getStartTimeUtcMillis(), rhs.getStartTimeUtcMillis());
+                if (res != 0) {
+                    return res;
                 }
+                return Long.compare(lhs.mId, rhs.mId);
             };
 
     private static final long CLIPPED_THRESHOLD_MS = TimeUnit.MINUTES.toMillis(5);

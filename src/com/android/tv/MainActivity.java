@@ -262,8 +262,7 @@ public class MainActivity extends Activity
     private ConflictChecker mDvrConflictChecker;
     private SetupUtils mSetupUtils;
 
-    @VisibleForTesting
-    protected TunableTvView mTvView;
+    @VisibleForTesting protected TunableTvView mTvView;
     private View mContentView;
     private Bundle mTuneParams;
     @Nullable private Uri mInitChannelUri;
@@ -414,13 +413,7 @@ public class MainActivity extends Activity
                 public void onChannelChanged(Channel previousChannel, Channel currentChannel) {}
             };
 
-    private final Runnable mRestoreMainViewRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    restoreMainTvView();
-                }
-            };
+    private final Runnable mRestoreMainViewRunnable = this::restoreMainTvView;
     private ProgramGuideSearchFragment mSearchFragment;
 
     private final TvInputCallback mTvInputCallback =
@@ -846,13 +839,9 @@ public class MainActivity extends Activity
                         getApplicationContext(), TvInputManager.RECORDING_ERROR_INSUFFICIENT_SPACE)
                 && !failedScheduledRecordingInfoSet.isEmpty()) {
             runAfterAttachedToWindow(
-                    new Runnable() {
-                        @Override
-                        public void run() {
+                    () ->
                             DvrUiHelper.showDvrInsufficientSpaceErrorDialog(
-                                    MainActivity.this, failedScheduledRecordingInfoSet);
-                        }
-                    });
+                                    MainActivity.this, failedScheduledRecordingInfoSet));
         }
 
         if (mChannelTuner.areAllChannelsLoaded()) {
@@ -871,26 +860,14 @@ public class MainActivity extends Activity
             // This will delay the start of the animation until after the Live Channel app is
             // shown. Without this the animation is completed before it is actually visible on
             // the screen.
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mOverlayManager.showProgramGuide();
-                        }
-                    });
+            mHandler.post(() -> mOverlayManager.showProgramGuide());
         } else if (mShowSelectInputView) {
             mShowSelectInputView = false;
             // mShowSelectInputView is true when the activity is started/resumed because the
             // TV_INPUT button was pressed in a different app.  This will delay the start of
             // the animation until after the Live Channel app is shown. Without this the
             // animation is completed before it is actually visible on the screen.
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mOverlayManager.showSelectInputView();
-                        }
-                    });
+            mHandler.post(() -> mOverlayManager.showSelectInputView());
         }
         if (mDvrConflictChecker != null) {
             mDvrConflictChecker.start();
@@ -1308,19 +1285,15 @@ public class MainActivity extends Activity
         if (!Objects.equals(mTvView.getCurrentChannel(), returnChannel)) {
             final Channel channel = returnChannel;
             Runnable tuneAction =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            tuneToChannel(channel);
-                            if (mChannelBeforeShrunkenTvView == null
-                                    || !mChannelBeforeShrunkenTvView.equals(channel)) {
-                                Utils.setLastWatchedChannel(MainActivity.this, channel);
-                            }
-                            mIsCompletingShrunkenTvView = false;
-                            mIsCurrentChannelUnblockedByUser =
-                                    mWasChannelUnblockedBeforeShrunkenByUser;
-                            mTvView.setBlockScreenType(getDesiredBlockScreenType());
+                    () -> {
+                        tuneToChannel(channel);
+                        if (mChannelBeforeShrunkenTvView == null
+                                || !mChannelBeforeShrunkenTvView.equals(channel)) {
+                            Utils.setLastWatchedChannel(MainActivity.this, channel);
                         }
+                        mIsCompletingShrunkenTvView = false;
+                        mIsCurrentChannelUnblockedByUser = mWasChannelUnblockedBeforeShrunkenByUser;
+                        mTvView.setBlockScreenType(getDesiredBlockScreenType());
                     };
             mTvViewUiManager.fadeOutTvView(tuneAction);
             // Will automatically fade-in when video becomes available.
@@ -1432,13 +1405,7 @@ public class MainActivity extends Activity
 
     /** Notifies the key input focus is changed to the TV view. */
     public void updateKeyInputFocus() {
-        mHandler.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mTvView.setBlockScreenType(getDesiredBlockScreenType());
-                    }
-                });
+        mHandler.post(() -> mTvView.setBlockScreenType(getDesiredBlockScreenType()));
     }
 
     // It should be called before onResume.
@@ -1464,13 +1431,7 @@ public class MainActivity extends Activity
         }
 
         if (TvInputManager.ACTION_SETUP_INPUTS.equals(intent.getAction())) {
-            runAfterAttachedToWindow(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mOverlayManager.showSetupFragment();
-                        }
-                    });
+            runAfterAttachedToWindow(() -> mOverlayManager.showSetupFragment());
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri uri = intent.getData();
             if (Utils.isProgramsUri(uri)) {
@@ -1715,18 +1676,14 @@ public class MainActivity extends Activity
                     && mSetupUtils.hasUnrecognizedInput(mTvInputManagerHelper)) {
                 // Show new channel sources fragment.
                 runAfterAttachedToWindow(
-                        new Runnable() {
-                            @Override
-                            public void run() {
+                        () ->
                                 mOverlayManager.runAfterOverlaysAreClosed(
                                         new Runnable() {
                                             @Override
                                             public void run() {
                                                 mOverlayManager.showNewSourcesFragment();
                                             }
-                                        });
-                            }
-                        });
+                                        }));
             }
             mSetupUtils.onTuned();
             if (mTuneParams != null) {
@@ -1797,12 +1754,9 @@ public class MainActivity extends Activity
     // should be closed when the activity is paused.
     private void runAfterAttachedToWindow(final Runnable runnable) {
         final Runnable runOnlyIfActivityIsResumed =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mActivityResumed) {
-                            runnable.run();
-                        }
+                () -> {
+                    if (mActivityResumed) {
+                        runnable.run();
                     }
                 };
         if (mContentView.isAttachedToWindow()) {
@@ -2315,16 +2269,12 @@ public class MainActivity extends Activity
                                 DvrUiHelper.checkStorageStatusAndShowErrorMessage(
                                         this,
                                         currentChannel.getInputId(),
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
+                                        () ->
                                                 DvrUiHelper.requestRecordingCurrentProgram(
                                                         MainActivity.this,
                                                         currentChannel,
                                                         program,
-                                                        false);
-                                            }
-                                        });
+                                                        false));
                             }
                         } else {
                             DvrUiHelper.showStopRecordingDialog(
@@ -2441,13 +2391,7 @@ public class MainActivity extends Activity
         mIsInPIPMode = true;
         if (mOverlayManager.isOverlayOpened()) {
             mOverlayManager.hideOverlays(TvOverlayManager.FLAG_HIDE_OVERLAYS_WITHOUT_ANIMATION);
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            MainActivity.super.enterPictureInPictureMode();
-                        }
-                    });
+            mHandler.post(MainActivity.super::enterPictureInPictureMode);
         } else {
             MainActivity.super.enterPictureInPictureMode();
         }
@@ -2743,14 +2687,11 @@ public class MainActivity extends Activity
         mLazyInitialized = true;
         // Running initialization.
         mHandler.postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mActivityStarted) {
-                            initAnimations();
-                            initSideFragments();
-                            initMenuItemViews();
-                        }
+                () -> {
+                    if (mActivityStarted) {
+                        initAnimations();
+                        initSideFragments();
+                        initMenuItemViews();
                     }
                 },
                 LAZY_INITIALIZATION_DELAY);
@@ -2854,8 +2795,8 @@ public class MainActivity extends Activity
             }
             applyDisplayRefreshRate(info.getVideoFrameRate());
             mTvViewUiManager.updateTvAspectRatio();
-            applyMultiAudio(allowAutoSelectionOfTrack
-                    ? null : getSelectedTrack(TvTrackInfo.TYPE_AUDIO));
+            applyMultiAudio(
+                    allowAutoSelectionOfTrack ? null : getSelectedTrack(TvTrackInfo.TYPE_AUDIO));
             applyClosedCaption();
             mOverlayManager.getMenu().onStreamInfoChanged();
             if (mTvView.isVideoAvailable()) {
@@ -2936,17 +2877,17 @@ public class MainActivity extends Activity
 
         @Override
         public Provider<Channel> getCurrentChannelProvider() {
-            return () -> getCurrentChannel();
+            return MainActivity.this::getCurrentChannel;
         }
 
         @Override
         public Provider<Program> getCurrentProgramProvider() {
-            return () -> getCurrentProgram();
+            return MainActivity.this::getCurrentProgram;
         }
 
         @Override
         public Provider<TvOverlayManager> getOverlayManagerProvider() {
-            return () -> getOverlayManager();
+            return MainActivity.this::getOverlayManager;
         }
 
         @Override
@@ -2956,7 +2897,7 @@ public class MainActivity extends Activity
 
         @Override
         public Provider<Long> getCurrentPlayingPositionProvider() {
-            return () -> getCurrentPlayingPosition();
+            return MainActivity.this::getCurrentPlayingPosition;
         }
 
         @Override

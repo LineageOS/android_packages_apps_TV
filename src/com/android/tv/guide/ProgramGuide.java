@@ -806,13 +806,7 @@ public class ProgramGuide
             detailView.setVisibility(View.VISIBLE);
 
             final ProgramRow programRow = (ProgramRow) row.findViewById(R.id.row);
-            programRow.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            programRow.focusCurrentProgram();
-                        }
-                    });
+            programRow.post(programRow::focusCurrentProgram);
         } else {
             animateRowChange(mSelectedRow, row);
         }

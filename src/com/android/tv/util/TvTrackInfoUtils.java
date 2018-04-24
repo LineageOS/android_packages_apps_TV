@@ -34,40 +34,36 @@ public class TvTrackInfoUtils {
      */
     public static Comparator<TvTrackInfo> createComparator(
             final String id, final String language, final int channelCount) {
-        return new Comparator<TvTrackInfo>() {
-
-            @Override
-            public int compare(TvTrackInfo lhs, TvTrackInfo rhs) {
-                if (lhs == rhs) {
-                    return 0;
-                }
-                if (lhs == null) {
-                    return -1;
-                }
-                if (rhs == null) {
-                    return 1;
-                }
-                // Assumes {@code null} language matches to any language since it means user hasn't
-                // selected any track before or selected a track without language information.
-                boolean lhsLangMatch =
-                        language == null || Utils.isEqualLanguage(lhs.getLanguage(), language);
-                boolean rhsLangMatch =
-                        language == null || Utils.isEqualLanguage(rhs.getLanguage(), language);
-                if (lhsLangMatch && rhsLangMatch) {
-                    boolean lhsCountMatch =
-                            lhs.getType() != TvTrackInfo.TYPE_AUDIO
-                                    || lhs.getAudioChannelCount() == channelCount;
-                    boolean rhsCountMatch =
-                            rhs.getType() != TvTrackInfo.TYPE_AUDIO
-                                    || rhs.getAudioChannelCount() == channelCount;
-                    if (lhsCountMatch && rhsCountMatch) {
-                        return Boolean.compare(lhs.getId().equals(id), rhs.getId().equals(id));
-                    } else {
-                        return Boolean.compare(lhsCountMatch, rhsCountMatch);
-                    }
+        return (TvTrackInfo lhs, TvTrackInfo rhs) -> {
+            if (lhs == rhs) {
+                return 0;
+            }
+            if (lhs == null) {
+                return -1;
+            }
+            if (rhs == null) {
+                return 1;
+            }
+            // Assumes {@code null} language matches to any language since it means user hasn't
+            // selected any track before or selected a track without language information.
+            boolean lhsLangMatch =
+                    language == null || Utils.isEqualLanguage(lhs.getLanguage(), language);
+            boolean rhsLangMatch =
+                    language == null || Utils.isEqualLanguage(rhs.getLanguage(), language);
+            if (lhsLangMatch && rhsLangMatch) {
+                boolean lhsCountMatch =
+                        lhs.getType() != TvTrackInfo.TYPE_AUDIO
+                                || lhs.getAudioChannelCount() == channelCount;
+                boolean rhsCountMatch =
+                        rhs.getType() != TvTrackInfo.TYPE_AUDIO
+                                || rhs.getAudioChannelCount() == channelCount;
+                if (lhsCountMatch && rhsCountMatch) {
+                    return Boolean.compare(lhs.getId().equals(id), rhs.getId().equals(id));
                 } else {
-                    return Boolean.compare(lhsLangMatch, rhsLangMatch);
+                    return Boolean.compare(lhsCountMatch, rhsCountMatch);
                 }
+            } else {
+                return Boolean.compare(lhsLangMatch, rhsLangMatch);
             }
         };
     }

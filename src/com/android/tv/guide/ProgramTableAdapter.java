@@ -260,13 +260,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
                         }
                     }
                 };
-        private final Runnable mUpdateDetailViewRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        updateDetailView();
-                    }
-                };
+        private final Runnable mUpdateDetailViewRunnable = this::updateDetailView;
 
         private final RecyclerView.OnScrollListener mOnScrollListener =
                 new RecyclerView.OnScrollListener() {
