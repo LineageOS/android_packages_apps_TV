@@ -334,7 +334,7 @@ public class RecommendationDataManager implements WatchedHistoryManager.Listener
                     history.add(createWatchedProgramFromWatchedProgramCursor(cursor));
                 } while (cursor.moveToPrevious());
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error trying to load watch history from " + uri, e);
             return;
         }
