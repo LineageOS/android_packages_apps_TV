@@ -141,6 +141,7 @@ public class Utils {
         return sb.toString();
     }
 
+    @Nullable
     @WorkerThread
     public static String getInputIdForChannel(Context context, long channelId) {
         if (channelId == Channel.INVALID_ID) {
@@ -153,6 +154,8 @@ public class Utils {
             if (cursor != null && cursor.moveToNext()) {
                 return Utils.intern(cursor.getString(0));
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Error get input id for channel", e);
         }
         return null;
     }
