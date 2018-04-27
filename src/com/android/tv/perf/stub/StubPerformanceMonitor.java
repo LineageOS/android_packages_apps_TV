@@ -16,7 +16,6 @@
 
 package com.android.tv.perf.stub;
 
-import android.app.Application;
 import android.content.Context;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
@@ -25,10 +24,6 @@ import com.android.tv.perf.TimerEvent;
 public final class StubPerformanceMonitor implements PerformanceMonitor {
 
     private static final TimerEvent TIMER_EVENT = new TimerEvent() {};
-
-    public static PerformanceMonitor initialize(Application app) {
-        return new StubPerformanceMonitor();
-    }
 
     @Override
     public void startMemoryMonitor() {}
