@@ -122,13 +122,17 @@ public class TvTrackInfoUtils {
     public static String getMultiAudioString(
             Context context, TvTrackInfo track, boolean showSampleRate) {
         if (track.getType() != TvTrackInfo.TYPE_AUDIO) {
-            throw new IllegalArgumentException("Not an audio track: " + track);
+            throw new IllegalArgumentException("Not an audio track: " + toString(track));
         }
         String language = context.getString(R.string.multi_audio_unknown_language);
         if (!TextUtils.isEmpty(track.getLanguage())) {
             language = new Locale(track.getLanguage()).getDisplayName();
         } else {
-            Log.d(TAG, "No language information found for the audio track: " + track);
+            Log.d(
+                TAG,
+                "No language information found for the audio track: "
+                + toString(track)
+            );
         }
 
         StringBuilder metadata = new StringBuilder();
@@ -159,7 +163,7 @@ public class TvTrackInfoUtils {
                             "Invalid audio channel count ("
                                     + track.getAudioChannelCount()
                                     + ") found for the audio track: "
-                                    + track);
+                                    + toString(track));
                 }
                 break;
         }
@@ -185,6 +189,49 @@ public class TvTrackInfoUtils {
         }
         return context.getString(
                 R.string.multi_audio_display_string_with_channel, language, metadata.toString());
+    }
+
+    private static String trackTypeToString(int trackType) {
+        switch (trackType) {
+            case TvTrackInfo.TYPE_AUDIO:
+                return "Audio";
+            case TvTrackInfo.TYPE_VIDEO:
+                return "Video";
+            case TvTrackInfo.TYPE_SUBTITLE:
+                return "Subtitle";
+            default:
+                return "Invalid Type";
+        }
+    }
+
+    public static String toString(TvTrackInfo info) {
+        int trackType = info.getType();
+        return "TvTrackInfo{"
+            + "type="
+            + trackTypeToString(trackType)
+            + ", id="
+            + info.getId()
+            + ", language="
+            + info.getLanguage()
+            + ", description="
+            + info.getDescription()
+            + (trackType == TvTrackInfo.TYPE_AUDIO
+                ?
+                (", audioChannelCount="
+                + info.getAudioChannelCount()
+                + ", audioSampleRate="
+                + info.getAudioSampleRate()) : "")
+            + (trackType == TvTrackInfo.TYPE_VIDEO
+                ?
+                (", videoWidth="
+                + info.getVideoWidth()
+                + ", videoHeight="
+                + info.getVideoHeight()
+                + ", videoFrameRate="
+                + info.getVideoFrameRate()
+                + ", videoPixelAspectRatio="
+                + info.getVideoPixelAspectRatio()) : "")
+            + "}";
     }
 
     private TvTrackInfoUtils() {}
