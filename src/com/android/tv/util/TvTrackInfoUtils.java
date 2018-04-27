@@ -18,6 +18,7 @@ package com.android.tv.util;
 import android.media.tv.TvTrackInfo;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /** Static utilities for {@link TvTrackInfo}. */
 public class TvTrackInfoUtils {
@@ -35,7 +36,7 @@ public class TvTrackInfoUtils {
     public static Comparator<TvTrackInfo> createComparator(
             final String id, final String language, final int channelCount) {
         return (TvTrackInfo lhs, TvTrackInfo rhs) -> {
-            if (lhs == rhs) {
+            if (Objects.equals(lhs, rhs)) {
                 return 0;
             }
             if (lhs == null) {
