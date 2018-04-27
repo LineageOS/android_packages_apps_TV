@@ -1899,7 +1899,8 @@ public class MainActivity extends Activity
                 selectTrack(TvTrackInfo.TYPE_AUDIO, bestTrack, UNDEFINED_TRACK_INDEX);
             } else {
                 mTvOptionsManager.onMultiAudioChanged(
-                        Utils.getMultiAudioString(this, bestTrack, false));
+                        TvTrackInfoUtils
+                            .getMultiAudioString(this, bestTrack, false));
             }
             return;
         }
@@ -2548,7 +2549,10 @@ public class MainActivity extends Activity
         mTvView.selectTrack(type, track == null ? null : track.getId());
         if (type == TvTrackInfo.TYPE_AUDIO) {
             mTvOptionsManager.onMultiAudioChanged(
-                    track == null ? null : Utils.getMultiAudioString(this, track, false));
+                track == null
+                    ? null
+                        : TvTrackInfoUtils
+                            .getMultiAudioString(this, track, false));
         } else if (type == TvTrackInfo.TYPE_SUBTITLE) {
             mTvOptionsManager.onClosedCaptionsChanged(track, trackIndex);
         }

@@ -15,13 +15,27 @@
  */
 package com.android.tv.util;
 
+import android.content.Context;
 import android.media.tv.TvTrackInfo;
+import android.text.TextUtils;
+import android.util.Log;
+import com.android.tv.R;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 /** Static utilities for {@link TvTrackInfo}. */
 public class TvTrackInfoUtils {
+
+    private static final String TAG = "TvTrackInfoUtils";
+    private static final int AUDIO_CHANNEL_NONE = 0;
+    private static final int AUDIO_CHANNEL_MONO = 1;
+    private static final int AUDIO_CHANNEL_STEREO = 2;
+    private static final int AUDIO_CHANNEL_SURROUND_6 = 6;
+    private static final int AUDIO_CHANNEL_SURROUND_8 = 8;
 
     /**
      * Compares how closely two {@link android.media.tv.TvTrackInfo}s match {@code language}, {@code
@@ -91,6 +105,86 @@ public class TvTrackInfoUtils {
             }
         }
         return best;
+    }
+
+    public static boolean needToShowSampleRate(Context context, List<TvTrackInfo> tracks) {
+        Set<String> multiAudioStrings = new HashSet<>();
+        for (TvTrackInfo track : tracks) {
+            String multiAudioString = getMultiAudioString(context, track, false);
+            if (multiAudioStrings.contains(multiAudioString)) {
+                return true;
+            }
+            multiAudioStrings.add(multiAudioString);
+        }
+        return false;
+    }
+
+    public static String getMultiAudioString(
+            Context context, TvTrackInfo track, boolean showSampleRate) {
+        if (track.getType() != TvTrackInfo.TYPE_AUDIO) {
+            throw new IllegalArgumentException("Not an audio track: " + track);
+        }
+        String language = context.getString(R.string.multi_audio_unknown_language);
+        if (!TextUtils.isEmpty(track.getLanguage())) {
+            language = new Locale(track.getLanguage()).getDisplayName();
+        } else {
+            Log.d(TAG, "No language information found for the audio track: " + track);
+        }
+
+        StringBuilder metadata = new StringBuilder();
+        switch (track.getAudioChannelCount()) {
+            case AUDIO_CHANNEL_NONE:
+                break;
+            case AUDIO_CHANNEL_MONO:
+                metadata.append(context.getString(R.string.multi_audio_channel_mono));
+                break;
+            case AUDIO_CHANNEL_STEREO:
+                metadata.append(context.getString(R.string.multi_audio_channel_stereo));
+                break;
+            case AUDIO_CHANNEL_SURROUND_6:
+                metadata.append(context.getString(R.string.multi_audio_channel_surround_6));
+                break;
+            case AUDIO_CHANNEL_SURROUND_8:
+                metadata.append(context.getString(R.string.multi_audio_channel_surround_8));
+                break;
+            default:
+                if (track.getAudioChannelCount() > 0) {
+                    metadata.append(
+                            context.getString(
+                                    R.string.multi_audio_channel_suffix,
+                                    track.getAudioChannelCount()));
+                } else {
+                    Log.d(
+                            TAG,
+                            "Invalid audio channel count ("
+                                    + track.getAudioChannelCount()
+                                    + ") found for the audio track: "
+                                    + track);
+                }
+                break;
+        }
+        if (showSampleRate) {
+            int sampleRate = track.getAudioSampleRate();
+            if (sampleRate > 0) {
+                if (metadata.length() > 0) {
+                    metadata.append(", ");
+                }
+                int integerPart = sampleRate / 1000;
+                int tenths = (sampleRate % 1000) / 100;
+                metadata.append(integerPart);
+                if (tenths != 0) {
+                    metadata.append(".");
+                    metadata.append(tenths);
+                }
+                metadata.append("kHz");
+            }
+        }
+
+        if (metadata.length() == 0) {
+            return language;
+        }
+        return context.getString(
+                R.string.multi_audio_display_string_with_channel, language, metadata.toString());
     }
 
     private TvTrackInfoUtils() {}

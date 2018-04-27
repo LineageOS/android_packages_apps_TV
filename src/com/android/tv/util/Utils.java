@@ -29,7 +29,6 @@ import android.media.tv.TvContract;
 import android.media.tv.TvContract.Channels;
 import android.media.tv.TvContract.Programs.Genres;
 import android.media.tv.TvInputInfo;
-import android.media.tv.TvTrackInfo;
 import android.net.Uri;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -98,12 +97,6 @@ public class Utils {
     private static final int VIDEO_FULL_HD_HEIGHT = 1080;
     private static final int VIDEO_ULTRA_HD_WIDTH = 2048;
     private static final int VIDEO_ULTRA_HD_HEIGHT = 1536;
-
-    private static final int AUDIO_CHANNEL_NONE = 0;
-    private static final int AUDIO_CHANNEL_MONO = 1;
-    private static final int AUDIO_CHANNEL_STEREO = 2;
-    private static final int AUDIO_CHANNEL_SURROUND_6 = 6;
-    private static final int AUDIO_CHANNEL_SURROUND_8 = 8;
 
     private static final long RECORDING_FAILED_REASON_NONE = 0;
     private static final long HALF_MINUTE_MS = TimeUnit.SECONDS.toMillis(30);
@@ -585,86 +578,6 @@ public class Utils {
                 return context.getResources().getString(R.string.audio_channel_7_1);
         }
         return "";
-    }
-
-    public static boolean needToShowSampleRate(Context context, List<TvTrackInfo> tracks) {
-        Set<String> multiAudioStrings = new HashSet<>();
-        for (TvTrackInfo track : tracks) {
-            String multiAudioString = getMultiAudioString(context, track, false);
-            if (multiAudioStrings.contains(multiAudioString)) {
-                return true;
-            }
-            multiAudioStrings.add(multiAudioString);
-        }
-        return false;
-    }
-
-    public static String getMultiAudioString(
-            Context context, TvTrackInfo track, boolean showSampleRate) {
-        if (track.getType() != TvTrackInfo.TYPE_AUDIO) {
-            throw new IllegalArgumentException("Not an audio track: " + track);
-        }
-        String language = context.getString(R.string.multi_audio_unknown_language);
-        if (!TextUtils.isEmpty(track.getLanguage())) {
-            language = new Locale(track.getLanguage()).getDisplayName();
-        } else {
-            Log.d(TAG, "No language information found for the audio track: " + track);
-        }
-
-        StringBuilder metadata = new StringBuilder();
-        switch (track.getAudioChannelCount()) {
-            case AUDIO_CHANNEL_NONE:
-                break;
-            case AUDIO_CHANNEL_MONO:
-                metadata.append(context.getString(R.string.multi_audio_channel_mono));
-                break;
-            case AUDIO_CHANNEL_STEREO:
-                metadata.append(context.getString(R.string.multi_audio_channel_stereo));
-                break;
-            case AUDIO_CHANNEL_SURROUND_6:
-                metadata.append(context.getString(R.string.multi_audio_channel_surround_6));
-                break;
-            case AUDIO_CHANNEL_SURROUND_8:
-                metadata.append(context.getString(R.string.multi_audio_channel_surround_8));
-                break;
-            default:
-                if (track.getAudioChannelCount() > 0) {
-                    metadata.append(
-                            context.getString(
-                                    R.string.multi_audio_channel_suffix,
-                                    track.getAudioChannelCount()));
-                } else {
-                    Log.d(
-                            TAG,
-                            "Invalid audio channel count ("
-                                    + track.getAudioChannelCount()
-                                    + ") found for the audio track: "
-                                    + track);
-                }
-                break;
-        }
-        if (showSampleRate) {
-            int sampleRate = track.getAudioSampleRate();
-            if (sampleRate > 0) {
-                if (metadata.length() > 0) {
-                    metadata.append(", ");
-                }
-                int integerPart = sampleRate / 1000;
-                int tenths = (sampleRate % 1000) / 100;
-                metadata.append(integerPart);
-                if (tenths != 0) {
-                    metadata.append(".");
-                    metadata.append(tenths);
-                }
-                metadata.append("kHz");
-            }
-        }
-
-        if (metadata.length() == 0) {
-            return language;
-        }
-        return context.getString(
-                R.string.multi_audio_display_string_with_channel, language, metadata.toString());
     }
 
     public static boolean isEqualLanguage(String lang1, String lang2) {
