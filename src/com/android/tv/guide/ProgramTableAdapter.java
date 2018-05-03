@@ -238,8 +238,10 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
         int channelIndex = mProgramManager.getChannelIndex(tableEntry.channelId);
         int pos = mProgramManager.getProgramIdIndex(tableEntry.channelId, tableEntry.getId());
         if (DEBUG) Log.d(TAG, "update(" + channelIndex + ", " + pos + ")");
-        mProgramListAdapters.get(channelIndex).notifyItemChanged(pos, tableEntry);
-        notifyItemChanged(channelIndex, true);
+        if (channelIndex >= 0 && channelIndex < mProgramListAdapters.size()) {
+            mProgramListAdapters.get(channelIndex).notifyItemChanged(pos, tableEntry);
+            notifyItemChanged(channelIndex, true);
+        }
     }
 
     class ProgramRowViewHolder extends RecyclerView.ViewHolder
