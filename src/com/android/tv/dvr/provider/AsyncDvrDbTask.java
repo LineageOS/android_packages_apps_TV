@@ -26,20 +26,25 @@ import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.provider.DvrContract.Schedules;
 import com.android.tv.dvr.provider.DvrContract.SeriesRecordings;
+import com.android.tv.util.MainThreadExecutor;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** {@link AsyncTask} that defaults to executing on its own single threaded Executor Service. */
-public abstract class AsyncDvrDbTask<Params, Progress, Result>
-        extends AsyncTask<Params, Progress, Result> {
+public abstract class AsyncDvrDbTask<ParamsT, ResultT> {
     private static final NamedThreadFactory THREAD_FACTORY =
-            new NamedThreadFactory(AsyncDvrDbTask.class.getSimpleName());
-    private static final ExecutorService DB_EXECUTOR =
-            Executors.newSingleThreadExecutor(THREAD_FACTORY);
+        new NamedThreadFactory(AsyncDvrDbTask.class.getSimpleName());
+    private static final ListeningExecutorService DB_EXECUTOR =
+        MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(THREAD_FACTORY));
 
     private static DvrDatabaseHelper sDbHelper;
+    private ListenableFuture<ResultT> mFuture;
 
     private static synchronized DvrDatabaseHelper initializeDbHelper(Context context) {
         if (sDbHelper == null) {
@@ -54,25 +59,31 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
         mContext = context;
     }
 
-    /** Execute the task on the {@link #DB_EXECUTOR} thread. */
+    /** Execute the task on the {@link #DB_EXECUTOR} thread and return Future*/
     @SafeVarargs
-    public final void executeOnDbThread(Params... params) {
-        executeOnExecutor(DB_EXECUTOR, params);
+    public final ListenableFuture<ResultT> executeOnDbThread(
+        FutureCallback<ResultT> callback, ParamsT... params) {
+            mFuture = DB_EXECUTOR.submit(() -> doInBackground(params));
+            Futures.addCallback(mFuture, callback, MainThreadExecutor.getInstance());
+            return mFuture;
     }
 
-    @Override
-    protected final Result doInBackground(Params... params) {
+    protected final ResultT doInBackground(ParamsT... params) {
         initializeDbHelper(mContext);
         return doInDvrBackground(params);
     }
 
     /** Executes in the background after {@link #initializeDbHelper(Context)} */
     @Nullable
-    protected abstract Result doInDvrBackground(Params... params);
+    protected abstract ResultT doInDvrBackground(ParamsT... params);
+
+    public final boolean isCancelled() {
+        return mFuture.isCancelled();
+    }
 
     /** Inserts schedules. */
     public static class AsyncAddScheduleTask
-            extends AsyncDvrDbTask<ScheduledRecording, Void, Void> {
+            extends AsyncDvrDbTask<ScheduledRecording, Void> {
         public AsyncAddScheduleTask(Context context) {
             super(context);
         }
@@ -86,7 +97,7 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
 
     /** Update schedules. */
     public static class AsyncUpdateScheduleTask
-            extends AsyncDvrDbTask<ScheduledRecording, Void, Void> {
+            extends AsyncDvrDbTask<ScheduledRecording, Void> {
         public AsyncUpdateScheduleTask(Context context) {
             super(context);
         }
@@ -100,7 +111,7 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
 
     /** Delete schedules. */
     public static class AsyncDeleteScheduleTask
-            extends AsyncDvrDbTask<ScheduledRecording, Void, Void> {
+            extends AsyncDvrDbTask<ScheduledRecording, Void> {
         public AsyncDeleteScheduleTask(Context context) {
             super(context);
         }
@@ -113,8 +124,8 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
     }
 
     /** Returns all {@link ScheduledRecording}s. */
-    public abstract static class AsyncDvrQueryScheduleTask
-            extends AsyncDvrDbTask<Void, Void, List<ScheduledRecording>> {
+    public static class AsyncDvrQueryScheduleTask
+            extends AsyncDvrDbTask<Void, List<ScheduledRecording>> {
         public AsyncDvrQueryScheduleTask(Context context) {
             super(context);
         }
@@ -137,7 +148,7 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
 
     /** Inserts series recordings. */
     public static class AsyncAddSeriesRecordingTask
-            extends AsyncDvrDbTask<SeriesRecording, Void, Void> {
+            extends AsyncDvrDbTask<SeriesRecording, Void> {
         public AsyncAddSeriesRecordingTask(Context context) {
             super(context);
         }
@@ -151,7 +162,7 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
 
     /** Update series recordings. */
     public static class AsyncUpdateSeriesRecordingTask
-            extends AsyncDvrDbTask<SeriesRecording, Void, Void> {
+            extends AsyncDvrDbTask<SeriesRecording, Void> {
         public AsyncUpdateSeriesRecordingTask(Context context) {
             super(context);
         }
@@ -165,7 +176,7 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
 
     /** Delete series recordings. */
     public static class AsyncDeleteSeriesRecordingTask
-            extends AsyncDvrDbTask<SeriesRecording, Void, Void> {
+            extends AsyncDvrDbTask<SeriesRecording, Void> {
         public AsyncDeleteSeriesRecordingTask(Context context) {
             super(context);
         }
@@ -178,8 +189,8 @@ public abstract class AsyncDvrDbTask<Params, Progress, Result>
     }
 
     /** Returns all {@link SeriesRecording}s. */
-    public abstract static class AsyncDvrQuerySeriesRecordingTask
-            extends AsyncDvrDbTask<Void, Void, List<SeriesRecording>> {
+    public static class AsyncDvrQuerySeriesRecordingTask
+            extends AsyncDvrDbTask<Void, List<SeriesRecording>> {
         private static final String TAG = "DvrQuerySeriesRecording";
 
         public AsyncDvrQuerySeriesRecordingTask(Context context) {
