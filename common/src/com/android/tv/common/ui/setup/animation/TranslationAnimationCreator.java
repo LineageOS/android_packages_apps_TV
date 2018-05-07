@@ -9,7 +9,7 @@ import android.transition.Transition;
 import android.transition.TransitionValues;
 import android.view.View;
 
-import com.android.tv.common.R;
+import android.support.v17.leanback.R;
 
 /**
  * This class is used by Slide and Explode to create an animator that goes from the start position
