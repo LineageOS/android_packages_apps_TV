@@ -110,6 +110,8 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
     private final int mDvrPaddingStartWithTrack;
     private final int mDvrPaddingStartWithOutTrack;
 
+    private RecyclerView mRecyclerView;
+
     ProgramTableAdapter(Context context, ProgramGuide programGuide) {
         mContext = context;
         mAccessibilityManager =
@@ -198,7 +200,15 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
             mProgramManager.addTableEntriesUpdatedListener(listAdapter);
             mProgramListAdapters.add(listAdapter);
         }
-        notifyDataSetChanged();
+        if (mRecyclerView != null && mRecyclerView.isComputingLayout()) {
+            // it means that RecyclerView is in a lockdown state and any attempt to update adapter
+            // contents will result in an exception because adapter contents cannot be changed while
+            // RecyclerView is trying to compute the layout
+            // postpone the change using a Handler
+            mHandler.post(this::notifyDataSetChanged);
+        } else {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -242,6 +252,18 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
             mProgramListAdapters.get(channelIndex).notifyItemChanged(pos, tableEntry);
             notifyItemChanged(channelIndex, true);
         }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        mRecyclerView = null;
     }
 
     class ProgramRowViewHolder extends RecyclerView.ViewHolder
