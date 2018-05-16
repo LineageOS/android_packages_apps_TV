@@ -24,6 +24,7 @@ import android.media.tv.TvInputInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.RemoteException;
+import android.support.annotation.Nullable;
 import android.support.media.tv.TvContractCompat;
 import android.util.Log;
 import com.android.tv.TvSingletons;
@@ -123,6 +124,8 @@ public class DvrStorageStatusManager extends RecordingStorageStatusManager {
             }
         }
 
+
+        @Nullable
         private List<ContentProviderOperation> getDeleteOps() {
             List<ContentProviderOperation> ops = new ArrayList<>();
 
@@ -165,6 +168,9 @@ public class DvrStorageStatusManager extends RecordingStorageStatusManager {
                     }
                 }
                 return ops;
+            } catch (Exception e) {
+                Log.w(TAG, "Error when getting delete ops at CleanUpDbTask", e);
+                return null;
             }
         }
     }
