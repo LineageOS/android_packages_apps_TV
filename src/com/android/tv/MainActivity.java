@@ -2849,7 +2849,7 @@ public class MainActivity extends Activity
             // before.
             if (mWasUnderShrunkenTvView
                     && mUnlockAllowedRatingBeforeShrunken
-                    && mChannelBeforeShrunkenTvView.equals(mChannel)
+                    && Objects.equals(mChannelBeforeShrunkenTvView, mChannel)
                     && rating.equals(mAllowedRatingBeforeShrunken)) {
                 mUnlockAllowedRatingBeforeShrunken = isUnderShrunkenTvView();
                 mTvView.unblockContent(rating);
