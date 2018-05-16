@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.tv.TvInputManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.DetailsFragment;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -216,6 +217,7 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
     }
 
     /** The programs are sorted by season number and episode number. */
+    @Nullable
     private RecordedProgram getRecommendProgram(List<RecordedProgram> programs) {
         for (int i = programs.size() - 1; i >= 0; i--) {
             RecordedProgram program = programs.get(i);
@@ -290,7 +292,8 @@ public class SeriesRecordingDetailsFragment extends DvrDetailsFragment
                         }
                     }
                 }
-                if (recordedProgram.getId() == mRecommendRecordedProgram.getId()) {
+                if (mRecommendRecordedProgram != null
+                        && recordedProgram.getId() == mRecommendRecordedProgram.getId()) {
                     updateWatchAction();
                 }
             }
