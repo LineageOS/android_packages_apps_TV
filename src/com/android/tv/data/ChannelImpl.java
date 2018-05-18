@@ -46,12 +46,8 @@ public final class ChannelImpl implements Channel {
 
     /** Compares the channel numbers of channels which belong to the same input. */
     public static final Comparator<Channel> CHANNEL_NUMBER_COMPARATOR =
-            new Comparator<Channel>() {
-                @Override
-                public int compare(Channel lhs, Channel rhs) {
-                    return ChannelNumber.compare(lhs.getDisplayNumber(), rhs.getDisplayNumber());
-                }
-            };
+            (Channel lhs, Channel rhs) ->
+                    ChannelNumber.compare(lhs.getDisplayNumber(), rhs.getDisplayNumber());
 
     private static final int APP_LINK_TYPE_NOT_SET = 0;
     private static final String INVALID_PACKAGE_NAME = "packageName";

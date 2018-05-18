@@ -34,7 +34,6 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.support.v17.leanback.widget.VerticalGridView;
 import android.text.TextUtils;
-
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.feature.CommonFeatures;
@@ -54,7 +53,7 @@ import com.android.tv.util.images.ImageLoader;
 /** A fragment shows the details of a Program */
 public class ProgramDetailsFragment extends DetailsFragment
         implements DvrDataManager.ScheduledRecordingListener,
-        DvrScheduleManager.OnConflictStateChangeListener {
+                DvrScheduleManager.OnConflictStateChangeListener {
     private static final int LOAD_LOGO_IMAGE = 1;
     private static final int LOAD_BACKGROUND_IMAGE = 2;
 
@@ -134,8 +133,8 @@ public class ProgramDetailsFragment extends DetailsFragment
     /**
      * Loads program details according to the arguments the fragment got.
      *
-     * @return false if cannot find valid programs, else return true. If the return value is
-     *     false, the detail activity and fragment will be ended.
+     * @return false if cannot find valid programs, else return true. If the return value is false,
+     *     the detail activity and fragment will be ended.
      */
     private boolean onLoadDetails(Bundle args) {
         Program program = args.getParcelable(DetailsActivity.PROGRAM);
@@ -152,8 +151,7 @@ public class ProgramDetailsFragment extends DetailsFragment
                     mDvrDataManager.getScheduledRecordingForProgramId(program.getId());
             mBackgroundHelper = new DetailsViewBackgroundHelper(getActivity());
             setupAdapter();
-            setDetailsOverviewRow(
-                    DetailsContent.createFromProgram(getContext(), mProgram));
+            setDetailsOverviewRow(DetailsContent.createFromProgram(getContext(), mProgram));
             mDvrDataManager.addScheduledRecordingListener(this);
             mDvrScheduleManager.addOnConflictStateChangeListener(this);
             return true;
@@ -219,13 +217,9 @@ public class ProgramDetailsFragment extends DetailsFragment
                     DvrUiHelper.checkStorageStatusAndShowErrorMessage(
                             getActivity(),
                             mInputId,
-                            new Runnable() {
-                                @Override
-                                public void run() {
+                            () ->
                                     DvrUiHelper.requestRecordingFutureProgram(
-                                            getActivity(), mProgram, false);
-                                }
-                            });
+                                            getActivity(), mProgram, false));
                 }
             }
         };

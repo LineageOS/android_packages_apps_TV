@@ -103,12 +103,9 @@ public class ProgramItemView extends TextView {
                             tvActivity.getChannelDataManager().getChannel(entry.channelId);
                     if (entry.isCurrentProgram()) {
                         view.postDelayed(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        tvActivity.tuneToChannel(channel);
-                                        tvActivity.hideOverlaysForTune();
-                                    }
+                                () -> {
+                                    tvActivity.tuneToChannel(channel);
+                                    tvActivity.hideOverlaysForTune();
                                 },
                                 entry.getWidth() > ((ProgramItemView) view).mMaxWidthForRipple
                                         ? 0
@@ -125,13 +122,9 @@ public class ProgramItemView extends TextView {
                                 DvrUiHelper.checkStorageStatusAndShowErrorMessage(
                                         tvActivity,
                                         channel.getInputId(),
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
+                                        () ->
                                                 DvrUiHelper.requestRecordingFutureProgram(
-                                                        tvActivity, entry.program, false);
-                                            }
-                                        });
+                                                        tvActivity, entry.program, false));
                             } else {
                                 dvrManager.removeScheduledRecording(entry.scheduledRecording);
                                 String msg =

@@ -334,7 +334,8 @@ class DvrPlayer {
 
     /** Returns the audio tracks of the current playback. */
     public ArrayList<TvTrackInfo> getAudioTracks() {
-        return new ArrayList<>(mTvView.getTracks(TvTrackInfo.TYPE_AUDIO));
+        List<TvTrackInfo> tracks = mTvView.getTracks(TvTrackInfo.TYPE_AUDIO);
+        return tracks == null ? new ArrayList<>() : new ArrayList<>(tracks);
     }
 
     /** Returns the ID of the selected track of the given type. */

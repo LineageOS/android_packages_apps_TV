@@ -30,21 +30,10 @@ import java.lang.annotation.Retention;
 public final class EventNames {
 
     @Retention(SOURCE)
-    @StringDef({
-        APPLICATION_ONCREATE,
-        FETCH_EPG_TASK,
-        MAIN_ACTIVITY_ONCREATE,
-        MAIN_ACTIVITY_ONSTART,
-        MAIN_ACTIVITY_ONRESUME,
-        ON_DEVICE_SEARCH
-    })
+    @StringDef({FETCH_EPG_TASK, ON_DEVICE_SEARCH})
     public @interface EventName {}
 
-    public static final String APPLICATION_ONCREATE = "Application.onCreate";
     public static final String FETCH_EPG_TASK = "FetchEpgTask";
-    public static final String MAIN_ACTIVITY_ONCREATE = "MainActivity.onCreate";
-    public static final String MAIN_ACTIVITY_ONSTART = "MainActivity.onStart";
-    public static final String MAIN_ACTIVITY_ONRESUME = "MainActivity.onResume";
     /**
      * Event name for query running time of on-device search in {@link
      * com.android.tv.search.LocalSearchProvider}.

@@ -460,12 +460,7 @@ public class TvViewUiManager {
                             return;
                         }
                         mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setTvViewPosition(mTvViewLayoutParams, mTvViewFrame, false);
-                                    }
-                                });
+                                () -> setTvViewPosition(mTvViewLayoutParams, mTvViewFrame, false));
                     }
                 });
         mTvViewAnimator.addUpdateListener(
@@ -496,13 +491,7 @@ public class TvViewUiManager {
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mContentView.setBackgroundColor(mBackgroundColor);
-                                    }
-                                });
+                        mHandler.post(() -> mContentView.setBackgroundColor(mBackgroundColor));
                     }
                 });
     }

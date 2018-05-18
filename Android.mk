@@ -44,9 +44,10 @@ LOCAL_JAVA_LIBRARIES := \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
+    guava \
+    jsr330 \
     lib-exoplayer \
     lib-exoplayer-v2-core \
-    jsr330 \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-compat \

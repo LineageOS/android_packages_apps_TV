@@ -21,10 +21,18 @@ import android.app.Application;
 /** Manages the initialization of Performance Monitoring. */
 public interface PerformanceMonitorManager {
 
-  /**
-   * Initializes the {@link com.android.tv.perf.PerformanceMonitor}.
-   *
-   * <p>This should only be called once.
-   */
-  PerformanceMonitor initialize(Application app);
+    /**
+     * Initializes the {@link com.android.tv.perf.PerformanceMonitor}.
+     *
+     * <p>This should only be called once.
+     */
+    PerformanceMonitor initialize(Application app);
+
+    /**
+     * Returns a lightweight object to help measure both cold and warm startup latency.
+     *
+     * <p>This method is idempotent and lightweight. It can be called multiple times and does not
+     * need to be cached.
+     */
+    StartupMeasure getStartupMeasure();
 }

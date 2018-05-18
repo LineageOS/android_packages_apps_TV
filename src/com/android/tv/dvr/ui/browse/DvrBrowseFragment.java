@@ -101,93 +101,84 @@ public class DvrBrowseFragment extends BrowseFragment
             };
 
     private final Comparator<Object> RECORDED_PROGRAM_COMPARATOR =
-            new Comparator<Object>() {
-                @Override
-                public int compare(Object lhs, Object rhs) {
-                    if (lhs instanceof SeriesRecording) {
-                        lhs = mSeriesId2LatestProgram.get(((SeriesRecording) lhs).getSeriesId());
-                    }
-                    if (rhs instanceof SeriesRecording) {
-                        rhs = mSeriesId2LatestProgram.get(((SeriesRecording) rhs).getSeriesId());
-                    }
-                    if (lhs instanceof RecordedProgram) {
-                        if (rhs instanceof RecordedProgram) {
-                            return RecordedProgram.START_TIME_THEN_ID_COMPARATOR
-                                    .reversed()
-                                    .compare((RecordedProgram) lhs, (RecordedProgram) rhs);
-                        } else {
-                            return -1;
-                        }
-                    } else if (rhs instanceof RecordedProgram) {
-                        return 1;
+            (Object lhs, Object rhs) -> {
+                if (lhs instanceof SeriesRecording) {
+                    lhs = mSeriesId2LatestProgram.get(((SeriesRecording) lhs).getSeriesId());
+                }
+                if (rhs instanceof SeriesRecording) {
+                    rhs = mSeriesId2LatestProgram.get(((SeriesRecording) rhs).getSeriesId());
+                }
+                if (lhs instanceof RecordedProgram) {
+                    if (rhs instanceof RecordedProgram) {
+                        return RecordedProgram.START_TIME_THEN_ID_COMPARATOR
+                                .reversed()
+                                .compare((RecordedProgram) lhs, (RecordedProgram) rhs);
                     } else {
-                        return 0;
+                        return -1;
                     }
+                } else if (rhs instanceof RecordedProgram) {
+                    return 1;
+                } else {
+                    return 0;
                 }
             };
 
     private static final Comparator<Object> SCHEDULE_COMPARATOR =
-            new Comparator<Object>() {
-                @Override
-                public int compare(Object lhs, Object rhs) {
-                    if (lhs instanceof ScheduledRecording) {
-                        if (rhs instanceof ScheduledRecording) {
-                            return ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
-                                    .compare((ScheduledRecording) lhs, (ScheduledRecording) rhs);
-                        } else {
-                            return -1;
-                        }
-                    } else if (rhs instanceof ScheduledRecording) {
-                        return 1;
+            (Object lhs, Object rhs) -> {
+                if (lhs instanceof ScheduledRecording) {
+                    if (rhs instanceof ScheduledRecording) {
+                        return ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
+                                .compare((ScheduledRecording) lhs, (ScheduledRecording) rhs);
                     } else {
-                        return 0;
+                        return -1;
                     }
+                } else if (rhs instanceof ScheduledRecording) {
+                    return 1;
+                } else {
+                    return 0;
                 }
             };
 
     static final Comparator<Object> RECENT_ROW_COMPARATOR =
-            new Comparator<Object>() {
-                @Override
-                public int compare(Object lhs, Object rhs) {
-                    if (lhs instanceof ScheduledRecording) {
-                        if (rhs instanceof ScheduledRecording) {
-                            return ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
-                                    .reversed()
-                                    .compare((ScheduledRecording) lhs, (ScheduledRecording) rhs);
-                        } else if (rhs instanceof RecordedProgram) {
-                            ScheduledRecording scheduled = (ScheduledRecording) lhs;
-                            RecordedProgram recorded = (RecordedProgram) rhs;
-                            int compare =
-                                    Long.compare(
-                                            recorded.getStartTimeUtcMillis(),
-                                            scheduled.getStartTimeMs());
-                            // recorded program first when the start times are the same
-                            return compare == 0 ? 1 : compare;
-                        } else {
-                            return -1;
-                        }
-                    } else if (lhs instanceof RecordedProgram) {
-                        if (rhs instanceof RecordedProgram) {
-                            return RecordedProgram.START_TIME_THEN_ID_COMPARATOR
-                                    .reversed()
-                                    .compare((RecordedProgram) lhs, (RecordedProgram) rhs);
-                        } else if (rhs instanceof ScheduledRecording) {
-                            RecordedProgram recorded = (RecordedProgram) lhs;
-                            ScheduledRecording scheduled = (ScheduledRecording) rhs;
-                            int compare =
-                                    Long.compare(
-                                            scheduled.getStartTimeMs(),
-                                            recorded.getStartTimeUtcMillis());
-                            // recorded program first when the start times are the same
-                            return compare == 0 ? -1 : compare;
-                        } else {
-                            return -1;
-                        }
+            (Object lhs, Object rhs) -> {
+                if (lhs instanceof ScheduledRecording) {
+                    if (rhs instanceof ScheduledRecording) {
+                        return ScheduledRecording.START_TIME_THEN_PRIORITY_THEN_ID_COMPARATOR
+                                .reversed()
+                                .compare((ScheduledRecording) lhs, (ScheduledRecording) rhs);
+                    } else if (rhs instanceof RecordedProgram) {
+                        ScheduledRecording scheduled = (ScheduledRecording) lhs;
+                        RecordedProgram recorded = (RecordedProgram) rhs;
+                        int compare =
+                                Long.compare(
+                                        recorded.getStartTimeUtcMillis(),
+                                        scheduled.getStartTimeMs());
+                        // recorded program first when the start times are the same
+                        return compare == 0 ? 1 : compare;
                     } else {
-                        return !(rhs instanceof RecordedProgram)
-                                && !(rhs instanceof ScheduledRecording)
-                                ? 0 : 1;
+                        return -1;
                     }
+                } else if (lhs instanceof RecordedProgram) {
+                    if (rhs instanceof RecordedProgram) {
+                        return RecordedProgram.START_TIME_THEN_ID_COMPARATOR
+                                .reversed()
+                                .compare((RecordedProgram) lhs, (RecordedProgram) rhs);
+                    } else if (rhs instanceof ScheduledRecording) {
+                        RecordedProgram recorded = (RecordedProgram) lhs;
+                        ScheduledRecording scheduled = (ScheduledRecording) rhs;
+                        int compare =
+                                Long.compare(
+                                        scheduled.getStartTimeMs(),
+                                        recorded.getStartTimeUtcMillis());
+                        // recorded program first when the start times are the same
+                        return compare == 0 ? -1 : compare;
+                    } else {
+                        return -1;
+                    }
+                } else {
+                    return !(rhs instanceof RecordedProgram) && !(rhs instanceof ScheduledRecording)
+                            ? 0
+                            : 1;
                 }
             };
 
@@ -204,13 +195,7 @@ public class DvrBrowseFragment extends BrowseFragment
                 }
             };
 
-    private final Runnable mUpdateRowsRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    updateRows();
-                }
-            };
+    private final Runnable mUpdateRowsRunnable = this::updateRows;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -232,8 +217,7 @@ public class DvrBrowseFragment extends BrowseFragment
                                 FullScheduleCardHolder.class,
                                 new FullSchedulesCardPresenter(context))
                         .addClassPresenter(
-                                DvrHistoryCardHolder.class,
-                                new DvrHistoryCardPresenter(context));
+                                DvrHistoryCardHolder.class, new DvrHistoryCardPresenter(context));
 
         mGenreLabels = new ArrayList<>(Arrays.asList(GenreItems.getLabels(context)));
         mGenreLabels.add(getString(R.string.dvr_main_others));
@@ -447,8 +431,8 @@ public class DvrBrowseFragment extends BrowseFragment
                 handleRecordedProgramAdded(recordedProgram, false);
             }
             // only get failed recordings
-            for (ScheduledRecording scheduledRecording
-                    : mDvrDataManager.getFailedScheduledRecordings()) {
+            for (ScheduledRecording scheduledRecording :
+                    mDvrDataManager.getFailedScheduledRecordings()) {
                 onScheduledRecordingAdded(scheduledRecording);
             }
             mRecentAdapter.addExtraItem(DvrHistoryCardHolder.DVR_HISTORY_CARD_HOLDER);
@@ -713,16 +697,13 @@ public class DvrBrowseFragment extends BrowseFragment
         SeriesAdapter() {
             super(
                     mPresenterSelector,
-                    new Comparator<SeriesRecording>() {
-                        @Override
-                        public int compare(SeriesRecording lhs, SeriesRecording rhs) {
-                            if (lhs.isStopped() && !rhs.isStopped()) {
-                                return 1;
-                            } else if (!lhs.isStopped() && rhs.isStopped()) {
-                                return -1;
-                            }
-                            return SeriesRecording.PRIORITY_COMPARATOR.compare(lhs, rhs);
+                    (SeriesRecording lhs, SeriesRecording rhs) -> {
+                        if (lhs.isStopped() && !rhs.isStopped()) {
+                            return 1;
+                        } else if (!lhs.isStopped() && rhs.isStopped()) {
+                            return -1;
                         }
+                        return SeriesRecording.PRIORITY_COMPARATOR.compare(lhs, rhs);
                     });
         }
 

@@ -442,14 +442,7 @@ public class DvrManager {
         }
         synchronized (mListener) {
             for (final Entry<Listener, Handler> entry : mListener.entrySet()) {
-                entry.getValue()
-                        .post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        entry.getKey().onStopRecordingRequested(recording);
-                                    }
-                                });
+                entry.getValue().post(() -> entry.getKey().onStopRecordingRequested(recording));
             }
         }
     }

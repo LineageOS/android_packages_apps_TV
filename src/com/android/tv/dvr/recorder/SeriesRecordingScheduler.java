@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -442,21 +441,18 @@ public class SeriesRecordingScheduler {
             List<Program> programsForEpisode = entry.getValue();
             Collections.sort(
                     programsForEpisode,
-                    new Comparator<Program>() {
-                        @Override
-                        public int compare(Program lhs, Program rhs) {
-                            // Place the existing schedule first.
-                            boolean lhsScheduled = isProgramScheduled(dataManager, lhs);
-                            boolean rhsScheduled = isProgramScheduled(dataManager, rhs);
-                            if (lhsScheduled && !rhsScheduled) {
-                                return -1;
-                            }
-                            if (!lhsScheduled && rhsScheduled) {
-                                return 1;
-                            }
-                            // Sort by the start time in ascending order.
-                            return lhs.compareTo(rhs);
+                    (Program lhs, Program rhs) -> {
+                        // Place the existing schedule first.
+                        boolean lhsScheduled = isProgramScheduled(dataManager, lhs);
+                        boolean rhsScheduled = isProgramScheduled(dataManager, rhs);
+                        if (lhsScheduled && !rhsScheduled) {
+                            return -1;
                         }
+                        if (!lhsScheduled && rhsScheduled) {
+                            return 1;
+                        }
+                        // Sort by the start time in ascending order.
+                        return lhs.compareTo(rhs);
                     });
             boolean added = false;
             // Add all the scheduled programs

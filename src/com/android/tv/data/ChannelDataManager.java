@@ -737,15 +737,12 @@ public class ChannelDataManager {
             return;
         }
         mDbExecutor.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        String selection = Utils.buildSelectionForIds(Channels._ID, ids);
-                        ContentValues values = new ContentValues();
-                        values.put(columnName, columnValue);
-                        mContentResolver.update(
-                                TvContract.Channels.CONTENT_URI, values, selection, null);
-                    }
+                () -> {
+                    String selection = Utils.buildSelectionForIds(Channels._ID, ids);
+                    ContentValues values = new ContentValues();
+                    values.put(columnName, columnValue);
+                    mContentResolver.update(
+                            TvContract.Channels.CONTENT_URI, values, selection, null);
                 });
     }
 

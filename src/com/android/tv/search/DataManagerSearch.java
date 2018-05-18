@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -68,13 +67,7 @@ public class DataManagerSearch implements SearchInterface {
     public List<SearchResult> search(final String query, final int limit, final int action) {
         Future<List<SearchResult>> future =
                 MainThreadExecutor.getInstance()
-                        .submit(
-                                new Callable<List<SearchResult>>() {
-                                    @Override
-                                    public List<SearchResult> call() throws Exception {
-                                        return searchFromDataManagers(query, limit, action);
-                                    }
-                                });
+                        .submit(() -> searchFromDataManagers(query, limit, action));
 
         try {
             return future.get();

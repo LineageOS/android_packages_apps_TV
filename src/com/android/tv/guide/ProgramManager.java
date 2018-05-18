@@ -437,6 +437,14 @@ public class ProgramManager {
         buildGenreFilters();
     }
 
+    /** Sets the channel list for testing */
+    void setChannels(List<Channel> channels) {
+        mChannels = new ArrayList<>(channels);
+        mSelectedGenreId = GenreItems.ID_ALL_CHANNELS;
+        mFilteredChannels = mChannels;
+        buildGenreFilters();
+    }
+
     private void updateTableEntries(boolean clear) {
         updateTableEntriesWithoutNotification(clear);
         notifyTableEntriesUpdated();

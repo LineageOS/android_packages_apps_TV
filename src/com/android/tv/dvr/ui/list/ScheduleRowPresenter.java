@@ -117,14 +117,11 @@ class ScheduleRowPresenter extends RowPresenter {
                     @Override
                     public void onFocusChange(View view, boolean focused) {
                         view.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (view.isFocused()) {
-                                            mPresenter.mLastFocusedViewId = view.getId();
-                                        }
-                                        updateSelector();
+                                () -> {
+                                    if (view.isFocused()) {
+                                        mPresenter.mLastFocusedViewId = view.getId();
                                     }
+                                    updateSelector();
                                 });
                     }
                 };
@@ -431,8 +428,10 @@ class ScheduleRowPresenter extends RowPresenter {
         if (mDvrManager.isConflicting(schedule) || isFailedRecording(schedule)) {
             String extraInfo;
             if (isFailedRecording(schedule)) {
-                extraInfo = mContext.getString(R.string.dvr_recording_failed_short)
-                        + " " + getErrorMessage(schedule);
+                extraInfo =
+                        mContext.getString(R.string.dvr_recording_failed_short)
+                                + " "
+                                + getErrorMessage(schedule);
                 viewHolder.mExtraInfoIcon.setVisibility(View.VISIBLE);
             } else if (mDvrScheduleManager.isPartiallyConflicting(row.getSchedule())) {
                 extraInfo = mTunerConflictWillBePartiallyRecordedInfo;
@@ -451,7 +450,8 @@ class ScheduleRowPresenter extends RowPresenter {
         }
         if (isFailedRecording(schedule)) {
             viewHolder.mExtraInfoView.setTextColor(
-                    viewHolder.mInfoContainer
+                    viewHolder
+                            .mInfoContainer
                             .getResources()
                             .getColor(R.color.dvr_recording_failed_text_color, null));
         }
@@ -465,9 +465,10 @@ class ScheduleRowPresenter extends RowPresenter {
     }
 
     private String getErrorMessage(ScheduledRecording recording) {
-        int reason = recording.getFailedReason() == null
-                ? ScheduledRecording.FAILED_REASON_OTHER
-                : recording.getFailedReason();
+        int reason =
+                recording.getFailedReason() == null
+                        ? ScheduledRecording.FAILED_REASON_OTHER
+                        : recording.getFailedReason();
         switch (reason) {
             case ScheduledRecording.FAILED_REASON_PROGRAM_ENDED_BEFORE_RECORDING_STARTED:
                 return mContext.getString(R.string.dvr_recording_failed_not_started_short);
@@ -737,23 +738,17 @@ class ScheduleRowPresenter extends RowPresenter {
                     prepareShowActionView(viewHolder.mSecondActionContainer);
                     prepareShowActionView(viewHolder.mFirstActionContainer);
                     viewHolder.mPendingAnimationRunnable =
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    showActionView(viewHolder.mSecondActionContainer);
-                                    showActionView(viewHolder.mFirstActionContainer);
-                                }
+                            () -> {
+                                showActionView(viewHolder.mSecondActionContainer);
+                                showActionView(viewHolder.mFirstActionContainer);
                             };
                     break;
                 case 1:
                     prepareShowActionView(viewHolder.mFirstActionContainer);
                     viewHolder.mPendingAnimationRunnable =
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    hideActionView(viewHolder.mSecondActionContainer, View.GONE);
-                                    showActionView(viewHolder.mFirstActionContainer);
-                                }
+                            () -> {
+                                hideActionView(viewHolder.mSecondActionContainer, View.GONE);
+                                showActionView(viewHolder.mFirstActionContainer);
                             };
                     if (mLastFocusedViewId == R.id.action_second_container) {
                         mLastFocusedViewId = R.id.info_container;
@@ -762,12 +757,9 @@ class ScheduleRowPresenter extends RowPresenter {
                 case 0:
                 default:
                     viewHolder.mPendingAnimationRunnable =
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    hideActionView(viewHolder.mSecondActionContainer, View.GONE);
-                                    hideActionView(viewHolder.mFirstActionContainer, View.GONE);
-                                }
+                            () -> {
+                                hideActionView(viewHolder.mSecondActionContainer, View.GONE);
+                                hideActionView(viewHolder.mFirstActionContainer, View.GONE);
                             };
                     mLastFocusedViewId = R.id.info_container;
                     SoftPreconditions.checkState(

@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.tv.perf.stub;
 
 import android.app.Application;
-import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.perf.PerformanceMonitorManager;
 import com.android.tv.perf.StartupMeasure;
 
-/** Manages a stub implementation of Performance Monitoring. */
-public class StubPerformanceMonitorManager implements PerformanceMonitorManager {
+/** Stub implementation of {@link StartupMeasure} */
+public class StubStartupMeasure implements StartupMeasure {
 
     @Override
-    public PerformanceMonitor initialize(Application app) {
-        return new StubPerformanceMonitor();
-    }
+    public void onAppClassLoaded() {}
 
     @Override
-    public StartupMeasure getStartupMeasure() {
-        return new StubStartupMeasure();
-    }
+    public void onAppCreate(Application application) {}
+
+    @Override
+    public void onActivityInit() {}
 }

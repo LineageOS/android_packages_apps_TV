@@ -148,13 +148,7 @@ public class OnboardingActivity extends SetupActivity {
 
     private void showMerchantCollection() {
         executeActionWithDelay(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(OnboardingUtils.ONLINE_STORE_INTENT);
-                    }
-                },
-                SHOW_RIPPLE_DURATION_MS);
+                () -> startActivity(OnboardingUtils.ONLINE_STORE_INTENT), SHOW_RIPPLE_DURATION_MS);
     }
 
     @Override

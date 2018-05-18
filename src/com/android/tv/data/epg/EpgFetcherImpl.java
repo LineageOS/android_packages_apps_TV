@@ -615,13 +615,9 @@ public class EpgFetcherImpl implements EpgFetcher {
             }
             new Handler(mContext.getMainLooper())
                     .post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
+                            () ->
                                     ChannelLogoFetcher.startFetchingChannelLogos(
-                                            mContext, asChannelList(channels));
-                                }
-                            });
+                                            mContext, asChannelList(channels)));
             for (EpgReader.EpgChannel epgChannel : channels) {
                 if (this.isCancelled()) {
                     return null;
@@ -804,14 +800,7 @@ public class EpgFetcherImpl implements EpgFetcher {
             // Clear timestamp to make routine service start right away.
             EpgFetchHelper.setLastEpgUpdatedTimestamp(mContext, 0);
             Log.i(TAG, "EPG Fetching during channel scanning finished.");
-            new Handler(Looper.getMainLooper())
-                    .post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    fetchImmediately();
-                                }
-                            });
+            new Handler(Looper.getMainLooper()).post(EpgFetcherImpl.this::fetchImmediately);
         }
     }
 }

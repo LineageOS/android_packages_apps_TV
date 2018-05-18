@@ -86,19 +86,18 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(
-        flag = true,
-        value = {
-            FLAG_HIDE_OVERLAYS_DEFAULT,
-            FLAG_HIDE_OVERLAYS_WITHOUT_ANIMATION,
-            FLAG_HIDE_OVERLAYS_KEEP_SCENE,
-            FLAG_HIDE_OVERLAYS_KEEP_DIALOG,
-            FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS,
-            FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANEL_HISTORY,
-            FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE,
-            FLAG_HIDE_OVERLAYS_KEEP_MENU,
-            FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT
-        }
-    )
+            flag = true,
+            value = {
+                FLAG_HIDE_OVERLAYS_DEFAULT,
+                FLAG_HIDE_OVERLAYS_WITHOUT_ANIMATION,
+                FLAG_HIDE_OVERLAYS_KEEP_SCENE,
+                FLAG_HIDE_OVERLAYS_KEEP_DIALOG,
+                FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS,
+                FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANEL_HISTORY,
+                FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE,
+                FLAG_HIDE_OVERLAYS_KEEP_MENU,
+                FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT
+            })
     private @interface HideOverlayFlag {}
     // FLAG_HIDE_OVERLAYs must be bitwise exclusive.
     public static final int FLAG_HIDE_OVERLAYS_DEFAULT = 0b000000000;
@@ -115,20 +114,19 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(
-        flag = true,
-        value = {
-            OVERLAY_TYPE_NONE,
-            OVERLAY_TYPE_MENU,
-            OVERLAY_TYPE_SIDE_FRAGMENT,
-            OVERLAY_TYPE_DIALOG,
-            OVERLAY_TYPE_GUIDE,
-            OVERLAY_TYPE_SCENE_CHANNEL_BANNER,
-            OVERLAY_TYPE_SCENE_INPUT_BANNER,
-            OVERLAY_TYPE_SCENE_KEYPAD_CHANNEL_SWITCH,
-            OVERLAY_TYPE_SCENE_SELECT_INPUT,
-            OVERLAY_TYPE_FRAGMENT
-        }
-    )
+            flag = true,
+            value = {
+                OVERLAY_TYPE_NONE,
+                OVERLAY_TYPE_MENU,
+                OVERLAY_TYPE_SIDE_FRAGMENT,
+                OVERLAY_TYPE_DIALOG,
+                OVERLAY_TYPE_GUIDE,
+                OVERLAY_TYPE_SCENE_CHANNEL_BANNER,
+                OVERLAY_TYPE_SCENE_INPUT_BANNER,
+                OVERLAY_TYPE_SCENE_KEYPAD_CHANNEL_SWITCH,
+                OVERLAY_TYPE_SCENE_SELECT_INPUT,
+                OVERLAY_TYPE_FRAGMENT
+            })
     private @interface TvOverlayType {}
     // OVERLAY_TYPEs must be bitwise exclusive.
     /** The overlay type which indicates that there are no overlays. */
@@ -289,35 +287,17 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
         mSideFragmentManager =
                 new SideFragmentManager(
                         mainActivity,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                onOverlayOpened(OVERLAY_TYPE_SIDE_FRAGMENT);
-                                hideOverlays(FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS);
-                            }
+                        () -> {
+                            onOverlayOpened(OVERLAY_TYPE_SIDE_FRAGMENT);
+                            hideOverlays(FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS);
                         },
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                showChannelBannerIfHiddenBySideFragment();
-                                onOverlayClosed(OVERLAY_TYPE_SIDE_FRAGMENT);
-                            }
+                        () -> {
+                            showChannelBannerIfHiddenBySideFragment();
+                            onOverlayClosed(OVERLAY_TYPE_SIDE_FRAGMENT);
                         });
         // Program Guide
-        Runnable preShowRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        onOverlayOpened(OVERLAY_TYPE_GUIDE);
-                    }
-                };
-        Runnable postHideRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        onOverlayClosed(OVERLAY_TYPE_GUIDE);
-                    }
-                };
+        Runnable preShowRunnable = () -> onOverlayOpened(OVERLAY_TYPE_GUIDE);
+        Runnable postHideRunnable = () -> onOverlayClosed(OVERLAY_TYPE_GUIDE);
         DvrDataManager dvrDataManager =
                 CommonFeatures.DVR.isEnabled(mainActivity) ? singletons.getDvrDataManager() : null;
         mProgramGuide =
@@ -522,16 +502,13 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
         hideOverlays(FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
         onOverlayOpened(OVERLAY_TYPE_FRAGMENT);
         runAfterSideFragmentsAreClosed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (DEBUG) Log.d(TAG, "showFragment(" + fragment + ")");
-                        mMainActivity
-                                .getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, fragment, tag)
-                                .commit();
-                    }
+                () -> {
+                    if (DEBUG) Log.d(TAG, "showFragment(" + fragment + ")");
+                    mMainActivity
+                            .getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, fragment, tag)
+                            .commit();
                 });
     }
 
@@ -680,12 +657,7 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
     /** Shows the program guide. */
     public void showProgramGuide() {
         mProgramGuide.show(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        hideOverlays(TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE);
-                    }
-                });
+                () -> hideOverlays(TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE));
     }
 
     /**
@@ -858,7 +830,7 @@ public class TvOverlayManager implements AccessibilityStateChangeListener {
                     mChannelBannerView.updateViews(false);
                 }
             } else if (CommonFeatures.TUNER_SIGNAL_STRENGTH.isEnabled(mMainActivity)
-                        && reason == UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH) {
+                    && reason == UPDATE_CHANNEL_BANNER_REASON_UPDATE_SIGNAL_STRENGTH) {
                 mChannelBannerView.updateChannelSignalStrengthView(
                         mTvView.getChannelSignalStrength());
             } else {

@@ -176,12 +176,9 @@ public class ScanFragment extends SetupFragment {
             // Notifies a user of waiting to finish the scanning process.
             new Handler()
                     .postDelayed(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mChannelScanTask != null) {
-                                        mChannelScanTask.showFinishingProgressDialog();
-                                    }
+                            () -> {
+                                if (mChannelScanTask != null) {
+                                    mChannelScanTask.showFinishingProgressDialog();
                                 }
                             },
                             SHOW_PROGRESS_DIALOG_DELAY_MS);
@@ -282,41 +279,35 @@ public class ScanFragment extends SetupFragment {
 
         private void maybeSetChannelListVisible() {
             mActivity.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            int channelsFound = mAdapter.getCount();
-                            if (!mChannelListVisible && channelsFound > 0) {
-                                String format =
-                                        getResources()
-                                                .getQuantityString(
-                                                        R.plurals.ut_channel_scan_message,
-                                                        channelsFound,
-                                                        channelsFound);
-                                mScanningMessage.setText(String.format(format, channelsFound));
-                                mChannelHolder.setVisibility(View.VISIBLE);
-                                mChannelListVisible = true;
-                            }
+                    () -> {
+                        int channelsFound = mAdapter.getCount();
+                        if (!mChannelListVisible && channelsFound > 0) {
+                            String format =
+                                    getResources()
+                                            .getQuantityString(
+                                                    R.plurals.ut_channel_scan_message,
+                                                    channelsFound,
+                                                    channelsFound);
+                            mScanningMessage.setText(String.format(format, channelsFound));
+                            mChannelHolder.setVisibility(View.VISIBLE);
+                            mChannelListVisible = true;
                         }
                     });
         }
 
         private void addChannel(final TunerChannel channel) {
             mActivity.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mAdapter.add(channel);
-                            if (mChannelListVisible) {
-                                int channelsFound = mAdapter.getCount();
-                                String format =
-                                        getResources()
-                                                .getQuantityString(
-                                                        R.plurals.ut_channel_scan_message,
-                                                        channelsFound,
-                                                        channelsFound);
-                                mScanningMessage.setText(String.format(format, channelsFound));
-                            }
+                    () -> {
+                        mAdapter.add(channel);
+                        if (mChannelListVisible) {
+                            int channelsFound = mAdapter.getCount();
+                            String format =
+                                    getResources()
+                                            .getQuantityString(
+                                                    R.plurals.ut_channel_scan_message,
+                                                    channelsFound,
+                                                    channelsFound);
+                            mScanningMessage.setText(String.format(format, channelsFound));
                         }
                     });
         }

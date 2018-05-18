@@ -124,32 +124,29 @@ public class SetupUtils {
         TvSingletons tvSingletons = TvSingletons.getSingletons(context);
         final ChannelDataManager manager = tvSingletons.getChannelDataManager();
         manager.updateChannels(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Channel firstChannelForInput = null;
-                        boolean browsableChanged = false;
-                        for (Channel channel : manager.getChannelList()) {
-                            if (channel.getInputId().equals(inputId)) {
-                                if (!channel.isBrowsable()) {
-                                    manager.updateBrowsable(channel.getId(), true, true);
-                                    browsableChanged = true;
-                                }
-                                if (firstChannelForInput == null) {
-                                    firstChannelForInput = channel;
-                                }
+                () -> {
+                    Channel firstChannelForInput = null;
+                    boolean browsableChanged = false;
+                    for (Channel channel : manager.getChannelList()) {
+                        if (channel.getInputId().equals(inputId)) {
+                            if (!channel.isBrowsable()) {
+                                manager.updateBrowsable(channel.getId(), true, true);
+                                browsableChanged = true;
+                            }
+                            if (firstChannelForInput == null) {
+                                firstChannelForInput = channel;
                             }
                         }
-                        if (firstChannelForInput != null) {
-                            Utils.setLastWatchedChannel(context, firstChannelForInput);
-                        }
-                        if (browsableChanged) {
-                            manager.notifyChannelBrowsableChanged();
-                            manager.applyUpdatedValuesToDb();
-                        }
-                        if (postRunnable != null) {
-                            postRunnable.run();
-                        }
+                    }
+                    if (firstChannelForInput != null) {
+                        Utils.setLastWatchedChannel(context, firstChannelForInput);
+                    }
+                    if (browsableChanged) {
+                        manager.notifyChannelBrowsableChanged();
+                        manager.applyUpdatedValuesToDb();
+                    }
+                    if (postRunnable != null) {
+                        postRunnable.run();
                     }
                 });
     }

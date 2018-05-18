@@ -56,39 +56,22 @@ public final class ScheduledRecording implements Parcelable {
 
     /** Compares the start time in ascending order. */
     public static final Comparator<ScheduledRecording> START_TIME_COMPARATOR =
-            new Comparator<ScheduledRecording>() {
-                @Override
-                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-                    return Long.compare(lhs.mStartTimeMs, rhs.mStartTimeMs);
-                }
-            };
+            (ScheduledRecording lhs, ScheduledRecording rhs) ->
+                    Long.compare(lhs.mStartTimeMs, rhs.mStartTimeMs);
 
     /** Compares the end time in ascending order. */
     public static final Comparator<ScheduledRecording> END_TIME_COMPARATOR =
-            new Comparator<ScheduledRecording>() {
-                @Override
-                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-                    return Long.compare(lhs.mEndTimeMs, rhs.mEndTimeMs);
-                }
-            };
+            (ScheduledRecording lhs, ScheduledRecording rhs) ->
+                    Long.compare(lhs.mEndTimeMs, rhs.mEndTimeMs);
 
     /** Compares ID in ascending order. The schedule with the larger ID was created later. */
     public static final Comparator<ScheduledRecording> ID_COMPARATOR =
-            new Comparator<ScheduledRecording>() {
-                @Override
-                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-                    return Long.compare(lhs.mId, rhs.mId);
-                }
-            };
+            (ScheduledRecording lhs, ScheduledRecording rhs) -> Long.compare(lhs.mId, rhs.mId);
 
     /** Compares the priority in ascending order. */
     public static final Comparator<ScheduledRecording> PRIORITY_COMPARATOR =
-            new Comparator<ScheduledRecording>() {
-                @Override
-                public int compare(ScheduledRecording lhs, ScheduledRecording rhs) {
-                    return Long.compare(lhs.mPriority, rhs.mPriority);
-                }
-            };
+            (ScheduledRecording lhs, ScheduledRecording rhs) ->
+                    Long.compare(lhs.mPriority, rhs.mPriority);
 
     /**
      * Compares start time in ascending order and then priority in descending order and then ID in
@@ -686,7 +669,8 @@ public final class ScheduledRecording implements Parcelable {
     }
 
     /** Returns the failed reason of the {@link ScheduledRecording}. */
-    @Nullable @RecordingFailedReason
+    @Nullable
+    @RecordingFailedReason
     public Integer getFailedReason() {
         return mFailedReason;
     }
@@ -819,10 +803,7 @@ public final class ScheduledRecording implements Parcelable {
         }
     }
 
-    /**
-     * Converts a string to a failed reason integer, defaulting to {@link
-     * #FAILED_REASON_OTHER}.
-     */
+    /** Converts a string to a failed reason integer, defaulting to {@link #FAILED_REASON_OTHER}. */
     private static Integer recordingFailedReason(String reason) {
         if (TextUtils.isEmpty(reason)) {
             return null;

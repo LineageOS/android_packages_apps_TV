@@ -56,6 +56,8 @@ import com.android.tv.dvr.DvrStorageStatusManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
+import com.android.tv.perf.PerformanceMonitorManager;
+import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
 import com.android.tv.tuner.TunerInputController;
@@ -74,6 +76,9 @@ import java.util.concurrent.Executors;
  * <p>This includes all the Google specific hooks.
  */
 public abstract class TvApplication extends BaseApplication implements TvSingletons, Starter {
+
+    protected static final PerformanceMonitorManager PERFORMANCE_MONITOR_MANAGER =
+            PerformanceMonitorManagerFactory.create();
     private static final String TAG = "TvApplication";
     private static final boolean DEBUG = false;
 
@@ -128,12 +133,9 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         super.onCreate();
         SharedPreferencesUtils.initialize(
                 this,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mRunningInMainProcess != null && mRunningInMainProcess) {
-                            checkTunerServiceOnFirstLaunch();
-                        }
+                () -> {
+                    if (mRunningInMainProcess != null && mRunningInMainProcess) {
+                        checkTunerServiceOnFirstLaunch();
                     }
                 });
         try {
@@ -289,13 +291,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
             return mProgramDataManager;
         }
         Utils.runInMainThreadAndWait(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mProgramDataManager == null) {
-                            mProgramDataManager = new ProgramDataManager(TvApplication.this);
-                            mProgramDataManager.start();
-                        }
+                () -> {
+                    if (mProgramDataManager == null) {
+                        mProgramDataManager = new ProgramDataManager(TvApplication.this);
+                        mProgramDataManager.start();
                     }
                 });
         return mProgramDataManager;
