@@ -21,9 +21,6 @@ package com.android.tv.tuner.data;
 option java_package = "com.android.tv.tuner.data";
 option java_outer_classname = "Channel";
 
-import "third_party/android/nanoproto/nano_descriptor.proto";
-option (proto2.nano.file_as_lite) = false;
-
 import "track.proto";
 
 // Holds information about a channel used in the tuners.
