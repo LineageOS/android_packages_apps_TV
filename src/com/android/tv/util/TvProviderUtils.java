@@ -23,6 +23,7 @@ import android.media.tv.TvContract;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import com.android.tv.data.BaseProgram;
@@ -109,10 +110,16 @@ public final class TvProviderUtils {
      *
      * @param uri the corresponding URI of the table
      */
-    private static Set<String> getExistingColumns(Context context, Uri uri) {
-        Bundle result =
-                context.getContentResolver()
-                        .call(uri, TvContract.METHOD_GET_COLUMNS, uri.toString(), null);
+    @VisibleForTesting
+    static Set<String> getExistingColumns(Context context, Uri uri) {
+        Bundle result = null;
+        try {
+            result =
+                    context.getContentResolver()
+                            .call(uri, TvContract.METHOD_GET_COLUMNS, uri.toString(), null);
+        } catch (Exception e) {
+            Log.e(TAG, "Error trying to get existing columns.", e);
+        }
         if (result != null) {
             String[] columns = result.getStringArray(TvContract.EXTRA_EXISTING_COLUMN_NAMES);
             if (columns != null) {

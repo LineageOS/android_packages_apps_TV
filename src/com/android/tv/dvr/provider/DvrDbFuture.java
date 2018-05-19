@@ -18,7 +18,6 @@ package com.android.tv.dvr.provider;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.tv.common.concurrent.NamedThreadFactory;
@@ -36,26 +35,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-/** {@link AsyncTask} that defaults to executing on its own single threaded Executor Service. */
-public abstract class AsyncDvrDbTask<ParamsT, ResultT> {
+/** {@link DvrDbFuture} that defaults to executing on its own single threaded Executor Service. */
+public abstract class DvrDbFuture<ParamsT, ResultT> {
     private static final NamedThreadFactory THREAD_FACTORY =
-        new NamedThreadFactory(AsyncDvrDbTask.class.getSimpleName());
+        new NamedThreadFactory(DvrDbFuture.class.getSimpleName());
     private static final ListeningExecutorService DB_EXECUTOR =
         MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(THREAD_FACTORY));
 
     private static DvrDatabaseHelper sDbHelper;
     private ListenableFuture<ResultT> mFuture;
 
-    private static synchronized DvrDatabaseHelper initializeDbHelper(Context context) {
-        if (sDbHelper == null) {
-            sDbHelper = new DvrDatabaseHelper(context.getApplicationContext());
-        }
-        return sDbHelper;
-    }
-
     final Context mContext;
 
-    private AsyncDvrDbTask(Context context) {
+    private DvrDbFuture(Context context) {
         mContext = context;
     }
 
@@ -63,76 +55,74 @@ public abstract class AsyncDvrDbTask<ParamsT, ResultT> {
     @SafeVarargs
     public final ListenableFuture<ResultT> executeOnDbThread(
         FutureCallback<ResultT> callback, ParamsT... params) {
-            mFuture = DB_EXECUTOR.submit(() -> doInBackground(params));
+            if (sDbHelper == null) {
+                sDbHelper = new DvrDatabaseHelper(mContext.getApplicationContext());
+            }
+            mFuture = DB_EXECUTOR.submit(() -> dbHelperInBackground(params));
             Futures.addCallback(mFuture, callback, MainThreadExecutor.getInstance());
             return mFuture;
     }
 
-    protected final ResultT doInBackground(ParamsT... params) {
-        initializeDbHelper(mContext);
-        return doInDvrBackground(params);
-    }
-
-    /** Executes in the background after {@link #initializeDbHelper(Context)} */
+    /** Executes in the background after initializing DbHelper} */
     @Nullable
-    protected abstract ResultT doInDvrBackground(ParamsT... params);
+    protected abstract ResultT dbHelperInBackground(ParamsT... params);
 
     public final boolean isCancelled() {
         return mFuture.isCancelled();
     }
 
     /** Inserts schedules. */
-    public static class AsyncAddScheduleTask
-            extends AsyncDvrDbTask<ScheduledRecording, Void> {
-        public AsyncAddScheduleTask(Context context) {
+    public static class AddScheduleFuture
+            extends DvrDbFuture<ScheduledRecording, Void> {
+        public AddScheduleFuture(Context context) {
             super(context);
         }
 
         @Override
-        protected final Void doInDvrBackground(ScheduledRecording... params) {
+        protected final Void dbHelperInBackground(ScheduledRecording... params) {
             sDbHelper.insertSchedules(params);
             return null;
         }
     }
 
     /** Update schedules. */
-    public static class AsyncUpdateScheduleTask
-            extends AsyncDvrDbTask<ScheduledRecording, Void> {
-        public AsyncUpdateScheduleTask(Context context) {
+    public static class UpdateScheduleFuture
+            extends DvrDbFuture<ScheduledRecording, Void> {
+        public UpdateScheduleFuture(Context context) {
             super(context);
         }
 
         @Override
-        protected final Void doInDvrBackground(ScheduledRecording... params) {
+        protected final Void dbHelperInBackground(ScheduledRecording... params) {
             sDbHelper.updateSchedules(params);
             return null;
         }
     }
 
     /** Delete schedules. */
-    public static class AsyncDeleteScheduleTask
-            extends AsyncDvrDbTask<ScheduledRecording, Void> {
-        public AsyncDeleteScheduleTask(Context context) {
+    public static class DeleteScheduleFuture
+            extends DvrDbFuture<ScheduledRecording, Void> {
+        public DeleteScheduleFuture(Context context) {
             super(context);
         }
 
         @Override
-        protected final Void doInDvrBackground(ScheduledRecording... params) {
+        protected final Void dbHelperInBackground(ScheduledRecording... params) {
             sDbHelper.deleteSchedules(params);
             return null;
         }
     }
 
     /** Returns all {@link ScheduledRecording}s. */
-    public static class AsyncDvrQueryScheduleTask
-            extends AsyncDvrDbTask<Void, List<ScheduledRecording>> {
-        public AsyncDvrQueryScheduleTask(Context context) {
+    public static class DvrQueryScheduleFuture
+            extends DvrDbFuture<Void, List<ScheduledRecording>> {
+        public DvrQueryScheduleFuture(Context context) {
             super(context);
         }
 
         @Override
         @Nullable
-        protected final List<ScheduledRecording> doInDvrBackground(Void... params) {
+        protected final List<ScheduledRecording> dbHelperInBackground(Void... params) {
             if (isCancelled()) {
                 return null;
             }
@@ -147,59 +137,59 @@ public abstract class AsyncDvrDbTask<ParamsT, ResultT> {
     }
 
     /** Inserts series recordings. */
-    public static class AsyncAddSeriesRecordingTask
-            extends AsyncDvrDbTask<SeriesRecording, Void> {
-        public AsyncAddSeriesRecordingTask(Context context) {
+    public static class AddSeriesRecordingFuture
+            extends DvrDbFuture<SeriesRecording, Void> {
+        public AddSeriesRecordingFuture(Context context) {
             super(context);
         }
 
         @Override
-        protected final Void doInDvrBackground(SeriesRecording... params) {
+        protected final Void dbHelperInBackground(SeriesRecording... params) {
             sDbHelper.insertSeriesRecordings(params);
             return null;
         }
     }
 
     /** Update series recordings. */
-    public static class AsyncUpdateSeriesRecordingTask
-            extends AsyncDvrDbTask<SeriesRecording, Void> {
-        public AsyncUpdateSeriesRecordingTask(Context context) {
+    public static class UpdateSeriesRecordingFuture
+            extends DvrDbFuture<SeriesRecording, Void> {
+        public UpdateSeriesRecordingFuture(Context context) {
             super(context);
         }
 
         @Override
-        protected final Void doInDvrBackground(SeriesRecording... params) {
+        protected final Void dbHelperInBackground(SeriesRecording... params) {
             sDbHelper.updateSeriesRecordings(params);
             return null;
         }
     }
 
     /** Delete series recordings. */
-    public static class AsyncDeleteSeriesRecordingTask
-            extends AsyncDvrDbTask<SeriesRecording, Void> {
-        public AsyncDeleteSeriesRecordingTask(Context context) {
+    public static class DeleteSeriesRecordingFuture
+            extends DvrDbFuture<SeriesRecording, Void> {
+        public DeleteSeriesRecordingFuture(Context context) {
             super(context);
         }
 
         @Override
-        protected final Void doInDvrBackground(SeriesRecording... params) {
+        protected final Void dbHelperInBackground(SeriesRecording... params) {
             sDbHelper.deleteSeriesRecordings(params);
             return null;
         }
     }
 
     /** Returns all {@link SeriesRecording}s. */
-    public static class AsyncDvrQuerySeriesRecordingTask
-            extends AsyncDvrDbTask<Void, List<SeriesRecording>> {
+    public static class DvrQuerySeriesRecordingFuture
+            extends DvrDbFuture<Void, List<SeriesRecording>> {
         private static final String TAG = "DvrQuerySeriesRecording";
 
-        public AsyncDvrQuerySeriesRecordingTask(Context context) {
+        public DvrQuerySeriesRecordingFuture(Context context) {
             super(context);
         }
 
         @Override
         @Nullable
-        protected final List<SeriesRecording> doInDvrBackground(Void... params) {
+        protected final List<SeriesRecording> dbHelperInBackground(Void... params) {
             if (isCancelled()) {
                 return null;
             }

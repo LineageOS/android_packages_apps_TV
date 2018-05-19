@@ -48,14 +48,14 @@ import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.ScheduledRecording.RecordingState;
 import com.android.tv.dvr.data.SeriesRecording;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncAddScheduleTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncAddSeriesRecordingTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncDeleteScheduleTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncDeleteSeriesRecordingTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncDvrQueryScheduleTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncDvrQuerySeriesRecordingTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncUpdateScheduleTask;
-import com.android.tv.dvr.provider.AsyncDvrDbTask.AsyncUpdateSeriesRecordingTask;
+import com.android.tv.dvr.provider.DvrDbFuture.AddScheduleFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.AddSeriesRecordingFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.DeleteScheduleFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.DeleteSeriesRecordingFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.DvrQueryScheduleFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.DvrQuerySeriesRecordingFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.UpdateScheduleFuture;
+import com.android.tv.dvr.provider.DvrDbFuture.UpdateSeriesRecordingFuture;
 import com.android.tv.dvr.provider.DvrDbSync;
 import com.android.tv.dvr.recorder.SeriesRecordingScheduler;
 import com.android.tv.util.AsyncDbTask;
@@ -199,8 +199,8 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
     public void start() {
         mInputManager.addCallback(mInputCallback);
         mStorageStatusManager.addListener(mStorageMountChangedListener);
-        AsyncDvrQuerySeriesRecordingTask dvrQuerySeriesRecordingTask =
-            new AsyncDvrQuerySeriesRecordingTask(mContext);
+        DvrQuerySeriesRecordingFuture dvrQuerySeriesRecordingTask =
+            new DvrQuerySeriesRecordingFuture(mContext);
         ListenableFuture<List<SeriesRecording>> dvrQuerySeriesRecordingFuture =
             dvrQuerySeriesRecordingTask.executeOnDbThread(
                 new FutureCallback<List<SeriesRecording>>() {
@@ -237,7 +237,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                     }
                 });
         mPendingDvrFuture.add(dvrQuerySeriesRecordingFuture);
-        AsyncDvrQueryScheduleTask dvrQueryScheduleTask = new AsyncDvrQueryScheduleTask(mContext);
+        DvrQueryScheduleFuture dvrQueryScheduleTask = new DvrQueryScheduleFuture(mContext);
         ListenableFuture<List<ScheduledRecording>> dvrQueryScheduleFuture =
             dvrQueryScheduleTask.executeOnDbThread(
                 new FutureCallback<List<ScheduledRecording>>() {
@@ -636,7 +636,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         if (mDvrLoadFinished) {
             notifyScheduledRecordingAdded(schedules);
         }
-        ListenableFuture addScheduleFuture = new AsyncAddScheduleTask(mContext)
+        ListenableFuture addScheduleFuture = new AddScheduleFuture(mContext)
             .executeOnDbThread(removeFromSetOnCompletion, schedules);
         mNoStopFuture.add(addScheduleFuture);
         removeDeletedSchedules(schedules);
@@ -658,7 +658,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             notifySeriesRecordingAdded(seriesRecordings);
         }
         ListenableFuture addSeriesRecordingFuture =
-            new AsyncAddSeriesRecordingTask(mContext).executeOnDbThread(
+            new AddSeriesRecordingFuture(mContext).executeOnDbThread(
                 removeFromSetOnCompletion, seriesRecordings);
         mNoStopFuture.add(addSeriesRecordingFuture);
     }
@@ -717,13 +717,13 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             }
         }
         if (!schedulesToDelete.isEmpty()) {
-            ListenableFuture deleteScheduleFuture = new AsyncDeleteScheduleTask(mContext)
+            ListenableFuture deleteScheduleFuture = new DeleteScheduleFuture(mContext)
                 .executeOnDbThread(
                     removeFromSetOnCompletion, ScheduledRecording.toArray(schedulesToDelete));
             mNoStopFuture.add(deleteScheduleFuture);
         }
         if (!schedulesNotToDelete.isEmpty()) {
-            ListenableFuture updateScheduleFuture = new AsyncUpdateScheduleTask(mContext)
+            ListenableFuture updateScheduleFuture = new UpdateScheduleFuture(mContext)
                 .executeOnDbThread(
                     removeFromSetOnCompletion, ScheduledRecording.toArray(schedulesNotToDelete));
             mNoStopFuture.add(updateScheduleFuture);
@@ -764,7 +764,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         if (mDvrLoadFinished) {
             notifySeriesRecordingRemoved(seriesRecordings);
         }
-        ListenableFuture deleteSeriesRecordingFuture = new AsyncDeleteSeriesRecordingTask(mContext)
+        ListenableFuture deleteSeriesRecordingFuture = new DeleteSeriesRecordingFuture(mContext)
             .executeOnDbThread(removeFromSetOnCompletion, seriesRecordings);
         mNoStopFuture.add(deleteSeriesRecordingFuture);
         removeDeletedSchedules(seriesRecordings);
@@ -819,7 +819,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             notifyScheduledRecordingStatusChanged(scheduleArray);
         }
         if (updateDb) {
-            ListenableFuture updateScheduleFuture = new AsyncUpdateScheduleTask(mContext)
+            ListenableFuture updateScheduleFuture = new UpdateScheduleFuture(mContext)
                 .executeOnDbThread(removeFromSetOnCompletion, scheduleArray);
             mNoStopFuture.add(updateScheduleFuture);
         }
@@ -845,7 +845,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         if (mDvrLoadFinished) {
             notifySeriesRecordingChanged(seriesRecordings);
         }
-        ListenableFuture updateSeriesRecordingFuture = new AsyncUpdateSeriesRecordingTask(mContext)
+        ListenableFuture updateSeriesRecordingFuture = new UpdateSeriesRecordingFuture(mContext)
             .executeOnDbThread(removeFromSetOnCompletion, seriesRecordings);
         mNoStopFuture.add(updateSeriesRecordingFuture);
     }
@@ -865,7 +865,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             }
         }
         if (!schedulesToDelete.isEmpty()) {
-            ListenableFuture deleteScheduleFuture = new AsyncDeleteScheduleTask(mContext)
+            ListenableFuture deleteScheduleFuture = new DeleteScheduleFuture(mContext)
                 .executeOnDbThread(
                     removeFromSetOnCompletion, ScheduledRecording.toArray(schedulesToDelete));
             mNoStopFuture.add(deleteScheduleFuture);
@@ -888,7 +888,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             }
         }
         if (!schedulesToDelete.isEmpty()) {
-            ListenableFuture deleteScheduleFuture = new AsyncDeleteScheduleTask(mContext)
+            ListenableFuture deleteScheduleFuture = new DeleteScheduleFuture(mContext)
                 .executeOnDbThread(
                     removeFromSetOnCompletion, ScheduledRecording.toArray(schedulesToDelete));
             mNoStopFuture.add(deleteScheduleFuture);
@@ -947,7 +947,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         for (SeriesRecording r : removedSeriesRecordings) {
             mSeriesRecordingsForRemovedInput.remove(r.getId());
         }
-        ListenableFuture deleteSeriesRecordingFuture = new AsyncDeleteSeriesRecordingTask(mContext)
+        ListenableFuture deleteSeriesRecordingFuture = new DeleteSeriesRecordingFuture(mContext)
             .executeOnDbThread(
                 removeFromSetOnCompletion, SeriesRecording.toArray(removedSeriesRecordings));
         mNoStopFuture.add(deleteSeriesRecordingFuture);
@@ -1053,11 +1053,11 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                 i.remove();
             }
         }
-        ListenableFuture deleteScheduleFuture = new AsyncDeleteScheduleTask(mContext)
+        ListenableFuture deleteScheduleFuture = new DeleteScheduleFuture(mContext)
             .executeOnDbThread(
                 removeFromSetOnCompletion, ScheduledRecording.toArray(schedulesToDelete));
         mNoStopFuture.add(deleteScheduleFuture);
-        ListenableFuture deleteSeriesRecordingFuture = new AsyncDeleteSeriesRecordingTask(mContext)
+        ListenableFuture deleteSeriesRecordingFuture = new DeleteSeriesRecordingFuture(mContext)
             .executeOnDbThread(
                 removeFromSetOnCompletion, SeriesRecording.toArray(seriesRecordingsToDelete));
         mNoStopFuture.add(deleteSeriesRecordingFuture);
@@ -1092,7 +1092,7 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
         if (!removedSeriesRecordings.isEmpty()) {
             SeriesRecording[] removed = SeriesRecording.toArray(removedSeriesRecordings);
             ListenableFuture deleteSeriesRecordingFuture =
-                new AsyncDeleteSeriesRecordingTask(mContext)
+                new DeleteSeriesRecordingFuture(mContext)
                     .executeOnDbThread(removeFromSetOnCompletion, removed);
             mNoStopFuture.add(deleteSeriesRecordingFuture);
             if (mDvrLoadFinished) {

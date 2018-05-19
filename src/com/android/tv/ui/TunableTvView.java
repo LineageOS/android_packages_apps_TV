@@ -129,7 +129,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     private AppLayerTvView mTvView;
     private TvViewSession mTvViewSession;
-    private Channel mCurrentChannel;
+    @Nullable private Channel mCurrentChannel;
     private TvInputManagerHelper mInputManagerHelper;
     private ContentRatingsManager mContentRatingsManager;
     private ParentalControlSettings mParentalControlSettings;
@@ -668,6 +668,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
     }
 
     @Override
+    @Nullable
     public Channel getCurrentChannel() {
         return mCurrentChannel;
     }

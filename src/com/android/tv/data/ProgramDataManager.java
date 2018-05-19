@@ -546,7 +546,9 @@ public class ProgramDataManager implements MemoryManageable {
                         Log.d(TAG, "Database is changed while querying. Will retry.");
                     }
                 } catch (SecurityException e) {
-                    Log.d(TAG, "Security exception during program data query", e);
+                    Log.w(TAG, "Security exception during program data query", e);
+                } catch (Exception e) {
+                    Log.w(TAG, "Error during program data query", e);
                 }
             }
             if (DEBUG) {

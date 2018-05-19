@@ -27,7 +27,6 @@ import android.support.annotation.NonNull;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.view.View;
-import android.view.ViewTreeObserver.OnPreDrawListener;
 import com.android.tv.common.R;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
@@ -55,23 +54,7 @@ public abstract class SetupActivity extends Activity implements OnActionClickLis
         // Show initial fragment only when the saved state is not restored, because the last
         // fragment is restored if savesInstanceState is not null.
         if (savedInstanceState == null) {
-            // This is the workaround to show the first fragment with delay to show the fragment
-            // enter transition. See http://b/26255145
-            getWindow()
-                    .getDecorView()
-                    .getViewTreeObserver()
-                    .addOnPreDrawListener(
-                            new OnPreDrawListener() {
-                                @Override
-                                public boolean onPreDraw() {
-                                    getWindow()
-                                            .getDecorView()
-                                            .getViewTreeObserver()
-                                            .removeOnPreDrawListener(this);
-                                    showInitialFragment();
-                                    return true;
-                                }
-                            });
+            showInitialFragment();
         } else {
             mShowInitialFragment = false;
         }
