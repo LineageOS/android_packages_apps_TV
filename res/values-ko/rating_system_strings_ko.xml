@@ -20,9 +20,4 @@
     <!-- TV content rating system strings for KR TV. These strings are from
          http://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2000000118507
          This resources are tranlated only for Korean. -->
-    <string name="title_kr_tv_all">모든연령시청가</string>
-    <string name="title_kr_tv_7">7세이상시청가</string>
-    <string name="title_kr_tv_12">12세이상시청가</string>
-    <string name="title_kr_tv_15">15세이상시청가</string>
-    <string name="title_kr_tv_19">19세이상시청가</string>
 </resources>

@@ -20,10 +20,4 @@
     <!-- TV content rating system strings for BR TV. These strings are from
          http://www.justica.gov.br/seus-direitos/classificacao/guia-pratico/practical-guide.pdf/view
          This resources are tranlated only for Portuguese. -->
-    <string name="title_br_tv_l">Livre</string>
-    <string name="title_br_tv_10">10 anos</string>
-    <string name="title_br_tv_12">12 anos</string>
-    <string name="title_br_tv_14">14 anos</string>
-    <string name="title_br_tv_16">16 anos</string>
-    <string name="title_br_tv_18">18 anos</string>
 </resources>
