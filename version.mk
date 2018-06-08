@@ -1,4 +1,4 @@
-#
+#####################################################
 # Copyright (C) 2015 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,17 +48,17 @@
 
 base_version_major := 1
 # Change this for each branch
-base_version_minor := 15
+base_version_minor := 17
 
 # code_version_major will overflow at 22
 code_version_major := $(shell echo $$(($(base_version_major)+3)))
 
 # x86 and arm sometimes don't match.
-code_version_build := 007
+code_version_build := 001
 #####################################################
 #####################################################
 # Collect automatic version code parameters
-ifeq ($(strip $(HAS_BUILD_NUMBER)),false)
+ifneq "" "$(filter eng.%,$(BUILD_NUMBER))"
     # This is an eng build
     base_version_buildtype := 0
 else
@@ -94,12 +94,12 @@ version_code_package := $(code_version_major)$(base_version_minor)$(code_version
 #       and hh is the git hash
 # On eng builds, the BUILD_NUMBER has the user and timestamp inline
 ifdef TARGET_BUILD_APPS
-ifeq ($(strip $(HAS_BUILD_NUMBER)),false)
+ifneq "" "$(filter eng.%,$(BUILD_NUMBER))"
     git_hash := $(shell git --git-dir $(LOCAL_PATH)/.git log -n 1 --pretty=format:%h)
     date_string := $(shell date +%Y-%m-%d)
     version_name_package := $(base_version_major).$(base_version_minor).$(code_version_build) (eng.$(USER).$(git_hash).$(date_string)-$(base_version_arch)$(base_version_density))
 else
-    version_name_package := $(base_version_major).$(base_version_minor).$(code_version_build) ($(BUILD_NUMBER_FROM_FILE)-$(base_version_arch)$(base_version_density))
+    version_name_package := $(base_version_major).$(base_version_minor).$(code_version_build) ($(BUILD_NUMBER)-$(base_version_arch)$(base_version_density))
 endif
 else # !TARGET_BUILD_APPS
     version_name_package := $(base_version_major).$(base_version_minor).$(code_version_build)

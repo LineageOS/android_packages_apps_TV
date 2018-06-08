@@ -13,12 +13,16 @@ LOCAL_USE_AAPT2 := true
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
+LOCAL_JAVA_LIBRARIES := \
+    android-support-annotations
+
+LOCAL_DISABLE_RESOLVE_SUPPORT_LIBRARIES := true
+
 LOCAL_SHARED_ANDROID_LIBRARIES := \
-    android-support-annotations \
     android-support-compat \
     android-support-core-ui \
     android-support-v7-recyclerview \
-    android-support-v17-leanback \
+    android-support-v17-leanback
 
 include $(LOCAL_PATH)/buildconfig.mk
 
