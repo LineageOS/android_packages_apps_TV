@@ -36,6 +36,8 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-tv-provider \
     tv-common \
 
+LOCAL_MIN_SDK_VERSION := 23
+
 include $(LOCAL_PATH)/buildconfig.mk
 
 include $(BUILD_STATIC_JAVA_LIBRARY)
