@@ -8,6 +8,7 @@ LOCAL_MODULE := live-channels-partner-support
 LOCAL_MODULE_CLASS := STATIC_JAVA_LIBRARIES
 LOCAL_MODULE_TAGS := optional
 LOCAL_SDK_VERSION := system_current
+LOCAL_MIN_SDK_VERSION := 23
 
 LOCAL_USE_AAPT2 := true
 
