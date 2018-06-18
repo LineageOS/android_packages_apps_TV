@@ -790,7 +790,7 @@
          sufficient space.-->
     <string name="dvr_error_insufficient_space_description_three_or_more_recordings">The recordings of <xliff:g id="programName_1" example="Friends">%1$s</xliff:g>, <xliff:g id="programName_2" example="Friends">%2$s</xliff:g> and <xliff:g id="programName_3" example="Friends">%3$s</xliff:g> didn\'t complete due to insufficient storage.</string>
     <!-- Dialog title which will be shown when the current storage is too small for DVR. -->
-    <string name="dvr_error_small_sized_storage_title">More stroage needed</string>
+    <string name="dvr_error_small_sized_storage_title">More storage needed</string>
     <!-- Dialog description which will be shown when the current storage is too small for DVR. -->
     <string name="dvr_error_small_sized_storage_description">You will be able to record programs. However there is not enough storage on your device to start recording. Please connect an external drive that is <xliff:g id="storage_size" example="10GB">%1$d</xliff:g>GB or larger and follow the steps to format it as device storage.</string>
     <!-- Dialog title which will be shown when there is no free space on the current storage for DVR. -->
