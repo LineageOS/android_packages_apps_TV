@@ -16,8 +16,8 @@
 
 package com.android.tv.data;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
@@ -33,8 +33,6 @@ import android.media.tv.TvContract.Channels;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import android.test.MoreAsserts;
 import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
@@ -42,6 +40,8 @@ import android.test.mock.MockCursor;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
+import androidx.test.filters.SmallTest;
+import androidx.test.runner.AndroidJUnit4;
 import com.android.tv.data.api.Channel;
 import com.android.tv.testing.constants.Constants;
 import com.android.tv.testing.data.ChannelInfo;
