@@ -23,6 +23,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
@@ -134,8 +135,12 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                                         // DataSource interface.
                                         return new com.google.android.exoplayer2.upstream
                                                 .DataSource() {
+
+                                            private @Nullable Uri uri;
+
                                             @Override
                                             public long open(DataSpec dataSpec) throws IOException {
+                                                this.uri = dataSpec.uri;
                                                 return source.open(
                                                         new com.google.android.exoplayer.upstream
                                                                 .DataSpec(
@@ -156,13 +161,14 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                                             }
 
                                             @Override
-                                            public Uri getUri() {
-                                                return null;
+                                            public @Nullable Uri getUri() {
+                                                return uri;
                                             }
 
                                             @Override
                                             public void close() throws IOException {
                                                 source.close();
+                                                uri = null;
                                             }
                                         };
                                     }
