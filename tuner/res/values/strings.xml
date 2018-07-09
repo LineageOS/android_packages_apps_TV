@@ -210,7 +210,7 @@
     <!-- Title of postal/zip code input guided step fragment  [CHAR LIMIT=30] -->
     <string name="postal_code_guidance_title">Enter your ZIP Code.</string>
     <!-- Description of postal/zip code input guided step fragment  [CHAR LIMIT=NONE] -->
-    <string name="postal_code_guidance_description">Live TV app will use the ZIP Code to provide a complete program guide for the TV channels.</string>
+    <string name="postal_code_guidance_description"><xliff:g id="app_name">Live TV</xliff:g>  app will use the ZIP Code to provide a complete program guide for the TV channels.</string>
     <!-- Description of postal/zip code input edit text view to prompt users entering ZIP Code  [CHAR LIMIT=30] -->
     <string name="postal_code_action_description">Enter your ZIP Code</string>
     <!-- Warning message shown in description field of postal/zip code input edit text view when user enters an invalid ZIP Code and presses Done [CHAR LIMIT=30] -->
