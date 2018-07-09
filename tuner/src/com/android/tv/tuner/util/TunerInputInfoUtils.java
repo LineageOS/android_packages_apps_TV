@@ -78,7 +78,9 @@ public class TunerInputInfoUtils {
      */
     public static void updateTunerInputInfo(Context context) {
         final Context appContext = context.getApplicationContext();
-        if (!BuildConfig.NO_JNI_TEST && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (!BuildConfig.NO_JNI_TEST
+                && !BuildConfig.AOSP
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             new AsyncTask<Void, Void, TvInputInfo>() {
                 @Override
                 protected TvInputInfo doInBackground(Void... params) {
