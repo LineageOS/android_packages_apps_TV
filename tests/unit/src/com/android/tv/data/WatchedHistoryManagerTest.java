@@ -16,12 +16,12 @@
 
 package com.android.tv.data;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.google.common.truth.Truth.assertThat;
 
 import android.os.Looper;
-import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
+import androidx.test.runner.AndroidJUnit4;
 import com.android.tv.data.WatchedHistoryManager.WatchedRecord;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;

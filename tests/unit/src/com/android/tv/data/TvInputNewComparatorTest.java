@@ -18,9 +18,9 @@ package com.android.tv.data;
 
 import android.content.pm.ResolveInfo;
 import android.media.tv.TvInputInfo;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
+import androidx.test.filters.SmallTest;
+import androidx.test.runner.AndroidJUnit4;
 import com.android.tv.testing.ComparatorTester;
 import com.android.tv.testing.utils.TestUtils;
 import com.android.tv.util.SetupUtils;
