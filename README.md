@@ -21,7 +21,7 @@ To install LiveTv
 
 ```bash
 echo "Compiling"
-m -j LiveTv 
+m -j LiveTv
 echo  "Installing"
 adb install -r ${OUT}/system/priv-app/LiveTv/LiveTv.apk
 
