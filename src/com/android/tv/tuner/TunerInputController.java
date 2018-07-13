@@ -51,6 +51,7 @@ import android.widget.Toast;
 import com.android.tv.R;
 import com.android.tv.Starter;
 import com.android.tv.TvApplication;
+import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.util.SystemPropertiesProxy;
@@ -306,7 +307,9 @@ public class TunerInputController {
             // Enable/disable the USB tuner TV input.
             pm.setComponentEnabledSetting(serviceComponent, newState, flags);
             if (DEBUG) Log.d(TAG, "Status updated:" + enabled);
-        } else if (enabled && serviceComponent.getPackageName().equals(context.getPackageName())) {
+        } else if (TvFeatures.TUNER.isEnabled(context)
+                && enabled
+                && serviceComponent.getPackageName().equals(context.getPackageName())) {
             // When # of tuners is changed or the tuner input service is switching from/to using
             // network tuners or the device just boots.
             TunerInputInfoUtils.updateTunerInputInfo(context);
