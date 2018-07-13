@@ -287,22 +287,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!--
-          TunerInputController should be the same process with MainActivity to check status
-          of MainActivity
-        -->
-        <receiver
-            android:name="com.android.tv.tuner.TunerInputControllerImpl$IntentReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-                <action android:name="com.android.tv.action.APPLICATION_FIRST_LAUNCHED" />
-                <action android:name="com.android.tv.action.NETWORK_TUNER_ATTACHED" />
-                <action android:name="com.android.tv.action.NETWORK_TUNER_DETACHED" />
-            </intent-filter>
-        </receiver> <!-- DVR -->
+        <!-- DVR -->
         <service
             android:name="com.android.tv.dvr.recorder.DvrRecordingService"
             android:label="@string/dvr_service_name" />

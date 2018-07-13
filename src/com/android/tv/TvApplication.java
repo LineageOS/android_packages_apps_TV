@@ -60,13 +60,11 @@ import com.android.tv.perf.PerformanceMonitorManager;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
-import com.android.tv.tuner.TunerInputControllerImpl;
 import com.android.tv.tuner.util.TunerInputInfoUtils;
 import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
-import com.google.common.base.Optional;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -122,7 +120,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
-    private Optional<TunerInputController> mOptionalTunerInputController;
 
     @Override
     public void onCreate() {
@@ -356,17 +353,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
             mTvInputManagerHelper.start();
         }
         return mTvInputManagerHelper;
-    }
-
-    @Override
-    public synchronized Optional<TunerInputController> getTunerInputController() {
-        if (mOptionalTunerInputController == null) {
-            mOptionalTunerInputController =
-                    Optional.of(
-                            new TunerInputControllerImpl(
-                                    ComponentName.unflattenFromString(getEmbeddedTunerInputId())));
-        }
-        return mOptionalTunerInputController;
     }
 
     @Override
