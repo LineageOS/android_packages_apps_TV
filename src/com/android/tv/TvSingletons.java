@@ -33,7 +33,7 @@ import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.tuner.TunerInputController;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;

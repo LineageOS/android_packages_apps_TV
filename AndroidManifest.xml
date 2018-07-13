@@ -292,7 +292,7 @@
           of MainActivity
         -->
         <receiver
-            android:name="com.android.tv.tuner.TunerInputController$IntentReceiver"
+            android:name="com.android.tv.tuner.TunerInputControllerImpl$IntentReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

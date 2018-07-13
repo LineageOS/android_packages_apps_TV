@@ -60,8 +60,9 @@ import com.android.tv.perf.PerformanceMonitorManager;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
-import com.android.tv.tuner.TunerInputController;
+import com.android.tv.tuner.TunerInputControllerImpl;
 import com.android.tv.tuner.util.TunerInputInfoUtils;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
@@ -357,7 +358,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     public synchronized TunerInputController getTunerInputController() {
         if (mTunerInputController == null) {
             mTunerInputController =
-                    new TunerInputController(
+                    new TunerInputControllerImpl(
                             ComponentName.unflattenFromString(getEmbeddedTunerInputId()));
         }
         return mTunerInputController;

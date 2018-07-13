@@ -46,7 +46,8 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
-import com.android.tv.tuner.TunerInputController;
+import com.android.tv.tuner.TunerInputControllerImpl;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
@@ -74,7 +75,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
     public void onCreate() {
         super.onCreate();
         mTunerInputController =
-                new TunerInputController(
+                new TunerInputControllerImpl(
                         ComponentName.unflattenFromString(getEmbeddedTunerInputId()));
 
         tvInputManagerHelper = new FakeTvInputManagerHelper(this);

@@ -59,6 +59,7 @@ import com.android.tv.common.util.SystemPropertiesProxy;
 
 import com.android.tv.tuner.setup.BaseTunerSetupActivity;
 import com.android.tv.tuner.util.TunerInputInfoUtils;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -75,7 +76,7 @@ import java.util.concurrent.TimeUnit;
  * UsbManager.ACTION_USB_DEVICE_ATTACHED}, and {@code UsbManager.ACTION_USB_DEVICE_ATTACHED} to
  * update the connection status of the supported USB TV tuners.
  */
-public class TunerInputController {
+public class TunerInputControllerImpl implements TunerInputController {
     private static final boolean DEBUG = false;
     private static final String TAG = "TunerInputController";
     private static final String PREFERENCE_IS_NETWORK_TUNER_ATTACHED = "network_tuner";
@@ -118,7 +119,7 @@ public class TunerInputController {
 
     private final CheckDvbDeviceHandler mHandler = new CheckDvbDeviceHandler(this);
 
-    public TunerInputController(ComponentName embeddedTuner) {
+    public TunerInputControllerImpl(ComponentName embeddedTuner) {
         usbTunerComponent = embeddedTuner;
         networkTunerComponent = usbTunerComponent;
         builtInTunerComponent = usbTunerComponent;
@@ -128,6 +129,7 @@ public class TunerInputController {
     }
 
     /** Checks status of USB devices to see if there are available USB tuners connected. */
+    @Override
     public void onCheckingUsbTunerStatus(Context context, String action) {
         onCheckingUsbTunerStatus(context, action, mHandler);
     }
@@ -319,6 +321,7 @@ public class TunerInputController {
     /**
      * Discovers a network tuner. If the network connection is down, it won't repeatedly checking.
      */
+    @Override
     public void executeNetworkTunerDiscoveryAsyncTask(final Context context) {
         executeNetworkTunerDiscoveryAsyncTask(context, 0, 0);
     }
@@ -459,8 +462,9 @@ public class TunerInputController {
         public void onReceive(Context context, Intent intent) {
             if (DEBUG) Log.d(TAG, "Broadcast intent received:" + intent);
             Starter.start(context);
-            TunerInputController tunerInputController =
-                    TvSingletons.getSingletons(context).getTunerInputController();
+            TunerInputControllerImpl tunerInputController =
+                    (TunerInputControllerImpl)
+                            TvSingletons.getSingletons(context).getTunerInputController();
             if (!TUNER.isEnabled(context)) {
                 tunerInputController.handleTunerStatusChanged(
                         context, false, Collections.emptySet(), null);
@@ -531,10 +535,10 @@ public class TunerInputController {
 
     private static class CheckDvbDeviceHandler extends Handler {
 
-        private final TunerInputController mTunerInputController;
+        private final TunerInputControllerImpl mTunerInputController;
         private DvbDeviceAccessor mDvbDeviceAccessor;
 
-        CheckDvbDeviceHandler(TunerInputController tunerInputController) {
+        CheckDvbDeviceHandler(TunerInputControllerImpl tunerInputController) {
             super(Looper.getMainLooper());
             this.mTunerInputController = tunerInputController;
         }
