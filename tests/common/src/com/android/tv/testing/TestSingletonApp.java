@@ -51,6 +51,7 @@ import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
+import com.google.common.base.Optional;
 import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
@@ -67,16 +68,17 @@ public class TestSingletonApp extends Application implements TvSingletons {
     public DvrDataManager mDvrDataManager;
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
-    private TunerInputController mTunerInputController;
+    private Optional<TunerInputController> mOptionalTunerInputController;
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mTunerInputController =
-                new TunerInputControllerImpl(
-                        ComponentName.unflattenFromString(getEmbeddedTunerInputId()));
+        mOptionalTunerInputController =
+                Optional.of(
+                        new TunerInputControllerImpl(
+                                ComponentName.unflattenFromString(getEmbeddedTunerInputId())));
 
         tvInputManagerHelper = new FakeTvInputManagerHelper(this);
         setupUtils = SetupUtils.createForTvSingletons(this);
@@ -184,8 +186,8 @@ public class TestSingletonApp extends Application implements TvSingletons {
     }
 
     @Override
-    public TunerInputController getTunerInputController() {
-        return mTunerInputController;
+    public Optional<TunerInputController> getTunerInputController() {
+        return mOptionalTunerInputController;
     }
 
     @Override

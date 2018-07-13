@@ -464,7 +464,7 @@ public class TunerInputControllerImpl implements TunerInputController {
             Starter.start(context);
             TunerInputControllerImpl tunerInputController =
                     (TunerInputControllerImpl)
-                            TvSingletons.getSingletons(context).getTunerInputController();
+                            TvSingletons.getSingletons(context).getTunerInputController().get();
             if (!TUNER.isEnabled(context)) {
                 tunerInputController.handleTunerStatusChanged(
                         context, false, Collections.emptySet(), null);

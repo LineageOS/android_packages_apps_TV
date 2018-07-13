@@ -66,6 +66,7 @@ import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.google.common.base.Optional;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -121,7 +122,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
-    private TunerInputController mTunerInputController;
+    private Optional<TunerInputController> mOptionalTunerInputController;
 
     @Override
     public void onCreate() {
@@ -215,8 +216,11 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         boolean isFirstLaunch = sharedPreferences.getBoolean(PREFERENCE_IS_FIRST_LAUNCH, true);
         if (isFirstLaunch) {
             if (DEBUG) Log.d(TAG, "Congratulations, it's the first launch!");
-            getTunerInputController()
-                    .onCheckingUsbTunerStatus(this, ACTION_APPLICATION_FIRST_LAUNCHED);
+            if (getTunerInputController().isPresent()) {
+                getTunerInputController()
+                        .get()
+                        .onCheckingUsbTunerStatus(this, ACTION_APPLICATION_FIRST_LAUNCHED);
+            }
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(PREFERENCE_IS_FIRST_LAUNCH, false);
             editor.apply();
@@ -355,13 +359,14 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     }
 
     @Override
-    public synchronized TunerInputController getTunerInputController() {
-        if (mTunerInputController == null) {
-            mTunerInputController =
-                    new TunerInputControllerImpl(
-                            ComponentName.unflattenFromString(getEmbeddedTunerInputId()));
+    public synchronized Optional<TunerInputController> getTunerInputController() {
+        if (mOptionalTunerInputController == null) {
+            mOptionalTunerInputController =
+                    Optional.of(
+                            new TunerInputControllerImpl(
+                                    ComponentName.unflattenFromString(getEmbeddedTunerInputId())));
         }
-        return mTunerInputController;
+        return mOptionalTunerInputController;
     }
 
     @Override

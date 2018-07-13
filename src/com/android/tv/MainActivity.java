@@ -109,6 +109,7 @@ import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.NotificationService;
 import com.android.tv.search.ProgramGuideSearchFragment;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.ui.ChannelBannerView;
 import com.android.tv.ui.DetailsActivity;
 import com.android.tv.ui.InputBannerView;
@@ -141,6 +142,7 @@ import com.android.tv.util.ViewCache;
 import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.images.ImageCache;
 
+import com.google.common.base.Optional;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -802,7 +804,10 @@ public class MainActivity extends Activity
             startService(notificationIntent);
         }
         TvSingletons singletons = TvSingletons.getSingletons(this);
-        singletons.getTunerInputController().executeNetworkTunerDiscoveryAsyncTask(this);
+        Optional<TunerInputController> tunerInputController = singletons.getTunerInputController();
+        if (tunerInputController.isPresent()) {
+            tunerInputController.get().executeNetworkTunerDiscoveryAsyncTask(this);
+        }
         singletons.getEpgFetcher().fetchImmediatelyIfNeeded();
     }
 
@@ -1899,8 +1904,7 @@ public class MainActivity extends Activity
                 selectTrack(TvTrackInfo.TYPE_AUDIO, bestTrack, UNDEFINED_TRACK_INDEX);
             } else {
                 mTvOptionsManager.onMultiAudioChanged(
-                        TvTrackInfoUtils
-                            .getMultiAudioString(this, bestTrack, false));
+                        TvTrackInfoUtils.getMultiAudioString(this, bestTrack, false));
             }
             return;
         }
@@ -2549,10 +2553,9 @@ public class MainActivity extends Activity
         mTvView.selectTrack(type, track == null ? null : track.getId());
         if (type == TvTrackInfo.TYPE_AUDIO) {
             mTvOptionsManager.onMultiAudioChanged(
-                track == null
-                    ? null
-                        : TvTrackInfoUtils
-                            .getMultiAudioString(this, track, false));
+                    track == null
+                            ? null
+                            : TvTrackInfoUtils.getMultiAudioString(this, track, false));
         } else if (type == TvTrackInfo.TYPE_SUBTITLE) {
             mTvOptionsManager.onClosedCaptionsChanged(track, trackIndex);
         }

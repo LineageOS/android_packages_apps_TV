@@ -197,9 +197,12 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
             mChannelDataManager.addListener(mChannelDataManagerListener);
             super.onCreate(savedInstanceState);
             mParentFragment = (SetupSourcesFragment) getParentFragment();
-            singletons
-                    .getTunerInputController()
-                    .executeNetworkTunerDiscoveryAsyncTask(getContext());
+            if (singletons.getTunerInputController().isPresent()) {
+                singletons
+                        .getTunerInputController()
+                        .get()
+                        .executeNetworkTunerDiscoveryAsyncTask(getContext());
+            }
         }
 
         @Override
