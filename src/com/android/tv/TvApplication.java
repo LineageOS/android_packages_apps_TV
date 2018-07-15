@@ -60,8 +60,8 @@ import com.android.tv.perf.PerformanceMonitorManager;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
-import com.android.tv.tuner.TunerInputController;
 import com.android.tv.tuner.util.TunerInputInfoUtils;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
@@ -120,7 +120,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
-    private TunerInputController mTunerInputController;
 
     @Override
     public void onCreate() {
@@ -214,8 +213,11 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         boolean isFirstLaunch = sharedPreferences.getBoolean(PREFERENCE_IS_FIRST_LAUNCH, true);
         if (isFirstLaunch) {
             if (DEBUG) Log.d(TAG, "Congratulations, it's the first launch!");
-            getTunerInputController()
-                    .onCheckingUsbTunerStatus(this, ACTION_APPLICATION_FIRST_LAUNCHED);
+            if (getTunerInputController().isPresent()) {
+                getTunerInputController()
+                        .get()
+                        .onCheckingUsbTunerStatus(this, ACTION_APPLICATION_FIRST_LAUNCHED);
+            }
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(PREFERENCE_IS_FIRST_LAUNCH, false);
             editor.apply();
@@ -351,16 +353,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
             mTvInputManagerHelper.start();
         }
         return mTvInputManagerHelper;
-    }
-
-    @Override
-    public synchronized TunerInputController getTunerInputController() {
-        if (mTunerInputController == null) {
-            mTunerInputController =
-                    new TunerInputController(
-                            ComponentName.unflattenFromString(getEmbeddedTunerInputId()));
-        }
-        return mTunerInputController;
     }
 
     @Override

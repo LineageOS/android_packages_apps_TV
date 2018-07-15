@@ -27,20 +27,20 @@
     <string name="option_item_divider_font" translatable="false">@string/condensed_font</string>
 
     <!-- Name of application [CHAR LIMIT=NONE] -->
-    <string name="app_name">Live TV</string>
+    <string name="app_name" translatable="false">Live TV</string>
 
     <!-- Title of an application permission, listed so the user can choose
         whether they want to allow the application to do this. -->
-    <string name="permlab_receiveInputEvent" translatable="false">receive input events from Live TV app</string>
+    <string name="permlab_receiveInputEvent" translatable="false">receive input events from <xliff:g id="app_name">Live TV</xliff:g>  app</string>
     <!-- Description of an application permission, listed so the user can choose
         whether they want to allow the application to do this. -->
-    <string name="permdesc_receiveInputEvent" translatable="false">Allows the app to receive input events from Live TV app</string>
+    <string name="permdesc_receiveInputEvent" translatable="false">Allows the app to receive input events from <xliff:g id="app_name">Live TV</xliff:g>  app</string>
     <!-- Title of an application permission, listed so the user can choose
         whether they want to allow the application to do this. -->
-    <string name="permlab_customizeTvApp" translatable="false">customize Live TV app</string>
+    <string name="permlab_customizeTvApp" translatable="false">customize <xliff:g id="app_name">Live TV</xliff:g>  app</string>
     <!-- Description of an application permission, listed so the user can choose
         whether they want to allow the application to do this. -->
-    <string name="permdesc_customizeTvApp" translatable="false">Allows the app to customize Live TV app</string>
+    <string name="permdesc_customizeTvApp" translatable="false">Allows the app to customize <xliff:g id="app_name">Live TV</xliff:g>  app</string>
 
     <!-- Program information, mainly used for channel banner and program guide. -->
     <eat-comment />
@@ -482,7 +482,7 @@
          the source video through to the display and don't provide ability to tune to a specific
          channel unless the user directly controls the external source device (e.g. game console,
          DVD player, settop box, etc) that is connected to the TV. [CHAR LIMIT=NONE] -->
-    <string name="msg_not_passthrough_input">Tuner type not suitable. Please launch Live TV app for tuner type TV input.</string>
+    <string name="msg_not_passthrough_input">Tuner type not suitable. Please launch <xliff:g id="app_name">Live TV</xliff:g>  app for tuner type TV input.</string>
     <!-- Error message when tune is failed. [CHAR LIMIT=NONE] -->
     <string name="msg_tune_failed">Tune failed</string>
     <!-- Error message when the user attempts an action (select TIS setup-activity, app-link,
@@ -497,7 +497,7 @@
          (commands for external device)  [CHAR LIMIT=NONE] -->
     <string name="msg_back_key_guide">BACK key is for connected device. Press HOME button to exit.</string>
     <!-- Error message when a user denied to grant READ_TV_LISTING permission. [CHAR LIMIT=NONE] -->
-    <string name="msg_read_tv_listing_permission_denied">Live TV needs permission to read the TV listings.</string>
+    <string name="msg_read_tv_listing_permission_denied"><xliff:g id="app_name">Live TV</xliff:g>  needs permission to read the TV listings.</string>
 
     <!-- Strings for debug or not to be shown to users -->
     <eat-comment />
@@ -523,13 +523,13 @@
     <string name="dvr_history_dialog_title" translatable="false">DVR history</string>
 
     <!-- Display name of DVR recording service's notification channel. -->
-    <string name="dvr_notification_channel_name" translatable="false">Live TV DVR</string>
+    <string name="dvr_notification_channel_name" translatable="false"><xliff:g id="app_name">Live TV</xliff:g>  DVR</string>
     <!-- Content title of DVR recording service's notification. -->
-    <string name="dvr_notification_content_title" translatable="false">Live TV DVR</string>
+    <string name="dvr_notification_content_title" translatable="false"><xliff:g id="app_name">Live TV</xliff:g>  DVR</string>
     <!-- Content text of DVR recording service's notification during recording. -->
-    <string name="dvr_notification_content_text_recording" translatable="false">Live TV are recording.</string>
+    <string name="dvr_notification_content_text_recording" translatable="false"><xliff:g id="app_name">Live TV</xliff:g>  are recording.</string>
     <!-- Content text of DVR recording service's notification during updating schedules. -->
-    <string name="dvr_notification_content_text_loading" translatable="false">Live TV are updating recording schedules.</string>
+    <string name="dvr_notification_content_text_loading" translatable="false"><xliff:g id="app_name">Live TV</xliff:g>  are updating recording schedules.</string>
 
     <!-- Default content title of tuner installing notifications. -->
     <string name="tuner_install_notification_content_title" translatable="false">Install <xliff:g id="tuner_package" example="Tuner package">%s</xliff:g></string>

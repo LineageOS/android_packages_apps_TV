@@ -36,8 +36,10 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.account.AccountHelperImpl;
+import com.google.common.base.Optional;
 import javax.inject.Provider;
 
 /** The top level application for Live TV. */
@@ -58,6 +60,7 @@ public class LiveTvApplication extends TvApplication {
                 }
             };
 
+    private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private AccountHelper mAccountHelper;
     private Analytics mAnalytics;
     private Tracker mTracker;
@@ -148,5 +151,10 @@ public class LiveTvApplication extends TvApplication {
             mRemoteConfig = DefaultConfigManager.createInstance(this).getRemoteConfig();
         }
         return mRemoteConfig;
+    }
+
+    @Override
+    public Optional<TunerInputController> getTunerInputController() {
+        return mOptionalTunerInputController;
     }
 }

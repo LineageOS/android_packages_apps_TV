@@ -17,7 +17,6 @@
 package com.android.tv.testing;
 
 import android.app.Application;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvInputManager;
@@ -46,10 +45,11 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
-import com.android.tv.tuner.TunerInputController;
+import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
+import com.google.common.base.Optional;
 import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
@@ -66,17 +66,13 @@ public class TestSingletonApp extends Application implements TvSingletons {
     public DvrDataManager mDvrDataManager;
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
-    private TunerInputController mTunerInputController;
+    private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mTunerInputController =
-                new TunerInputController(
-                        ComponentName.unflattenFromString(getEmbeddedTunerInputId()));
-
         tvInputManagerHelper = new FakeTvInputManagerHelper(this);
         setupUtils = SetupUtils.createForTvSingletons(this);
         tvInputManagerHelper.start();
@@ -183,8 +179,8 @@ public class TestSingletonApp extends Application implements TvSingletons {
     }
 
     @Override
-    public TunerInputController getTunerInputController() {
-        return mTunerInputController;
+    public Optional<TunerInputController> getTunerInputController() {
+        return mOptionalTunerInputController;
     }
 
     @Override
