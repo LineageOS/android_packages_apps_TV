@@ -24,4 +24,11 @@ public interface TunerInputController {
     void onCheckingUsbTunerStatus(Context context, String action);
 
     void executeNetworkTunerDiscoveryAsyncTask(Context context);
+
+    /**
+     * Updates tuner input's info.
+     *
+     * @param context {@link Context} instance
+     */
+    void updateTunerInputInfo(Context context);
 }
