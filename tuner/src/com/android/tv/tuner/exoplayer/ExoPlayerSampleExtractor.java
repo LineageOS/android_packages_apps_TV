@@ -48,8 +48,10 @@ import com.google.android.exoplayer2.source.SampleStream;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -290,10 +292,13 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                 return;
             }
             TrackSelection.Factory selectionFactory = new FixedTrackSelection.Factory();
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder().build();
             TrackGroupArray trackGroupArray = mMediaPeriod.getTrackGroups();
             TrackSelection[] selections = new TrackSelection[trackGroupArray.length];
             for (int i = 0; i < selections.length; ++i) {
-                selections[i] = selectionFactory.createTrackSelection(trackGroupArray.get(i), 0);
+                selections[i] =
+                    selectionFactory.createTrackSelection(
+                        trackGroupArray.get(i), bandwidthMeter, 0);
             }
             boolean[] retain = new boolean[trackGroupArray.length];
             boolean[] reset = new boolean[trackGroupArray.length];
