@@ -60,7 +60,6 @@ import com.android.tv.perf.PerformanceMonitorManager;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
-import com.android.tv.tuner.util.TunerInputInfoUtils;
 import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
@@ -172,11 +171,13 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                             new TvInputCallback() {
                                 @Override
                                 public void onInputAdded(String inputId) {
-                                    if (TvFeatures.TUNER.isEnabled(TvApplication.this)
+                                    if (getTunerInputController().isPresent()
+                                            && TvFeatures.TUNER.isEnabled(TvApplication.this)
                                             && TextUtils.equals(
                                                     inputId, getEmbeddedTunerInputId())) {
-                                        TunerInputInfoUtils.updateTunerInputInfo(
-                                                TvApplication.this);
+                                        getTunerInputController()
+                                                .get()
+                                                .updateTunerInputInfo(TvApplication.this);
                                     }
                                     handleInputCountChanged();
                                 }
@@ -186,10 +187,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                                     handleInputCountChanged();
                                 }
                             });
-            if (TvFeatures.TUNER.isEnabled(this)) {
+            if (getTunerInputController().isPresent() && TvFeatures.TUNER.isEnabled(this)) {
                 // If the tuner input service is added before the app is started, we need to
                 // handle it here.
-                TunerInputInfoUtils.updateTunerInputInfo(TvApplication.this);
+                getTunerInputController().get().updateTunerInputInfo(TvApplication.this);
             }
             if (CommonFeatures.DVR.isEnabled(this)) {
                 mDvrScheduleManager = new DvrScheduleManager(this);
