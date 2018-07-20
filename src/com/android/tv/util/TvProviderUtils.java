@@ -140,13 +140,18 @@ public final class TvProviderUtils {
         extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, EXTRA_PROGRAM_COLUMN);
         extra.putCharSequence(TvContract.EXTRA_DATA_TYPE, "TEXT");
         // If the add operation fails, the following just returns null without crashing.
-        Bundle allColumns =
-                context.getContentResolver()
-                        .call(
-                                contentUri,
-                                TvContract.METHOD_ADD_COLUMN,
-                                contentUri.toString(),
-                                extra);
+        Bundle allColumns = null;
+        try {
+            allColumns =
+                    context.getContentResolver()
+                            .call(
+                                    contentUri,
+                                    TvContract.METHOD_ADD_COLUMN,
+                                    contentUri.toString(),
+                                    extra);
+        } catch (Exception e) {
+            Log.e(TAG, "Error trying to add column.", e);
+        }
         if (allColumns == null) {
             Log.w(TAG, "Adding new column failed. Uri=" + contentUri);
         }
