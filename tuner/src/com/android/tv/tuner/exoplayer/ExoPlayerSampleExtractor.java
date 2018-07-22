@@ -49,7 +49,7 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.upstream.DataSpec;
-import com.google.android.exoplayer2.upstream.DefaultAllocator;
+import com.google.android.exoplayer2.upstream.DefaultAllocator;;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -289,11 +289,10 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                 // This instance is already released while the extractor is preparing.
                 return;
             }
-            TrackSelection.Factory selectionFactory = new FixedTrackSelection.Factory();
             TrackGroupArray trackGroupArray = mMediaPeriod.getTrackGroups();
             TrackSelection[] selections = new TrackSelection[trackGroupArray.length];
             for (int i = 0; i < selections.length; ++i) {
-                selections[i] = selectionFactory.createTrackSelection(trackGroupArray.get(i), 0);
+                selections[i] = new FixedTrackSelection(trackGroupArray.get(i), 0);
             }
             boolean[] retain = new boolean[trackGroupArray.length];
             boolean[] reset = new boolean[trackGroupArray.length];
