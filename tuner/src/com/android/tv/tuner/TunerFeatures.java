@@ -18,6 +18,7 @@ package com.android.tv.tuner;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
+import static com.android.tv.common.feature.FeatureUtils.and;
 import static com.android.tv.common.feature.FeatureUtils.aospFeature;
 import static com.android.tv.common.feature.FeatureUtils.or;
 
@@ -94,6 +95,14 @@ public class TunerFeatures extends CommonFeatures {
 
     /** Enable Dvb parsers and listeners. */
     public static final Feature ENABLE_FILE_DVB = OFF;
+
+  /**
+   * Use ExoPlayer V2 only.
+   *
+   * <p>Turn on with <code>adb shell setprop <em>exoplayer.v2.only</em> <em>true</em></code>
+   */
+  public static final Feature EXO_PLAYER_V2_ONLY =
+      and(ENG_ONLY_FEATURE, PropertyFeature.create("exoplayer.v2.only", false));
 
     private TunerFeatures() {}
 }
