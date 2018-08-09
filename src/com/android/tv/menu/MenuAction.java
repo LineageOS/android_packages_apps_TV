@@ -50,7 +50,7 @@ public class MenuAction {
             new MenuAction(
                     R.string.options_item_more_channels,
                     TvOptionsManager.OPTION_MORE_CHANNELS,
-                    R.drawable.ic_store);
+                    R.drawable.ic_app_store);
     public static final MenuAction DEV_ACTION =
             new MenuAction(
                     R.string.options_item_developer,
