@@ -49,7 +49,8 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.upstream.DataSpec;
-import com.google.android.exoplayer2.upstream.DefaultAllocator;;
+import com.google.android.exoplayer2.upstream.DefaultAllocator;
+import com.google.android.exoplayer2.upstream.TransferListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,15 +103,16 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                 new HandlerThread("SourceReaderThread"));
     }
 
-    @VisibleForTesting
-    public ExoPlayerSampleExtractor(
-            Uri uri,
-            DataSource source,
-            BufferManager bufferManager,
-            PlaybackBufferListener bufferListener,
-            boolean isRecording,
-            Looper workerLooper,
-            HandlerThread sourceReaderThread) {
+  @VisibleForTesting
+  @SuppressWarnings("MissingOverride")
+  public ExoPlayerSampleExtractor(
+      Uri uri,
+      DataSource source,
+      BufferManager bufferManager,
+      PlaybackBufferListener bufferListener,
+      boolean isRecording,
+      Looper workerLooper,
+      HandlerThread sourceReaderThread) {
         // It'll be used as a timeshift file chunk name's prefix.
         mId = System.currentTimeMillis();
 
@@ -137,6 +139,13 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                                                 .DataSource() {
 
                                             private @Nullable Uri uri;
+
+                                            // TODO: uncomment once this is part of the public API.
+                                            // @Override
+                                            public void addTransferListener(
+                                                    TransferListener transferListener) {
+                                                // Do nothing. Unsupported in V1.
+                                            }
 
                                             @Override
                                             public long open(DataSpec dataSpec) throws IOException {
