@@ -335,7 +335,7 @@ public class SetupSourcesFragment extends SetupMultiPaneFragment {
                             .id(ACTION_ONLINE_STORE)
                             .title(getString(R.string.setup_store_action_title))
                             .description(getString(R.string.setup_store_action_description))
-                            .icon(R.drawable.ic_store)
+                            .icon(R.drawable.ic_app_store)
                             .build());
 
             if (newPosition != -1) {
