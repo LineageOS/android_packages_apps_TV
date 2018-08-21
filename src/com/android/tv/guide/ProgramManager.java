@@ -309,8 +309,8 @@ public class ProgramManager {
         long fromUtcMillis = mFromUtcMillis + timeMillisToScroll;
         long toUtcMillis = mToUtcMillis + timeMillisToScroll;
         if (fromUtcMillis < mStartUtcMillis) {
-            fromUtcMillis = mStartUtcMillis;
             toUtcMillis += mStartUtcMillis - fromUtcMillis;
+            fromUtcMillis = mStartUtcMillis;
         }
         if (toUtcMillis > mEndUtcMillis) {
             fromUtcMillis -= toUtcMillis - mEndUtcMillis;
