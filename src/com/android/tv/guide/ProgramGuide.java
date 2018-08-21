@@ -711,9 +711,7 @@ public class ProgramGuide
     }
 
     private void startFull() {
-        if (!mShowGuidePartial || mAccessibilityManager.isEnabled()) {
-            // If accessibility service is enabled, focus cannot be moved to side panel due to it's
-            // hidden. Therefore, we don't hide side panel when accessibility service is enabled.
+        if (!mShowGuidePartial) {
             return;
         }
         mShowGuidePartial = false;
@@ -929,6 +927,7 @@ public class ProgramGuide
         private static final int UNKNOWN = 0;
         private static final int SIDE_PANEL = 1;
         private static final int PROGRAM_TABLE = 2;
+        private static final int CHANNEL_COLUMN = 3;
 
         @Override
         public void onGlobalFocusChanged(View oldFocus, View newFocus) {
@@ -942,6 +941,10 @@ public class ProgramGuide
                 startFull();
             } else if (fromLocation == PROGRAM_TABLE && toLocation == SIDE_PANEL) {
                 startPartial();
+            } else if (fromLocation == CHANNEL_COLUMN && toLocation == PROGRAM_TABLE) {
+                startFull();
+            } else if (fromLocation == PROGRAM_TABLE && toLocation == CHANNEL_COLUMN) {
+                startPartial();
             }
         }
 
@@ -953,7 +956,11 @@ public class ProgramGuide
                 if (obj == mSidePanel) {
                     return SIDE_PANEL;
                 } else if (obj == mGrid) {
-                    return PROGRAM_TABLE;
+                    if (view instanceof ProgramItemView) {
+                        return PROGRAM_TABLE;
+                    } else {
+                        return CHANNEL_COLUMN;
+                    }
                 }
             }
             return UNKNOWN;
