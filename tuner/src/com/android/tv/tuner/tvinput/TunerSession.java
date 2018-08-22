@@ -52,6 +52,19 @@ import com.android.tv.tuner.util.StatusTextUtils;
  */
 public class TunerSession extends TisSessionCompat
         implements Handler.Callback, CommonPreferencesChangedListener {
+
+    /** Listener for {@link TunerSession} events. */
+    public interface Listener {
+
+        /**
+         * Called when the given session is released.
+         *
+         * @param session The session that has been released.
+         */
+        void onReleased(TunerSession session);
+
+    }
+
     private static final String TAG = "TunerSession";
     private static final boolean DEBUG = false;
     private static final String USBTUNER_SHOW_DEBUG = "persist.tv.tuner.show_debug";
@@ -77,11 +90,12 @@ public class TunerSession extends TisSessionCompat
     private final ViewGroup mMessageLayout;
     private final CaptionTrackRenderer mCaptionTrackRenderer;
     private final TunerSessionWorker mSessionWorker;
-    private boolean mReleased = false;
+    private final Listener mListener;
     private boolean mPlayPaused;
     private long mTuneStartTimestamp;
 
-    public TunerSession(Context context, ChannelDataManager channelDataManager) {
+    public TunerSession(
+            Context context, ChannelDataManager channelDataManager, Listener eventListener) {
         super(context);
         mContext = context;
         mUiHandler = new Handler(this);
@@ -99,11 +113,8 @@ public class TunerSession extends TisSessionCompat
         CaptionLayout captionLayout = (CaptionLayout) mOverlayView.findViewById(R.id.caption);
         mCaptionTrackRenderer = new CaptionTrackRenderer(captionLayout);
         mSessionWorker = new TunerSessionWorker(context, channelDataManager, this);
+        mListener = eventListener;
         TunerPreferences.setCommonPreferencesChangedListener(this);
-    }
-
-    public boolean isReleased() {
-        return mReleased;
     }
 
     @Override
@@ -206,10 +217,10 @@ public class TunerSession extends TisSessionCompat
         if (DEBUG) {
             Log.d(TAG, "onRelease");
         }
-        mReleased = true;
         mSessionWorker.release();
         mUiHandler.removeCallbacksAndMessages(null);
         TunerPreferences.setCommonPreferencesChangedListener(null);
+        mListener.onReleased(this);
     }
 
     @Override

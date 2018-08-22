@@ -29,7 +29,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 /** {@link BaseTunerTvInputService} serves TV channels coming from a tuner device. */
-public class BaseTunerTvInputService extends TvInputService {
+public class BaseTunerTvInputService extends TvInputService implements TunerSession.Listener {
     private static final String TAG = "BaseTunerTvInputService";
     private static final boolean DEBUG = false;
 
@@ -85,11 +85,11 @@ public class BaseTunerTvInputService extends TvInputService {
         if (DEBUG) Log.d(TAG, "onCreateSession");
         try {
             // TODO(b/65445352): Support multiple TunerSessions for multiple tuners
-            if (!allSessionsReleased()) {
+            if (!mTunerSessions.isEmpty()) {
                 Log.d(TAG, "abort creating an session");
                 return null;
             }
-            final TunerSession session = new TunerSession(this, mChannelDataManager);
+            final TunerSession session = new TunerSession(this, mChannelDataManager, this);
             mTunerSessions.add(session);
             session.setOverlayViewEnabled(true);
             return session;
@@ -100,12 +100,8 @@ public class BaseTunerTvInputService extends TvInputService {
         }
     }
 
-    private boolean allSessionsReleased() {
-        for (TunerSession session : mTunerSessions) {
-            if (!session.isReleased()) {
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public void onReleased(TunerSession session) {
+        mTunerSessions.remove(session);
     }
 }
