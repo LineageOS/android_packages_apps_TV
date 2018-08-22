@@ -877,6 +877,9 @@ public class MainActivity extends Activity
         if (mDvrConflictChecker != null) {
             mDvrConflictChecker.start();
         }
+        if (isAudioOnlyInput()) {
+            enterPictureInPictureMode();
+        }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume end");
     }
 
@@ -2715,6 +2718,11 @@ public class MainActivity extends Activity
 
     private void initMenuItemViews() {
         mOverlayManager.getMenu().preloadItemViews();
+    }
+
+    private boolean isAudioOnlyInput() {
+        //TODO(b/111353408) implement. May hardcode before the update of framework & compat lib
+        return false;
     }
 
     @Override

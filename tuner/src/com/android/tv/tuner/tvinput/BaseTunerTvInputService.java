@@ -23,16 +23,13 @@ import android.content.Context;
 import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
-import com.google.android.exoplayer.audio.AudioCapabilities;
-import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 /** {@link BaseTunerTvInputService} serves TV channels coming from a tuner device. */
-public class BaseTunerTvInputService extends TvInputService
-        implements AudioCapabilitiesReceiver.Listener {
+public class BaseTunerTvInputService extends TvInputService {
     private static final String TAG = "BaseTunerTvInputService";
     private static final boolean DEBUG = false;
 
@@ -41,8 +38,6 @@ public class BaseTunerTvInputService extends TvInputService
     // WeakContainer for {@link TvInputSessionImpl}
     private final Set<TunerSession> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
     private ChannelDataManager mChannelDataManager;
-    private AudioCapabilitiesReceiver mAudioCapabilitiesReceiver;
-    private AudioCapabilities mAudioCapabilities;
 
     @Override
     public void onCreate() {
@@ -54,8 +49,6 @@ public class BaseTunerTvInputService extends TvInputService
         super.onCreate();
         if (DEBUG) Log.d(TAG, "onCreate");
         mChannelDataManager = new ChannelDataManager(getApplicationContext());
-        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
-        mAudioCapabilitiesReceiver.register();
         if (CommonFeatures.DVR.isEnabled(this)) {
             JobScheduler jobScheduler =
                     (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -80,7 +73,6 @@ public class BaseTunerTvInputService extends TvInputService
         if (DEBUG) Log.d(TAG, "onDestroy");
         super.onDestroy();
         mChannelDataManager.release();
-        mAudioCapabilitiesReceiver.unregister();
     }
 
     @Override
@@ -99,23 +91,12 @@ public class BaseTunerTvInputService extends TvInputService
             }
             final TunerSession session = new TunerSession(this, mChannelDataManager);
             mTunerSessions.add(session);
-            session.setAudioCapabilities(mAudioCapabilities);
             session.setOverlayViewEnabled(true);
             return session;
         } catch (RuntimeException e) {
             // There are no available DVB devices.
             Log.e(TAG, "Creating a session for " + inputId + " failed.", e);
             return null;
-        }
-    }
-
-    @Override
-    public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
-        mAudioCapabilities = audioCapabilities;
-        for (TunerSession session : mTunerSessions) {
-            if (!session.isReleased()) {
-                session.setAudioCapabilities(audioCapabilities);
-            }
         }
     }
 

@@ -109,7 +109,6 @@ public class TunerSessionWorker
     public static final int MSG_TIMESHIFT_RESUME = 5;
     public static final int MSG_TIMESHIFT_SEEK_TO = 6;
     public static final int MSG_TIMESHIFT_SET_PLAYBACKPARAMS = 7;
-    public static final int MSG_AUDIO_CAPABILITIES_CHANGED = 8;
     public static final int MSG_UNBLOCKED_RATING = 9;
     public static final int MSG_TUNER_PREFERENCES_CHANGED = 10;
 
@@ -215,6 +214,7 @@ public class TunerSessionWorker
     private boolean mChannelBlocked;
     private TvContentRating mUnblockedContentRating;
     private long mLastPositionMs;
+    private final AudioCapabilitiesReceiverV1Wrapper mAudioCapabilitiesReceiver;
     private AudioCapabilities mAudioCapabilities;
     private long mLastLimitInBytes;
     private final TvContentRatingCache mTvContentRatingCache = TvContentRatingCache.getInstance();
@@ -256,6 +256,10 @@ public class TunerSessionWorker
         mSourceManager = TsDataSourceManager.createSourceManager(false);
         mTvInputManager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
         mTvTracks = new ArrayList<>();
+        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiverV1Wrapper(
+                context, mHandler, this::handleMessageAudioCapabilitiesChanged);
+        mHandler.post(
+                () -> handleMessageAudioCapabilitiesChanged(mAudioCapabilitiesReceiver.register()));
         mAudioTrackMap = new SparseArray<>();
         mCaptionTrackMap = new SparseArray<>();
         CaptioningManager captioningManager =
@@ -425,6 +429,7 @@ public class TunerSessionWorker
             // TODO reimplement for google3
             // Here disconnect ffmpeg
         }
+        mAudioCapabilitiesReceiver.unregister();
         mChannelDataManager.setListener(null);
         mHandler.removeCallbacksAndMessages(null);
         mHandler.sendEmptyMessage(MSG_RELEASE);
@@ -729,8 +734,6 @@ public class TunerSessionWorker
                 return handleMessageTimeshiftSeekTo((long) msg.obj);
             case MSG_TIMESHIFT_SET_PLAYBACKPARAMS:
                 return handleMessageTimeshiftSetPlaybackParams((PlaybackParams) msg.obj);
-            case MSG_AUDIO_CAPABILITIES_CHANGED:
-                return handleMessageAudioCapabilitiesChanged((AudioCapabilities) msg.obj);
             case MSG_SET_STREAM_VOLUME:
                 return handleMessageSetStreamVolume();
             case MSG_TUNER_PREFERENCES_CHANGED:

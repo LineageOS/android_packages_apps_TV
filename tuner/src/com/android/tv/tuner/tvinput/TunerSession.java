@@ -45,7 +45,6 @@ import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
 import com.android.tv.tuner.util.GlobalSettingsUtils;
 import com.android.tv.tuner.util.StatusTextUtils;
-import com.google.android.exoplayer.audio.AudioCapabilities;
 
 /**
  * Provides a tuner TV input session. It handles Overlay UI works. Main tuner input functions are
@@ -211,12 +210,6 @@ public class TunerSession extends TisSessionCompat
         mSessionWorker.release();
         mUiHandler.removeCallbacksAndMessages(null);
         TunerPreferences.setCommonPreferencesChangedListener(null);
-    }
-
-    /** Sets {@link AudioCapabilities}. */
-    public void setAudioCapabilities(AudioCapabilities audioCapabilities) {
-        mSessionWorker.sendMessage(
-                TunerSessionWorker.MSG_AUDIO_CAPABILITIES_CHANGED, audioCapabilities);
     }
 
     @Override
