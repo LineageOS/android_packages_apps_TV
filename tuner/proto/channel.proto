@@ -25,6 +25,8 @@ import "track.proto";
 
 // Holds information about a channel used in the tuners.
 message TunerChannelProto {
+  option (proto2.nano.message_as_lite) = false;
+
   optional TunerType type = 1;
   optional string short_name = 2;
   optional string long_name = 3;
@@ -60,6 +62,8 @@ message TunerChannelProto {
 
 // Enum describing the types of tuner.
 enum TunerType {
+  option (proto2.nano.enum_as_lite) = false;
+
   TYPE_TUNER = 0;
   TYPE_FILE = 1;
   TYPE_NETWORK = 2;
@@ -67,6 +71,8 @@ enum TunerType {
 
 // Enum describing the types of video stream.
 enum VideoStreamType {
+  option (proto2.nano.enum_as_lite) = false;
+
   // ISO/IEC 11172 Video (MPEG-1)
   MPEG1 = 0x01;
   // ISO/IEC 13818-2 (MPEG-2) Video
@@ -81,6 +87,8 @@ enum VideoStreamType {
 
 // Enum describing the types of audio stream.
 enum AudioStreamType {
+  option (proto2.nano.enum_as_lite) = false;
+
   // ISO/IEC 11172 Audio (MPEG-1)
   MPEG1AUDIO = 0x03;
   // ISO/IEC 13818-3 Audio (MPEG-2)
@@ -98,6 +106,8 @@ enum AudioStreamType {
 // Enum describing ATSC service types
 // See ATSC Code Points Registry.
 enum AtscServiceType {
+  option (proto2.nano.enum_as_lite) = false;
+
   SERVICE_TYPE_ATSC_RESERVED = 0x0;
   SERVICE_TYPE_ANALOG_TELEVISION_CHANNELS = 0x1;
   SERVICE_TYPE_ATSC_DIGITAL_TELEVISION = 0x2;
