@@ -219,6 +219,7 @@ public class TunerSessionWorker
     private long mLastLimitInBytes;
     private final TvContentRatingCache mTvContentRatingCache = TvContentRatingCache.getInstance();
     private final TunerSession mSession;
+    private final TunerSessionOverlay mTunerSessionOverlay;
     private final boolean mHasSoftwareAudioDecoder;
     private int mPlayerState = ExoPlayer.STATE_IDLE;
     private long mPreparingStartTimeMs;
@@ -231,13 +232,20 @@ public class TunerSessionWorker
     private int mSignalStrength;
 
     public TunerSessionWorker(
-            Context context, ChannelDataManager channelDataManager, TunerSession tunerSession) {
-        this(context, channelDataManager, tunerSession, null);
+            Context context,
+            ChannelDataManager channelDataManager,
+            TunerSession tunerSession,
+            TunerSessionOverlay tunerSessionOverlay) {
+        this(context, channelDataManager, tunerSession, tunerSessionOverlay, null);
     }
 
     @VisibleForTesting
-    protected TunerSessionWorker(Context context, ChannelDataManager channelDataManager,
-        TunerSession tunerSession, @Nullable Handler handler) {
+    protected TunerSessionWorker(
+            Context context,
+            ChannelDataManager channelDataManager,
+            TunerSession tunerSession,
+            TunerSessionOverlay tunerSessionOverlay,
+        @Nullable Handler handler) {
         if (DEBUG) Log.d(TAG, "TunerSessionWorker created");
         mContext = context;
         if (handler != null) {
@@ -250,6 +258,7 @@ public class TunerSessionWorker
             mHandler = new Handler(handlerThread.getLooper(), this);
         }
         mSession = tunerSession;
+        mTunerSessionOverlay = tunerSessionOverlay;
         mChannelDataManager = channelDataManager;
         mChannelDataManager.setListener(this);
         mChannelDataManager.checkDataVersion(mContext);
@@ -538,18 +547,18 @@ public class TunerSessionWorker
             return;
         }
         Log.i(TAG, "AC3 audio cannot be played due to device limitation");
-        mSession.sendUiMessage(TunerSession.MSG_UI_SHOW_AUDIO_UNPLAYABLE);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_SHOW_AUDIO_UNPLAYABLE);
     }
 
     // MpegTsPlayer.VideoEventListener
     @Override
     public void onEmitCaptionEvent(Cea708Data.CaptionEvent event) {
-        mSession.sendUiMessage(TunerSession.MSG_UI_PROCESS_CAPTION_TRACK, event);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_PROCESS_CAPTION_TRACK, event);
     }
 
     @Override
     public void onClearCaptionEvent() {
-        mSession.sendUiMessage(TunerSession.MSG_UI_CLEAR_CAPTION_RENDERER);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_CLEAR_CAPTION_RENDERER);
     }
 
     @Override
@@ -570,7 +579,7 @@ public class TunerSessionWorker
 
     @Override
     public void onRescanNeeded() {
-        mSession.sendUiMessage(TunerSession.MSG_UI_TOAST_RESCAN_NEEDED);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_TOAST_RESCAN_NEEDED);
     }
 
     @Override
@@ -1171,8 +1180,8 @@ public class TunerSessionWorker
         long limitInBytes = source != null ? source.getBufferedPosition() : 0L;
         if (TunerDebug.ENABLED) {
             TunerDebug.calculateDiff();
-            mSession.sendUiMessage(
-                TunerSession.MSG_UI_SET_STATUS_TEXT,
+            mTunerSessionOverlay.sendUiMessage(
+                TunerSessionOverlay.MSG_UI_SET_STATUS_TEXT,
                 Html.fromHtml(
                     StatusTextUtils.getStatusWarningInHTML(
                         (limitInBytes - mLastLimitInBytes) / TS_PACKET_SIZE,
@@ -1185,7 +1194,7 @@ public class TunerSessionWorker
                         TunerDebug.getVideoPtsUs(),
                         TunerDebug.getVideoPtsUsRate())));
         }
-        mSession.sendUiMessage(TunerSession.MSG_UI_HIDE_MESSAGE);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_HIDE_MESSAGE);
         long currentTime = SystemClock.elapsedRealtime();
         long bufferingTimeMs =
             mBufferingStartTimeMs != INVALID_TIME
@@ -1408,7 +1417,8 @@ public class TunerSessionWorker
 
     private void startCaptionTrack() {
         if (mCaptionEnabled && mCaptionTrack != null) {
-            mSession.sendUiMessage(TunerSession.MSG_UI_START_CAPTION_TRACK, mCaptionTrack);
+            mTunerSessionOverlay.sendUiMessage(
+                    TunerSessionOverlay.MSG_UI_START_CAPTION_TRACK, mCaptionTrack);
             if (mPlayer != null) {
                 mPlayer.setCaptionServiceNumber(mCaptionTrack.serviceNumber);
             }
@@ -1419,14 +1429,14 @@ public class TunerSessionWorker
         if (mPlayer != null) {
             mPlayer.setCaptionServiceNumber(Cea708Data.EMPTY_SERVICE_NUMBER);
         }
-        mSession.sendUiMessage(TunerSession.MSG_UI_STOP_CAPTION_TRACK);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_STOP_CAPTION_TRACK);
     }
 
     private void resetTvTracks() {
         mTvTracks.clear();
         mAudioTrackMap.clear();
         mCaptionTrackMap.clear();
-        mSession.sendUiMessage(TunerSession.MSG_UI_RESET_CAPTION_TRACK);
+        mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_RESET_CAPTION_TRACK);
         mSession.notifyTracksChanged(mTvTracks);
     }
 
@@ -1625,7 +1635,7 @@ public class TunerSessionWorker
             mBufferingStartTimeMs = INVALID_TIME;
             mReadyStartTimeMs = INVALID_TIME;
             mLastLimitInBytes = 0L;
-            mSession.sendUiMessage(TunerSession.MSG_UI_HIDE_AUDIO_UNPLAYABLE);
+            mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_HIDE_AUDIO_UNPLAYABLE);
             mSession.notifyTimeShiftStatusChanged(TvInputManager.TIME_SHIFT_STATUS_UNAVAILABLE);
         }
     }
@@ -1665,7 +1675,7 @@ public class TunerSessionWorker
                 // Doesn't show buffering during weak signal.
                 notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING);
             }
-            mSession.sendUiMessage(TunerSession.MSG_UI_HIDE_MESSAGE);
+            mTunerSessionOverlay.sendUiMessage(TunerSessionOverlay.MSG_UI_HIDE_MESSAGE);
             mPlayerStarted = true;
         }
     }
