@@ -21,6 +21,9 @@ package com.android.tv.tuner.data;
 option java_package = "com.android.tv.tuner.data";
 option java_outer_classname = "Channel";
 
+
+//AOSP:comment_out import "third_party/android/nanoproto/nano_descriptor.proto";
+
 import "track.proto";
 
 // Holds information about a channel used in the tuners.
@@ -62,7 +65,7 @@ message TunerChannelProto {
 
 // Enum describing the types of tuner.
 enum TunerType {
-  option (proto2.nano.enum_as_lite) = false;
+//AOSP:comment_out   option (proto2.nano.enum_as_lite) = false;
 
   TYPE_TUNER = 0;
   TYPE_FILE = 1;
@@ -71,7 +74,7 @@ enum TunerType {
 
 // Enum describing the types of video stream.
 enum VideoStreamType {
-  option (proto2.nano.enum_as_lite) = false;
+//AOSP:comment_out   option (proto2.nano.enum_as_lite) = false;
 
   // ISO/IEC 11172 Video (MPEG-1)
   MPEG1 = 0x01;
@@ -87,7 +90,7 @@ enum VideoStreamType {
 
 // Enum describing the types of audio stream.
 enum AudioStreamType {
-  option (proto2.nano.enum_as_lite) = false;
+//AOSP:comment_out   option (proto2.nano.enum_as_lite) = false;
 
   // ISO/IEC 11172 Audio (MPEG-1)
   MPEG1AUDIO = 0x03;
@@ -106,7 +109,7 @@ enum AudioStreamType {
 // Enum describing ATSC service types
 // See ATSC Code Points Registry.
 enum AtscServiceType {
-  option (proto2.nano.enum_as_lite) = false;
+//AOSP:comment_out   option (proto2.nano.enum_as_lite) = false;
 
   SERVICE_TYPE_ATSC_RESERVED = 0x0;
   SERVICE_TYPE_ANALOG_TELEVISION_CHANNELS = 0x1;
