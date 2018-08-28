@@ -74,6 +74,7 @@ import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.WeakHandler;
+import com.android.tv.common.compat.TvInputInfoCompat;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.memory.MemoryManageable;
 import com.android.tv.common.singletons.HasSingletons;
@@ -143,6 +144,7 @@ import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.images.ImageCache;
 
 import com.google.common.base.Optional;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -319,6 +321,8 @@ public class MainActivity extends Activity
 
     private RecurringRunner mSendConfigInfoRecurringRunner;
     private RecurringRunner mChannelStatusRecurringRunner;
+
+    private String mLastInputIdFromIntent;
 
     private final Handler mHandler = new MainActivityHandler(this);
     private final Set<OnActionClickListener> mOnActionClickListeners = new ArraySet<>();
@@ -1418,6 +1422,7 @@ public class MainActivity extends Activity
 
     // It should be called before onResume.
     private boolean handleIntent(Intent intent) {
+        mLastInputIdFromIntent = getInputId(intent);
         // Reset the closed caption settings when the activity is 1)created or 2) restarted.
         // And do not reset while TvView is playing.
         if (!mTvView.isPlaying()) {
@@ -2721,8 +2726,20 @@ public class MainActivity extends Activity
     }
 
     private boolean isAudioOnlyInput() {
-        //TODO(b/111353408) implement. May hardcode before the update of framework & compat lib
-        return false;
+        if (mLastInputIdFromIntent == null) {
+            return false;
+        }
+        TvInputInfoCompat inputInfo =
+                mTvInputManagerHelper.getTvInputInfoCompat(mLastInputIdFromIntent);
+        return inputInfo != null && inputInfo.isAudioOnly();
+    }
+
+    @Nullable
+    private String getInputId(Intent intent) {
+        Uri uri = intent.getData();
+        return TvContract.isChannelUriForPassthroughInput(uri)
+                ? uri.getPathSegments().get(1)
+                : null;
     }
 
     @Override

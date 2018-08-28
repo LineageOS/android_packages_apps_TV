@@ -33,6 +33,7 @@ import android.util.ArrayMap;
 import android.util.Log;
 import com.android.tv.TvFeatures;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.compat.TvInputInfoCompat;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
@@ -149,7 +150,7 @@ public class TvInputManagerHelper {
     private final PackageManager mPackageManager;
     protected final TvInputManagerInterface mTvInputManager;
     private final Map<String, Integer> mInputStateMap = new HashMap<>();
-    private final Map<String, TvInputInfo> mInputMap = new HashMap<>();
+    private final Map<String, TvInputInfoCompat> mInputMap = new HashMap<>();
     private final Map<String, String> mTvInputLabels = new ArrayMap<>();
     private final Map<String, String> mTvInputCustomLabels = new ArrayMap<>();
     private final Map<String, Boolean> mInputIdToPartnerInputMap = new HashMap<>();
@@ -180,7 +181,7 @@ public class TvInputManagerHelper {
                     }
                     TvInputInfo info = mTvInputManager.getTvInputInfo(inputId);
                     if (info != null) {
-                        mInputMap.put(inputId, info);
+                        mInputMap.put(inputId, new TvInputInfoCompat(mContext, info));
                         CharSequence label = info.loadLabel(mContext);
                         // in tests the label may be missing just use the input id
                         mTvInputLabels.put(inputId, label != null ? label.toString() : inputId);
@@ -223,7 +224,7 @@ public class TvInputManagerHelper {
                         return;
                     }
                     TvInputInfo info = mTvInputManager.getTvInputInfo(inputId);
-                    mInputMap.put(inputId, info);
+                    mInputMap.put(inputId, new TvInputInfoCompat(mContext, info));
                     mTvInputLabels.put(inputId, info.loadLabel(mContext).toString());
                     CharSequence inputCustomLabel = info.loadCustomLabel(mContext);
                     if (inputCustomLabel != null) {
@@ -242,7 +243,7 @@ public class TvInputManagerHelper {
                 @Override
                 public void onTvInputInfoUpdated(TvInputInfo inputInfo) {
                     if (DEBUG) Log.d(TAG, "onTvInputInfoUpdated " + inputInfo);
-                    mInputMap.put(inputInfo.getId(), inputInfo);
+                    mInputMap.put(inputInfo.getId(), new TvInputInfoCompat(mContext, inputInfo));
                     mTvInputLabels.put(inputInfo.getId(), inputInfo.loadLabel(mContext).toString());
                     CharSequence inputCustomLabel = inputInfo.loadCustomLabel(mContext);
                     if (inputCustomLabel != null) {
@@ -312,7 +313,7 @@ public class TvInputManagerHelper {
             if (isInBlackList(inputId)) {
                 continue;
             }
-            mInputMap.put(inputId, input);
+            mInputMap.put(inputId, new TvInputInfoCompat(mContext, input));
             int state = mTvInputManager.getInputState(inputId);
             mInputStateMap.put(inputId, state);
             mInputIdToPartnerInputMap.put(inputId, isPartnerInput(input));
@@ -475,7 +476,14 @@ public class TvInputManagerHelper {
         return mStarted && !TextUtils.isEmpty(inputId) && mInputMap.get(inputId) != null;
     }
 
+    @Nullable
     public TvInputInfo getTvInputInfo(String inputId) {
+        TvInputInfoCompat inputInfo = getTvInputInfoCompat(inputId);
+        return inputInfo == null ? null : inputInfo.getTvInputInfo();
+    }
+
+    @Nullable
+    public TvInputInfoCompat getTvInputInfoCompat(String inputId) {
         SoftPreconditions.checkState(
                 mStarted, TAG, "getTvInputInfo() called before TvInputManagerHelper was started.");
         if (!mStarted) {
@@ -494,7 +502,7 @@ public class TvInputManagerHelper {
 
     public int getTunerTvInputSize() {
         int size = 0;
-        for (TvInputInfo input : mInputMap.values()) {
+        for (TvInputInfoCompat input : mInputMap.values()) {
             if (input.getType() == TvInputInfo.TYPE_TUNER) {
                 ++size;
             }
