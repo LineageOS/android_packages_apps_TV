@@ -882,7 +882,7 @@ public class MainActivity extends Activity
             mDvrConflictChecker.start();
         }
         if (isAudioOnlyInput()) {
-            enterPictureInPictureMode();
+            // handle audio only input
         }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume end");
     }
