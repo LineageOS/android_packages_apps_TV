@@ -25,7 +25,7 @@ option java_outer_classname = "Track";
 
 // Represents a AC3 audio track.
 message AtscAudioTrack {
-  option (proto2.nano.message_as_lite) = false;
+//AOSP:comment_out   option (proto2.nano.message_as_lite) = false; 
 
   optional string language = 1;
   optional AudioType audio_type = 2;
