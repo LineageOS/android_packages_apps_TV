@@ -28,7 +28,7 @@ import "track.proto";
 
 // Holds information about a channel used in the tuners.
 message TunerChannelProto {
-  option (proto2.nano.message_as_lite) = false;
+//AOSP:comment_out   option (proto2.nano.message_as_lite) = false;
 
   optional TunerType type = 1;
   optional string short_name = 2;
