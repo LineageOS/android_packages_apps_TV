@@ -643,6 +643,11 @@ public class ProgramGuide
         return mGrid;
     }
 
+    /** Returns if Accessibility is enabled. */
+    boolean isAccessibilityEnabled() {
+        return mAccessibilityManager.isEnabled();
+    }
+
     /** Gets {@link VerticalGridView} for "genre select" side panel. */
     VerticalGridView getSidePanel() {
         return mSidePanelGridView;
