@@ -1069,6 +1069,9 @@ public class MainActivity extends Activity
         mActivityStarted = false;
         stopAll(false);
         unregisterReceiver(mBroadcastReceiver);
+        if (mChannelTuner.isCurrentChannelPassthrough()) {
+            mInitChannelUri = mChannelTuner.getCurrentChannelUri();
+        }
         mTracker.sendMainStop(mMainDurationTimer.reset());
         super.onStop();
     }
