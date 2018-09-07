@@ -23,6 +23,7 @@ import static com.android.tv.common.feature.TestableFeature.createTestableFeatur
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.android.tv.common.config.api.RemoteConfig.HasRemoteConfig;
 import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.LocationUtils;
@@ -81,4 +82,7 @@ public class CommonFeatures {
     // TODO(b/74197177): remove when UI and API finalized.
     /** Show channel signal strength. */
     public static final Feature TUNER_SIGNAL_STRENGTH = ENG_ONLY_FEATURE;
+
+    /** Use AudioOnlyTvService for audio-only inputs. */
+    public static final Feature ENABLE_TV_SERVICE = context -> false;
 }
