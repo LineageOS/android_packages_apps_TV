@@ -69,6 +69,7 @@ import com.android.tv.MainActivity.MySingletons;
 import com.android.tv.analytics.SendChannelStatusRunnable;
 import com.android.tv.analytics.SendConfigInfoRunnable;
 import com.android.tv.analytics.Tracker;
+import com.android.tv.audiotvservice.AudioOnlyTvService;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.SoftPreconditions;
@@ -881,8 +882,8 @@ public class MainActivity extends Activity
         if (mDvrConflictChecker != null) {
             mDvrConflictChecker.start();
         }
-        if (isAudioOnlyInput()) {
-            // handle audio only input
+        if (CommonFeatures.ENABLE_TV_SERVICE.isEnabled(this) && isAudioOnlyInput()) {
+            AudioOnlyTvService.startForegroundService(this);
         }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume end");
     }
