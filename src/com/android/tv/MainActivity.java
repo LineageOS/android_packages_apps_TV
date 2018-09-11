@@ -69,7 +69,7 @@ import com.android.tv.MainActivity.MySingletons;
 import com.android.tv.analytics.SendChannelStatusRunnable;
 import com.android.tv.analytics.SendConfigInfoRunnable;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.audiotvservice.AudioOnlyTvService;
+import com.android.tv.audiotvservice.AudioOnlyTvServiceUtil;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.SoftPreconditions;
@@ -145,7 +145,6 @@ import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.images.ImageCache;
 
 import com.google.common.base.Optional;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -883,7 +882,7 @@ public class MainActivity extends Activity
             mDvrConflictChecker.start();
         }
         if (CommonFeatures.ENABLE_TV_SERVICE.isEnabled(this) && isAudioOnlyInput()) {
-            AudioOnlyTvService.startForegroundService(this);
+            AudioOnlyTvServiceUtil.startForegroundService(this);
         }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume end");
     }

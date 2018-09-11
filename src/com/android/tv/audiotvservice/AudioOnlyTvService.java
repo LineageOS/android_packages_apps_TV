@@ -17,44 +17,16 @@ package com.android.tv.audiotvservice;
 
 import android.app.Notification;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-/**
- * Foreground service for audio-only TV inputs.
- */
+/** Foreground service for audio-only TV inputs. */
 public class AudioOnlyTvService extends Service {
     // TODO(b/110969180): implement this service.
     private static final String TAG = "AudioOnlyTvService";
     private static final int NOTIFICATION_ID = 1;
-
-    private static AudioOnlyTvService sInstance;
-
-    @MainThread
-    public static void startForegroundService(Context context) {
-        Log.i(TAG,
-                "startForegroundService, sInstance " + (sInstance == null ? "null" : "not null"));
-        if (sInstance == null) {
-            Intent intent = new Intent(context, AudioOnlyTvService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent);
-            } else {
-                context.startService(intent);
-            }
-        } else {
-            sInstance.startForeground(NOTIFICATION_ID, new Notification());
-        }
-    }
-    @MainThread
-    public static void stopForegroundService() {
-        Log.i(TAG, "stopForegroundService");
-        sInstance.stopForeground(true);
-    }
 
     @Nullable
     @Override
@@ -71,6 +43,7 @@ public class AudioOnlyTvService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand. flags = " + flags + ", startId = " + startId);
+        startForeground(NOTIFICATION_ID, new Notification());
         return super.onStartCommand(intent, flags, startId);
     }
 
