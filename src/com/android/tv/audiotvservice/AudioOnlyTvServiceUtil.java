@@ -19,16 +19,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.MainThread;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 /** Utility methods to start and stop audio only TV Player. */
-public class AudioOnlyTvServiceUtil {
+public final class AudioOnlyTvServiceUtil {
     private static final String TAG = "AudioOnlyTvServiceUtil";
+    private static final String EXTRA_INPUT_ID = "intputId";
 
     @MainThread
     public static void startAudioOnlyInput(Context context, String tvInputId) {
         Log.i(TAG, "startAudioOnlyInput");
-        Intent intent = new Intent(context, AudioOnlyTvService.class);
+        Intent intent = getIntent(context);
+        if (intent == null) {
+            return;
+        }
+        intent.putExtra(EXTRA_INPUT_ID, tvInputId);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -36,8 +42,27 @@ public class AudioOnlyTvServiceUtil {
         }
     }
 
-    @MainThread
-    public static void stopAudioOnlyInput() {
-        Log.i(TAG, "stopForegroundService");
+    @Nullable
+    private static Intent getIntent(Context context) {
+        try {
+            return new Intent(
+                    context, Class.forName("com.android.tv.audiotvservice.AudioOnlyTvService"));
+        } catch (ClassNotFoundException e) {
+            Log.wtf(TAG, e);
+            return null;
+        }
     }
+
+    @MainThread
+    public static void stopAudioOnlyInput(Context context) {
+        Log.i(TAG, "stopForegroundService");
+        context.stopService(getIntent(context));
+    }
+
+    @Nullable
+    public static String getInputIdFromIntent(Intent intent) {
+        return intent.getStringExtra(EXTRA_INPUT_ID);
+    }
+
+    private AudioOnlyTvServiceUtil() {}
 }

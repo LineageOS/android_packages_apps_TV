@@ -882,6 +882,7 @@ public class MainActivity extends Activity
             mDvrConflictChecker.start();
         }
         if (CommonFeatures.ENABLE_TV_SERVICE.isEnabled(this) && isAudioOnlyInput()) {
+            // TODO(b/110969180): figure out when to call AudioOnlyTvServiceUtil.stopAudioOnlyInput
             AudioOnlyTvServiceUtil.startAudioOnlyInput(this, mLastInputIdFromIntent);
         }
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.onResume end");
