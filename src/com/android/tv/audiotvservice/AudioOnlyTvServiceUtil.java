@@ -26,8 +26,8 @@ public class AudioOnlyTvServiceUtil {
     private static final String TAG = "AudioOnlyTvServiceUtil";
 
     @MainThread
-    public static void startForegroundService(Context context) {
-        Log.i(TAG, "startForegroundService");
+    public static void startAudioOnlyInput(Context context, String tvInputId) {
+        Log.i(TAG, "startAudioOnlyInput");
         Intent intent = new Intent(context, AudioOnlyTvService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
@@ -37,7 +37,7 @@ public class AudioOnlyTvServiceUtil {
     }
 
     @MainThread
-    public static void stopForegroundService() {
+    public static void stopAudioOnlyInput() {
         Log.i(TAG, "stopForegroundService");
     }
 }
