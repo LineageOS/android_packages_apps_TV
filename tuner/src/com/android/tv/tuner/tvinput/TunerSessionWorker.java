@@ -245,7 +245,7 @@ public class TunerSessionWorker
             ChannelDataManager channelDataManager,
             TunerSession tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
-        @Nullable Handler handler) {
+            @Nullable Handler handler) {
         if (DEBUG) Log.d(TAG, "TunerSessionWorker created");
         mContext = context;
         if (handler != null) {
@@ -267,8 +267,8 @@ public class TunerSessionWorker
         mTvTracks = new ArrayList<>();
         mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiverV1Wrapper(
                 context, mHandler, this::handleMessageAudioCapabilitiesChanged);
-        mHandler.post(
-                () -> handleMessageAudioCapabilitiesChanged(mAudioCapabilitiesReceiver.register()));
+        AudioCapabilities audioCapabilities = mAudioCapabilitiesReceiver.register();
+        mHandler.post(() -> handleMessageAudioCapabilitiesChanged(audioCapabilities));
         mAudioTrackMap = new SparseArray<>();
         mCaptionTrackMap = new SparseArray<>();
         CaptioningManager captioningManager =
