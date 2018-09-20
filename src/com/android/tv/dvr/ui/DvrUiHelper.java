@@ -66,6 +66,7 @@ import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrProgramConflictDialog
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrScheduleDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrSmallSizedStorageErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrStopRecordingDialogFragment;
+import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrWriteStoragePermissionRationaleDialogFragment;
 import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
 import com.android.tv.dvr.ui.list.DvrHistoryActivity;
 import com.android.tv.dvr.ui.list.DvrSchedulesActivity;
@@ -250,6 +251,12 @@ public class DvrUiHelper {
         Bundle args = new Bundle();
         args.putParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM, program);
         showDialogFragment(activity, new DvrFutureProgramInfoDialogFragment(), args, false, true);
+    }
+
+    /** Shows program information dialog. */
+    public static void showWriteStoragePermissionRationaleDialog(Activity activity) {
+        showDialogFragment(activity, new DvrWriteStoragePermissionRationaleDialogFragment(),
+                new Bundle(), false, false);
     }
 
     /**

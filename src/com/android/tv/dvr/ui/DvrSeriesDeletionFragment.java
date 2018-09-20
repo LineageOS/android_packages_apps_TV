@@ -17,16 +17,13 @@
 package com.android.tv.dvr.ui;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.tv.TvInputManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v17.leanback.widget.GuidedActionsStylist;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Toast;
 import com.android.tv.R;
@@ -56,8 +53,6 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
     private static final long ACTION_ID_SELECT_WATCHED = -110;
     private static final long ACTION_ID_SELECT_ALL = -111;
     private static final long ACTION_ID_DELETE = -112;
-    private static final String TAG = "DvrSeriesDeletionFragment";
-    private static final int REQUEST_DELETE = 1;
 
     private DvrManager mDvrManager;
     private DvrDataManager mDvrDataManager;
@@ -230,12 +225,12 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
                 mIdsToDelete.add(guidedAction.getId());
             }
         }
+        ((DvrSeriesDeletionActivity) getActivity()).setIdsToDelete(mIdsToDelete);
         if (!PermissionUtils.hasWriteExternalStorage(getContext())
                 && doesAnySelectedRecordedProgramNeedWritePermission()) {
-            requestPermissions(
-                    new String[] {"android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_DELETE);
+            DvrUiHelper.showWriteStoragePermissionRationaleDialog(getActivity());
         } else {
-            deleteSelectedIds(true);
+            deleteSelectedIds();
         }
     }
 
@@ -250,9 +245,9 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
         return false;
     }
 
-    private void deleteSelectedIds(boolean deleteFiles) {
+    private void deleteSelectedIds() {
         if (!mIdsToDelete.isEmpty()) {
-            mDvrManager.removeRecordedPrograms(mIdsToDelete, deleteFiles);
+            mDvrManager.removeRecordedPrograms(mIdsToDelete, true);
         }
         Toast.makeText(
                         getContext(),
@@ -265,30 +260,6 @@ public class DvrSeriesDeletionFragment extends GuidedStepFragment {
                         Toast.LENGTH_LONG)
                 .show();
         finishGuidedStepFragments();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_DELETE:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    deleteSelectedIds(true);
-                } else {
-                    // NOTE: If Live TV ever supports both embedded and separate DVR inputs
-                    // then we should try to do the delete regardless.
-                    Log.i(
-                            TAG,
-                            "Write permission denied, Not trying to delete the files for series "
-                                    + mSeriesRecordingId);
-                    deleteSelectedIds(false);
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
     }
 
     private String getWatchedString(long watchedPositionMs, long durationMs) {
