@@ -438,12 +438,14 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
                 mChannelNumberView.setText(displayNumber);
                 mChannelNumberView.setVisibility(View.VISIBLE);
             }
+
+            boolean isChannelLocked = isChannelLocked(channel);
             mChannelNumberView.setTextColor(
-                    isChannelLocked(channel) ? mChannelBlockedTextColor : mChannelTextColor);
+                    isChannelLocked ? mChannelBlockedTextColor : mChannelTextColor);
 
             mChannelLogoView.setImageBitmap(null);
             mChannelLogoView.setVisibility(View.GONE);
-            if (isChannelLocked(channel)) {
+            if (isChannelLocked) {
                 mChannelNameView.setVisibility(View.GONE);
                 mChannelBlockView.setVisibility(View.VISIBLE);
             } else {
