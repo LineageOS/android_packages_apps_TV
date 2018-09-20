@@ -190,14 +190,6 @@ public class DvrHalfSizedDialogFragment extends HalfSizedDialogFragment {
         }
     }
 
-    /** A dialog fragment for {@link DvrFutureProgramInfoFragment}. */
-    public static class DvrFutureProgramInfoDialogFragment extends DvrGuidedStepDialogFragment {
-        @Override
-        protected DvrGuidedStepFragment onCreateGuidedStepFragment() {
-            return new DvrFutureProgramInfoFragment();
-        }
-    }
-
     /** A dialog fragment for {@link DvrWriteStoragePermissionRationaleFragment}. */
     public static class DvrWriteStoragePermissionRationaleDialogFragment
             extends DvrGuidedStepDialogFragment {
