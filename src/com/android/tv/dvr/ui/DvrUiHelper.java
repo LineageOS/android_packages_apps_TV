@@ -41,7 +41,6 @@ import android.widget.Toast;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
-import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.CommonUtils;
@@ -58,7 +57,6 @@ import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrAlreadyRecordedDialog
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrAlreadyScheduledDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrChannelRecordDurationOptionDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrChannelWatchConflictDialogFragment;
-import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrFutureProgramInfoDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrInsufficientSpaceErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrMissingStorageErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrNoFreeSpaceErrorDialogFragment;
@@ -66,6 +64,7 @@ import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrProgramConflictDialog
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrScheduleDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrSmallSizedStorageErrorDialogFragment;
 import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrStopRecordingDialogFragment;
+import com.android.tv.dvr.ui.DvrHalfSizedDialogFragment.DvrWriteStoragePermissionRationaleDialogFragment;
 import com.android.tv.dvr.ui.browse.DvrBrowseActivity;
 import com.android.tv.dvr.ui.list.DvrHistoryActivity;
 import com.android.tv.dvr.ui.list.DvrSchedulesActivity;
@@ -243,13 +242,9 @@ public class DvrUiHelper {
     }
 
     /** Shows program information dialog. */
-    public static void showProgramInfoDialog(Activity activity, Program program) {
-        if (program == null || !BuildConfig.ENG) {
-            return;
-        }
-        Bundle args = new Bundle();
-        args.putParcelable(DvrHalfSizedDialogFragment.KEY_PROGRAM, program);
-        showDialogFragment(activity, new DvrFutureProgramInfoDialogFragment(), args, false, true);
+    public static void showWriteStoragePermissionRationaleDialog(Activity activity) {
+        showDialogFragment(activity, new DvrWriteStoragePermissionRationaleDialogFragment(),
+                new Bundle(), false, false);
     }
 
     /**

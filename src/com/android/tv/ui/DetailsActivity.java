@@ -17,15 +17,20 @@
 package com.android.tv.ui;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.DetailsFragment;
 import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
+import android.util.Log;
 import android.view.View;
 import com.android.tv.R;
 import com.android.tv.Starter;
+import com.android.tv.TvSingletons;
 import com.android.tv.dialog.PinDialogFragment;
+import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.ui.browse.CurrentRecordingDetailsFragment;
 import com.android.tv.dvr.ui.browse.RecordedProgramDetailsFragment;
 import com.android.tv.dvr.ui.browse.ScheduledRecordingDetailsFragment;
@@ -33,6 +38,10 @@ import com.android.tv.dvr.ui.browse.SeriesRecordingDetailsFragment;
 
 /** Activity to show details view. */
 public class DetailsActivity extends Activity implements PinDialogFragment.OnPinCheckedListener {
+    private static final String TAG = "DetailsActivity";
+
+    private static final long INVALID_RECORD_ID = -1;
+
     /** Name of record id added to the Intent. */
     public static final String RECORDING_ID = "record_id";
     /** Name of program uri added to the Intent. */
@@ -69,22 +78,26 @@ public class DetailsActivity extends Activity implements PinDialogFragment.OnPin
     /** SERIES_RECORDING_VIEW refers to program. */
     public static final int PROGRAM_VIEW = 5;
 
+    public static final int REQUEST_DELETE = 1;
+
     private PinDialogFragment.OnPinCheckedListener mOnPinCheckedListener;
+    private long mRecordId = INVALID_RECORD_ID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Starter.start(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dvr_details);
-        long recordId = getIntent().getLongExtra(RECORDING_ID, -1);
+        long recordId = getIntent().getLongExtra(RECORDING_ID, INVALID_RECORD_ID);
         int detailsViewType = getIntent().getIntExtra(DETAILS_VIEW_TYPE, -1);
         boolean hideViewSchedule = getIntent().getBooleanExtra(HIDE_VIEW_SCHEDULE, false);
         long channelId = getIntent().getLongExtra(CHANNEL_ID, -1);
         DetailsFragment detailsFragment = null;
         Bundle args = new Bundle();
         if (detailsViewType != -1 && savedInstanceState == null) {
-            if (recordId != -1) {
-                args.putLong(RECORDING_ID, recordId);
+            if (recordId != INVALID_RECORD_ID) {
+                mRecordId = recordId;
+                args.putLong(RECORDING_ID, mRecordId);
                 if (detailsViewType == CURRENT_RECORDING_VIEW) {
                     detailsFragment = new CurrentRecordingDetailsFragment();
                 } else if (detailsViewType == SCHEDULED_RECORDING_VIEW) {
@@ -162,5 +175,35 @@ public class DetailsActivity extends Activity implements PinDialogFragment.OnPin
                                 // Do nothing
                             }
                         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_DELETE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    delete(true);
+                } else {
+                    Log.i(
+                            TAG,
+                            "Write permission denied, Not trying to delete the file for "
+                                    + mRecordId);
+                    delete(false);
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private void delete(boolean deleteFile) {
+        if (mRecordId != INVALID_RECORD_ID) {
+            DvrManager dvrManager = TvSingletons.getSingletons(this).getDvrManager();
+            dvrManager.removeRecordedProgram(mRecordId, deleteFile);
+        }
+        finish();
     }
 }

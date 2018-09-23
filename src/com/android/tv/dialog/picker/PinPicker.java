@@ -29,6 +29,7 @@ import java.util.List;
 
 /** 4 digit picker */
 public final class PinPicker extends Picker {
+    // TODO(b/116144491): use leanback pin picker.
 
     private final List<PickerColumn> mPickers = new ArrayList<>();
     private OnClickListener mOnClickListener;

@@ -1002,4 +1002,11 @@
     <eat-comment/>
     <!-- Name for recorded programs preview channel -->
     <string name="recorded_programs_preview_channel">Recorded Programs</string>
+
+    <!-- Request Permission -->
+    <eat-comment />
+    <!-- Title of the dialog to show storage permission rationale -->
+    <string name="write_storage_permission_rationale_title">Request permission</string>
+    <!-- Description of the dialog to show storage permission rationale. It tells users why the permission is needed -->
+    <string name="write_storage_permission_rationale_description">You will be asked to, \"Allow Live TV to access photos, media, and files on your device?\"\nYou must select \"Allow\" in order to \'Delete\' your recorded programs \'files\'.</string>
 </resources>
