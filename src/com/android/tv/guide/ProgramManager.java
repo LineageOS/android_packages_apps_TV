@@ -402,7 +402,7 @@ public class ProgramManager {
      * given {@code channelId}.
      */
     int getTableEntryCount(long channelId) {
-        return mChannelIdEntriesMap.get(channelId).size();
+        return mChannelIdEntriesMap.isEmpty() ? 0 : mChannelIdEntriesMap.get(channelId).size();
     }
 
     /**
@@ -553,6 +553,9 @@ public class ProgramManager {
 
     @Nullable
     private TableEntry getTableEntry(long channelId, long entryId) {
+        if (mChannelIdEntriesMap.isEmpty()) {
+            return null;
+        }
         List<TableEntry> entries = mChannelIdEntriesMap.get(channelId);
         if (entries != null) {
             for (TableEntry entry : entries) {
