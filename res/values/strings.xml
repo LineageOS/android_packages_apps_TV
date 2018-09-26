@@ -1007,6 +1007,16 @@
     <eat-comment />
     <!-- Title of the dialog to show storage permission rationale -->
     <string name="write_storage_permission_rationale_title">Request permission</string>
-    <!-- Description of the dialog to show storage permission rationale. It tells users why the permission is needed -->
-    <string name="write_storage_permission_rationale_description">You will be asked to, \"Allow Live TV to access photos, media, and files on your device?\"\nYou must select \"Allow\" in order to \'Delete\' your recorded programs \'files\'.</string>
+    <!-- The users has asked to delete TV programs they have recorded, however the application
+        first needs a system permission to delete files.
+        This is the text of a dialog that explains to the users they will be asked to grant
+        Live TV permission to delete files.
+        "Allow Live TV to access photos, media, and files on your device?\" is from the text
+        from the system message at
+       https://tc.corp.google.com/btviewer/messagedetail?project=AndroidPlatform&msgId=7885942926944299560
+        -->
+    <string name="write_storage_permission_rationale_description">You will be asked to, \"Allow <xliff:g id="app_name">Live TV</xliff:g> to access photos, media, and files on your device?\"\n
+        Selecting \"Allow\", enables <xliff:g id="app_name">Live TV</xliff:g> to immediately
+        free storage space when deleting recorded TV programs.
+        This makes more space available for new recordings.</string>
 </resources>
