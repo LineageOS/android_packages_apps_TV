@@ -912,7 +912,6 @@ public class MainActivity extends Activity
         } else {
             mTracker.sendScreenView(SCREEN_BEHIND_NAME);
         }
-        TvSingletons.getSingletons(this).getExperimentLoader().asyncRefreshExperiments(this);
         super.onPause();
     }
 

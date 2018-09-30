@@ -19,6 +19,7 @@ package com.android.tv.common.experiments;
 import android.support.annotation.VisibleForTesting;
 import com.android.tv.common.BuildConfig;
 
+import com.google.common.base.Supplier;
 
 /** Experiments return values based on user, device and other criteria. */
 public final class ExperimentFlag<T> {
@@ -54,6 +55,7 @@ public final class ExperimentFlag<T> {
 
     @VisibleForTesting
     public void override(T t) {
+
         if (sAllowOverrides) {
             mOverridden = true;
             mOverrideValue = t;
