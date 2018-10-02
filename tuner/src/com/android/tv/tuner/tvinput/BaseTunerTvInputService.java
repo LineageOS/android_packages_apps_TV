@@ -23,20 +23,20 @@ import android.content.Context;
 import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.tuner.TunerFeatures;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 /** {@link BaseTunerTvInputService} serves TV channels coming from a tuner device. */
-public class BaseTunerTvInputService extends TvInputService implements TunerSession.Listener {
+public class BaseTunerTvInputService extends TvInputService {
     private static final String TAG = "BaseTunerTvInputService";
     private static final boolean DEBUG = false;
 
     private static final int DVR_STORAGE_CLEANUP_JOB_ID = 100;
 
-    // WeakContainer for {@link TvInputSessionImpl}
-    private final Set<TunerSession> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<Session> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
     private ChannelDataManager mChannelDataManager;
 
     @Override
@@ -89,7 +89,10 @@ public class BaseTunerTvInputService extends TvInputService implements TunerSess
                 Log.d(TAG, "abort creating an session");
                 return null;
             }
-            final TunerSession session = new TunerSession(this, mChannelDataManager, this);
+            final Session session =
+                    TunerFeatures.EXO_PLAYER_V2_ONLY.isEnabled(this)
+                            ? new TunerSessionExoV2(this, mChannelDataManager, this::onReleased)
+                            : new TunerSession(this, mChannelDataManager, this::onReleased);
             mTunerSessions.add(session);
             session.setOverlayViewEnabled(true);
             return session;
@@ -100,8 +103,7 @@ public class BaseTunerTvInputService extends TvInputService implements TunerSess
         }
     }
 
-    @Override
-    public void onReleased(TunerSession session) {
+    private void onReleased(Session session) {
         mTunerSessions.remove(session);
     }
 }
