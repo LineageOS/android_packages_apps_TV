@@ -52,7 +52,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-compat \
     android-support-core-ui \
-    android-support-tv-provider \
+    androidx.tvprovider_tvprovider \
     android-support-v4 \
     android-support-v7-appcompat \
     android-support-v7-palette \

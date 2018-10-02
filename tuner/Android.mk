@@ -29,11 +29,10 @@ LOCAL_JAVA_LIBRARIES := \
 LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-compat \
     android-support-core-ui \
-    android-support-tv-provider \
     android-support-v7-palette \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
-    android-support-tv-provider \
+    androidx.tvprovider_tvprovider \
     tv-common \
 
 LOCAL_MIN_SDK_VERSION := 23
