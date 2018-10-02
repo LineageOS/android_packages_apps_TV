@@ -38,6 +38,7 @@ import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
 import com.google.common.base.Optional;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
@@ -106,4 +107,6 @@ public interface TvSingletons extends BaseSingletons {
     ExperimentLoader getExperimentLoader();
 
     Executor getDbExecutor();
+
+    BackendKnobsFlags getBackendKnobs();
 }

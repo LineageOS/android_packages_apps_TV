@@ -38,6 +38,7 @@ import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
+import com.android.tv.flags.BackendKnobsFlags;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.tunerinputcontroller.TunerInputController;
@@ -50,6 +51,7 @@ public class MockTvSingletons implements TvSingletons {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
 
     private final TvApplication mApp;
+    private final BackendKnobsFlags mBackendFlags = new BackendKnobsFlags();
     private PerformanceMonitor mPerformanceMonitor;
 
     public MockTvSingletons(Context context) {
@@ -206,5 +208,10 @@ public class MockTvSingletons implements TvSingletons {
     @Override
     public Executor getDbExecutor() {
         return mApp.getDbExecutor();
+    }
+
+    @Override
+    public BackendKnobsFlags getBackendKnobs() {
+        return mBackendFlags;
     }
 }

@@ -32,6 +32,7 @@ import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
+import com.android.tv.flags.BackendKnobsFlags;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
@@ -61,6 +62,7 @@ public class LiveTvApplication extends TvApplication {
             };
 
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
+    private final BackendKnobsFlags mBackendKnobsFlags = new BackendKnobsFlags();
     private AccountHelper mAccountHelper;
     private Analytics mAnalytics;
     private Tracker mTracker;
@@ -101,6 +103,11 @@ public class LiveTvApplication extends TvApplication {
     public ExperimentLoader getExperimentLoader() {
         mExperimentLoader = new ExperimentLoader();
         return mExperimentLoader;
+    }
+
+    @Override
+    public BackendKnobsFlags getBackendKnobs() {
+        return mBackendKnobsFlags;
     }
 
     /** Returns the {@link Analytics}. */

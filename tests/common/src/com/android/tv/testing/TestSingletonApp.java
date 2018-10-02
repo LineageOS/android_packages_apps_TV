@@ -41,6 +41,7 @@ import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
+import com.android.tv.flags.BackendKnobsFlags;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
@@ -67,6 +68,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
+    private final BackendKnobsFlags mBackendKnobs = new BackendKnobsFlags();
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
@@ -239,5 +241,10 @@ public class TestSingletonApp extends Application implements TvSingletons {
     @Override
     public Executor getDbExecutor() {
         return AsyncTask.SERIAL_EXECUTOR;
+    }
+
+    @Override
+    public BackendKnobsFlags getBackendKnobs() {
+        return mBackendKnobs;
     }
 }

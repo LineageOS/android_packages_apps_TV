@@ -35,8 +35,6 @@ import android.util.LongSparseArray;
 import android.util.LruCache;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.config.api.RemoteConfig;
-import com.android.tv.common.config.api.RemoteConfigValue;
 import com.android.tv.common.memory.MemoryManageable;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.api.Channel;
@@ -44,6 +42,7 @@ import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.MultiLongSparseArray;
 import com.android.tv.util.TvProviderUtils;
 import com.android.tv.util.Utils;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,8 +71,6 @@ public class ProgramDataManager implements MemoryManageable {
     // TODO: need to optimize consecutive DB updates.
     private static final long CURRENT_PROGRAM_UPDATE_WAIT_MS = TimeUnit.SECONDS.toMillis(5);
     @VisibleForTesting static final long PROGRAM_GUIDE_SNAP_TIME_MS = TimeUnit.MINUTES.toMillis(30);
-    private static final RemoteConfigValue<Long> PROGRAM_GUIDE_MAX_HOURS =
-            RemoteConfigValue.create("live_channels_program_guide_max_hours", 48);
 
     // TODO: Use TvContract constants, once they become public.
     private static final String PARAM_START_TIME = "start_time";
@@ -95,7 +92,7 @@ public class ProgramDataManager implements MemoryManageable {
     private final Clock mClock;
     private final ContentResolver mContentResolver;
     private final Executor mDbExecutor;
-    private final RemoteConfig mRemoteConfig;
+    private final BackendKnobsFlags mBackendKnobsFlags;
     private boolean mStarted;
     // Updated only on the main thread.
     private volatile boolean mCurrentProgramsLoadFinished;
@@ -107,7 +104,6 @@ public class ProgramDataManager implements MemoryManageable {
             mChannelId2ProgramUpdatedListeners = new MultiLongSparseArray<>();
     private final Handler mHandler;
     private final Set<Listener> mListeners = new ArraySet<>();
-
     private final ContentObserver mProgramObserver;
 
     private boolean mPrefetchEnabled;
@@ -132,7 +128,7 @@ public class ProgramDataManager implements MemoryManageable {
                 context.getContentResolver(),
                 Clock.SYSTEM,
                 Looper.myLooper(),
-                TvSingletons.getSingletons(context).getRemoteConfig());
+                TvSingletons.getSingletons(context).getBackendKnobs());
     }
 
     @VisibleForTesting
@@ -142,13 +138,13 @@ public class ProgramDataManager implements MemoryManageable {
             ContentResolver contentResolver,
             Clock time,
             Looper looper,
-            RemoteConfig remoteConfig) {
+            BackendKnobsFlags backendKnobsFlags) {
         mContext = context;
         mDbExecutor = executor;
         mClock = time;
         mContentResolver = contentResolver;
         mHandler = new MyHandler(looper);
-        mRemoteConfig = remoteConfig;
+        mBackendKnobsFlags = backendKnobsFlags;
         mProgramObserver =
                 new ContentObserver(mHandler) {
                     @Override
@@ -474,7 +470,7 @@ public class ProgramDataManager implements MemoryManageable {
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
             mEndTimeMs =
                     mStartTimeMs
-                            + TimeUnit.HOURS.toMillis(PROGRAM_GUIDE_MAX_HOURS.get(mRemoteConfig));
+                            + TimeUnit.HOURS.toMillis(mBackendKnobsFlags.programGuideMaxHours());
             mSuccess = false;
         }
 
@@ -509,8 +505,7 @@ public class ProgramDataManager implements MemoryManageable {
                         projection = TvProviderUtils.addExtraColumnsToProjection(projection);
                     }
                 }
-                try (Cursor c =
-                        mContentResolver.query(uri, projection, null, null, SORT_BY_TIME)) {
+                try (Cursor c = mContentResolver.query(uri, projection, null, null, SORT_BY_TIME)) {
                     if (c == null) {
                         continue;
                     }
