@@ -19,16 +19,11 @@ package com.android.tv.tuner;
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.and;
-import static com.android.tv.common.feature.FeatureUtils.aospFeature;
-import static com.android.tv.common.feature.FeatureUtils.or;
 
-import com.android.tv.common.config.RemoteConfigFeature;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.Feature;
 import com.android.tv.common.feature.Model;
 import com.android.tv.common.feature.PropertyFeature;
-import com.android.tv.common.util.LocationUtils;
-import java.util.Locale;
 
 /**
  * List of {@link Feature} for Tuner.
@@ -36,17 +31,6 @@ import java.util.Locale;
  * <p>Remove the {@code Feature} once it is launched.
  */
 public class TunerFeatures extends CommonFeatures {
-
-    /** Use network tuner if it is available and there is no other tuner types. */
-    public static final Feature NETWORK_TUNER =
-            or(
-                    ENG_ONLY_FEATURE,
-                    aospFeature(
-                            context ->
-                                    Locale.US
-                                            .getCountry()
-                                            .equalsIgnoreCase(
-                                                    LocationUtils.getCurrentCountry(context))));
 
     /**
      * USE_SW_CODEC_FOR_SD
