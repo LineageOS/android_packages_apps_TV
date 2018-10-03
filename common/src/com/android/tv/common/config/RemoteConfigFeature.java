@@ -17,7 +17,7 @@
 package com.android.tv.common.config;
 
 import android.content.Context;
-import com.android.tv.common.BaseApplication;
+import com.android.tv.common.config.api.RemoteConfig.HasRemoteConfig;
 import com.android.tv.common.feature.Feature;
 
 /**
@@ -37,6 +37,6 @@ public class RemoteConfigFeature implements Feature {
 
     @Override
     public boolean isEnabled(Context context) {
-        return BaseApplication.getSingletons(context).getRemoteConfig().getBoolean(mKey);
+        return ((HasRemoteConfig) context).getRemoteConfig().getBoolean(mKey);
     }
 }
