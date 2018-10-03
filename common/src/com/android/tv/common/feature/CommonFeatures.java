@@ -18,12 +18,12 @@ package com.android.tv.common.feature;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.and;
+import static com.android.tv.common.feature.FeatureUtils.or;
 import static com.android.tv.common.feature.TestableFeature.createTestableFeature;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
-import com.android.tv.common.config.api.RemoteConfig.HasRemoteConfig;
+import com.android.tv.common.config.RemoteConfigFeature;
 import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.LocationUtils;
 
@@ -56,27 +56,25 @@ public class CommonFeatures {
 
     /** Show postal code fragment before channel scan. */
     public static final Feature ENABLE_CLOUD_EPG_REGION =
-            new Feature() {
-                private final String[] supportedRegions = {
-                };
+            and(
+                    ExperimentFeature.from(Experiments.CLOUD_EPG),
+                    or(
+                            new Feature() {
+                                private final String[] supportedRegions = {
+                                };
 
-
-                @Override
-                public boolean isEnabled(Context context) {
-                    if (!Experiments.CLOUD_EPG.get()) {
-                        if (DEBUG) Log.d(TAG, "Experiments.CLOUD_EPG is false");
-                        return false;
-                    }
-                    String country = LocationUtils.getCurrentCountry(context);
-                    for (int i = 0; i < supportedRegions.length; i++) {
-                        if (supportedRegions[i].equalsIgnoreCase(country)) {
-                            return true;
-                        }
-                    }
-                    if (DEBUG) Log.d(TAG, "EPG flag false after country check");
-                    return false;
-                }
-            };
+                                @Override
+                                public boolean isEnabled(Context context) {
+                                    String country = LocationUtils.getCurrentCountry(context);
+                                    for (int i = 0; i < supportedRegions.length; i++) {
+                                        if (supportedRegions[i].equalsIgnoreCase(country)) {
+                                            return true;
+                                        }
+                                    }
+                                    if (DEBUG) Log.d(TAG, "EPG flag false after country check");
+                                    return false;
+                                }
+                            }));
 
     // TODO(b/74197177): remove when UI and API finalized.
     /** Show channel signal strength. */
