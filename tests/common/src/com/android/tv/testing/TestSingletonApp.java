@@ -152,7 +152,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     @Override
     public InputSessionManager getInputSessionManager() {
-        return null;
+        return new InputSessionManager(this);
     }
 
     @Override

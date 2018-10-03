@@ -38,8 +38,10 @@ import android.util.Log;
 import com.android.tv.common.compat.TvViewCompat;
 import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.data.api.Channel;
+import com.android.tv.dvr.DvrTvView;
 import com.android.tv.ui.TunableTvView;
 import com.android.tv.ui.TunableTvView.OnTuneListener;
+import com.android.tv.ui.TunableTvViewPlayingApi;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.Collections;
 import java.util.List;
@@ -88,7 +90,8 @@ public class InputSessionManager {
     @MainThread
     @NonNull
     public TvViewSession createTvViewSession(
-            TvViewCompat tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
+            TvViewCompat tvView, TunableTvViewPlayingApi tunableTvView,
+            TvInputCallbackCompat callback) {
         TvViewSession session = new TvViewSession(tvView, tunableTvView, callback);
         mTvViewSessions.add(session);
         if (DEBUG) Log.d(TAG, "TvView session created: " + session);
@@ -239,8 +242,9 @@ public class InputSessionManager {
     @MainThread
     public class TvViewSession {
         private final TvViewCompat mTvView;
-        private final TunableTvView mTunableTvView;
+        private final TunableTvViewPlayingApi mTunableTvView;
         private final TvInputCallbackCompat mCallback;
+        private final boolean mIsDvrSession;
         private Channel mChannel;
         private String mInputId;
         private Uri mChannelUri;
@@ -249,11 +253,12 @@ public class InputSessionManager {
         private boolean mTuned;
         private boolean mNeedToBeRetuned;
 
-        TvViewSession(
-                TvViewCompat tvView, TunableTvView tunableTvView, TvInputCallbackCompat callback) {
+        TvViewSession(TvViewCompat tvView, TunableTvViewPlayingApi tunableTvView,
+                TvInputCallbackCompat callback) {
             mTvView = tvView;
             mTunableTvView = tunableTvView;
             mCallback = callback;
+            mIsDvrSession = tunableTvView instanceof DvrTvView;
             mTvView.setCallback(
                     new DelegateTvInputCallback(mCallback) {
                         @Override
@@ -340,9 +345,13 @@ public class InputSessionManager {
 
         void retune() {
             if (DEBUG) Log.d(TAG, "Retune requested.");
+            if (mIsDvrSession) {
+                Log.w(TAG, "DVR session should not call retune()!");
+                return;
+            }
             if (mNeedToBeRetuned) {
                 if (DEBUG) Log.d(TAG, "Retuning: {channel=" + mChannel + "}");
-                mTunableTvView.tuneTo(mChannel, mParams, mOnTuneListener);
+                ((TunableTvView) mTunableTvView).tuneTo(mChannel, mParams, mOnTuneListener);
                 mNeedToBeRetuned = false;
             }
         }
@@ -371,9 +380,13 @@ public class InputSessionManager {
         void resetByRecording() {
             mCallback.onVideoUnavailable(
                     mInputId, TunableTvView.VIDEO_UNAVAILABLE_REASON_NO_RESOURCE);
+            if (mIsDvrSession) {
+                Log.w(TAG, "DVR session should not call resetByRecording()!");
+                return;
+            }
             if (mTuned) {
                 if (DEBUG) Log.d(TAG, "Reset TvView session by recording");
-                mTunableTvView.resetByRecording();
+                ((TunableTvView) mTunableTvView).resetByRecording();
                 reset();
             }
             mNeedToBeRetuned = true;

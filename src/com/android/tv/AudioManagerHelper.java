@@ -62,7 +62,7 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
             switch (mAudioFocusStatus) {
                 case AudioManager.AUDIOFOCUS_GAIN:
                     if (mTvView.isTimeShiftAvailable()) {
-                        mTvView.timeshiftPlay();
+                        mTvView.timeShiftPlay();
                     } else {
                         mTvView.setStreamVolume(AUDIO_MAX_VOLUME);
                     }
@@ -77,14 +77,14 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
                     // fall through
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                     if (mTvView.isTimeShiftAvailable()) {
-                        mTvView.timeshiftPause();
+                        mTvView.timeShiftPause();
                     } else {
                         mTvView.setStreamVolume(AUDIO_MIN_VOLUME);
                     }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                     if (mTvView.isTimeShiftAvailable()) {
-                        mTvView.timeshiftPause();
+                        mTvView.timeShiftPause();
                     } else {
                         mTvView.setStreamVolume(AUDIO_DUCKING_VOLUME);
                     }

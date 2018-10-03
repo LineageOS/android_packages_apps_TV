@@ -1294,7 +1294,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     /** Plays the media, if the current input supports time-shifting. */
     @Override
-    public void timeshiftPlay() {
+    public void timeShiftPlay() {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
         }
@@ -1306,7 +1306,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     /** Pauses the media, if the current input supports time-shifting. */
     @Override
-    public void timeshiftPause() {
+    public void timeShiftPause() {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
         }
@@ -1322,7 +1322,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
      * @param speed The speed to rewind the media. e.g. 2 for 2x, 3 for 3x and 4 for 4x.
      */
     @Override
-    public void timeshiftRewind(int speed) {
+    public void timeShiftRewind(int speed) {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
         } else {
@@ -1342,7 +1342,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
      * @param speed The speed to forward the media. e.g. 2 for 2x, 3 for 3x and 4 for 4x.
      */
     @Override
-    public void timeshiftFastForward(int speed) {
+    public void timeShiftFastForward(int speed) {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
         } else {
@@ -1362,7 +1362,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
      * @param timeMs The time in milliseconds to seek to.
      */
     @Override
-    public void timeshiftSeekTo(long timeMs) {
+    public void timeShiftSeekTo(long timeMs) {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
         }
@@ -1371,14 +1371,14 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
 
     /** Returns the current playback position in milliseconds. */
     @Override
-    public long timeshiftGetCurrentPositionMs() {
+    public long timeShiftGetCurrentPositionMs() {
         if (!isTimeShiftAvailable()) {
             throw new IllegalStateException("Time-shift is not supported for the current channel");
         }
         if (DEBUG) {
             Log.d(
                     TAG,
-                    "timeshiftGetCurrentPositionMs: current position ="
+                    "timeShiftGetCurrentPositionMs: current position ="
                             + Utils.toTimeString(mTimeShiftCurrentPositionMs));
         }
         return mTimeShiftCurrentPositionMs;
