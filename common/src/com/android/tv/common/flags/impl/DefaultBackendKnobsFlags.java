@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv.flags;
+package com.android.tv.common.flags.impl;
 
 /** Flags for tuning non ui behavior. */
-public final class BackendKnobsFlags
+public final class DefaultBackendKnobsFlags
         implements com.android.tv.common.flags.BackendKnobsFlags {
 
     @Override

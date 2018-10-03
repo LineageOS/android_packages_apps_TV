@@ -29,10 +29,10 @@ import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.config.DefaultConfigManager;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
+import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
-import com.android.tv.flags.BackendKnobsFlags;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
@@ -62,7 +62,7 @@ public class LiveTvApplication extends TvApplication {
             };
 
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
-    private final BackendKnobsFlags mBackendKnobsFlags = new BackendKnobsFlags();
+    private final DefaultBackendKnobsFlags mBackendKnobsFlags = new DefaultBackendKnobsFlags();
     private AccountHelper mAccountHelper;
     private Analytics mAnalytics;
     private Tracker mTracker;
@@ -106,7 +106,7 @@ public class LiveTvApplication extends TvApplication {
     }
 
     @Override
-    public BackendKnobsFlags getBackendKnobs() {
+    public DefaultBackendKnobsFlags getBackendKnobs() {
         return mBackendKnobsFlags;
     }
 

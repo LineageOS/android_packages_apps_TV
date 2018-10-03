@@ -29,6 +29,7 @@ import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
+import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -41,7 +42,6 @@ import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
-import com.android.tv.flags.BackendKnobsFlags;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
@@ -68,7 +68,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
-    private final BackendKnobsFlags mBackendKnobs = new BackendKnobsFlags();
+    private final DefaultBackendKnobsFlags mBackendKnobs = new DefaultBackendKnobsFlags();
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
@@ -244,7 +244,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
     }
 
     @Override
-    public BackendKnobsFlags getBackendKnobs() {
+    public DefaultBackendKnobsFlags getBackendKnobs() {
         return mBackendKnobs;
     }
 }

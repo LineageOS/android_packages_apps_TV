@@ -26,6 +26,7 @@ import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
+import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -38,7 +39,6 @@ import com.android.tv.dvr.DvrManager;
 import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
-import com.android.tv.flags.BackendKnobsFlags;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.testing.FakeClock;
 import com.android.tv.tunerinputcontroller.TunerInputController;
@@ -51,7 +51,7 @@ public class MockTvSingletons implements TvSingletons {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
 
     private final TvApplication mApp;
-    private final BackendKnobsFlags mBackendFlags = new BackendKnobsFlags();
+    private final DefaultBackendKnobsFlags mBackendFlags = new DefaultBackendKnobsFlags();
     private PerformanceMonitor mPerformanceMonitor;
 
     public MockTvSingletons(Context context) {
@@ -211,7 +211,7 @@ public class MockTvSingletons implements TvSingletons {
     }
 
     @Override
-    public BackendKnobsFlags getBackendKnobs() {
+    public DefaultBackendKnobsFlags getBackendKnobs() {
         return mBackendFlags;
     }
 }
