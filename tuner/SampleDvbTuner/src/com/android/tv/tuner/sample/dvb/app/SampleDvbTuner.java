@@ -24,6 +24,7 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.config.DefaultConfigManager;
 import com.android.tv.common.config.api.RemoteConfig;
+import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
@@ -32,6 +33,7 @@ import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 public class SampleDvbTuner extends BaseApplication {
     private String mEmbeddedInputId;
     private RemoteConfig mRemoteConfig;
+    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
 
     @Override
     public Intent getTunerSetupIntent(Context context) {
@@ -60,5 +62,10 @@ public class SampleDvbTuner extends BaseApplication {
             mRemoteConfig = DefaultConfigManager.createInstance(this).getRemoteConfig();
         }
         return mRemoteConfig;
+    }
+
+    @Override
+    public DefaultCloudEpgFlags getCloudEpgFlags() {
+        return mCloudEpgFlags;
     }
 }

@@ -30,6 +30,7 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
+import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -69,6 +70,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobs = new DefaultBackendKnobsFlags();
+    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
@@ -246,5 +248,10 @@ public class TestSingletonApp extends Application implements TvSingletons {
     @Override
     public DefaultBackendKnobsFlags getBackendKnobs() {
         return mBackendKnobs;
+    }
+
+    @Override
+    public DefaultCloudEpgFlags getCloudEpgFlags() {
+        return mCloudEpgFlags;
     }
 }

@@ -30,6 +30,7 @@ import com.android.tv.common.config.DefaultConfigManager;
 import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
+import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
@@ -63,6 +64,7 @@ public class LiveTvApplication extends TvApplication {
 
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobsFlags = new DefaultBackendKnobsFlags();
+    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private AccountHelper mAccountHelper;
     private Analytics mAnalytics;
     private Tracker mTracker;
@@ -149,6 +151,11 @@ public class LiveTvApplication extends TvApplication {
                             new ComponentName(this, LiveTvTunerTvInputService.class));
         }
         return mEmbeddedInputId;
+    }
+
+    @Override
+    public DefaultCloudEpgFlags getCloudEpgFlags() {
+        return mCloudEpgFlags;
     }
 
     @Override

@@ -23,9 +23,10 @@ import static com.android.tv.common.feature.TestableFeature.createTestableFeatur
 
 import android.content.Context;
 import android.util.Log;
-import com.android.tv.common.config.RemoteConfigFeature;
 import com.android.tv.common.experiments.Experiments;
+import com.android.tv.common.flags.has.HasCloudEpgFlags;
 import com.android.tv.common.util.LocationUtils;
+import com.android.tv.common.flags.CloudEpgFlags;
 
 /**
  * List of {@link Feature} that affect more than just the Live TV app.
@@ -59,6 +60,8 @@ public class CommonFeatures {
             and(
                     ExperimentFeature.from(Experiments.CLOUD_EPG),
                     or(
+                            FlagFeature.from(
+                                    HasCloudEpgFlags::fromContext, CloudEpgFlags::supportedRegion),
                             new Feature() {
                                 private final String[] supportedRegions = {
                                 };
