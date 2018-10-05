@@ -20,6 +20,11 @@ import com.android.tv.common.flags.CloudEpgFlags;
 /** Default flags for Cloud EPG */
 public final class DefaultCloudEpgFlags implements CloudEpgFlags {
 
+    private String mThirdPartyEpgInputCsv =
+            "com.google.android.tv/.tuner.tvinput.TunerTvInputService,"
+                    + "com.technicolor.skipper.tuner/.tvinput.TunerTvInputService,"
+                    + "com.silicondust.view/.tif.SDTvInputService";
+
     @Override
     public boolean compiled() {
         return true;
@@ -28,5 +33,14 @@ public final class DefaultCloudEpgFlags implements CloudEpgFlags {
     @Override
     public boolean supportedRegion() {
         return false;
+    }
+
+    public void setThirdPartyEpgInputCsv(String value) {
+        mThirdPartyEpgInputCsv = value;
+    }
+
+    @Override
+    public String thirdPartyEpgInputsCsv() {
+        return mThirdPartyEpgInputCsv;
     }
 }

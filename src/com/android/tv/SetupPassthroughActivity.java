@@ -66,7 +66,7 @@ public class SetupPassthroughActivity extends Activity {
         Intent intent = getIntent();
         String inputId = intent.getStringExtra(InputSetupActionUtils.EXTRA_INPUT_ID);
         mTvInputInfo = inputManager.getTvInputInfo(inputId);
-        mEpgInputWhiteList = new EpgInputWhiteList(tvSingletons.getRemoteConfig());
+        mEpgInputWhiteList = new EpgInputWhiteList(tvSingletons.getCloudEpgFlags());
         mActivityAfterCompletion = InputSetupActionUtils.getExtraActivityAfter(intent);
         boolean needToFetchEpg =
                 mTvInputInfo != null
