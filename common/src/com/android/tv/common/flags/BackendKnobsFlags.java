@@ -30,6 +30,9 @@ public interface BackendKnobsFlags {
      */
     boolean compiled();
 
+    /** EPG fetcher interval in hours */
+    long epgFetcherIntervalHour();
+
     /** How many hours of programs are loaded in the program guide */
     long programGuideMaxHours();
 }
