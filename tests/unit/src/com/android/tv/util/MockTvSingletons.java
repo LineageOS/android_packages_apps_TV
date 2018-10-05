@@ -24,7 +24,6 @@ import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
@@ -176,11 +175,6 @@ public class MockTvSingletons implements TvSingletons {
     @Override
     public com.android.tv.util.account.AccountHelper getAccountHelper() {
         return mApp.getAccountHelper();
-    }
-
-    @Override
-    public RemoteConfig getRemoteConfig() {
-        return mApp.getRemoteConfig();
     }
 
     @Override

@@ -20,7 +20,6 @@ import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.annotation.VisibleForTesting;
@@ -77,14 +76,6 @@ public abstract class BaseApplication extends Application implements BaseSinglet
         if (CommonFeatures.DVR.isEnabled(this)) {
             getRecordingStorageStatusManager();
         }
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                // Fetch remote config
-                getRemoteConfig().fetch(null);
-                return null;
-            }
-        }.execute();
     }
 
     @Override

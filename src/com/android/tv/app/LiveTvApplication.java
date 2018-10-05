@@ -26,8 +26,6 @@ import com.android.tv.analytics.StubAnalytics;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.actions.InputSetupActionUtils;
-import com.android.tv.common.config.DefaultConfigManager;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
@@ -69,7 +67,6 @@ public class LiveTvApplication extends TvApplication {
     private Analytics mAnalytics;
     private Tracker mTracker;
     private String mEmbeddedInputId;
-    private RemoteConfig mRemoteConfig;
     private ExperimentLoader mExperimentLoader;
     private PerformanceMonitor mPerformanceMonitor;
 
@@ -156,15 +153,6 @@ public class LiveTvApplication extends TvApplication {
     @Override
     public DefaultCloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
-    }
-
-    @Override
-    public RemoteConfig getRemoteConfig() {
-        if (mRemoteConfig == null) {
-            // No need to synchronize this, it does not hurt to create two and throw one away.
-            mRemoteConfig = DefaultConfigManager.createInstance(this).getRemoteConfig();
-        }
-        return mRemoteConfig;
     }
 
     @Override

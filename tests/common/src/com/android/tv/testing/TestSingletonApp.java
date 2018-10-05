@@ -27,7 +27,6 @@ import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
@@ -59,7 +58,6 @@ import javax.inject.Provider;
 public class TestSingletonApp extends Application implements TvSingletons {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
-    public final FakeRemoteConfig remoteConfig = new FakeRemoteConfig();
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();
 
     public FakeTvInputManagerHelper tvInputManagerHelper;
@@ -210,11 +208,6 @@ public class TestSingletonApp extends Application implements TvSingletons {
     @Override
     public RecordingStorageStatusManager getRecordingStorageStatusManager() {
         return null;
-    }
-
-    @Override
-    public RemoteConfig getRemoteConfig() {
-        return remoteConfig;
     }
 
     @Override

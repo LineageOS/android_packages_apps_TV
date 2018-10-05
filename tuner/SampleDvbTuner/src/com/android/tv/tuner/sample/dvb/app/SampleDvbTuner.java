@@ -22,8 +22,6 @@ import android.content.Intent;
 import android.media.tv.TvContract;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.actions.InputSetupActionUtils;
-import com.android.tv.common.config.DefaultConfigManager;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
@@ -32,7 +30,6 @@ import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 /** The top level application for Sample DVB Tuner. */
 public class SampleDvbTuner extends BaseApplication {
     private String mEmbeddedInputId;
-    private RemoteConfig mRemoteConfig;
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
 
     @Override
@@ -53,15 +50,6 @@ public class SampleDvbTuner extends BaseApplication {
                             new ComponentName(this, SampleDvbTunerTvInputService.class));
         }
         return mEmbeddedInputId;
-    }
-
-    @Override
-    public RemoteConfig getRemoteConfig() {
-        if (mRemoteConfig == null) {
-            // No need to synchronize this, it does not hurt to create two and throw one away.
-            mRemoteConfig = DefaultConfigManager.createInstance(this).getRemoteConfig();
-        }
-        return mRemoteConfig;
     }
 
     @Override
