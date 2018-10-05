@@ -42,7 +42,6 @@ import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.config.api.RemoteConfigValue;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.LocationUtils;
@@ -61,6 +60,7 @@ import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.Utils;
 import com.google.android.tv.partner.support.EpgInput;
 import com.google.android.tv.partner.support.EpgInputs;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,8 +100,7 @@ public class EpgFetcherImpl implements EpgFetcher {
     private static final long FETCH_DURING_SCAN_DURATION_SEC = TimeUnit.HOURS.toSeconds(3);
     private static final long FAST_FETCH_DURATION_SEC = TimeUnit.DAYS.toSeconds(2);
 
-    private static final RemoteConfigValue<Long> ROUTINE_INTERVAL_HOUR =
-            RemoteConfigValue.create("live_channels_epg_fetcher_interval_hour", 4);
+    private static final long DEFAULT_ROUTINE_INTERVAL_HOUR = 4;
 
     private static final int MSG_PREPARE_FETCH_DURING_SCAN = 1;
     private static final int MSG_CHANNEL_UPDATED_DURING_SCAN = 2;
@@ -115,6 +114,7 @@ public class EpgFetcherImpl implements EpgFetcher {
     private final ChannelDataManager mChannelDataManager;
     private final EpgReader mEpgReader;
     private final PerformanceMonitor mPerformanceMonitor;
+    private final BackendKnobsFlags mBackendKnobsFlags;
     private FetchAsyncTask mFetchTask;
     private FetchDuringScanHandler mFetchDuringScanHandler;
     private long mEpgTimeStamp;
@@ -124,9 +124,6 @@ public class EpgFetcherImpl implements EpgFetcher {
     // A flag to block the re-entrance of onChannelScanStarted and onChannelScanFinished.
     private boolean mScanStarted;
 
-    private final long mRoutineIntervalMs;
-    private final long mEpgDataExpiredTimeLimitMs;
-    private final long mFastFetchDurationSec;
     private Clock mClock;
 
     public static EpgFetcher create(Context context) {
@@ -136,15 +133,14 @@ public class EpgFetcherImpl implements EpgFetcher {
         PerformanceMonitor performanceMonitor = tvSingletons.getPerformanceMonitor();
         EpgReader epgReader = tvSingletons.providesEpgReader().get();
         Clock clock = tvSingletons.getClock();
-        long routineIntervalMs = ROUTINE_INTERVAL_HOUR.get(tvSingletons.getRemoteConfig());
-
+        BackendKnobsFlags backendKnobsFlags = tvSingletons.getBackendKnobs();
         return new EpgFetcherImpl(
                 context,
                 channelDataManager,
                 epgReader,
                 performanceMonitor,
                 clock,
-                routineIntervalMs);
+                backendKnobsFlags);
     }
 
     @VisibleForTesting
@@ -154,18 +150,28 @@ public class EpgFetcherImpl implements EpgFetcher {
             EpgReader epgReader,
             PerformanceMonitor performanceMonitor,
             Clock clock,
-            long routineIntervalMs) {
+            BackendKnobsFlags backendKnobsFlags) {
         mContext = context;
         mChannelDataManager = channelDataManager;
         mEpgReader = epgReader;
         mPerformanceMonitor = performanceMonitor;
         mClock = clock;
-        mRoutineIntervalMs =
-                routineIntervalMs <= 0
-                        ? TimeUnit.HOURS.toMillis(ROUTINE_INTERVAL_HOUR.getDefaultValue())
-                        : TimeUnit.HOURS.toMillis(routineIntervalMs);
-        mEpgDataExpiredTimeLimitMs = routineIntervalMs * 2;
-        mFastFetchDurationSec = FAST_FETCH_DURATION_SEC + routineIntervalMs / 1000;
+        mBackendKnobsFlags = backendKnobsFlags;
+    }
+
+    private long getFastFetchDurationSec() {
+        return FAST_FETCH_DURATION_SEC + getRoutineIntervalMs() / 1000;
+    }
+
+    private long getEpgDataExpiredTimeLimitMs() {
+        return getRoutineIntervalMs() * 2;
+    }
+
+    private long getRoutineIntervalMs() {
+        long routineIntervalHours = mBackendKnobsFlags.epgFetcherIntervalHour();
+        return routineIntervalHours <= 0
+                ? TimeUnit.HOURS.toMillis(DEFAULT_ROUTINE_INTERVAL_HOUR)
+                : TimeUnit.HOURS.toMillis(routineIntervalHours);
     }
 
     private static Set<Channel> getExistingChannelsForMyPackage(Context context) {
@@ -214,7 +220,7 @@ public class EpgFetcherImpl implements EpgFetcher {
                 new JobInfo.Builder(
                                 EPG_ROUTINELY_FETCHING_JOB_ID,
                                 new ComponentName(mContext, EpgFetchService.class))
-                        .setPeriodic(mRoutineIntervalMs)
+                        .setPeriodic(getRoutineIntervalMs())
                         .setBackoffCriteria(INITIAL_BACKOFF_MS, JobInfo.BACKOFF_POLICY_EXPONENTIAL)
                         .setPersisted(true)
                         .build();
@@ -238,7 +244,7 @@ public class EpgFetcherImpl implements EpgFetcher {
             @Override
             protected void onPostExecute(Long result) {
                 if (mClock.currentTimeMillis() - EpgFetchHelper.getLastEpgUpdatedTimestamp(mContext)
-                        > mEpgDataExpiredTimeLimitMs) {
+                        > getEpgDataExpiredTimeLimitMs()) {
                     Log.i(TAG, "EPG data expired. Start fetching immediately.");
                     fetchImmediately();
                 }
@@ -610,8 +616,8 @@ public class EpgFetcherImpl implements EpgFetcher {
             }
             EpgFetchHelper.updateNetworkAffiliation(mContext, channels);
             if (mClock.currentTimeMillis() - EpgFetchHelper.getLastEpgUpdatedTimestamp(mContext)
-                    > mEpgDataExpiredTimeLimitMs) {
-                batchFetchEpg(channels, mFastFetchDurationSec);
+                    > getEpgDataExpiredTimeLimitMs()) {
+                batchFetchEpg(channels, getFastFetchDurationSec());
             }
             new Handler(mContext.getMainLooper())
                     .post(

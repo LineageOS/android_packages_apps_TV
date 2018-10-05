@@ -25,6 +25,11 @@ public final class DefaultBackendKnobsFlags
     }
 
     @Override
+    public long epgFetcherIntervalHour() {
+        return 25;
+    }
+
+    @Override
     public long programGuideMaxHours() {
         return 48;
     }
