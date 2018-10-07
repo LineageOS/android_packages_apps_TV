@@ -657,6 +657,9 @@ public class DvrBrowseFragment extends BrowseFragment
                 }
             }
         }
+        if (getSelectedPosition() >= mRowsAdapter.size()) {
+            setSelectedPosition(mRecentAdapter.size() - 1);
+        }
     }
 
     private boolean needToShowScheduledRecording(ScheduledRecording recording) {

@@ -27,8 +27,9 @@ import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
+import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
+import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -57,7 +58,6 @@ import javax.inject.Provider;
 public class TestSingletonApp extends Application implements TvSingletons {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
-    public final FakeRemoteConfig remoteConfig = new FakeRemoteConfig();
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();
 
     public FakeTvInputManagerHelper tvInputManagerHelper;
@@ -67,6 +67,8 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
+    private final DefaultBackendKnobsFlags mBackendKnobs = new DefaultBackendKnobsFlags();
+    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
@@ -150,7 +152,7 @@ public class TestSingletonApp extends Application implements TvSingletons {
 
     @Override
     public InputSessionManager getInputSessionManager() {
-        return null;
+        return new InputSessionManager(this);
     }
 
     @Override
@@ -209,11 +211,6 @@ public class TestSingletonApp extends Application implements TvSingletons {
     }
 
     @Override
-    public RemoteConfig getRemoteConfig() {
-        return remoteConfig;
-    }
-
-    @Override
     public Intent getTunerSetupIntent(Context context) {
         return null;
     }
@@ -239,5 +236,15 @@ public class TestSingletonApp extends Application implements TvSingletons {
     @Override
     public Executor getDbExecutor() {
         return AsyncTask.SERIAL_EXECUTOR;
+    }
+
+    @Override
+    public DefaultBackendKnobsFlags getBackendKnobs() {
+        return mBackendKnobs;
+    }
+
+    @Override
+    public DefaultCloudEpgFlags getCloudEpgFlags() {
+        return mCloudEpgFlags;
     }
 }

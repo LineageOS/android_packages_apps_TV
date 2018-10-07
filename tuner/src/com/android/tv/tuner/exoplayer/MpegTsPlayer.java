@@ -58,10 +58,7 @@ public class MpegTsPlayer
     /** Interface definition for building specific track renderers. */
     public interface RendererBuilder {
         void buildRenderers(
-                MpegTsPlayer mpegTsPlayer,
-                DataSource dataSource,
-                boolean hasSoftwareAudioDecoder,
-                RendererBuilderCallback callback);
+                MpegTsPlayer mpegTsPlayer, DataSource dataSource, RendererBuilderCallback callback);
     }
 
     /** Interface definition for {@link RendererBuilder#buildRenderers} to notify the result. */
@@ -246,7 +243,7 @@ public class MpegTsPlayer
         }
         mRendererBuildingState = RENDERER_BUILDING_STATE_BUILDING;
         mBuilderCallback = new InternalRendererBuilderCallback();
-        mRendererBuilder.buildRenderers(this, source, hasSoftwareAudioDecoder, mBuilderCallback);
+        mRendererBuilder.buildRenderers(this, source, mBuilderCallback);
         return true;
     }
 

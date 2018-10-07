@@ -106,8 +106,6 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
     private final Handler mEventHandler;
     private final AudioTrackMonitor mMonitor;
     private final AudioClock mAudioClock;
-    private final boolean mAc3Passthrough;
-    private final boolean mSoftwareDecoderAvailable;
 
     private MediaFormat mFormat;
     private SampleHolder mSampleHolder;
@@ -137,9 +135,7 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
             SampleSource source,
             MediaCodecSelector selector,
             Handler eventHandler,
-            EventListener listener,
-            boolean hasSoftwareAudioDecoder,
-            boolean usePassthrough) {
+            EventListener listener) {
         mSource = source.register();
         mSelector = selector;
         mEventHandler = eventHandler;
@@ -152,9 +148,6 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
         mMonitor = new AudioTrackMonitor();
         mAudioClock = new AudioClock();
         mTracksIndex = new ArrayList<>();
-        mAc3Passthrough = usePassthrough;
-        // TODO reimplement ffmpeg decoder check for google3
-        mSoftwareDecoderAvailable = false;
     }
 
     @Override
@@ -377,19 +370,6 @@ public class MpegTsDefaultAudioTrackRenderer extends TrackRenderer implements Me
         if (result == SampleSource.FORMAT_READ) {
             onInputFormatChanged(mFormatHolder);
         }
-    }
-
-    private MediaFormat convertMediaFormatToRaw(MediaFormat format) {
-        return MediaFormat.createAudioFormat(
-                format.trackId,
-                MimeTypes.AUDIO_RAW,
-                format.bitrate,
-                format.maxInputSize,
-                format.durationUs,
-                format.channelCount,
-                format.sampleRate,
-                format.initializationData,
-                format.language);
     }
 
     private void onInputFormatChanged(MediaFormatHolder formatHolder) throws ExoPlaybackException {

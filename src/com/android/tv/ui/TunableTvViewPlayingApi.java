@@ -27,17 +27,17 @@ public interface TunableTvViewPlayingApi {
 
     boolean isTimeShiftAvailable();
 
-    void timeshiftPlay();
+    void timeShiftPlay();
 
-    void timeshiftPause();
+    void timeShiftPause();
 
-    void timeshiftRewind(int speed);
+    void timeShiftRewind(int speed);
 
-    void timeshiftFastForward(int speed);
+    void timeShiftFastForward(int speed);
 
-    void timeshiftSeekTo(long timeMs);
+    void timeShiftSeekTo(long timeMs);
 
-    long timeshiftGetCurrentPositionMs();
+    long timeShiftGetCurrentPositionMs();
 
     /** Used to receive the time-shift events. */
     abstract class TimeShiftListener {

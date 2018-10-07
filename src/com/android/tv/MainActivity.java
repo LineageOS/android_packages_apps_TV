@@ -1066,12 +1066,12 @@ public class MainActivity extends Activity
                 markCurrentChannelDuringScreenOff();
             }
         }
-        mActivityStarted = false;
-        stopAll(false);
-        unregisterReceiver(mBroadcastReceiver);
         if (mChannelTuner.isCurrentChannelPassthrough()) {
             mInitChannelUri = mChannelTuner.getCurrentChannelUri();
         }
+        mActivityStarted = false;
+        stopAll(false);
+        unregisterReceiver(mBroadcastReceiver);
         mTracker.sendMainStop(mMainDurationTimer.reset());
         super.onStop();
     }

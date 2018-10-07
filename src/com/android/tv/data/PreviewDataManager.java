@@ -221,17 +221,17 @@ public class PreviewDataManager {
                                 new Pair<>(PARAM_PREVIEW, String.valueOf(true)));
                 String packageName = mContext.getPackageName();
                 if (PermissionUtils.hasAccessAllEpg(mContext)) {
-          try (Cursor cursor =
-              mContentResolver.query(
-                  previewChannelsUri,
-                  androidx.tvprovider.media.tv.Channel.PROJECTION,
-                  mChannelSelection,
-                  new String[] {packageName},
-                  null)) {
+                    try (Cursor cursor =
+                            mContentResolver.query(
+                                    previewChannelsUri,
+                                    androidx.tvprovider.media.tv.Channel.PROJECTION,
+                                    mChannelSelection,
+                                    new String[] {packageName},
+                                    null)) {
                         if (cursor != null) {
                             while (cursor.moveToNext()) {
-                androidx.tvprovider.media.tv.Channel previewChannel =
-                    androidx.tvprovider.media.tv.Channel.fromCursor(cursor);
+                                androidx.tvprovider.media.tv.Channel previewChannel =
+                                        androidx.tvprovider.media.tv.Channel.fromCursor(cursor);
                                 Long previewChannelType = previewChannel.getInternalProviderFlag1();
                                 if (previewChannelType != null) {
                                     previewData.addPreviewChannelId(
@@ -241,17 +241,17 @@ public class PreviewDataManager {
                         }
                     }
                 } else {
-          try (Cursor cursor =
-              mContentResolver.query(
-                  previewChannelsUri,
-                  androidx.tvprovider.media.tv.Channel.PROJECTION,
-                  null,
-                  null,
-                  null)) {
+                    try (Cursor cursor =
+                            mContentResolver.query(
+                                    previewChannelsUri,
+                                    androidx.tvprovider.media.tv.Channel.PROJECTION,
+                                    null,
+                                    null,
+                                    null)) {
                         if (cursor != null) {
                             while (cursor.moveToNext()) {
-                androidx.tvprovider.media.tv.Channel previewChannel =
-                    androidx.tvprovider.media.tv.Channel.fromCursor(cursor);
+                                androidx.tvprovider.media.tv.Channel previewChannel =
+                                        androidx.tvprovider.media.tv.Channel.fromCursor(cursor);
                                 Long previewChannelType = previewChannel.getInternalProviderFlag1();
                                 if (packageName.equals(previewChannel.getPackageName())
                                         && previewChannelType != null) {
@@ -552,19 +552,19 @@ public class PreviewDataManager {
 
     /** A utils class for preview data. */
     public static final class PreviewDataUtils {
-    /** Creates a preview channel. */
-    public static androidx.tvprovider.media.tv.Channel createPreviewChannel(
-        Context context, @PreviewChannelType long previewChannelType) {
+        /** Creates a preview channel. */
+        public static androidx.tvprovider.media.tv.Channel createPreviewChannel(
+                Context context, @PreviewChannelType long previewChannelType) {
             if (previewChannelType == TYPE_RECORDED_PROGRAM_PREVIEW_CHANNEL) {
                 return createRecordedProgramPreviewChannel(context, previewChannelType);
             }
             return createDefaultPreviewChannel(context, previewChannelType);
         }
 
-    private static androidx.tvprovider.media.tv.Channel createDefaultPreviewChannel(
-        Context context, @PreviewChannelType long previewChannelType) {
-      androidx.tvprovider.media.tv.Channel.Builder builder =
-          new androidx.tvprovider.media.tv.Channel.Builder();
+        private static androidx.tvprovider.media.tv.Channel createDefaultPreviewChannel(
+                Context context, @PreviewChannelType long previewChannelType) {
+            androidx.tvprovider.media.tv.Channel.Builder builder =
+                    new androidx.tvprovider.media.tv.Channel.Builder();
             CharSequence appLabel =
                     context.getApplicationInfo().loadLabel(context.getPackageManager());
             CharSequence appDescription =
@@ -577,10 +577,10 @@ public class PreviewDataManager {
             return builder.build();
         }
 
-    private static androidx.tvprovider.media.tv.Channel createRecordedProgramPreviewChannel(
-        Context context, @PreviewChannelType long previewChannelType) {
-      androidx.tvprovider.media.tv.Channel.Builder builder =
-          new androidx.tvprovider.media.tv.Channel.Builder();
+        private static androidx.tvprovider.media.tv.Channel createRecordedProgramPreviewChannel(
+                Context context, @PreviewChannelType long previewChannelType) {
+            androidx.tvprovider.media.tv.Channel.Builder builder =
+                    new androidx.tvprovider.media.tv.Channel.Builder();
             builder.setType(TvContract.Channels.TYPE_PREVIEW)
                     .setDisplayName(
                             context.getResources()

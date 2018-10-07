@@ -19,21 +19,11 @@ package com.android.tv.tuner;
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.and;
-import static com.android.tv.common.feature.FeatureUtils.aospFeature;
-import static com.android.tv.common.feature.FeatureUtils.or;
 
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
-import com.android.tv.common.BaseApplication;
-import com.android.tv.common.config.RemoteConfigFeature;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.Feature;
 import com.android.tv.common.feature.Model;
 import com.android.tv.common.feature.PropertyFeature;
-import com.android.tv.common.util.LocationUtils;
-import java.util.Locale;
 
 /**
  * List of {@link Feature} for Tuner.
@@ -41,19 +31,6 @@ import java.util.Locale;
  * <p>Remove the {@code Feature} once it is launched.
  */
 public class TunerFeatures extends CommonFeatures {
-    private static final String TAG = "TunerFeatures";
-    private static final boolean DEBUG = false;
-
-    /** Use network tuner if it is available and there is no other tuner types. */
-    public static final Feature NETWORK_TUNER =
-            or(
-                    ENG_ONLY_FEATURE,
-                    aospFeature(
-                            context ->
-                                    Locale.US
-                                            .getCountry()
-                                            .equalsIgnoreCase(
-                                                    LocationUtils.getCurrentCountry(context))));
 
     /**
      * USE_SW_CODEC_FOR_SD
@@ -66,43 +43,16 @@ public class TunerFeatures extends CommonFeatures {
                     false
                     );
 
-    /** Use AC3 software decode. */
-    public static final Feature AC3_SOFTWARE_DECODE =
-            new Feature() {
-                private final String[] SUPPORTED_REGIONS = {};
-
-                private Boolean mEnabled;
-
-                @Override
-                public boolean isEnabled(Context context) {
-                    if (mEnabled == null) {
-                        if (mEnabled == null) {
-                            // We will not cache the result of fallback solution.
-                            String country = LocationUtils.getCurrentCountry(context);
-                            for (int i = 0; i < SUPPORTED_REGIONS.length; ++i) {
-                                if (SUPPORTED_REGIONS[i].equalsIgnoreCase(country)) {
-                                    return true;
-                                }
-                            }
-                            if (DEBUG) Log.d(TAG, "AC3 flag false after country check");
-                            return false;
-                        }
-                    }
-                    if (DEBUG) Log.d(TAG, "AC3 flag " + mEnabled);
-                    return mEnabled;
-                }
-            };
-
     /** Enable Dvb parsers and listeners. */
     public static final Feature ENABLE_FILE_DVB = OFF;
 
-  /**
-   * Use ExoPlayer V2 only.
-   *
-   * <p>Turn on with <code>adb shell setprop <em>exoplayer.v2.only</em> <em>true</em></code>
-   */
-  public static final Feature EXO_PLAYER_V2_ONLY =
-      and(ENG_ONLY_FEATURE, PropertyFeature.create("exoplayer.v2.only", false));
+    /**
+     * Use ExoPlayer V2 only.
+     *
+     * <p>Turn on with <code>adb shell setprop <em>exoplayer.v2.only</em> <em>true</em></code>
+     */
+    public static final Feature EXO_PLAYER_V2_ONLY =
+            and(ENG_ONLY_FEATURE, PropertyFeature.create("exoplayer.v2.only", false));
 
     private TunerFeatures() {}
 }

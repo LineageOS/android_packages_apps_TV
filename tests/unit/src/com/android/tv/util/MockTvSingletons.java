@@ -24,8 +24,9 @@ import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.config.api.RemoteConfig;
 import com.android.tv.common.experiments.ExperimentLoader;
+import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
+import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -50,6 +51,8 @@ public class MockTvSingletons implements TvSingletons {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
 
     private final TvApplication mApp;
+    private final DefaultBackendKnobsFlags mBackendFlags = new DefaultBackendKnobsFlags();
+    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private PerformanceMonitor mPerformanceMonitor;
 
     public MockTvSingletons(Context context) {
@@ -175,11 +178,6 @@ public class MockTvSingletons implements TvSingletons {
     }
 
     @Override
-    public RemoteConfig getRemoteConfig() {
-        return mApp.getRemoteConfig();
-    }
-
-    @Override
     public Intent getTunerSetupIntent(Context context) {
         return mApp.getTunerSetupIntent(context);
     }
@@ -204,7 +202,17 @@ public class MockTvSingletons implements TvSingletons {
     }
 
     @Override
+    public DefaultCloudEpgFlags getCloudEpgFlags() {
+        return mCloudEpgFlags;
+    }
+
+    @Override
     public Executor getDbExecutor() {
         return mApp.getDbExecutor();
+    }
+
+    @Override
+    public DefaultBackendKnobsFlags getBackendKnobs() {
+        return mBackendFlags;
     }
 }

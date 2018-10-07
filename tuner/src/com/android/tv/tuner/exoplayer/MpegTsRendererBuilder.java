@@ -17,7 +17,6 @@
 package com.android.tv.tuner.exoplayer;
 
 import android.content.Context;
-import com.android.tv.tuner.TunerFeatures;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilder;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilderCallback;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
@@ -43,10 +42,7 @@ public class MpegTsRendererBuilder implements RendererBuilder {
 
     @Override
     public void buildRenderers(
-            MpegTsPlayer mpegTsPlayer,
-            DataSource dataSource,
-            boolean mHasSoftwareAudioDecoder,
-            RendererBuilderCallback callback) {
+            MpegTsPlayer mpegTsPlayer, DataSource dataSource, RendererBuilderCallback callback) {
         // Build the video and audio renderers.
         SampleExtractor extractor =
                 dataSource == null
@@ -63,9 +59,7 @@ public class MpegTsRendererBuilder implements RendererBuilder {
                         sampleSource,
                         MediaCodecSelector.DEFAULT,
                         mpegTsPlayer.getMainHandler(),
-                        mpegTsPlayer,
-                        mHasSoftwareAudioDecoder,
-                        !TunerFeatures.AC3_SOFTWARE_DECODE.isEnabled(mContext));
+                        mpegTsPlayer);
         Cea708TextTrackRenderer textRenderer = new Cea708TextTrackRenderer(sampleSource);
 
         TrackRenderer[] renderers = new TrackRenderer[MpegTsPlayer.RENDERER_COUNT];

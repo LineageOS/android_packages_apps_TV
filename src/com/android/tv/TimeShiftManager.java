@@ -713,7 +713,7 @@ public class TimeShiftManager {
                                 : mRecordEndTimeMs;
                 long currentPositionMs =
                         Math.max(
-                                Math.min(mTvView.timeshiftGetCurrentPositionMs(), currentTimeMs),
+                                Math.min(mTvView.timeShiftGetCurrentPositionMs(), currentTimeMs),
                                 mRecordStartTimeMs);
                 boolean isCurrentTime =
                         currentTimeMs - currentPositionMs < RECORDING_BOUNDARY_THRESHOLD;
@@ -721,7 +721,7 @@ public class TimeShiftManager {
                 if (isCurrentTime && isForwarding()) {
                     // It's playing forward and the current playing position reached
                     // the current system time. i.e. The live stream is played.
-                    // Therefore no need to call TvView.timeshiftGetCurrentPositionMs
+                    // Therefore no need to call TvView.timeShiftGetCurrentPositionMs
                     // any more.
                     newCurrentPositionMs = currentTimeMs;
                     mIsPlayOffsetChanged = false;
@@ -751,14 +751,14 @@ public class TimeShiftManager {
             mDisplayedPlaySpeed = PLAY_SPEED_1X;
             mPlaybackSpeed = 1;
             mPlayDirection = PLAY_DIRECTION_FORWARD;
-            mTvView.timeshiftPlay();
+            mTvView.timeShiftPlay();
             setPlayStatus(PLAY_STATUS_PLAYING);
         }
 
         void pause() {
             mDisplayedPlaySpeed = PLAY_SPEED_1X;
             mPlaybackSpeed = 1;
-            mTvView.timeshiftPause();
+            mTvView.timeShiftPause();
             setPlayStatus(PLAY_STATUS_PAUSED);
             mIsPlayOffsetChanged = true;
         }
@@ -781,7 +781,7 @@ public class TimeShiftManager {
             }
             mPlayDirection = PLAY_DIRECTION_BACKWARD;
             mPlaybackSpeed = getPlaybackSpeed();
-            mTvView.timeshiftRewind(mPlaybackSpeed);
+            mTvView.timeShiftRewind(mPlaybackSpeed);
             setPlayStatus(PLAY_STATUS_PLAYING);
             mIsPlayOffsetChanged = true;
         }
@@ -794,14 +794,14 @@ public class TimeShiftManager {
             }
             mPlayDirection = PLAY_DIRECTION_FORWARD;
             mPlaybackSpeed = getPlaybackSpeed();
-            mTvView.timeshiftFastForward(mPlaybackSpeed);
+            mTvView.timeShiftFastForward(mPlaybackSpeed);
             setPlayStatus(PLAY_STATUS_PLAYING);
             mIsPlayOffsetChanged = true;
         }
 
         /** Moves to the specified time. */
         void seekTo(long timeMs) {
-            mTvView.timeshiftSeekTo(
+            mTvView.timeShiftSeekTo(
                     Math.min(
                             mRecordEndTimeMs == CURRENT_TIME
                                     ? System.currentTimeMillis()
@@ -819,9 +819,9 @@ public class TimeShiftManager {
             if (playbackSpeed != mPlaybackSpeed) {
                 mPlaybackSpeed = playbackSpeed;
                 if (mPlayDirection == PLAY_DIRECTION_FORWARD) {
-                    mTvView.timeshiftFastForward(mPlaybackSpeed);
+                    mTvView.timeShiftFastForward(mPlaybackSpeed);
                 } else {
-                    mTvView.timeshiftRewind(mPlaybackSpeed);
+                    mTvView.timeShiftRewind(mPlaybackSpeed);
                 }
             }
         }
