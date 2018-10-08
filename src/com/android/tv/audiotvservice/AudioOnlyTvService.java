@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.StreamInfo;
 import com.android.tv.data.api.Channel;
 import com.android.tv.ui.TunableTvView;
@@ -63,9 +64,8 @@ public class AudioOnlyTvService extends Service implements OnTuneListener {
         return START_STICKY;
     }
 
-    private void tune(String mTvInputId) {
-        // TODO(b/110969180): get proper channel
-        Channel channel = null;
+    private void tune(String tvInputId) {
+        Channel channel = ChannelImpl.createPassthroughChannel(tvInputId);
         mTvView.tuneTo(channel, null, this);
     }
 
