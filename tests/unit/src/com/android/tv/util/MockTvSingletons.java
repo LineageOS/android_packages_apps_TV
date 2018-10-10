@@ -215,4 +215,9 @@ public class MockTvSingletons implements TvSingletons {
     public DefaultBackendKnobsFlags getBackendKnobs() {
         return mBackendFlags;
     }
+
+    @Override
+    public BuildType getBuildType() {
+        return BuildType.ENG;
+    }
 }

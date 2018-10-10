@@ -56,4 +56,9 @@ public class SampleDvbTuner extends BaseApplication {
     public DefaultCloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
     }
+
+    @Override
+    public BuildType getBuildType() {
+        return BuildType.ENG;
+    }
 }
