@@ -20,11 +20,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvContract;
+import com.android.tv.TvActivity;
 import com.android.tv.TvApplication;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.StubAnalytics;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.CommonConstants;
 import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
@@ -44,8 +44,6 @@ import javax.inject.Provider;
 
 /** The top level application for Live TV. */
 public class LiveTvApplication extends TvApplication {
-    protected static final String TV_ACTIVITY_CLASS_NAME =
-            CommonConstants.BASE_PACKAGE + ".TvActivity";
 
     static {
         PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppClassLoaded();
@@ -134,8 +132,8 @@ public class LiveTvApplication extends TvApplication {
                 CommonUtils.createSetupIntent(
                         new Intent(context, LiveTvTunerSetupActivity.class), mEmbeddedInputId);
         intent.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, mEmbeddedInputId);
-        Intent tvActivityIntent = new Intent();
-        tvActivityIntent.setComponent(new ComponentName(context, TV_ACTIVITY_CLASS_NAME));
+        Intent tvActivityIntent = new Intent(context, TvActivity.class);
+
         intent.putExtra(InputSetupActionUtils.EXTRA_ACTIVITY_AFTER_COMPLETION, tvActivityIntent);
         return intent;
     }
