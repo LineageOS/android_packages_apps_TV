@@ -97,8 +97,8 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     }
 
     /**
-     * Returns the column index for {@code column},-1 if the column doesn't exist in
-     * {@link #PROJECTION}.
+     * Returns the column index for {@code column},-1 if the column doesn't exist in {@link
+     * #PROJECTION}.
      */
     public static int getColumnIndex(String column) {
         for (int i = 0; i < PROJECTION.length; ++i) {
@@ -209,6 +209,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     private String mEpisodeNumber;
     private long mStartTimeUtcMillis;
     private long mEndTimeUtcMillis;
+    private String mDurationString;
     private String mDescription;
     private String mLongDescription;
     private int mVideoWidth;
@@ -283,6 +284,15 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     @Override
     public long getEndTimeUtcMillis() {
         return mEndTimeUtcMillis;
+    }
+
+    public String getDurationString(Context context) {
+        // TODO(b/71717446): expire the calculated string
+        if (mDurationString == null) {
+            mDurationString =
+                    Utils.getDurationString(context, mStartTimeUtcMillis, mEndTimeUtcMillis, true);
+        }
+        return mDurationString;
     }
 
     /** Returns the program duration. */
@@ -566,6 +576,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
         mEpisodeNumber = other.mEpisodeNumber;
         mStartTimeUtcMillis = other.mStartTimeUtcMillis;
         mEndTimeUtcMillis = other.mEndTimeUtcMillis;
+        mDurationString = null; // Recreate Duration when needed.
         mDescription = other.mDescription;
         mLongDescription = other.mLongDescription;
         mVideoWidth = other.mVideoWidth;
@@ -594,6 +605,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
             mProgram.mEpisodeNumber = null;
             mProgram.mStartTimeUtcMillis = -1;
             mProgram.mEndTimeUtcMillis = -1;
+            mProgram.mDurationString = null;
             mProgram.mDescription = null;
             mProgram.mLongDescription = null;
             mProgram.mRecordingProhibited = false;

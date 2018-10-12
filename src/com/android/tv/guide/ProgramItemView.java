@@ -398,20 +398,22 @@ public class ProgramItemView extends TextView {
         if (channel != null) {
             description = channel.getDisplayNumber() + " " + description;
         }
-        description +=
-                " "
-                        + Utils.getDurationString(
-                                getContext(),
-                                mClock,
-                                mTableEntry.entryStartUtcMillis,
-                                mTableEntry.entryEndUtcMillis,
-                                true);
         Program program = mTableEntry.program;
         if (program != null) {
+            description += " " + program.getDurationString(getContext());
             String episodeDescription = program.getEpisodeContentDescription(getContext());
             if (!TextUtils.isEmpty(episodeDescription)) {
                 description += " " + episodeDescription;
             }
+        } else {
+            description +=
+                    " "
+                            + Utils.getDurationString(
+                                    getContext(),
+                                    mClock,
+                                    mTableEntry.entryStartUtcMillis,
+                                    mTableEntry.entryEndUtcMillis,
+                                    true);
         }
         if (mTableEntry.scheduledRecording != null) {
             if (mDvrManager.isConflicting(mTableEntry.scheduledRecording)) {

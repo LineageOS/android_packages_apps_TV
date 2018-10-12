@@ -169,26 +169,26 @@ public class ChannelBannerView extends FrameLayout
     /**
      * 0 - 100 represent signal strength percentage. Strength is divided into 5 levels (0 - 4).
      *
-     * <p>This is the upper boundary of level 0 [0%, 20%],
-     * and the lower boundary of level 1 (20%, 40%].
+     * <p>This is the upper boundary of level 0 [0%, 20%], and the lower boundary of level 1 (20%,
+     * 40%].
      */
     private static final int SIGNAL_STRENGTH_0_OF_4_UPPER_BOUND = 20;
 
     /**
-     * This is the upper boundary of level 1 (20%, 40%],
-     * and the lower boundary of level 2 (40%, 60%].
+     * This is the upper boundary of level 1 (20%, 40%], and the lower boundary of level 2 (40%,
+     * 60%].
      */
     private static final int SIGNAL_STRENGTH_1_OF_4_UPPER_BOUND = 40;
 
     /**
-     * This is the upper boundary of level of level 2. (40%, 60%],
-     * and the lower boundary of level 3 (60%, 80%].
+     * This is the upper boundary of level of level 2. (40%, 60%], and the lower boundary of level 3
+     * (60%, 80%].
      */
     private static final int SIGNAL_STRENGTH_2_OF_4_UPPER_BOUND = 60;
 
     /**
-     * This is the upper boundary of level of level 3 (60%, 80%],
-     * and the lower boundary of level 4 (80%, 100%].
+     * This is the upper boundary of level of level 3 (60%, 80%], and the lower boundary of level 4
+     * (80%, 100%].
      */
     private static final int SIGNAL_STRENGTH_3_OF_4_UPPER_BOUND = 80;
 
@@ -251,19 +251,17 @@ public class ChannelBannerView extends FrameLayout
 
         mProgramDescriptionFadeInAnimator =
                 AnimatorInflater.loadAnimator(
-                    context, R.animator.channel_banner_program_description_fade_in);
+                        context, R.animator.channel_banner_program_description_fade_in);
         mProgramDescriptionFadeOutAnimator =
                 AnimatorInflater.loadAnimator(
-                    context, R.animator.channel_banner_program_description_fade_out);
+                        context, R.animator.channel_banner_program_description_fade_out);
 
         if (CommonFeatures.DVR.isEnabled(context)) {
             mDvrManager = singletons.getDvrManagerSingleton();
         } else {
             mDvrManager = null;
         }
-        mContentRatingsManager =
-                mTvInputManagerHelper
-                        .getContentRatingsManager();
+        mContentRatingsManager = mTvInputManagerHelper.getContentRatingsManager();
 
         mNoProgram =
                 new Program.Builder()
@@ -396,12 +394,14 @@ public class ChannelBannerView extends FrameLayout
 
     private void hide() {
         mCurrentHeight = 0;
-        mTvOverlayManager.get().hideOverlays(
-            TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
-                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
-                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
-                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
-                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
+        mTvOverlayManager
+                .get()
+                .hideOverlays(
+                        TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_DIALOG
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_SIDE_PANELS
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_PROGRAM_GUIDE
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_MENU
+                                | TvOverlayManager.FLAG_HIDE_OVERLAYS_KEEP_FRAGMENT);
     }
 
     /**
@@ -421,7 +421,7 @@ public class ChannelBannerView extends FrameLayout
             updateText(
                     mResolutionTextView,
                     Utils.getVideoDefinitionLevelString(
-                        getContext(), info.getVideoDefinitionLevel()));
+                            getContext(), info.getVideoDefinitionLevel()));
             updateText(
                     mAudioChannelTextView,
                     Utils.getAudioChannelString(getContext(), info.getAudioChannelCount()));
@@ -748,13 +748,11 @@ public class ChannelBannerView extends FrameLayout
     private void updateProgramTimeInfo(Program program) {
         long durationMs = program.getDurationMillis();
         long startTimeMs = program.getStartTimeUtcMillis();
-        long endTimeMs = program.getEndTimeUtcMillis();
 
         if (mLockType != LOCK_CHANNEL_INFO && durationMs > 0 && startTimeMs > 0) {
             mProgramTimeTextView.setVisibility(View.VISIBLE);
             mRemainingTimeView.setVisibility(View.VISIBLE);
-            mProgramTimeTextView.setText(
-                    Utils.getDurationString(getContext(), startTimeMs, endTimeMs, true));
+            mProgramTimeTextView.setText(program.getDurationString(getContext()));
         } else {
             mProgramTimeTextView.setVisibility(View.GONE);
             mRemainingTimeView.setVisibility(View.GONE);
@@ -820,7 +818,7 @@ public class ChannelBannerView extends FrameLayout
                                 .getString(
                                         R.string.dvr_recording_till_format,
                                         DateUtils.formatDateTime(
-                                            getContext(),
+                                                getContext(),
                                                 recording.getEndTimeMs(),
                                                 DateUtils.FORMAT_SHOW_TIME)));
                 mRecordingIndicatorView.setCompoundDrawablePadding(mRecordingIconPadding);
