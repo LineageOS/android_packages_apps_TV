@@ -20,11 +20,13 @@ import android.content.Context;
 import android.content.Intent;
 import com.android.tv.common.buildtype.HasBuildType;
 import com.android.tv.common.flags.has.HasCloudEpgFlags;
+import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 
 /** Injection point for the base app */
-public interface BaseSingletons extends HasCloudEpgFlags, HasBuildType {
+public interface BaseSingletons
+        extends HasCloudEpgFlags, HasBuildType, HasConcurrentDvrPlaybackFlags {
 
     Clock getClock();
 
