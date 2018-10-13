@@ -324,11 +324,42 @@ public class ProgramGuide
         mGrid.setItemAlignmentOffset(0);
         mGrid.setItemAlignmentOffsetPercent(ProgramGrid.ITEM_ALIGN_OFFSET_PERCENT_DISABLED);
 
+        mGrid.addOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        if (DEBUG) {
+                            Log.d(TAG, "ProgramGrid onScrollStateChanged. newState=" + newState);
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            mPerformanceMonitor.startJankRecorder(
+                                    EventNames.PROGRAM_GUIDE_SCROLL_VERTICALLY);
+                        } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            mPerformanceMonitor.stopJankRecorder(
+                                    EventNames.PROGRAM_GUIDE_SCROLL_VERTICALLY);
+                        }
+                    }
+                }
+        );
+
         RecyclerView.OnScrollListener onScrollListener =
                 new RecyclerView.OnScrollListener() {
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         onHorizontalScrolled(dx);
+                    }
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        if (DEBUG) {
+                            Log.d(TAG, "TimelineRow onScrollStateChanged. newState=" + newState);
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            mPerformanceMonitor.startJankRecorder(
+                                    EventNames.PROGRAM_GUIDE_SCROLL_HORIZONTALLY);
+                        } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            mPerformanceMonitor.stopJankRecorder(
+                                    EventNames.PROGRAM_GUIDE_SCROLL_HORIZONTALLY);
+                        }
                     }
                 };
         mTimelineRow.addOnScrollListener(onScrollListener);

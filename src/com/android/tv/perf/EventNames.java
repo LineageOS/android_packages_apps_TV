@@ -32,7 +32,8 @@ public final class EventNames {
     @Retention(SOURCE)
     @StringDef({FETCH_EPG_TASK, ON_DEVICE_SEARCH, PROGRAM_GUIDE_SHOW,
             PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND,
-            PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE})
+            PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE, PROGRAM_GUIDE_SCROLL_HORIZONTALLY,
+            PROGRAM_GUIDE_SCROLL_VERTICALLY})
     public @interface EventName {}
 
     public static final String FETCH_EPG_TASK = "FetchEpgTask";
@@ -46,6 +47,9 @@ public final class EventNames {
             "ProgramDataManager.ProgramsPrefetchTask.doInBackground";
     public static final String PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE =
             "ProgramGuide.show.fromEmptyCache";
+    public static final String PROGRAM_GUIDE_SCROLL_HORIZONTALLY =
+            "ProgramGuide.scroll.horizontally";
+    public static final String PROGRAM_GUIDE_SCROLL_VERTICALLY = "ProgramGuide.scroll.vertically";
 
     private EventNames() {}
 }
