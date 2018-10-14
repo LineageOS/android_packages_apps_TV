@@ -593,13 +593,7 @@ class ProgramTableAdapter extends RecyclerView.Adapter<ProgramTableAdapter.Progr
                     mTitleView.setText(text);
                 }
 
-                updateTextView(
-                        mTimeView,
-                        Utils.getDurationString(
-                                context,
-                                program.getStartTimeUtcMillis(),
-                                program.getEndTimeUtcMillis(),
-                                false));
+                updateTextView(mTimeView, program.getDurationString(context));
 
                 boolean trackMetaDataVisible =
                         updateTextView(

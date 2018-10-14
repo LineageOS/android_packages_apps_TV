@@ -157,4 +157,9 @@ public class LiveTvApplication extends TvApplication {
     public Optional<TunerInputController> getTunerInputController() {
         return mOptionalTunerInputController;
     }
+
+    @Override
+    public BuildType getBuildType() {
+        return BuildType.AOSP;
+    }
 }

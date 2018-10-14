@@ -48,6 +48,7 @@ import com.android.tv.ChannelTuner;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
 import com.android.tv.TvFeatures;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.util.DurationTimer;
@@ -56,6 +57,9 @@ import com.android.tv.data.GenreItems;
 import com.android.tv.data.ProgramDataManager;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrScheduleManager;
+import com.android.tv.perf.EventNames;
+import com.android.tv.perf.PerformanceMonitor;
+import com.android.tv.perf.TimerEvent;
 import com.android.tv.ui.HardwareLayerAnimatorListenerAdapter;
 import com.android.tv.ui.ViewUtils;
 import com.android.tv.ui.hideable.AutoHideScheduler;
@@ -150,6 +154,9 @@ public class ProgramGuide
 
     private final ProgramManagerListener mProgramManagerListener = new ProgramManagerListener();
 
+    private final PerformanceMonitor mPerformanceMonitor;
+    private TimerEvent mTimerEvent;
+
     private final Runnable mUpdateTimeIndicator =
             new Runnable() {
                 @Override
@@ -175,6 +182,7 @@ public class ProgramGuide
             Runnable preShowRunnable,
             Runnable postHideRunnable) {
         mActivity = activity;
+        mPerformanceMonitor = TvSingletons.getSingletons(mActivity).getPerformanceMonitor();
         mProgramManager =
                 new ProgramManager(
                         tvInputManagerHelper,
@@ -447,6 +455,7 @@ public class ProgramGuide
         if (mContainer.getVisibility() == View.VISIBLE) {
             return;
         }
+        mTimerEvent = mPerformanceMonitor.startTimer();
         mTracker.sendShowEpg();
         mTracker.sendScreenView(SCREEN_NAME);
         if (mPreShowRunnable != null) {
@@ -521,6 +530,11 @@ public class ProgramGuide
                             mShowAnimatorPartial.start();
                         } else {
                             mShowAnimatorFull.start();
+                        }
+                        if (mTimerEvent != null) {
+                            mPerformanceMonitor
+                                    .stopTimer(mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
+                            mTimerEvent = null;
                         }
                     }
                 };

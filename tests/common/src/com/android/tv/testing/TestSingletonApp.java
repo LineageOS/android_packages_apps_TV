@@ -247,4 +247,9 @@ public class TestSingletonApp extends Application implements TvSingletons {
     public DefaultCloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
     }
+
+    @Override
+    public BuildType getBuildType() {
+        return BuildType.ENG;
+    }
 }

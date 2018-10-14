@@ -38,6 +38,9 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.memory.MemoryManageable;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.api.Channel;
+import com.android.tv.perf.EventNames;
+import com.android.tv.perf.PerformanceMonitor;
+import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.MultiLongSparseArray;
 import com.android.tv.util.TvProviderUtils;
@@ -93,6 +96,7 @@ public class ProgramDataManager implements MemoryManageable {
     private final ContentResolver mContentResolver;
     private final Executor mDbExecutor;
     private final BackendKnobsFlags mBackendKnobsFlags;
+    private final PerformanceMonitor mPerformanceMonitor;
     private boolean mStarted;
     // Updated only on the main thread.
     private volatile boolean mCurrentProgramsLoadFinished;
@@ -128,7 +132,8 @@ public class ProgramDataManager implements MemoryManageable {
                 context.getContentResolver(),
                 Clock.SYSTEM,
                 Looper.myLooper(),
-                TvSingletons.getSingletons(context).getBackendKnobs());
+                TvSingletons.getSingletons(context).getBackendKnobs(),
+                TvSingletons.getSingletons(context).getPerformanceMonitor());
     }
 
     @VisibleForTesting
@@ -138,13 +143,15 @@ public class ProgramDataManager implements MemoryManageable {
             ContentResolver contentResolver,
             Clock time,
             Looper looper,
-            BackendKnobsFlags backendKnobsFlags) {
+            BackendKnobsFlags backendKnobsFlags,
+            PerformanceMonitor performanceMonitor) {
         mContext = context;
         mDbExecutor = executor;
         mClock = time;
         mContentResolver = contentResolver;
         mHandler = new MyHandler(looper);
         mBackendKnobsFlags = backendKnobsFlags;
+        mPerformanceMonitor = performanceMonitor;
         mProgramObserver =
                 new ContentObserver(mHandler) {
                     @Override
@@ -462,6 +469,7 @@ public class ProgramDataManager implements MemoryManageable {
         private final long mEndTimeMs;
 
         private boolean mSuccess;
+        private TimerEvent mFromEmptyCacheTimeEvent;
 
         public ProgramsPrefetchTask() {
             super(mDbExecutor);
@@ -475,7 +483,17 @@ public class ProgramDataManager implements MemoryManageable {
         }
 
         @Override
+        protected void onPreExecute() {
+            if (mChannelIdCurrentProgramMap.isEmpty()) {
+                // No current program guide is shown.
+                // Measure the delay before users can see program guides.
+                mFromEmptyCacheTimeEvent = mPerformanceMonitor.startTimer();
+            }
+        }
+
+        @Override
         protected Map<Long, ArrayList<Program>> doInBackground(Void... params) {
+            TimerEvent asyncTimeEvent = mPerformanceMonitor.startTimer();
             Map<Long, ArrayList<Program>> programMap = new HashMap<>();
             if (DEBUG) {
                 Log.d(
@@ -549,6 +567,8 @@ public class ProgramDataManager implements MemoryManageable {
             if (DEBUG) {
                 Log.d(TAG, "Ends programs prefetch for " + programMap.size() + " channels");
             }
+            mPerformanceMonitor.stopTimer(asyncTimeEvent,
+                    EventNames.PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND);
             return programMap;
         }
 
@@ -570,6 +590,11 @@ public class ProgramDataManager implements MemoryManageable {
                                         mLastPrefetchTaskRunMs + PROGRAM_GUIDE_SNAP_TIME_MS,
                                         PROGRAM_GUIDE_SNAP_TIME_MS)
                                 - currentTime;
+                if (mFromEmptyCacheTimeEvent != null) {
+                    mPerformanceMonitor.stopTimer(mFromEmptyCacheTimeEvent,
+                            EventNames.PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE);
+                    mFromEmptyCacheTimeEvent = null;
+                }
             } else {
                 nextMessageDelayedTime = PERIODIC_PROGRAM_UPDATE_MIN_MS;
             }

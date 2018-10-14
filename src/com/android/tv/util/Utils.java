@@ -41,6 +41,7 @@ import android.util.Log;
 import android.view.View;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
+import com.android.tv.common.BaseSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.GenreItems;
@@ -329,8 +330,7 @@ public class Utils {
                 projection = TvProviderUtils.addExtraColumnsToProjection(projection);
             }
         }
-        try (Cursor cursor =
-                resolver.query(uri, projection, null, null, null)) {
+        try (Cursor cursor = resolver.query(uri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToNext()) {
                 return Program.fromCursor(cursor);
             }
@@ -364,11 +364,10 @@ public class Utils {
             Context context, long startUtcMillis, long endUtcMillis, boolean useShortFormat) {
         return getDurationString(
                 context,
-                System.currentTimeMillis(),
+                ((BaseSingletons) context.getApplicationContext()).getClock(),
                 startUtcMillis,
                 endUtcMillis,
-                useShortFormat,
-                0);
+                useShortFormat);
     }
 
     /**
@@ -746,8 +745,7 @@ public class Utils {
         if (unflattenInputId == null) {
             return false;
         }
-        return context.getPackageName()
-                .equals(unflattenInputId.getPackageName());
+        return context.getPackageName().equals(unflattenInputId.getPackageName());
     }
 
     /** Returns the TV input for the given {@code program}. */
