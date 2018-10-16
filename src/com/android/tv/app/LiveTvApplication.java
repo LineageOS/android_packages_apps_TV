@@ -29,6 +29,7 @@ import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
+import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
@@ -61,6 +62,8 @@ public class LiveTvApplication extends TvApplication {
     private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobsFlags = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
+    private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
+            new DefaultConcurrentDvrPlaybackFlags();
     private AccountHelper mAccountHelper;
     private Analytics mAnalytics;
     private Tracker mTracker;
@@ -161,5 +164,10 @@ public class LiveTvApplication extends TvApplication {
     @Override
     public BuildType getBuildType() {
         return BuildType.AOSP;
+    }
+
+    @Override
+    public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
+        return mConcurrentDvrPlaybackFlags;
     }
 }

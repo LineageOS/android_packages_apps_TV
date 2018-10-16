@@ -23,6 +23,7 @@ import android.media.tv.TvContract;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
+import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
@@ -31,6 +32,8 @@ import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 public class SampleDvbTuner extends BaseApplication {
     private String mEmbeddedInputId;
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
+    private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
+            new DefaultConcurrentDvrPlaybackFlags();
 
     @Override
     public Intent getTunerSetupIntent(Context context) {
@@ -60,5 +63,10 @@ public class SampleDvbTuner extends BaseApplication {
     @Override
     public BuildType getBuildType() {
         return BuildType.ENG;
+    }
+
+    @Override
+    public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
+        return mConcurrentDvrPlaybackFlags;
     }
 }

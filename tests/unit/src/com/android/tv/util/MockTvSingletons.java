@@ -27,6 +27,7 @@ import com.android.tv.analytics.Tracker;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
+import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -53,6 +54,8 @@ public class MockTvSingletons implements TvSingletons {
     private final TvApplication mApp;
     private final DefaultBackendKnobsFlags mBackendFlags = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
+    private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
+            new DefaultConcurrentDvrPlaybackFlags();
     private PerformanceMonitor mPerformanceMonitor;
 
     public MockTvSingletons(Context context) {
@@ -219,5 +222,10 @@ public class MockTvSingletons implements TvSingletons {
     @Override
     public BuildType getBuildType() {
         return BuildType.ENG;
+    }
+
+    @Override
+    public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
+        return mConcurrentDvrPlaybackFlags;
     }
 }
