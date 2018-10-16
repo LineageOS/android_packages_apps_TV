@@ -371,6 +371,19 @@ public class ProgramGuide
                         R.animator.program_guide_side_panel_enter_full,
                         0,
                         R.animator.program_guide_table_enter_full);
+        mShowAnimatorFull.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (mTimerEvent != null) {
+                            mPerformanceMonitor
+                                    .stopTimer(mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
+                            mTimerEvent = null;
+                        }
+                        mPerformanceMonitor.stopJankRecorder(EventNames.PROGRAM_GUIDE_SHOW);
+                    }
+                }
+        );
 
         mShowAnimatorPartial =
                 createAnimator(
@@ -383,6 +396,16 @@ public class ProgramGuide
                     public void onAnimationStart(Animator animation) {
                         mSidePanelGridView.setVisibility(View.VISIBLE);
                         mSidePanelGridView.setAlpha(1.0f);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (mTimerEvent != null) {
+                            mPerformanceMonitor
+                                    .stopTimer(mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
+                            mTimerEvent = null;
+                        }
+                        mPerformanceMonitor.stopJankRecorder(EventNames.PROGRAM_GUIDE_SHOW);
                     }
                 });
 
@@ -487,6 +510,7 @@ public class ProgramGuide
             return;
         }
         mTimerEvent = mPerformanceMonitor.startTimer();
+        mPerformanceMonitor.startJankRecorder(EventNames.PROGRAM_GUIDE_SHOW);
         mTracker.sendShowEpg();
         mTracker.sendScreenView(SCREEN_NAME);
         if (mPreShowRunnable != null) {
@@ -561,11 +585,6 @@ public class ProgramGuide
                             mShowAnimatorPartial.start();
                         } else {
                             mShowAnimatorFull.start();
-                        }
-                        if (mTimerEvent != null) {
-                            mPerformanceMonitor
-                                    .stopTimer(mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
-                            mTimerEvent = null;
                         }
                     }
                 };
