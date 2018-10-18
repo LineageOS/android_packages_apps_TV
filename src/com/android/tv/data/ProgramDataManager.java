@@ -476,15 +476,11 @@ public class ProgramDataManager implements MemoryManageable {
             long time = mClock.currentTimeMillis();
             mStartTimeMs =
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
-            if (mChannelIdProgramCache.isEmpty()) {
-                // For first pre-fetch task, fetch only 8 hours of programs
-                mEndTimeMs = mStartTimeMs + TimeUnit.HOURS.toMillis(8);
-            } else {
-                mEndTimeMs =
-                        mStartTimeMs
-                                + TimeUnit.HOURS.toMillis(
-                                        mBackendKnobsFlags.programGuideMaxHours());
-            }
+            long durationHours =
+                    mChannelIdProgramCache.isEmpty()
+                            ? Math.max(1L, mBackendKnobsFlags.programGuideInitialFetchHours())
+                            : Math.max(24L, mBackendKnobsFlags.programGuideMaxHours());
+            mEndTimeMs = mStartTimeMs + TimeUnit.HOURS.toMillis(durationHours);
             mSuccess = false;
         }
 

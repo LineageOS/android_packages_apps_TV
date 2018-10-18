@@ -30,6 +30,11 @@ public final class DefaultBackendKnobsFlags
     }
 
     @Override
+    public long programGuideInitialFetchHours() {
+        return 8;
+    }
+
+    @Override
     public long programGuideMaxHours() {
         return 48;
     }
