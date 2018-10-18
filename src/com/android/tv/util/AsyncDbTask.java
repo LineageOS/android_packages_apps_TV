@@ -35,6 +35,7 @@ import com.android.tv.data.ChannelImpl;
 import com.android.tv.data.Program;
 import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.data.RecordedProgram;
+import com.google.common.base.Predicate;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +208,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                     // This is guaranteed to never call onPostExecute because the task is canceled.
                     return null;
                 }
-                if (mFilter != null && !mFilter.filter(c)) {
+                if (mFilter != null && !mFilter.apply(c)) {
                     continue;
                 }
                 T t = fromCursor(c);
@@ -413,5 +414,5 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     }
 
     /** An interface which filters the row. */
-    public interface CursorFilter extends Filter<Cursor> {}
+    public interface CursorFilter extends Predicate<Cursor> {}
 }

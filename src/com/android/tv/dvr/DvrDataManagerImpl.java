@@ -60,9 +60,9 @@ import com.android.tv.dvr.provider.DvrDbSync;
 import com.android.tv.dvr.recorder.SeriesRecordingScheduler;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.AsyncDbTask.AsyncRecordedProgramQueryTask;
-import com.android.tv.util.Filter;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.TvUriMatcher;
+import com.google.common.base.Predicate;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
@@ -173,12 +173,12 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
             };
 
     private static <T> List<T> moveElements(
-            HashMap<Long, T> from, HashMap<Long, T> to, Filter<T> filter) {
+            HashMap<Long, T> from, HashMap<Long, T> to, Predicate<T> filter) {
         List<T> moved = new ArrayList<>();
         Iterator<Entry<Long, T>> iter = from.entrySet().iterator();
         while (iter.hasNext()) {
             Entry<Long, T> entry = iter.next();
-            if (filter.filter(entry.getValue())) {
+            if (filter.apply(entry.getValue())) {
                 to.put(entry.getKey(), entry.getValue());
                 iter.remove();
                 moved.add(entry.getValue());
@@ -916,38 +916,25 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                 moveElements(
                         mScheduledRecordingsForRemovedInput,
                         mScheduledRecordings,
-                        new Filter<ScheduledRecording>() {
-                            @Override
-                            public boolean filter(ScheduledRecording r) {
-                                return r.getInputId().equals(inputId);
-                            }
-                        });
+                        r -> r.getInputId().equals(inputId));
         List<RecordedProgram> movedRecordedPrograms =
                 moveElements(
                         mRecordedProgramsForRemovedInput,
                         mRecordedPrograms,
-                        new Filter<RecordedProgram>() {
-                            @Override
-                            public boolean filter(RecordedProgram r) {
-                                return r.getInputId().equals(inputId);
-                            }
-                        });
+                        r -> r.getInputId().equals(inputId));
         List<SeriesRecording> removedSeriesRecordings = new ArrayList<>();
         List<SeriesRecording> movedSeriesRecordings =
                 moveElements(
                         mSeriesRecordingsForRemovedInput,
                         mSeriesRecordings,
-                        new Filter<SeriesRecording>() {
-                            @Override
-                            public boolean filter(SeriesRecording r) {
-                                if (r.getInputId().equals(inputId)) {
-                                    if (!isEmptySeriesRecording(r)) {
-                                        return true;
-                                    }
-                                    removedSeriesRecordings.add(r);
+                        r -> {
+                            if (r.getInputId().equals(inputId)) {
+                                if (!isEmptySeriesRecording(r)) {
+                                    return true;
                                 }
-                                return false;
+                                removedSeriesRecordings.add(r);
                             }
+                            return false;
                         });
         if (!movedSchedules.isEmpty()) {
             for (ScheduledRecording schedule : movedSchedules) {
@@ -986,32 +973,17 @@ public class DvrDataManagerImpl extends BaseDvrDataManager {
                 moveElements(
                         mScheduledRecordings,
                         mScheduledRecordingsForRemovedInput,
-                        new Filter<ScheduledRecording>() {
-                            @Override
-                            public boolean filter(ScheduledRecording r) {
-                                return r.getInputId().equals(inputId);
-                            }
-                        });
+                        r -> r.getInputId().equals(inputId));
         List<SeriesRecording> movedSeriesRecordings =
                 moveElements(
                         mSeriesRecordings,
                         mSeriesRecordingsForRemovedInput,
-                        new Filter<SeriesRecording>() {
-                            @Override
-                            public boolean filter(SeriesRecording r) {
-                                return r.getInputId().equals(inputId);
-                            }
-                        });
+                        r -> r.getInputId().equals(inputId));
         List<RecordedProgram> movedRecordedPrograms =
                 moveElements(
                         mRecordedPrograms,
                         mRecordedProgramsForRemovedInput,
-                        new Filter<RecordedProgram>() {
-                            @Override
-                            public boolean filter(RecordedProgram r) {
-                                return r.getInputId().equals(inputId);
-                            }
-                        });
+                        r -> r.getInputId().equals(inputId));
         if (!movedSchedules.isEmpty()) {
             for (ScheduledRecording schedule : movedSchedules) {
                 mProgramId2ScheduledRecordings.remove(schedule.getProgramId());
