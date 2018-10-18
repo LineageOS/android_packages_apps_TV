@@ -117,18 +117,18 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                 return null;
             }
             if ((Utils.isProgramsUri(mUri)
-                    && TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI))
-                            || (Utils.isRecordedProgramsUri(mUri)
-                                    && TvProviderUtils.checkSeriesIdColumn(context,
-                                            TvContract.RecordedPrograms.CONTENT_URI))) {
+                            && TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI))
+                    || (Utils.isRecordedProgramsUri(mUri)
+                            && TvProviderUtils.checkSeriesIdColumn(
+                                    context, TvContract.RecordedPrograms.CONTENT_URI))) {
                 mProjection = TvProviderUtils.addExtraColumnsToProjection(mProjection);
             }
             if (DEBUG) {
                 Log.v(TAG, "Starting query for " + this);
             }
             try (Cursor c =
-                    context.getContentResolver().query(
-                            mUri, mProjection, mSelection, mSelectionArgs, mOrderBy)) {
+                    context.getContentResolver()
+                            .query(mUri, mProjection, mSelection, mSelectionArgs, mOrderBy)) {
                 if (c != null && !isCancelled()) {
                     Result result = onQuery(c);
                     if (DEBUG) {
@@ -183,15 +183,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                 String selection,
                 String[] selectionArgs,
                 String orderBy) {
-            this(
-                    executor,
-                    context,
-                    uri,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    orderBy,
-                    null);
+            this(executor, context, uri, projection, selection, selectionArgs, orderBy, null);
         }
 
         public AsyncQueryListTask(
@@ -316,14 +308,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     /** Gets an {@link List} of {@link Program}s from {@link TvContract.Programs#CONTENT_URI}. */
     public abstract static class AsyncProgramQueryTask extends AsyncQueryListTask<Program> {
         public AsyncProgramQueryTask(Executor executor, Context context) {
-            super(
-                    executor,
-                    context,
-                    Programs.CONTENT_URI,
-                    Program.PROJECTION,
-                    null,
-                    null,
-                    null);
+            super(executor, context, Programs.CONTENT_URI, Program.PROJECTION, null, null, null);
         }
 
         public AsyncProgramQueryTask(
@@ -354,8 +339,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     /** Gets an {@link List} of {@link TvContract.RecordedPrograms}s. */
     public abstract static class AsyncRecordedProgramQueryTask
             extends AsyncQueryListTask<RecordedProgram> {
-        public AsyncRecordedProgramQueryTask(
-                Executor executor, Context context, Uri uri) {
+        public AsyncRecordedProgramQueryTask(Executor executor, Context context, Uri uri) {
             super(executor, context, uri, RecordedProgram.PROJECTION, null, null, null);
         }
 
@@ -383,10 +367,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         protected final long mChannelId;
 
         public LoadProgramsForChannelTask(
-                Executor executor,
-                Context context,
-                long channelId,
-                @Nullable Range<Long> period) {
+                Executor executor, Context context, long channelId, @Nullable Range<Long> period) {
             super(
                     executor,
                     context,
@@ -414,8 +395,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
     /** Gets a single {@link Program} from {@link TvContract.Programs#CONTENT_URI}. */
     public static class AsyncQueryProgramTask extends AsyncQueryItemTask<Program> {
 
-        public AsyncQueryProgramTask(
-                Executor executor, Context context, long programId) {
+        public AsyncQueryProgramTask(Executor executor, Context context, long programId) {
             super(
                     executor,
                     context,
