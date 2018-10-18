@@ -476,9 +476,15 @@ public class ProgramDataManager implements MemoryManageable {
             long time = mClock.currentTimeMillis();
             mStartTimeMs =
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
-            mEndTimeMs =
-                    mStartTimeMs
-                            + TimeUnit.HOURS.toMillis(mBackendKnobsFlags.programGuideMaxHours());
+            if (mChannelIdProgramCache.isEmpty()) {
+                // For first pre-fetch task, fetch only 8 hours of programs
+                mEndTimeMs = mStartTimeMs + TimeUnit.HOURS.toMillis(8);
+            } else {
+                mEndTimeMs =
+                        mStartTimeMs
+                                + TimeUnit.HOURS.toMillis(
+                                        mBackendKnobsFlags.programGuideMaxHours());
+            }
             mSuccess = false;
         }
 
@@ -567,7 +573,8 @@ public class ProgramDataManager implements MemoryManageable {
             if (DEBUG) {
                 Log.d(TAG, "Ends programs prefetch for " + programMap.size() + " channels");
             }
-            mPerformanceMonitor.stopTimer(asyncTimeEvent,
+            mPerformanceMonitor.stopTimer(
+                    asyncTimeEvent,
                     EventNames.PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND);
             return programMap;
         }
@@ -581,8 +588,6 @@ public class ProgramDataManager implements MemoryManageable {
             }
             long nextMessageDelayedTime;
             if (mSuccess) {
-                mChannelIdProgramCache = programs;
-                notifyProgramUpdated();
                 long currentTime = mClock.currentTimeMillis();
                 mLastPrefetchTaskRunMs = currentTime;
                 nextMessageDelayedTime =
@@ -590,8 +595,15 @@ public class ProgramDataManager implements MemoryManageable {
                                         mLastPrefetchTaskRunMs + PROGRAM_GUIDE_SNAP_TIME_MS,
                                         PROGRAM_GUIDE_SNAP_TIME_MS)
                                 - currentTime;
+                // Issue second pre-fetch immediately after the first partial update
+                if (mChannelIdProgramCache.isEmpty()) {
+                    nextMessageDelayedTime = 0;
+                }
+                mChannelIdProgramCache = programs;
+                notifyProgramUpdated();
                 if (mFromEmptyCacheTimeEvent != null) {
-                    mPerformanceMonitor.stopTimer(mFromEmptyCacheTimeEvent,
+                    mPerformanceMonitor.stopTimer(
+                            mFromEmptyCacheTimeEvent,
                             EventNames.PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE);
                     mFromEmptyCacheTimeEvent = null;
                 }
