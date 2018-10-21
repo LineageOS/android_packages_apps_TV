@@ -76,9 +76,6 @@ android {
 }
 
 repositories {
-    flatDir {
-        dirs 'libs'
-    }
     mavenCentral()
     jcenter()
     google()

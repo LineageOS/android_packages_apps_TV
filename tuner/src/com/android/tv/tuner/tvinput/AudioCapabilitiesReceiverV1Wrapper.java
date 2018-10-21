@@ -18,6 +18,7 @@ package com.android.tv.tuner.tvinput;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 
@@ -27,9 +28,12 @@ import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
  */
 public final class AudioCapabilitiesReceiverV1Wrapper {
 
+    private static final String TAG = "AudioCapabilitiesReceiverV1Wrapper";
+
     private final AudioCapabilitiesReceiver mAudioCapabilitiesReceiver;
     private final Handler mHandler;
     private final AudioCapabilitiesReceiver.Listener mListener;
+    private boolean mRegistered;
 
     /**
      * Creates an instance.
@@ -48,12 +52,18 @@ public final class AudioCapabilitiesReceiverV1Wrapper {
 
     /** @see AudioCapabilitiesReceiver#register() */
     public AudioCapabilities register() {
+        mRegistered = true;
         return mAudioCapabilitiesReceiver.register();
     }
 
     /** @see AudioCapabilitiesReceiver#unregister() */
     public void unregister() {
-        mAudioCapabilitiesReceiver.unregister();
+        if (mRegistered) {
+            mAudioCapabilitiesReceiver.unregister();
+            mRegistered = false;
+        } else {
+            Log.e(TAG, "Attempt to unregister a non-registered audio capabilities receiver.");
+        }
     }
 
     private void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {

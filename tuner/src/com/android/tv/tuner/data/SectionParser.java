@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.ts;
+package com.android.tv.tuner.data;
 
 import android.media.tv.TvContentRating;
 import android.media.tv.TvContract.Programs.Genres;

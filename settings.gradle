@@ -21,3 +21,5 @@
 
 include ':common'
 include ':tuner'
+include ':SampleDvbTuner'
+project(":SampleDvbTuner").projectDir = file("tuner/SampleDvbTuner")

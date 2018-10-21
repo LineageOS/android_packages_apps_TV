@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.cc;
+package com.android.tv.tuner.data;
 
 import android.os.SystemClock;
 import android.support.annotation.IntDef;
 import android.util.Log;
 import android.util.SparseIntArray;
-import com.android.tv.tuner.data.Cea708Data;
 import com.android.tv.tuner.data.Cea708Data.CaptionColor;
 import com.android.tv.tuner.data.Cea708Data.CaptionEvent;
 import com.android.tv.tuner.data.Cea708Data.CaptionPenAttr;
