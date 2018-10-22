@@ -19,6 +19,7 @@ package com.android.tv.tuner.source;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 import com.android.tv.tuner.TunerHal;
+import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
 import com.android.tv.tuner.tvinput.EventDetector;
@@ -125,7 +126,7 @@ public class TsDataSourceManager {
 
     /** Add tuner hal into TunerTsStreamerManager for test. */
     @VisibleForTesting
-    public void addTunerHalForTest(TunerHal tunerHal) {
+    public void addTunerHalForTest(ITunerHal tunerHal) {
         mTunerStreamerManager.addTunerHal(tunerHal, mId);
     }
 

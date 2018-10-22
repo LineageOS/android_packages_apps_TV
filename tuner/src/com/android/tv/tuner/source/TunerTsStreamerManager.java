@@ -20,6 +20,7 @@ import android.content.Context;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.tuner.TunerHal;
+import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.tvinput.EventDetector;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ class TunerTsStreamerManager {
         }
         // Created streamer was cancelled by a new tune request.
         streamer.stopStream();
-        TunerHal hal = streamer.getTunerHal();
+        ITunerHal hal = streamer.getTunerHal();
         hal.setHasPendingTune(false);
         mTunerHalManager.releaseTunerHal(hal, sessionId, reuse);
         return null;
@@ -119,7 +120,7 @@ class TunerTsStreamerManager {
             }
         }
         streamer.stopStream();
-        TunerHal hal = streamer.getTunerHal();
+        ITunerHal hal = streamer.getTunerHal();
         hal.setHasPendingTune(false);
         mTunerHalManager.releaseTunerHal(hal, sessionId, reuse);
     }
@@ -133,7 +134,7 @@ class TunerTsStreamerManager {
     }
 
     /** Add tuner hal into TunerHalManager for test. */
-    void addTunerHal(TunerHal tunerHal, int sessionId) {
+    void addTunerHal(ITunerHal tunerHal, int sessionId) {
         mTunerHalManager.addTunerHal(tunerHal, sessionId);
     }
 
@@ -192,7 +193,7 @@ class TunerTsStreamerManager {
         // mCancelled will be {@code true} if a new tune request for the same session
         // cancels create().
         private boolean mCancelled;
-        private TunerHal mTunerHal;
+        private ITunerHal mTunerHal;
 
         private TsStreamerCreator(
                 Context context, TunerChannel channel, EventDetector.EventListener listener) {
@@ -202,7 +203,7 @@ class TunerTsStreamerManager {
         }
 
         private TunerTsStreamer create(int sessionId, boolean reuse) {
-            TunerHal hal = mTunerHalManager.getOrCreateTunerHal(mContext, sessionId);
+            ITunerHal hal = mTunerHalManager.getOrCreateTunerHal(mContext, sessionId);
             if (hal == null) {
                 return null;
             }
@@ -252,11 +253,11 @@ class TunerTsStreamerManager {
      * affinity for {@link TunerHal} allocation.
      */
     private static class TunerHalManager {
-        private final Map<Integer, TunerHal> mTunerHals = new HashMap<>();
+        private final Map<Integer, ITunerHal> mTunerHals = new HashMap<>();
 
-        private TunerHal getOrCreateTunerHal(Context context, int sessionId) {
+        private ITunerHal getOrCreateTunerHal(Context context, int sessionId) {
             // Handles session affinity.
-            TunerHal hal = mTunerHals.get(sessionId);
+            ITunerHal hal = mTunerHals.get(sessionId);
             if (hal != null) {
                 mTunerHals.remove(sessionId);
                 return hal;
@@ -272,12 +273,12 @@ class TunerTsStreamerManager {
             return TunerHal.createInstance(context);
         }
 
-        private void releaseTunerHal(TunerHal hal, int sessionId, boolean reuse) {
+        private void releaseTunerHal(ITunerHal hal, int sessionId, boolean reuse) {
             if (!reuse || !hal.isReusable()) {
                 AutoCloseableUtils.closeQuietly(hal);
                 return;
             }
-            TunerHal cachedHal = mTunerHals.get(sessionId);
+            ITunerHal cachedHal = mTunerHals.get(sessionId);
             if (cachedHal != hal) {
                 mTunerHals.put(sessionId, hal);
                 if (cachedHal != null) {
@@ -287,7 +288,7 @@ class TunerTsStreamerManager {
         }
 
         private void releaseCachedHal(int sessionId) {
-            TunerHal hal = mTunerHals.get(sessionId);
+            ITunerHal hal = mTunerHals.get(sessionId);
             if (hal != null) {
                 mTunerHals.remove(sessionId);
             }
@@ -296,7 +297,7 @@ class TunerTsStreamerManager {
             }
         }
 
-        private void addTunerHal(TunerHal tunerHal, int sessionId) {
+        private void addTunerHal(ITunerHal tunerHal, int sessionId) {
             mTunerHals.put(sessionId, tunerHal);
         }
     }

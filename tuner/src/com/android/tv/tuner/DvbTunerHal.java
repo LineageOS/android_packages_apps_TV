@@ -44,7 +44,7 @@ public class DvbTunerHal extends TunerHal {
     }
 
     @Override
-    protected boolean openFirstAvailable() {
+    public boolean openFirstAvailable() {
         List<DvbDeviceInfoWrapper> deviceInfoList = mDvbDeviceAccessor.getDvbDeviceList();
         if (deviceInfoList == null || deviceInfoList.isEmpty()) {
             Log.e(TAG, "There's no dvb device attached");
@@ -119,12 +119,12 @@ public class DvbTunerHal extends TunerHal {
     }
 
     @Override
-    protected boolean isDeviceOpen() {
+    public boolean isDeviceOpen() {
         return (mDvbDeviceInfo != null);
     }
 
     @Override
-    protected long getDeviceId() {
+    public long getDeviceId() {
         if (mDvbDeviceInfo != null) {
             return mDvbDeviceInfo.getId();
         }
@@ -196,28 +196,20 @@ public class DvbTunerHal extends TunerHal {
     }
 
     /**
-     * This method curves the raw signal strength from tuner
-     * when it's between 0 - 65535 inclusive.
+     * This method curves the raw signal strength from tuner when it's between 0 - 65535 inclusive.
      */
     private int getCurvedSignalStrength(int signalStrength) {
-        /**
-         * When value < 80% of 65535, it will be recognized as level 0.
-         */
+        /** When value < 80% of 65535, it will be recognized as level 0. */
         if (signalStrength < 65535 * 0.8) {
             return 0;
         }
-        /**
-         * When value is between 80% to 100% of 65535,
-         * it will be linearly mapped to 0 - 100%.
-         */
+        /** When value is between 80% to 100% of 65535, it will be linearly mapped to 0 - 100%. */
         return (int) (5 * (signalStrength * 100.0 / 65535) - 400);
     }
 
     /**
-     * This method is for noise canceling.
-     * If the delta between current and previous strength is less than
-     * {@link #SIGNAL_STRENGTH_MINIMUM_DELTA},
-     * previous signal strength will be returned.
+     * This method is for noise canceling. If the delta between current and previous strength is
+     * less than {@link #SIGNAL_STRENGTH_MINIMUM_DELTA}, previous signal strength will be returned.
      * Otherwise current signal strength will be updated and returned.
      */
     private int updatingSignal(int signal) {
