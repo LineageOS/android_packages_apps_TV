@@ -417,6 +417,11 @@ public class ProgramGuide
         mHideAnimatorFull.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
+                    public void onAnimationStart(Animator animation) {
+                        mPerformanceMonitor.recordMemory(EventNames.MEMORY_ON_PROGRAM_GUIDE_CLOSE);
+                    }
+
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         mContainer.setVisibility(View.GONE);
                     }
@@ -428,6 +433,11 @@ public class ProgramGuide
                         R.animator.program_guide_table_exit);
         mHideAnimatorPartial.addListener(
                 new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mPerformanceMonitor.recordMemory(EventNames.MEMORY_ON_PROGRAM_GUIDE_CLOSE);
+                    }
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mContainer.setVisibility(View.GONE);
