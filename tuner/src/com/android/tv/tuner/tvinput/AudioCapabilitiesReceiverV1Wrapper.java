@@ -59,7 +59,15 @@ public final class AudioCapabilitiesReceiverV1Wrapper {
     /** @see AudioCapabilitiesReceiver#unregister() */
     public void unregister() {
         if (mRegistered) {
-            mAudioCapabilitiesReceiver.unregister();
+            try {
+                mAudioCapabilitiesReceiver.unregister();
+            } catch (IllegalArgumentException e) {
+                // Workaround for b/115739362.
+                Log.e(
+                        TAG,
+                        "Ignoring exception when unregistering audio capabilities receiver: ",
+                        e);
+            }
             mRegistered = false;
         } else {
             Log.e(TAG, "Attempt to unregister a non-registered audio capabilities receiver.");
