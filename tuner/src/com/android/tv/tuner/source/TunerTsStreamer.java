@@ -23,6 +23,7 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.tvinput.EventDetector;
 import com.android.tv.tuner.tvinput.EventDetector.EventListener;
@@ -53,7 +54,7 @@ public class TunerTsStreamer implements TsStreamer {
     private final AtomicLong mLastReadPosition = new AtomicLong();
     private boolean mStreaming;
 
-    private final TunerHal mTunerHal;
+    private final ITunerHal mTunerHal;
     private TunerChannel mChannel;
     private Thread mStreamingThread;
     private final EventDetector mEventDetector;
@@ -133,7 +134,7 @@ public class TunerTsStreamer implements TsStreamer {
      * @param tunerHal the HAL for tuner device
      * @param eventListener the listener for channel & program information
      */
-    public TunerTsStreamer(TunerHal tunerHal, EventListener eventListener, Context context) {
+    public TunerTsStreamer(ITunerHal tunerHal, EventListener eventListener, Context context) {
         mTunerHal = tunerHal;
         mEventDetector = new EventDetector(mTunerHal);
         if (eventListener != null) {
@@ -145,7 +146,7 @@ public class TunerTsStreamer implements TsStreamer {
                         : null;
     }
 
-    public TunerTsStreamer(TunerHal tunerHal, EventListener eventListener) {
+    public TunerTsStreamer(ITunerHal tunerHal, EventListener eventListener) {
         this(tunerHal, eventListener, null);
     }
 
@@ -154,20 +155,20 @@ public class TunerTsStreamer implements TsStreamer {
         if (mTunerHal.tune(
                 channel.getFrequency(), channel.getModulation(), channel.getDisplayNumber(false))) {
             if (channel.hasVideo()) {
-                mTunerHal.addPidFilter(channel.getVideoPid(), TunerHal.FILTER_TYPE_VIDEO);
+                mTunerHal.addPidFilter(channel.getVideoPid(), ITunerHal.FILTER_TYPE_VIDEO);
             }
             boolean audioFilterSet = false;
             for (Integer audioPid : channel.getAudioPids()) {
                 if (!audioFilterSet) {
-                    mTunerHal.addPidFilter(audioPid, TunerHal.FILTER_TYPE_AUDIO);
+                    mTunerHal.addPidFilter(audioPid, ITunerHal.FILTER_TYPE_AUDIO);
                     audioFilterSet = true;
                 } else {
                     // FILTER_TYPE_AUDIO overrides the previous filter for audio. We use
                     // FILTER_TYPE_OTHER from the secondary one to get the all audio tracks.
-                    mTunerHal.addPidFilter(audioPid, TunerHal.FILTER_TYPE_OTHER);
+                    mTunerHal.addPidFilter(audioPid, ITunerHal.FILTER_TYPE_OTHER);
                 }
             }
-            mTunerHal.addPidFilter(channel.getPcrPid(), TunerHal.FILTER_TYPE_PCR);
+            mTunerHal.addPidFilter(channel.getPcrPid(), ITunerHal.FILTER_TYPE_PCR);
             if (mEventDetector != null) {
                 mEventDetector.startDetecting(
                         channel.getFrequency(),
@@ -264,7 +265,7 @@ public class TunerTsStreamer implements TsStreamer {
      *
      * @return {@link TunerHal}
      */
-    public TunerHal getTunerHal() {
+    public ITunerHal getTunerHal() {
         return mTunerHal;
     }
 

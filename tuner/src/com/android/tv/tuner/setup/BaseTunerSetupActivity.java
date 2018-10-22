@@ -49,6 +49,7 @@ import com.android.tv.common.util.PostalCodeUtils;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.api.ITunerHal;
 import java.util.concurrent.Executor;
 
 /** The base setup activity class for tuner. */
@@ -269,7 +270,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
     }
 
     /** Gets the currently used tuner HAL. */
-    TunerHal getTunerHal() {
+    ITunerHal getTunerHal() {
         return mTunerHalFactory.getOrCreate();
     }
 
@@ -348,13 +349,13 @@ public class BaseTunerSetupActivity extends SetupActivity {
         String contentTitle = resources.getString(R.string.ut_setup_notification_content_title);
         int contentTextId = 0;
         switch (tunerType) {
-            case TunerHal.TUNER_TYPE_BUILT_IN:
+            case ITunerHal.TUNER_TYPE_BUILT_IN:
                 contentTextId = R.string.bt_setup_notification_content_text;
                 break;
-            case TunerHal.TUNER_TYPE_USB:
+            case ITunerHal.TUNER_TYPE_USB:
                 contentTextId = R.string.ut_setup_notification_content_text;
                 break;
-            case TunerHal.TUNER_TYPE_NETWORK:
+            case ITunerHal.TUNER_TYPE_NETWORK:
                 contentTextId = R.string.nt_setup_notification_content_text;
                 break;
             default: // fall out
@@ -442,7 +443,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
     @VisibleForTesting
     protected static class TunerHalFactory {
         private Context mContext;
-        @VisibleForTesting TunerHal mTunerHal;
+        @VisibleForTesting ITunerHal mTunerHal;
         private TunerHalFactory.GenerateTunerHalTask mGenerateTunerHalTask;
         private final Executor mExecutor;
 
@@ -460,7 +461,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
          * before, tries to generate it synchronously.
          */
         @WorkerThread
-        TunerHal getOrCreate() {
+        ITunerHal getOrCreate() {
             if (mGenerateTunerHalTask != null
                     && mGenerateTunerHalTask.getStatus() != AsyncTask.Status.FINISHED) {
                 try {
@@ -497,18 +498,18 @@ public class BaseTunerSetupActivity extends SetupActivity {
         }
 
         @WorkerThread
-        protected TunerHal createInstance() {
+        protected ITunerHal createInstance() {
             return TunerHal.createInstance(mContext);
         }
 
-        class GenerateTunerHalTask extends AsyncTask<Void, Void, TunerHal> {
+        class GenerateTunerHalTask extends AsyncTask<Void, Void, ITunerHal> {
             @Override
-            protected TunerHal doInBackground(Void... args) {
+            protected ITunerHal doInBackground(Void... args) {
                 return createInstance();
             }
 
             @Override
-            protected void onPostExecute(TunerHal tunerHal) {
+            protected void onPostExecute(ITunerHal tunerHal) {
                 mTunerHal = tunerHal;
             }
         }

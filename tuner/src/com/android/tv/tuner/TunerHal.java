@@ -17,8 +17,6 @@
 package com.android.tv.tuner;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Pair;
@@ -26,60 +24,15 @@ import com.android.tv.common.BuildConfig;
 import com.android.tv.common.compat.TvInputConstantCompat;
 import com.android.tv.common.customization.CustomizationManager;
 
+import com.android.tv.tuner.api.ITunerHal;
 
 import com.android.tv.common.annotation.UsedByNative;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /** A base class to handle a hardware tuner device. */
-public abstract class TunerHal implements AutoCloseable {
+public abstract class TunerHal implements ITunerHal {
     protected static final String TAG = "TunerHal";
     protected static final boolean DEBUG = false;
-
-    @IntDef({FILTER_TYPE_OTHER, FILTER_TYPE_AUDIO, FILTER_TYPE_VIDEO, FILTER_TYPE_PCR})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface FilterType {}
-
-    public static final int FILTER_TYPE_OTHER = 0;
-    public static final int FILTER_TYPE_AUDIO = 1;
-    public static final int FILTER_TYPE_VIDEO = 2;
-    public static final int FILTER_TYPE_PCR = 3;
-
-    @StringDef({MODULATION_8VSB, MODULATION_QAM256})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ModulationType {}
-
-    public static final String MODULATION_8VSB = "8VSB";
-    public static final String MODULATION_QAM256 = "QAM256";
-
-    @IntDef({
-        DELIVERY_SYSTEM_UNDEFINED,
-        DELIVERY_SYSTEM_ATSC,
-        DELIVERY_SYSTEM_DVBC,
-        DELIVERY_SYSTEM_DVBS,
-        DELIVERY_SYSTEM_DVBS2,
-        DELIVERY_SYSTEM_DVBT,
-        DELIVERY_SYSTEM_DVBT2
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface DeliverySystemType {}
-
-    public static final int DELIVERY_SYSTEM_UNDEFINED = 0;
-    public static final int DELIVERY_SYSTEM_ATSC = 1;
-    public static final int DELIVERY_SYSTEM_DVBC = 2;
-    public static final int DELIVERY_SYSTEM_DVBS = 3;
-    public static final int DELIVERY_SYSTEM_DVBS2 = 4;
-    public static final int DELIVERY_SYSTEM_DVBT = 5;
-    public static final int DELIVERY_SYSTEM_DVBT2 = 6;
-
-    @IntDef({TUNER_TYPE_BUILT_IN, TUNER_TYPE_USB, TUNER_TYPE_NETWORK})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TunerType {}
-
-    public static final int TUNER_TYPE_BUILT_IN = 1;
-    public static final int TUNER_TYPE_USB = 2;
-    public static final int TUNER_TYPE_NETWORK = 3;
 
     protected static final int PID_PAT = 0;
     protected static final int PID_ATSC_SI_BASE = 0x1ffb;
@@ -87,14 +40,6 @@ public abstract class TunerHal implements AutoCloseable {
     protected static final int PID_DVB_EIT = 0x0012;
     protected static final int DEFAULT_VSB_TUNE_TIMEOUT_MS = 2000;
     protected static final int DEFAULT_QAM_TUNE_TIMEOUT_MS = 4000; // Some device takes time for
-    // QAM256 tuning.
-    @IntDef({
-        BUILT_IN_TUNER_TYPE_LINUX_DVB
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface BuiltInTunerType {}
-
-    private static final int BUILT_IN_TUNER_TYPE_LINUX_DVB = 1;
 
     private static Integer sBuiltInTunerType;
 
@@ -110,47 +55,6 @@ public abstract class TunerHal implements AutoCloseable {
     }
 
     /**
-     * Creates a TunerHal instance.
-     *
-     * @param context context for creating the TunerHal instance
-     * @return the TunerHal instance
-     */
-    @WorkerThread
-    public static synchronized TunerHal createInstance(Context context) {
-        TunerHal tunerHal = null;
-        if (DvbTunerHal.getNumberOfDevices(context) > 0) {
-            if (DEBUG) Log.d(TAG, "Use DvbTunerHal");
-            tunerHal = new DvbTunerHal(context);
-        }
-        return tunerHal != null && tunerHal.openFirstAvailable() ? tunerHal : null;
-    }
-
-    /** Gets the number of tuner devices currently present. */
-    @WorkerThread
-    public static Pair<Integer, Integer> getTunerTypeAndCount(Context context) {
-        if (useBuiltInTuner(context)) {
-            if (getBuiltInTunerType(context) == BUILT_IN_TUNER_TYPE_LINUX_DVB) {
-                return new Pair<>(TUNER_TYPE_BUILT_IN, DvbTunerHal.getNumberOfDevices(context));
-            }
-        } else {
-            int usbTunerCount = DvbTunerHal.getNumberOfDevices(context);
-            if (usbTunerCount > 0) {
-                return new Pair<>(TUNER_TYPE_USB, usbTunerCount);
-            }
-        }
-        return new Pair<>(null, 0);
-    }
-
-    /** Check a delivery system is for DVB or not. */
-    public static boolean isDvbDeliverySystem(@DeliverySystemType int deliverySystemType) {
-        return deliverySystemType == DELIVERY_SYSTEM_DVBC
-                || deliverySystemType == DELIVERY_SYSTEM_DVBS
-                || deliverySystemType == DELIVERY_SYSTEM_DVBS2
-                || deliverySystemType == DELIVERY_SYSTEM_DVBT
-                || deliverySystemType == DELIVERY_SYSTEM_DVBT2;
-    }
-
-    /**
      * Returns if tuner input service would use built-in tuners instead of USB tuners or network
      * tuners.
      */
@@ -158,7 +62,8 @@ public abstract class TunerHal implements AutoCloseable {
         return getBuiltInTunerType(context) != 0;
     }
 
-    private static @BuiltInTunerType int getBuiltInTunerType(Context context) {
+    @BuiltInTunerType
+    private static int getBuiltInTunerType(Context context) {
         if (sBuiltInTunerType == null) {
             sBuiltInTunerType = 0;
             if (CustomizationManager.hasLinuxDvbBuiltInTuner(context)
@@ -175,6 +80,38 @@ public abstract class TunerHal implements AutoCloseable {
         mModulation = null;
     }
 
+    /**
+     * Creates a TunerHal instance.
+     *
+     * @param context context for creating the TunerHal instance
+     * @return the TunerHal instance
+     */
+    @WorkerThread
+    public static synchronized ITunerHal createInstance(Context context) {
+        ITunerHal tunerHal = null;
+        if (DvbTunerHal.getNumberOfDevices(context) > 0) {
+            if (DEBUG) Log.d(TAG, "Use DvbTunerHal");
+            tunerHal = new DvbTunerHal(context);
+        }
+        return tunerHal != null && tunerHal.openFirstAvailable() ? tunerHal : null;
+    }
+
+    /** Gets the number of tuner devices currently present. */
+    @WorkerThread
+    public static Pair<Integer, Integer> getTunerTypeAndCount(Context context) {
+        if (useBuiltInTuner(context)) {
+            if (getBuiltInTunerType(context) == TunerHal.BUILT_IN_TUNER_TYPE_LINUX_DVB) {
+                return new Pair<>(TUNER_TYPE_BUILT_IN, DvbTunerHal.getNumberOfDevices(context));
+            }
+        } else {
+            int usbTunerCount = DvbTunerHal.getNumberOfDevices(context);
+            if (usbTunerCount > 0) {
+                return new Pair<>(TUNER_TYPE_USB, usbTunerCount);
+            }
+        }
+        return new Pair<>(null, 0);
+    }
+
     protected boolean isStreaming() {
         return mIsStreaming;
     }
@@ -189,6 +126,7 @@ public abstract class TunerHal implements AutoCloseable {
      * Returns {@code true} if this tuner HAL can be reused to save tuning time between channels of
      * the same frequency.
      */
+    @Override
     public boolean isReusable() {
         return true;
     }
@@ -202,18 +140,6 @@ public abstract class TunerHal implements AutoCloseable {
     protected native void nativeFinalize(long deviceId);
 
     /**
-     * Acquires the first available tuner device. If there is a tuner device that is available, the
-     * tuner device will be locked to the current instance.
-     *
-     * @return {@code true} if the operation was successful, {@code false} otherwise
-     */
-    protected abstract boolean openFirstAvailable();
-
-    protected abstract boolean isDeviceOpen();
-
-    protected abstract long getDeviceId();
-
-    /**
      * Sets the tuner channel. This should be called after acquiring a tuner device.
      *
      * @param frequency a frequency of the channel to tune to
@@ -222,6 +148,7 @@ public abstract class TunerHal implements AutoCloseable {
      *     use channelNumber instead of frequency for tune.
      * @return {@code true} if the operation was successful, {@code false} otherwise
      */
+    @Override
     public synchronized boolean tune(
             int frequency, @ModulationType String modulation, String channelNumber) {
         if (!isDeviceOpen()) {
@@ -238,7 +165,7 @@ public abstract class TunerHal implements AutoCloseable {
         if (mFrequency == frequency && Objects.equals(mModulation, modulation)) {
             addPidFilter(PID_PAT, FILTER_TYPE_OTHER);
             addPidFilter(PID_ATSC_SI_BASE, FILTER_TYPE_OTHER);
-            if (isDvbDeliverySystem(mDeliverySystemType)) {
+            if (ITunerHal.isDvbDeliverySystem(mDeliverySystemType)) {
                 addPidFilter(PID_DVB_SDT, FILTER_TYPE_OTHER);
                 addPidFilter(PID_DVB_EIT, FILTER_TYPE_OTHER);
             }
@@ -252,7 +179,7 @@ public abstract class TunerHal implements AutoCloseable {
         if (nativeTune(getDeviceId(), frequency, modulation, timeout_ms)) {
             addPidFilter(PID_PAT, FILTER_TYPE_OTHER);
             addPidFilter(PID_ATSC_SI_BASE, FILTER_TYPE_OTHER);
-            if (isDvbDeliverySystem(mDeliverySystemType)) {
+            if (ITunerHal.isDvbDeliverySystem(mDeliverySystemType)) {
                 addPidFilter(PID_DVB_SDT, FILTER_TYPE_OTHER);
                 addPidFilter(PID_DVB_EIT, FILTER_TYPE_OTHER);
             }
@@ -274,6 +201,7 @@ public abstract class TunerHal implements AutoCloseable {
      * @param filterType a type of pid. Must be one of (FILTER_TYPE_XXX)
      * @return {@code true} if the operation was successful, {@code false} otherwise
      */
+    @Override
     public synchronized boolean addPidFilter(int pid, @FilterType int filterType) {
         if (!isDeviceOpen()) {
             Log.e(TAG, "There's no available device");
@@ -300,6 +228,7 @@ public abstract class TunerHal implements AutoCloseable {
      * Stops current tuning. The tuner device and pid filters will be reset by this call and make
      * the tuner ready to accept another tune request.
      */
+    @Override
     public synchronized void stopTune() {
         if (isDeviceOpen()) {
             if (mIsStreaming) {
@@ -312,10 +241,12 @@ public abstract class TunerHal implements AutoCloseable {
         mModulation = null;
     }
 
+    @Override
     public void setHasPendingTune(boolean hasPendingTune) {
         nativeSetHasPendingTune(getDeviceId(), hasPendingTune);
     }
 
+    @Override
     public int getDeliverySystemType() {
         return mDeliverySystemType;
     }
@@ -333,6 +264,7 @@ public abstract class TunerHal implements AutoCloseable {
      * @return the amount of bytes written in the buffer. Note that this value could be 0 if no new
      *     frames have been obtained since the last call.
      */
+    @Override
     public synchronized int readTsStream(byte[] javaBuffer, int javaBufferSize) {
         if (isDeviceOpen()) {
             return nativeWriteInBuffer(getDeviceId(), javaBuffer, javaBufferSize);
@@ -351,6 +283,7 @@ public abstract class TunerHal implements AutoCloseable {
      *          when signal returned is not valid.
      *          0 - 100 representing strength from low to high. Curve raw data if necessary.
      */
+    @Override
     public int getSignalStrength() {
         return TvInputConstantCompat.SIGNAL_STRENGTH_NOT_USED;
     }
