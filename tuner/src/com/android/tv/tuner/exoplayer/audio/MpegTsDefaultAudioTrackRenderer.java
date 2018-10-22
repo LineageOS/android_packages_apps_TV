@@ -21,7 +21,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
-import com.android.tv.tuner.tvinput.TunerDebug;
+import com.android.tv.tuner.tvinput.debug.TunerDebug;
 import com.google.android.exoplayer.CodecCounters;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaClock;

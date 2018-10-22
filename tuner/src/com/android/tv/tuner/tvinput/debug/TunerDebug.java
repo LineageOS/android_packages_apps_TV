@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.tvinput.debug;
 
 import android.os.SystemClock;
 import android.util.Log;
