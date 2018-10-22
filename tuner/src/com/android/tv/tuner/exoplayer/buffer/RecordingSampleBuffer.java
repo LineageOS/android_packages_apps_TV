@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer;
 import com.android.tv.tuner.exoplayer.SampleExtractor;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;

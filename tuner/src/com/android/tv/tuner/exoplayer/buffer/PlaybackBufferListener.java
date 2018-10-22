@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.exoplayer.buffer;
 
 /** The listener for buffer events occurred during playback. */
 public interface PlaybackBufferListener {
