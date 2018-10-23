@@ -18,8 +18,8 @@ package com.android.tv.tuner.exoplayer;
 
 import android.os.Handler;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
+import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.MediaFormatHolder;
 import com.google.android.exoplayer.MediaFormatUtil;

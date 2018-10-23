@@ -33,7 +33,7 @@ public final class EventNames {
     @StringDef({FETCH_EPG_TASK, ON_DEVICE_SEARCH, PROGRAM_GUIDE_SHOW,
             PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND,
             PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE, PROGRAM_GUIDE_SCROLL_HORIZONTALLY,
-            PROGRAM_GUIDE_SCROLL_VERTICALLY})
+            PROGRAM_GUIDE_SCROLL_VERTICALLY, MEMORY_ON_PROGRAM_GUIDE_CLOSE})
     public @interface EventName {}
 
     public static final String FETCH_EPG_TASK = "FetchEpgTask";
@@ -50,6 +50,7 @@ public final class EventNames {
     public static final String PROGRAM_GUIDE_SCROLL_HORIZONTALLY =
             "ProgramGuide.scroll.horizontally";
     public static final String PROGRAM_GUIDE_SCROLL_VERTICALLY = "ProgramGuide.scroll.vertically";
+    public static final String MEMORY_ON_PROGRAM_GUIDE_CLOSE = "ProgramGuide.memory.close";
 
     private EventNames() {}
 }

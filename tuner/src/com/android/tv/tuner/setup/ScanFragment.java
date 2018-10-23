@@ -39,8 +39,8 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.R;
-import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.PsipData;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
@@ -126,10 +126,10 @@ public class ScanFragment extends SetupFragment {
         startScan(args == null ? 0 : args.getInt(EXTRA_FOR_CHANNEL_SCAN_FILE, 0));
         TextView scanTitleView = (TextView) view.findViewById(R.id.tune_title);
         switch (tunerType) {
-            case TunerHal.TUNER_TYPE_USB:
+            case ITunerHal.TUNER_TYPE_USB:
                 scanTitleView.setText(R.string.ut_channel_scan);
                 break;
-            case TunerHal.TUNER_TYPE_NETWORK:
+            case ITunerHal.TUNER_TYPE_NETWORK:
                 scanTitleView.setText(R.string.nt_channel_scan);
                 break;
             default:
@@ -266,7 +266,7 @@ public class ScanFragment extends SetupFragment {
             if (FAKE_MODE) {
                 mScanTsStreamer = new FakeTsStreamer(this);
             } else {
-                TunerHal hal = ((BaseTunerSetupActivity) mActivity).getTunerHal();
+                ITunerHal hal = ((BaseTunerSetupActivity) mActivity).getTunerHal();
                 if (hal == null) {
                     throw new RuntimeException("Failed to open a DVB device");
                 }

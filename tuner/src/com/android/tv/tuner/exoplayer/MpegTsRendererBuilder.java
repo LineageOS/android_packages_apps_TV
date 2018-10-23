@@ -21,7 +21,7 @@ import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilder;
 import com.android.tv.tuner.exoplayer.MpegTsPlayer.RendererBuilderCallback;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
+import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.TrackRenderer;

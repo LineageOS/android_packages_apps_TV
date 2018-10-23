@@ -28,9 +28,9 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 import com.android.tv.tuner.exoplayer.audio.MpegTsDefaultAudioTrackRenderer;
 import com.android.tv.tuner.exoplayer.buffer.BufferManager;
+import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.exoplayer.buffer.RecordingSampleBuffer;
 import com.android.tv.tuner.exoplayer.buffer.SimpleSampleBuffer;
-import com.android.tv.tuner.tvinput.PlaybackBufferListener;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.MediaFormatHolder;
 import com.google.android.exoplayer.SampleHolder;
@@ -103,16 +103,16 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                 new HandlerThread("SourceReaderThread"));
     }
 
-  @VisibleForTesting
-  @SuppressWarnings("MissingOverride")
-  public ExoPlayerSampleExtractor(
-      Uri uri,
-      DataSource source,
-      BufferManager bufferManager,
-      PlaybackBufferListener bufferListener,
-      boolean isRecording,
-      Looper workerLooper,
-      HandlerThread sourceReaderThread) {
+    @VisibleForTesting
+    @SuppressWarnings("MissingOverride")
+    public ExoPlayerSampleExtractor(
+            Uri uri,
+            DataSource source,
+            BufferManager bufferManager,
+            PlaybackBufferListener bufferListener,
+            boolean isRecording,
+            Looper workerLooper,
+            HandlerThread sourceReaderThread) {
         // It'll be used as a timeshift file chunk name's prefix.
         mId = System.currentTimeMillis();
 
@@ -240,7 +240,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                             // For now, this will cause EOS and playback reset.
                         }
                     };
-            mSampleSource.prepareSource(null, false, mSampleSourceListener);
+            mSampleSource.prepareSource(null, false, mSampleSourceListener, null);
             mDecoderInputBuffer =
                     new DecoderInputBuffer(DecoderInputBuffer.BUFFER_REPLACEMENT_MODE_NORMAL);
             mSampleHolder = new SampleHolder(SampleHolder.BUFFER_REPLACEMENT_MODE_NORMAL);

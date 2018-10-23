@@ -32,7 +32,7 @@ import com.android.tv.tuner.exoplayer.audio.MpegTsMediaCodecAudioTrackRenderer;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
 import com.android.tv.tuner.tvinput.EventDetector;
-import com.android.tv.tuner.tvinput.TunerDebug;
+import com.android.tv.tuner.tvinput.debug.TunerDebug;
 import com.google.android.exoplayer.DummyTrackRenderer;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
