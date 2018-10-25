@@ -22,6 +22,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -155,10 +156,16 @@ public class BaseTunerSetupActivity extends SetupActivity {
                         break;
                     default:
                         String postalCode = PostalCodeUtils.getLastPostalCode(this);
-                        if (mNeedToShowPostalCodeFragment
-                                || (CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
+                        boolean needLocation =
+                                CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
                                                 getApplicationContext())
-                                        && TextUtils.isEmpty(postalCode))) {
+                                        && TextUtils.isEmpty(postalCode);
+                        if (needLocation
+                                && checkSelfPermission(
+                                                android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                            showLocationFragment();
+                        } else if (mNeedToShowPostalCodeFragment || needLocation) {
                             // We cannot get postal code automatically. Postal code input fragment
                             // should always be shown even if users have input some valid postal
                             // code in this activity before.
@@ -168,6 +175,21 @@ public class BaseTunerSetupActivity extends SetupActivity {
                             showConnectionTypeFragment();
                         }
                         break;
+                }
+                return true;
+            case LocationFragment.ACTION_CATEGORY:
+                switch (actionId) {
+                    case LocationFragment.ACTION_ALLOW_PERMISSION:
+                        String postalCode = params == null
+                                ? null : params.getString(LocationFragment.KEY_POSTAL_CODE);
+                        if (postalCode == null) {
+                            showPostalCodeFragment();
+                        } else {
+                            showConnectionTypeFragment();
+                        }
+                        break;
+                    default:
+                        showConnectionTypeFragment();
                 }
                 return true;
             case PostalCodeFragment.ACTION_CATEGORY:

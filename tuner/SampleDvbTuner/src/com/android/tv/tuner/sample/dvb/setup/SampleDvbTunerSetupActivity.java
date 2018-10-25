@@ -20,6 +20,7 @@ import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.tv.TvInputInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import com.android.tv.tuner.sample.dvb.R;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity;
 import com.android.tv.tuner.setup.ConnectionTypeFragment;
 import com.android.tv.tuner.setup.LineupFragment;
+import com.android.tv.tuner.setup.LocationFragment;
 import com.android.tv.tuner.setup.PostalCodeFragment;
 import com.android.tv.tuner.setup.ScanFragment;
 import com.android.tv.tuner.setup.ScanResultFragment;
@@ -119,10 +121,16 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
                         break;
                     default:
                         String postalCode = PostalCodeUtils.getLastPostalCode(this);
-                        if (mNeedToShowPostalCodeFragment
-                                || (CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
+                        boolean needLocation =
+                                CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
                                                 getApplicationContext())
-                                        && TextUtils.isEmpty(postalCode))) {
+                                        && TextUtils.isEmpty(postalCode);
+                        if (needLocation
+                                && checkSelfPermission(
+                                                android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                            showLocationFragment();
+                        } else if (mNeedToShowPostalCodeFragment || needLocation) {
                             // We cannot get postal code automatically. Postal code input fragment
                             // should always be shown even if users have input some valid postal
                             // code in this activity before.
@@ -136,6 +144,26 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
                             showConnectionTypeFragment();
                         }
                         break;
+                }
+                return true;
+            case LocationFragment.ACTION_CATEGORY:
+                switch (actionId) {
+                    case LocationFragment.ACTION_ALLOW_PERMISSION:
+                        String postalCode =
+                                params == null
+                                        ? null
+                                        : params.getString(LocationFragment.KEY_POSTAL_CODE);
+                        if (postalCode == null) {
+                            showPostalCodeFragment();
+                        } else {
+                            this.postalCode = postalCode;
+                            restartFetchLineupTask();
+                            showConnectionTypeFragment();
+                        }
+                        break;
+                    default:
+                        cancelFetchLineup();
+                        showConnectionTypeFragment();
                 }
                 return true;
             case PostalCodeFragment.ACTION_CATEGORY:
@@ -214,8 +242,7 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
             case ScanResultFragment.ACTION_CATEGORY:
                 switch (actionId) {
                     case SetupMultiPaneFragment.ACTION_DONE:
-                        new SampleDvbTunerSetupActivity.InsertOrModifyEpgInputTask(
-                                        selectedLineup, embeddedInputId)
+                        new InsertOrModifyEpgInputTask(selectedLineup, embeddedInputId)
                                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         break;
                     default:
@@ -334,7 +361,9 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
 
     private void restartFetchLineupTask() {
         if (!CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(getApplicationContext())
-                || TextUtils.isEmpty(postalCode)) {
+                || TextUtils.isEmpty(postalCode)
+                || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         if (fetchLineupTask != null) {

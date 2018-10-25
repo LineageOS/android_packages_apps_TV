@@ -92,7 +92,6 @@ public class LocationUtils {
         sOnUpdateAddressListeners.add(listener);
     }
 
-
     /**
      * Remove an {@link OnUpdateAddressListener} instance if it exists.
      *
