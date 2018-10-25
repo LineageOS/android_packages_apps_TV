@@ -210,10 +210,29 @@
     <!-- Title of postal/zip code input guided step fragment  [CHAR LIMIT=30] -->
     <string name="postal_code_guidance_title">Enter your ZIP Code.</string>
     <!-- Description of postal/zip code input guided step fragment  [CHAR LIMIT=NONE] -->
-    <string name="postal_code_guidance_description"><xliff:g id="app_name">Live TV</xliff:g>  app will use the ZIP Code to provide a complete program guide for the TV channels.</string>
+    <string name="postal_code_guidance_description" translatable="false">
+        <xliff:g id="app_name">Live TV</xliff:g> can not determine your location. Please enter
+        your ZIP code.\nLocation information is only stored on device locally and sent to Google
+        servers when updating your program information. The location sent is never associated with
+        your account or stored in Google servers.\nIf you do not provide your ZIP code, your TV
+        program guide will be limited.</string>
     <!-- Description of postal/zip code input edit text view to prompt users entering ZIP Code  [CHAR LIMIT=30] -->
     <string name="postal_code_action_description">Enter your ZIP Code</string>
     <!-- Warning message shown in description field of postal/zip code input edit text view when user enters an invalid ZIP Code and presses Done [CHAR LIMIT=30] -->
     <string name="postal_code_invalid_warning">Invalid ZIP Code</string>
+
+    <!-- Title of location rationale guided step fragment  [CHAR LIMIT=30] -->
+    <string name="location_guidance_title" translatable="false">Location</string>
+    <!-- Description of location rationale guided step fragment  [CHAR LIMIT=NONE] -->
+    <string name="location_guidance_description" translatable="false">
+        <xliff:g id="app_name">Live TV</xliff:g> uses location information to provide a
+        complete program guide for your TV channels.\nLocation information is only stored on device
+        locally and sent to Google servers when updating your program information. The location sent
+        is never associated with your account or stored in Google servers.\nIf you do not grant
+        permission or manually enter your ZIP code, you TV program guide will be limited.</string>
+    <!-- Allow location permission -->
+    <string name="location_choices_allow_permission" translatable="false">Allow Permission</string>
+    <!-- Message to show users when getting location information -->
+    <string name="location_choices_getting_location" translatable="false">Getting Location</string>
 
 </resources>

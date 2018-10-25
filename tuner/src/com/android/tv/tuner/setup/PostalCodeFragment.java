@@ -32,7 +32,7 @@ import com.android.tv.common.util.PostalCodeUtils;
 import com.android.tv.tuner.R;
 import java.util.List;
 
-/** A fragment for initial screen. */
+/** A fragment for users to enter postal code. */
 public class PostalCodeFragment extends SetupMultiPaneFragment {
     public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.PostalCodeFragment";
     public static final String KEY_POSTAL_CODE = "postal_code";

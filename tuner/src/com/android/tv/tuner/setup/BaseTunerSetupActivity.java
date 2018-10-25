@@ -22,7 +22,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,7 +29,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
@@ -39,7 +37,6 @@ import android.util.Log;
 import android.widget.Toast;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupActivity;
 import com.android.tv.common.ui.setup.SetupFragment;
@@ -100,14 +97,6 @@ public class BaseTunerSetupActivity extends SetupActivity {
         mTunerHalFactory =
                 new TunerHalFactory(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
         super.onCreate(savedInstanceState);
-        // TODO: check {@link shouldShowRequestPermissionRationale}.
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // No need to check the request result.
-            requestPermissions(
-                    new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-        }
         try {
             // Updating postal code takes time, therefore we called it here for "warm-up".
             mPreviousPostalCode = PostalCodeUtils.getLastPostalCode(this);
@@ -135,25 +124,6 @@ public class BaseTunerSetupActivity extends SetupActivity {
         if (mPendingShowInitialFragment) {
             showInitialFragment();
             mPendingShowInitialFragment = false;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && Experiments.CLOUD_EPG.get()) {
-                try {
-                    // Updating postal code takes time, therefore we should update postal code
-                    // right after the permission is granted, so that the subsequent operations,
-                    // especially EPG fetcher, could get the newly updated postal code.
-                    PostalCodeUtils.updatePostalCode(this);
-                } catch (Exception e) {
-                    // Do nothing
-                }
-            }
         }
     }
 
@@ -282,6 +252,13 @@ public class BaseTunerSetupActivity extends SetupActivity {
     /** Clears the currently used tuner HAL. */
     protected void clearTunerHal() {
         mTunerHalFactory.clear();
+    }
+
+    protected void showLocationFragment() {
+        SetupFragment fragment = new LocationFragment();
+        fragment.setShortDistance(
+                SetupFragment.FRAGMENT_ENTER_TRANSITION | SetupFragment.FRAGMENT_RETURN_TRANSITION);
+        showFragment(fragment, true);
     }
 
     protected void showPostalCodeFragment() {
