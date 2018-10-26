@@ -24,5 +24,11 @@ public final class CommonConstants {
     /** A constant for the key of the extra data for the app linking intent. */
     public static final String EXTRA_APP_LINK_CHANNEL_URI = "app_link_channel_uri";
 
+    /**
+     * Video is unavailable because
+     * the source is not physically connected, for example the HDMI cable is not connected.
+     */
+    public static final int VIDEO_UNAVAILABLE_REASON_NOT_CONNECTED = 5;
+
     private CommonConstants() {}
 }
