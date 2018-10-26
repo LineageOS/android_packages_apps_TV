@@ -253,15 +253,14 @@ public class EventDetector {
     /**
      * Creates a detector for ATSC TV channles and program information.
      *
-     * @param usbTunerInteface {@link TunerHal}
+     * @param usbTunerInterface {@link TunerHal}
      */
-    public EventDetector(ITunerHal usbTunerInteface) {
-        mTunerHal = usbTunerInteface;
+    public EventDetector(ITunerHal usbTunerInterface) {
+        mTunerHal = usbTunerInterface;
     }
 
     private void reset() {
         // TODO: Use TsParser.reset()
-        int deliverySystemType = mTunerHal.getDeliverySystemType();
         mTsParser =
                 new TsParser(
                         mTsOutputListener,
