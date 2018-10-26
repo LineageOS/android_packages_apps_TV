@@ -353,6 +353,7 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                         case TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN:
                         case TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING:
                         case TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL:
+                        case CommonConstants.VIDEO_UNAVAILABLE_REASON_NOT_CONNECTED:
                             mTracker.sendChannelVideoUnavailable(mCurrentChannel, reason);
                             break;
                         default:
@@ -1075,6 +1076,8 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                     return res.getString(R.string.tvview_msg_audio_only);
                 case TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL:
                     return res.getString(R.string.tvview_msg_weak_signal);
+                case CommonConstants.VIDEO_UNAVAILABLE_REASON_NOT_CONNECTED:
+                    return res.getString(R.string.msg_channel_unavailable_not_connected);
                 case VIDEO_UNAVAILABLE_REASON_NO_RESOURCE:
                     return getTuneConflictMessage();
                 default:
@@ -1091,7 +1094,9 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                 && (mScreenBlocked
                         || mBlockedContentRating != null
                         || mVideoUnavailableReason
-                                == TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN)) {
+                                == TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN
+                        || mVideoUnavailableReason
+                                == CommonConstants.VIDEO_UNAVAILABLE_REASON_NOT_CONNECTED)) {
             ((Activity) getContext()).finish();
             return true;
         }

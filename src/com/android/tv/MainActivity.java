@@ -71,6 +71,7 @@ import com.android.tv.analytics.SendConfigInfoRunnable;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.audiotvservice.AudioOnlyTvServiceUtil;
 import com.android.tv.common.BuildConfig;
+import com.android.tv.common.CommonConstants;
 import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.TvContentRatingCache;
@@ -2637,6 +2638,11 @@ public class MainActivity extends Activity
             case TvInputManager.VIDEO_UNAVAILABLE_REASON_AUDIO_ONLY:
             case TvInputManager.VIDEO_UNAVAILABLE_REASON_WEAK_SIGNAL:
                 return;
+            case CommonConstants.VIDEO_UNAVAILABLE_REASON_NOT_CONNECTED:
+                Toast.makeText(
+                        this, R.string.msg_channel_unavailable_not_connected, Toast.LENGTH_SHORT)
+                        .show();
+                break;
             case TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN:
             default:
                 Toast.makeText(this, R.string.msg_channel_unavailable_unknown, Toast.LENGTH_SHORT)
