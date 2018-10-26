@@ -284,7 +284,14 @@ public class BaseTunerSetupActivity extends SetupActivity {
     }
 
     protected void showPostalCodeFragment() {
+        showPostalCodeFragment(null);
+    }
+
+    protected void showPostalCodeFragment(Bundle args) {
         SetupFragment fragment = new PostalCodeFragment();
+        if (args != null) {
+            fragment.setArguments(args);
+        }
         fragment.setShortDistance(
                 SetupFragment.FRAGMENT_ENTER_TRANSITION | SetupFragment.FRAGMENT_RETURN_TRANSITION);
         showFragment(fragment, true);

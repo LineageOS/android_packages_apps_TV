@@ -46,7 +46,8 @@ public class LocationFragment extends SetupMultiPaneFragment {
     public static final String KEY_POSTAL_CODE = "key_postal_code";
 
     public static final int ACTION_ALLOW_PERMISSION = 1;
-    public static final int ACTION_GETTING_LOCATION = 2;
+    public static final int ENTER_ZIP_CODE = 2;
+    public static final int ACTION_GETTING_LOCATION = 3;
     public static final int GET_LOCATION_TIMEOUT_MS = 3000;
 
     @Override
@@ -104,6 +105,11 @@ public class LocationFragment extends SetupMultiPaneFragment {
                     new GuidedAction.Builder(getActivity())
                             .id(ACTION_ALLOW_PERMISSION)
                             .title(getString(R.string.location_choices_allow_permission))
+                            .build());
+            actions.add(
+                    new GuidedAction.Builder(getActivity())
+                            .id(ENTER_ZIP_CODE)
+                            .title(getString(R.string.location_choices_enter_zip_code))
                             .build());
             actions.add(
                     new GuidedAction.Builder(getActivity())
