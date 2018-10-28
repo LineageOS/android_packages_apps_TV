@@ -30,7 +30,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
@@ -39,7 +38,6 @@ import android.util.Log;
 import android.widget.Toast;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupActivity;
 import com.android.tv.common.ui.setup.SetupFragment;
@@ -100,14 +98,6 @@ public class BaseTunerSetupActivity extends SetupActivity {
         mTunerHalFactory =
                 new TunerHalFactory(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
         super.onCreate(savedInstanceState);
-        // TODO: check {@link shouldShowRequestPermissionRationale}.
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // No need to check the request result.
-            requestPermissions(
-                    new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-        }
         try {
             // Updating postal code takes time, therefore we called it here for "warm-up".
             mPreviousPostalCode = PostalCodeUtils.getLastPostalCode(this);
@@ -139,25 +129,6 @@ public class BaseTunerSetupActivity extends SetupActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && Experiments.CLOUD_EPG.get()) {
-                try {
-                    // Updating postal code takes time, therefore we should update postal code
-                    // right after the permission is granted, so that the subsequent operations,
-                    // especially EPG fetcher, could get the newly updated postal code.
-                    PostalCodeUtils.updatePostalCode(this);
-                } catch (Exception e) {
-                    // Do nothing
-                }
-            }
-        }
-    }
-
-    @Override
     protected Fragment onCreateInitialFragment() {
         if (mTunerType != null) {
             SetupFragment fragment = new WelcomeFragment();
@@ -185,10 +156,16 @@ public class BaseTunerSetupActivity extends SetupActivity {
                         break;
                     default:
                         String postalCode = PostalCodeUtils.getLastPostalCode(this);
-                        if (mNeedToShowPostalCodeFragment
-                                || (CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
+                        boolean needLocation =
+                                CommonFeatures.ENABLE_CLOUD_EPG_REGION.isEnabled(
                                                 getApplicationContext())
-                                        && TextUtils.isEmpty(postalCode))) {
+                                        && TextUtils.isEmpty(postalCode);
+                        if (needLocation
+                                && checkSelfPermission(
+                                                android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                            showLocationFragment();
+                        } else if (mNeedToShowPostalCodeFragment || needLocation) {
                             // We cannot get postal code automatically. Postal code input fragment
                             // should always be shown even if users have input some valid postal
                             // code in this activity before.
@@ -198,6 +175,21 @@ public class BaseTunerSetupActivity extends SetupActivity {
                             showConnectionTypeFragment();
                         }
                         break;
+                }
+                return true;
+            case LocationFragment.ACTION_CATEGORY:
+                switch (actionId) {
+                    case LocationFragment.ACTION_ALLOW_PERMISSION:
+                        String postalCode = params == null
+                                ? null : params.getString(LocationFragment.KEY_POSTAL_CODE);
+                        if (postalCode == null) {
+                            showPostalCodeFragment();
+                        } else {
+                            showConnectionTypeFragment();
+                        }
+                        break;
+                    default:
+                        showConnectionTypeFragment();
                 }
                 return true;
             case PostalCodeFragment.ACTION_CATEGORY:
@@ -284,8 +276,22 @@ public class BaseTunerSetupActivity extends SetupActivity {
         mTunerHalFactory.clear();
     }
 
+    protected void showLocationFragment() {
+        SetupFragment fragment = new LocationFragment();
+        fragment.setShortDistance(
+                SetupFragment.FRAGMENT_ENTER_TRANSITION | SetupFragment.FRAGMENT_RETURN_TRANSITION);
+        showFragment(fragment, true);
+    }
+
     protected void showPostalCodeFragment() {
+        showPostalCodeFragment(null);
+    }
+
+    protected void showPostalCodeFragment(Bundle args) {
         SetupFragment fragment = new PostalCodeFragment();
+        if (args != null) {
+            fragment.setArguments(args);
+        }
         fragment.setShortDistance(
                 SetupFragment.FRAGMENT_ENTER_TRANSITION | SetupFragment.FRAGMENT_RETURN_TRANSITION);
         showFragment(fragment, true);

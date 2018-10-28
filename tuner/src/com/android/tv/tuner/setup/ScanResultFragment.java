@@ -29,7 +29,7 @@ import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.api.ITunerHal;
 import java.util.List;
 
-/** A fragment for initial screen. */
+/** A fragment to show found channels. */
 public class ScanResultFragment extends SetupMultiPaneFragment {
     public static final String ACTION_CATEGORY = "com.android.tv.tuner.setup.ScanResultFragment";
 

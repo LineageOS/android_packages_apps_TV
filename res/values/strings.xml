@@ -493,6 +493,8 @@
     <string name="msg_all_channels_hidden">All source channels are hidden.\nSelect at least one channel to watch.</string>
     <!-- Message displayed when availability is changed by unknown reason. [CHAR LIMIT=NONE] -->
     <string name="msg_channel_unavailable_unknown">The video is unexpectedly unavailable</string>
+    <!-- Message displayed when a TV input (eg HDMI Cable) is not physically connected. [CHAR LIMIT=NONE] -->
+    <string name="msg_channel_unavailable_not_connected">No Signal. Please check your source connection.</string>
     <!-- Message to notify the different use of Back Button: Home Button(To exit) Back button
          (commands for external device)  [CHAR LIMIT=NONE] -->
     <string name="msg_back_key_guide">BACK key is for connected device. Press HOME button to exit.</string>
