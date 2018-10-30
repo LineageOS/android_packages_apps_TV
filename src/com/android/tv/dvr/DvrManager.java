@@ -863,7 +863,7 @@ public class DvrManager {
      * <p>Note that this should be called after the input was removed.
      */
     public void forgetStorage(String inputId) {
-        if (mDataManager.isInitialized()) {
+        if (mDataManager != null && mDataManager.isInitialized()) {
             mDataManager.forgetStorage(inputId);
         }
     }
