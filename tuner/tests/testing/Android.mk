@@ -11,7 +11,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     androidx.test.runner \
     guava \
     mockito-target \
-    platform-robolectric-3.6.2-prebuilt \
     truth-0-36-prebuilt-jar \
     ub-uiautomator \
 
