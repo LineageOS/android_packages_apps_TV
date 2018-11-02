@@ -29,7 +29,7 @@ import android.view.Surface;
 import android.view.View;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.compat.TisSessionCompat;
-import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.prefs.TunerPreferences;
 
 /** Provides a tuner TV input session. */
 public class TunerSessionExoV2 extends TisSessionCompat

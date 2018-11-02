@@ -24,8 +24,8 @@ import android.support.v17.leanback.widget.GuidedAction;
 import com.android.tv.common.ui.setup.SetupGuidedStepFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.tuner.R;
-import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.List;
 
 /** A fragment for initial screen. */

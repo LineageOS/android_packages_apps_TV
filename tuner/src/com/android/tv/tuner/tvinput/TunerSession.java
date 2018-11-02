@@ -29,11 +29,11 @@ import android.view.Surface;
 import android.view.View;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.compat.TisSessionCompat;
-import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.prefs.TunerPreferences;
 
 /**
- * Provides a tuner TV input session. Main tuner input functions are implemented in
- * {@link TunerSessionWorker}.
+ * Provides a tuner TV input session. Main tuner input functions are implemented in {@link
+ * TunerSessionWorker}.
  */
 public class TunerSession extends TisSessionCompat implements CommonPreferencesChangedListener {
 
@@ -46,7 +46,6 @@ public class TunerSession extends TisSessionCompat implements CommonPreferencesC
          * @param session The session that has been released.
          */
         void onReleased(TunerSession session);
-
     }
 
     private static final String TAG = "TunerSession";
@@ -63,8 +62,8 @@ public class TunerSession extends TisSessionCompat implements CommonPreferencesC
         super(context);
         mListener = eventListener;
         mTunerSessionOverlay = new TunerSessionOverlay(context);
-        mSessionWorker = new TunerSessionWorker(
-                context, channelDataManager, this, mTunerSessionOverlay);
+        mSessionWorker =
+                new TunerSessionWorker(context, channelDataManager, this, mTunerSessionOverlay);
         TunerPreferences.setCommonPreferencesChangedListener(this);
     }
 

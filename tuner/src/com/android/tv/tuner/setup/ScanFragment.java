@@ -39,7 +39,6 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.R;
-import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.data.PsipData;
@@ -47,6 +46,7 @@ import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
 
 
+import com.android.tv.tuner.prefs.TunerPreferences;
 import com.android.tv.tuner.source.FileTsStreamer;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsStreamer;
