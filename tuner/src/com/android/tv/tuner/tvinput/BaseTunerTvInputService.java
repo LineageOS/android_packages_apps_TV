@@ -23,8 +23,8 @@ import android.content.Context;
 import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.tuner.features.TunerFeatures;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -91,9 +91,9 @@ public class BaseTunerTvInputService extends TvInputService {
                 return null;
             }
             final Session session =
-                    TunerFeatures.EXO_PLAYER_V2_ONLY.isEnabled(this)
-                            ? new TunerSessionExoV2(this, mChannelDataManager, this::onReleased)
-                            : new TunerSession(this, mChannelDataManager, this::onReleased);
+                    HasTunerSessionFactory.cast(this)
+                            .getTunerSessionFactory()
+                            .create(this, mChannelDataManager, this::onReleased);
             mTunerSessions.add(session);
             session.setOverlayViewEnabled(true);
             return session;
