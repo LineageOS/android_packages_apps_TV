@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.tvinput.datamanager;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentUris;

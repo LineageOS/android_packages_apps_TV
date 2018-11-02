@@ -24,6 +24,7 @@ import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.tuner.features.TunerFeatures;
+import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;

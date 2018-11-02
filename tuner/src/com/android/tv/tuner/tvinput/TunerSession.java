@@ -30,6 +30,7 @@ import android.view.View;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.compat.TisSessionCompat;
 import com.android.tv.tuner.prefs.TunerPreferences;
+import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 
 /**
  * Provides a tuner TV input session. Main tuner input functions are implemented in {@link
