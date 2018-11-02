@@ -23,7 +23,7 @@ import android.content.Context;
 import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.tuner.TunerFeatures;
+import com.android.tv.tuner.features.TunerFeatures;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;

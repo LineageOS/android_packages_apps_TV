@@ -18,7 +18,7 @@ package com.android.tv.tuner.exoplayer2;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
-import com.android.tv.tuner.TunerFeatures;
+import com.android.tv.tuner.features.TunerFeatures;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.mediacodec.MediaCodecInfo;
