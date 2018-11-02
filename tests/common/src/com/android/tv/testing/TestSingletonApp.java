@@ -31,6 +31,7 @@ import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
+import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
@@ -47,6 +48,9 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
@@ -56,7 +60,7 @@ import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Test application for Live TV. */
-public class TestSingletonApp extends Application implements TvSingletons {
+public class TestSingletonApp extends Application implements TvSingletons, HasTunerSessionFactory {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();
@@ -72,6 +76,8 @@ public class TestSingletonApp extends Application implements TvSingletons {
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
+    private final TunerSessionFactoryImpl mTunerSessionFactory =
+            new TunerSessionFactoryImpl(new DefaultExoplayer2Flags());
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
@@ -259,5 +265,10 @@ public class TestSingletonApp extends Application implements TvSingletons {
     @Override
     public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
         return mConcurrentDvrPlaybackFlags;
+    }
+
+    @Override
+    public TunerSessionFactory getTunerSessionFactory() {
+        return mTunerSessionFactory;
     }
 }
