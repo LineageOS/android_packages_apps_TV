@@ -17,7 +17,7 @@
 package com.android.tv.tuner;
 
 import android.util.Log;
-import com.android.tv.tuner.data.nano.Channel;
+import com.android.tv.tuner.api.ScanChannel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,46 +28,6 @@ import java.util.List;
 /** Parses plain text formatted scan files, which contain the list of channels. */
 public class ChannelScanFileParser {
     private static final String TAG = "ChannelScanFileParser";
-
-    public static final class ScanChannel {
-        public final int type;
-        public final int frequency;
-        public final String modulation;
-        public final String filename;
-        /**
-         * Radio frequency (channel) number specified at
-         * https://en.wikipedia.org/wiki/North_American_television_frequencies This can be {@code
-         * null} for cases like cable signal.
-         */
-        public final Integer radioFrequencyNumber;
-
-        public static ScanChannel forTuner(
-                int frequency, String modulation, Integer radioFrequencyNumber) {
-            return new ScanChannel(
-                    Channel.TunerType.TYPE_TUNER,
-                    frequency,
-                    modulation,
-                    null,
-                    radioFrequencyNumber);
-        }
-
-        public static ScanChannel forFile(int frequency, String filename) {
-            return new ScanChannel(Channel.TunerType.TYPE_FILE, frequency, "file:", filename, null);
-        }
-
-        private ScanChannel(
-                int type,
-                int frequency,
-                String modulation,
-                String filename,
-                Integer radioFrequencyNumber) {
-            this.type = type;
-            this.frequency = frequency;
-            this.modulation = modulation;
-            this.filename = filename;
-            this.radioFrequencyNumber = radioFrequencyNumber;
-        }
-    }
 
     /**
      * Parses a given scan file and returns the list of {@link ScanChannel} objects.

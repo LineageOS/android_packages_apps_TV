@@ -41,6 +41,7 @@ import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.data.PsipData;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
@@ -254,7 +255,7 @@ public class ScanFragment extends SetupFragment {
         private final TsStreamer mFileTsStreamer;
         private final ConditionVariable mConditionStopped;
 
-        private final List<ChannelScanFileParser.ScanChannel> mScanChannelList = new ArrayList<>();
+        private final List<ScanChannel> mScanChannelList = new ArrayList<>();
         private boolean mIsCanceled;
         private boolean mIsFinished;
         private ProgressDialog mFinishingProgressDialog;
@@ -357,7 +358,7 @@ public class ScanFragment extends SetupFragment {
 
             long startMs = System.currentTimeMillis();
             int i = 1;
-            for (ChannelScanFileParser.ScanChannel scanChannel : mScanChannelList) {
+            for (ScanChannel scanChannel : mScanChannelList) {
                 int frequency = scanChannel.frequency;
                 String modulation = scanChannel.modulation;
                 Log.i(TAG, "Tuning to " + frequency + " " + modulation);
@@ -394,7 +395,7 @@ public class ScanFragment extends SetupFragment {
             if (DEBUG) Log.i(TAG, "Channel scan ended");
         }
 
-        private void addChannelsWithoutVct(ChannelScanFileParser.ScanChannel scanChannel) {
+        private void addChannelsWithoutVct(ScanChannel scanChannel) {
             if (scanChannel.radioFrequencyNumber == null
                     || !(mScanTsStreamer instanceof TunerTsStreamer)) {
                 return;
@@ -506,7 +507,7 @@ public class ScanFragment extends SetupFragment {
         }
 
         @Override
-        public boolean startStream(ChannelScanFileParser.ScanChannel channel) {
+        public boolean startStream(ScanChannel channel) {
             if (++mProgramNumber % 2 == 1) {
                 return true;
             }

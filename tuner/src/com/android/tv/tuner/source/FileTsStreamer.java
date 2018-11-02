@@ -21,7 +21,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.ChannelScanFileParser.ScanChannel;
+import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.features.TunerFeatures;
 import com.android.tv.tuner.ts.TsParser;
