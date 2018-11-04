@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.tvinput.datamanager;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentUris;
@@ -34,9 +34,9 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.util.PermissionUtils;
-import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.data.PsipData.EitItem;
 import com.android.tv.tuner.data.TunerChannel;
+import com.android.tv.tuner.prefs.TunerPreferences;
 import com.android.tv.tuner.util.ConvertUtils;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner;
+package com.android.tv.tuner.prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;

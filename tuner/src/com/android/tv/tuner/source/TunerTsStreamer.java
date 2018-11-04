@@ -20,11 +20,11 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.TunerHal;
-import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.data.TunerChannel;
+import com.android.tv.tuner.prefs.TunerPreferences;
 import com.android.tv.tuner.tvinput.EventDetector;
 import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import com.google.android.exoplayer.C;
@@ -199,7 +199,7 @@ public class TunerTsStreamer implements TsStreamer {
     }
 
     @Override
-    public boolean startStream(ChannelScanFileParser.ScanChannel channel) {
+    public boolean startStream(ScanChannel channel) {
         if (mTunerHal.tune(channel.frequency, channel.modulation, null)) {
             mEventDetector.startDetecting(
                     channel.frequency, channel.modulation, EventDetector.ALL_PROGRAM_NUMBERS);

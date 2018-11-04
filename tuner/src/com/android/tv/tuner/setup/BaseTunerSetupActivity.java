@@ -46,8 +46,8 @@ import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.common.util.PostalCodeUtils;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.TunerHal;
-import com.android.tv.tuner.TunerPreferences;
 import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
 
 /** The base setup activity class for tuner. */
@@ -180,8 +180,10 @@ public class BaseTunerSetupActivity extends SetupActivity {
             case LocationFragment.ACTION_CATEGORY:
                 switch (actionId) {
                     case LocationFragment.ACTION_ALLOW_PERMISSION:
-                        String postalCode = params == null
-                                ? null : params.getString(LocationFragment.KEY_POSTAL_CODE);
+                        String postalCode =
+                                params == null
+                                        ? null
+                                        : params.getString(LocationFragment.KEY_POSTAL_CODE);
                         if (postalCode == null) {
                             showPostalCodeFragment();
                         } else {

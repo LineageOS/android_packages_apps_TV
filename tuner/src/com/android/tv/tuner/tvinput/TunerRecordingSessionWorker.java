@@ -53,6 +53,7 @@ import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
 import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
+import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.google.android.exoplayer.C;
 import java.io.File;
 import java.io.IOException;

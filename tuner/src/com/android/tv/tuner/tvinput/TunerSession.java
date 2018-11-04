@@ -29,42 +29,34 @@ import android.view.Surface;
 import android.view.View;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.compat.TisSessionCompat;
-import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.prefs.TunerPreferences;
+import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.SessionReleasedCallback;
 
 /**
- * Provides a tuner TV input session. Main tuner input functions are implemented in
- * {@link TunerSessionWorker}.
+ * Provides a tuner TV input session. Main tuner input functions are implemented in {@link
+ * TunerSessionWorker}.
  */
 public class TunerSession extends TisSessionCompat implements CommonPreferencesChangedListener {
-
-    /** Listener for {@link TunerSession} events. */
-    public interface Listener {
-
-        /**
-         * Called when the given session is released.
-         *
-         * @param session The session that has been released.
-         */
-        void onReleased(TunerSession session);
-
-    }
 
     private static final String TAG = "TunerSession";
     private static final boolean DEBUG = false;
 
     private final TunerSessionOverlay mTunerSessionOverlay;
     private final TunerSessionWorker mSessionWorker;
-    private final Listener mListener;
+    private final SessionReleasedCallback mReleasedCallback;
     private boolean mPlayPaused;
     private long mTuneStartTimestamp;
 
     public TunerSession(
-            Context context, ChannelDataManager channelDataManager, Listener eventListener) {
+            Context context,
+            ChannelDataManager channelDataManager,
+            SessionReleasedCallback releasedCallback) {
         super(context);
-        mListener = eventListener;
+        mReleasedCallback = releasedCallback;
         mTunerSessionOverlay = new TunerSessionOverlay(context);
-        mSessionWorker = new TunerSessionWorker(
-                context, channelDataManager, this, mTunerSessionOverlay);
+        mSessionWorker =
+                new TunerSessionWorker(context, channelDataManager, this, mTunerSessionOverlay);
         TunerPreferences.setCommonPreferencesChangedListener(this);
     }
 
@@ -173,7 +165,7 @@ public class TunerSession extends TisSessionCompat implements CommonPreferencesC
         mSessionWorker.release();
         mTunerSessionOverlay.release();
         TunerPreferences.setCommonPreferencesChangedListener(null);
-        mListener.onReleased(this);
+        mReleasedCallback.onReleased(this);
     }
 
     @Override

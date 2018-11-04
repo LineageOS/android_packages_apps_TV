@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package com.android.tv.tuner;
+package com.android.tv.tuner.features;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;

@@ -23,6 +23,7 @@ import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
+import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 
 /** Processes DVR recordings, and deletes the previously recorded contents. */
 public class TunerRecordingSession extends TvInputService.RecordingSession {

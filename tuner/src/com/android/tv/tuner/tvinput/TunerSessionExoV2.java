@@ -29,36 +29,29 @@ import android.view.Surface;
 import android.view.View;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.compat.TisSessionCompat;
-import com.android.tv.tuner.TunerPreferences;
+import com.android.tv.tuner.prefs.TunerPreferences;
+import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.SessionReleasedCallback;
 
 /** Provides a tuner TV input session. */
 public class TunerSessionExoV2 extends TisSessionCompat
         implements CommonPreferencesChangedListener {
-
-    /** Listener for events. */
-    public interface Listener {
-
-        /**
-         * Called when the given session is released.
-         *
-         * @param session The session that has been released.
-         */
-        void onReleased(TunerSessionExoV2 session);
-    }
 
     private static final String TAG = "TunerSessionExoV2";
     private static final boolean DEBUG = false;
 
     private final TunerSessionOverlay mTunerSessionOverlay;
     private final TunerSessionWorkerExoV2 mSessionWorker;
-    private final Listener mListener;
+    private final SessionReleasedCallback mReleasedCallback;
     private boolean mPlayPaused;
     private long mTuneStartTimestamp;
 
     public TunerSessionExoV2(
-            Context context, ChannelDataManager channelDataManager, Listener eventListener) {
+            Context context,
+            ChannelDataManager channelDataManager,
+            SessionReleasedCallback releasedCallback) {
         super(context);
-        mListener = eventListener;
+        mReleasedCallback = releasedCallback;
         mTunerSessionOverlay = new TunerSessionOverlay(context);
         mSessionWorker =
                 new TunerSessionWorkerExoV2(
@@ -172,7 +165,7 @@ public class TunerSessionExoV2 extends TisSessionCompat
         mSessionWorker.release();
         mTunerSessionOverlay.release();
         TunerPreferences.setCommonPreferencesChangedListener(null);
-        mListener.onReleased(this);
+        mReleasedCallback.onReleased(this);
     }
 
     @Override
