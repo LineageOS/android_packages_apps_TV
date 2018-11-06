@@ -57,7 +57,7 @@ public class FileSourceEventDetector {
     private FileTsStreamer.StreamProvider mStreamProvider;
     private int mProgramNumber = ALL_PROGRAM_NUMBERS;
 
-    public FileSourceEventDetector(EventDetector.EventListener listener, boolean enableDvbSignal) {
+    public FileSourceEventDetector(EventListener listener, boolean enableDvbSignal) {
         mEventListener = listener;
         mEnableDvbSignal = enableDvbSignal;
     }

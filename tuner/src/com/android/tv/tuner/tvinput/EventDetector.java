@@ -23,6 +23,7 @@ import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.PsiData;
 import com.android.tv.tuner.data.PsipData;
+import com.android.tv.tuner.data.PsipData.EitItem;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Track.AtscAudioTrack;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
@@ -226,15 +227,7 @@ public class EventDetector {
             };
 
     /** Listener for detecting ATSC TV channels and receiving EPG data. */
-    public interface EventListener {
-
-        /**
-         * Fired when new information of an ATSC TV channel arrived.
-         *
-         * @param channel an ATSC TV channel
-         * @param channelArrivedAtFirstTime tells whether this channel arrived at first time
-         */
-        void onChannelDetected(TunerChannel channel, boolean channelArrivedAtFirstTime);
+    public interface EventListener extends com.android.tv.tuner.api.ChannelScanListener {
 
         /**
          * Fired when new program events of an ATSC TV channel arrived.
@@ -242,7 +235,7 @@ public class EventDetector {
          * @param channel an ATSC TV channel
          * @param items a list of EIT items that were received
          */
-        void onEventDetected(TunerChannel channel, List<PsipData.EitItem> items);
+        void onEventDetected(TunerChannel channel, List<EitItem> items);
 
         /**
          * Fired when information of all detectable ATSC TV channels in current frequency arrived.

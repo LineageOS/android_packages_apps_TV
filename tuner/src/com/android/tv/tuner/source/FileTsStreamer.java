@@ -25,7 +25,7 @@ import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.features.TunerFeatures;
 import com.android.tv.tuner.ts.TsParser;
-import com.android.tv.tuner.tvinput.EventDetector;
+import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import com.android.tv.tuner.tvinput.FileSourceEventDetector;
 import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.upstream.DataSpec;
@@ -125,7 +125,7 @@ public class FileTsStreamer implements TsStreamer {
      *
      * @param eventListener the listener for channel & program information
      */
-    public FileTsStreamer(EventDetector.EventListener eventListener, Context context) {
+    public FileTsStreamer(EventListener eventListener, Context context) {
         mEventDetector =
                 new FileSourceEventDetector(
                         eventListener, TunerFeatures.ENABLE_FILE_DVB.isEnabled(context));

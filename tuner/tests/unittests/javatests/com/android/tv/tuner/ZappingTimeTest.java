@@ -36,7 +36,7 @@ import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.exoplayer.buffer.TrickplayStorageManager;
 import com.android.tv.tuner.source.TsDataSourceManager;
-import com.android.tv.tuner.tvinput.EventDetector;
+import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import com.google.android.exoplayer.ExoPlayer;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -86,7 +86,7 @@ public class ZappingTimeTest extends InstrumentationTestCase {
     private AtomicLong mOnDrawnToSurfaceTimeMs = new AtomicLong(0);
     private MockMpegTsPlayerListener mMpegTsPlayerListener = new MockMpegTsPlayerListener();
     private MockPlaybackBufferListener mPlaybackBufferListener = new MockPlaybackBufferListener();
-    private MockEventListener mEventListener = new MockEventListener();
+    private MockChannelScanListener mEventListener = new MockChannelScanListener();
 
     @Override
     protected void setUp() throws Exception {
@@ -388,7 +388,7 @@ public class ZappingTimeTest extends InstrumentationTestCase {
         }
     }
 
-    private static class MockEventListener implements EventDetector.EventListener {
+    private static class MockChannelScanListener implements EventListener {
         @Override
         public void onChannelDetected(TunerChannel channel, boolean channelArrivedAtFirstTime) {
             if (DEBUG) {

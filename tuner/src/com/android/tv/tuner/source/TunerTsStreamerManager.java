@@ -22,7 +22,7 @@ import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
-import com.android.tv.tuner.tvinput.EventDetector;
+import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ class TunerTsStreamerManager {
     private final Object mCancelLock = new Object();
     private final StreamerFinder mStreamerFinder = new StreamerFinder();
     private final Map<Integer, TsStreamerCreator> mCreators = new HashMap<>();
-    private final Map<Integer, EventDetector.EventListener> mListeners = new HashMap<>();
+    private final Map<Integer, EventListener> mListeners = new HashMap<>();
     private final Map<TsDataSource, TunerTsStreamer> mSourceToStreamerMap = new HashMap<>();
     private final TunerHalManager mTunerHalManager = new TunerHalManager();
     private static TunerTsStreamerManager sInstance;
@@ -63,7 +63,7 @@ class TunerTsStreamerManager {
     synchronized TsDataSource createDataSource(
             Context context,
             TunerChannel channel,
-            EventDetector.EventListener listener,
+            EventListener listener,
             int sessionId,
             boolean reuse) {
         TsStreamerCreator creator;
@@ -110,7 +110,7 @@ class TunerTsStreamerManager {
             if (streamer == null) {
                 return;
             }
-            EventDetector.EventListener listener = mListeners.remove(sessionId);
+            EventListener listener = mListeners.remove(sessionId);
             streamer.unregisterListener(listener);
             TunerChannel channel = streamer.getChannel();
             SoftPreconditions.checkState(channel != null);
@@ -189,14 +189,13 @@ class TunerTsStreamerManager {
     private class TsStreamerCreator {
         private final Context mContext;
         private final TunerChannel mChannel;
-        private final EventDetector.EventListener mEventListener;
+        private final EventListener mEventListener;
         // mCancelled will be {@code true} if a new tune request for the same session
         // cancels create().
         private boolean mCancelled;
         private ITunerHal mTunerHal;
 
-        private TsStreamerCreator(
-                Context context, TunerChannel channel, EventDetector.EventListener listener) {
+        private TsStreamerCreator(Context context, TunerChannel channel, EventListener listener) {
             mContext = context;
             mChannel = channel;
             mEventListener = listener;
