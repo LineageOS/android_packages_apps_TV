@@ -99,7 +99,7 @@ public class ChannelDataManager implements Handler.Callback {
     private final Context mContext;
     private final String mInputId;
     private ProgramInfoListener mListener;
-    private ChannelScanListener mChannelScanListener;
+    private ChannelHandlingDoneListener mChannelHandlingDoneListener;
     private Handler mChannelScanHandler;
     private final HandlerThread mHandlerThread;
     private final Handler mHandler;
@@ -139,7 +139,8 @@ public class ChannelDataManager implements Handler.Callback {
         void onRescanNeeded();
     }
 
-    public interface ChannelScanListener {
+    /** Listens for all channel handling to be done. */
+    public interface ChannelHandlingDoneListener {
         /** Invoked when all pending channels have been handled. */
         void onChannelHandlingDone();
     }
@@ -184,8 +185,8 @@ public class ChannelDataManager implements Handler.Callback {
         mListener = listener;
     }
 
-    public void setChannelScanListener(ChannelScanListener listener, Handler handler) {
-        mChannelScanListener = listener;
+    public void setChannelScanListener(ChannelHandlingDoneListener listener, Handler handler) {
+        mChannelHandlingDoneListener = listener;
         mChannelScanHandler = handler;
     }
 
@@ -197,7 +198,7 @@ public class ChannelDataManager implements Handler.Callback {
     public void releaseSafely() {
         mHandlerThread.quitSafely();
         mListener = null;
-        mChannelScanListener = null;
+        mChannelHandlingDoneListener = null;
         mChannelScanHandler = null;
     }
 
@@ -304,10 +305,10 @@ public class ChannelDataManager implements Handler.Callback {
                 Log.e(TAG, "Error deleting obsolete channels", e);
             }
         }
-        if (mChannelScanListener != null && mChannelScanHandler != null) {
-            mChannelScanHandler.post(() -> mChannelScanListener.onChannelHandlingDone());
+        if (mChannelHandlingDoneListener != null && mChannelScanHandler != null) {
+            mChannelScanHandler.post(() -> mChannelHandlingDoneListener.onChannelHandlingDone());
         } else {
-            Log.e(TAG, "Error. mChannelScanListener is null.");
+            Log.e(TAG, "Error. mChannelHandlingDoneListener is null.");
         }
     }
 

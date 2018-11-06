@@ -246,7 +246,7 @@ public class ScanFragment extends SetupFragment {
     }
 
     private class ChannelScanTask extends AsyncTask<Void, Integer, Void>
-            implements EventDetector.EventListener, ChannelDataManager.ChannelScanListener {
+            implements EventDetector.EventListener, ChannelDataManager.ChannelHandlingDoneListener {
         private static final int MAX_PROGRESS = 100;
 
         private final Activity mActivity;
