@@ -15,9 +15,7 @@
  */
 package com.android.tv.common.compat.internal;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.ArrayMap;
 import android.util.Log;
 import com.android.tv.common.compat.api.PrivateCommandSender;
 import com.android.tv.common.compat.api.TvInputCallbackCompatEvents;
@@ -27,22 +25,20 @@ import com.android.tv.common.compat.internal.Commands.PrivateCommand;
 import com.android.tv.common.compat.internal.Events.NotifyDevToast;
 import com.android.tv.common.compat.internal.Events.NotifySignalStrength;
 import com.android.tv.common.compat.internal.Events.SessionEvent;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Sends {@link TvViewCompatCommands} to the {@link android.media.tv.TvInputService.Session} via
  * {@link PrivateCommandSender} and receives notification events from the session forwarding them to
  * {@link TvInputCallbackCompatEvents}
  */
-public final class TvViewCompatProcessor implements TvViewCompatCommands {
+public final class TvViewCompatProcessor extends ViewCompatProcessor<PrivateCommand, SessionEvent>
+        implements TvViewCompatCommands {
     private static final String TAG = "TvViewCompatProcessor";
 
-    private final ArrayMap<String, Integer> inputCompatVersionMap = new ArrayMap<>();
-    private final PrivateCommandSender mPrivateCommandSender;
     private TvInputCallbackCompatEvents mCallback;
 
-    public TvViewCompatProcessor(PrivateCommandSender mPrivateCommandSender) {
-        this.mPrivateCommandSender = mPrivateCommandSender;
+    public TvViewCompatProcessor(PrivateCommandSender commandSender) {
+        super(commandSender, SessionEvent.parser());
     }
 
     @Override
@@ -60,58 +56,12 @@ public final class TvViewCompatProcessor implements TvViewCompatCommands {
         return builder;
     }
 
-    private final void sendCompatCommand(Commands.PrivateCommand privateCommand) {
-        try {
-            Bundle data = new Bundle();
-            data.putByteArray(Constants.ACTION_COMPAT_ON, privateCommand.toByteArray());
-            mPrivateCommandSender.sendAppPrivateCommand(Constants.ACTION_COMPAT_ON, data);
-        } catch (Exception e) {
-            Log.w(TAG, "Error sending compat action " + privateCommand.getCommandCase(), e);
-        }
-    }
-
-    public boolean handleEvent(String inputId, String eventType, Bundle eventArgs) {
-        switch (eventType) {
-            case Constants.EVENT_GET_VERSION:
-                int version = eventArgs.getInt(Constants.EVENT_GET_VERSION, 0);
-                inputCompatVersionMap.put(inputId, version);
-                return true;
-            case Constants.EVENT_COMPAT_NOTIFY:
-                try {
-                    Events.SessionEvent sessionEvent =
-                            TvViewCompatProcessor.sessionEventFromBundle(eventArgs);
-                    if (sessionEvent != null) {
-                        handleSessionEvent(inputId, sessionEvent);
-                    } else {
-                        String errorMessage =
-                                eventArgs.getString(Constants.EVENT_COMPAT_NOTIFY_ERROR);
-                        Log.w(TAG, "Error sent in compat notify  " + errorMessage);
-                    }
-
-                } catch (InvalidProtocolBufferException e) {
-                    Log.w(TAG, "Error parsing in compat notify for  " + inputId);
-                }
-
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public static SessionEvent sessionEventFromBundle(Bundle eventArgs)
-            throws InvalidProtocolBufferException {
-
-        byte[] protoBytes = eventArgs.getByteArray(Constants.EVENT_COMPAT_NOTIFY);
-        return protoBytes == null || protoBytes.length == 0
-                ? null
-                : Events.SessionEvent.parseFrom(protoBytes);
-    }
-
     public void onDevToast(String inputId, String message) {}
 
     public void onSignalStrength(String inputId, int value) {}
 
-    private void handleSessionEvent(String inputId, Events.SessionEvent sessionEvent) {
+    @Override
+    protected final void handleSessionEvent(String inputId, Events.SessionEvent sessionEvent) {
         switch (sessionEvent.getEventCase()) {
             case NOTIFY_DEV_MESSAGE:
                 handle(inputId, sessionEvent.getNotifyDevMessage());
