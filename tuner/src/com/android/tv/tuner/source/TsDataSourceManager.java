@@ -22,7 +22,7 @@ import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
-import com.android.tv.tuner.tvinput.EventDetector;
+import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,7 +74,7 @@ public class TsDataSourceManager {
      * @return {@link TsDataSource} which will provide the specified channel stream
      */
     public TsDataSource createDataSource(
-            Context context, TunerChannel channel, EventDetector.EventListener eventListener) {
+            Context context, TunerChannel channel, EventListener eventListener) {
         if (channel.getType() == Channel.TunerType.TYPE_FILE) {
             // MPEG2 TS captured stream file recording is not supported.
             if (mIsRecording) {

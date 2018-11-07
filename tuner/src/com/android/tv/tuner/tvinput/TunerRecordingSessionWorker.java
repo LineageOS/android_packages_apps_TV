@@ -53,6 +53,7 @@ import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
 import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
+import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.google.android.exoplayer.C;
 import java.io.File;
@@ -72,7 +73,7 @@ import java.util.concurrent.TimeUnit;
 /** Implements a DVR feature. */
 public class TunerRecordingSessionWorker
         implements PlaybackBufferListener,
-                EventDetector.EventListener,
+                EventListener,
                 SampleExtractor.OnCompletionListener,
                 Handler.Callback {
     private static final String TAG = "TunerRecordingSessionW";
