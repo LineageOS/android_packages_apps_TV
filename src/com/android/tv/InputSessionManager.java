@@ -20,8 +20,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.tv.TvContentRating;
 import android.media.tv.TvInputInfo;
-import android.media.tv.TvRecordingClient;
-import android.media.tv.TvRecordingClient.RecordingCallback;
 import android.media.tv.TvTrackInfo;
 import android.media.tv.TvView;
 import android.net.Uri;
@@ -35,6 +33,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
+import com.android.tv.common.compat.TvRecordingClientCompat;
+import com.android.tv.common.compat.TvRecordingClientCompat.RecordingCallbackCompat;
 import com.android.tv.common.compat.TvViewCompat;
 import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.data.api.Channel;
@@ -90,7 +90,8 @@ public class InputSessionManager {
     @MainThread
     @NonNull
     public TvViewSession createTvViewSession(
-            TvViewCompat tvView, TunableTvViewPlayingApi tunableTvView,
+            TvViewCompat tvView,
+            TunableTvViewPlayingApi tunableTvView,
             TvInputCallbackCompat callback) {
         TvViewSession session = new TvViewSession(tvView, tunableTvView, callback);
         mTvViewSessions.add(session);
@@ -111,7 +112,7 @@ public class InputSessionManager {
     public RecordingSession createRecordingSession(
             String inputId,
             String tag,
-            RecordingCallback callback,
+            RecordingCallbackCompat callback,
             Handler handler,
             long endTimeMs) {
         RecordingSession session = new RecordingSession(inputId, tag, callback, handler, endTimeMs);
@@ -253,7 +254,9 @@ public class InputSessionManager {
         private boolean mTuned;
         private boolean mNeedToBeRetuned;
 
-        TvViewSession(TvViewCompat tvView, TunableTvViewPlayingApi tunableTvView,
+        TvViewSession(
+                TvViewCompat tvView,
+                TunableTvViewPlayingApi tunableTvView,
                 TvInputCallbackCompat callback) {
             mTvView = tvView;
             mTunableTvView = tunableTvView;
@@ -401,22 +404,22 @@ public class InputSessionManager {
     public class RecordingSession {
         private final String mInputId;
         private Uri mChannelUri;
-        private final RecordingCallback mCallback;
+        private final RecordingCallbackCompat mCallback;
         private final Handler mHandler;
         private volatile long mEndTimeMs;
-        private TvRecordingClient mClient;
+        private TvRecordingClientCompat mClient;
         private boolean mTuned;
 
         RecordingSession(
                 String inputId,
                 String tag,
-                RecordingCallback callback,
+                RecordingCallbackCompat callback,
                 Handler handler,
                 long endTimeMs) {
             mInputId = inputId;
             mCallback = callback;
             mHandler = handler;
-            mClient = new TvRecordingClient(mContext, tag, callback, handler);
+            mClient = new TvRecordingClientCompat(mContext, tag, callback, handler);
             mEndTimeMs = endTimeMs;
         }
 

@@ -20,7 +20,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputManager;
-import android.media.tv.TvRecordingClient.RecordingCallback;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -36,6 +35,7 @@ import com.android.tv.InputSessionManager.RecordingSession;
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.compat.TvRecordingClientCompat.RecordingCallbackCompat;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.api.Channel;
@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  */
 @WorkerThread
 @TargetApi(Build.VERSION_CODES.N)
-public class RecordingTask extends RecordingCallback
+public class RecordingTask extends RecordingCallbackCompat
         implements Handler.Callback, DvrManager.Listener {
     private static final String TAG = "RecordingTask";
     private static final boolean DEBUG = false;
