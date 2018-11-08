@@ -124,7 +124,10 @@
                 android:resource="@xml/tv_content_rating_systems" />
         </receiver>
 
-        <activity android:name="com.android.tv.TvActivity" >
+        <activity
+            android:name="com.android.tv.TvActivity"
+            android:launchMode="singleTask"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
