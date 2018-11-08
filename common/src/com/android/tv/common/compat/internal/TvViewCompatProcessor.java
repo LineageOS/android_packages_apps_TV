@@ -50,10 +50,8 @@ public final class TvViewCompatProcessor extends ViewCompatProcessor<PrivateComm
     }
 
     @NonNull
-    public PrivateCommand.Builder createPrivateCommandCommand() {
-        PrivateCommand.Builder builder =
-                Commands.PrivateCommand.newBuilder().setCompatVersion(Constants.TIF_COMPAT_VERSION);
-        return builder;
+    private PrivateCommand.Builder createPrivateCommandCommand() {
+        return PrivateCommand.newBuilder().setCompatVersion(Constants.TIF_COMPAT_VERSION);
     }
 
     public void onDevToast(String inputId, String message) {}

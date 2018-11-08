@@ -49,7 +49,7 @@ abstract class ViewCompatProcessor<
                 : mEventParser.parseFrom(protoBytes);
     }
 
-    protected final void sendCompatCommand(C privateCommand) {
+    final void sendCompatCommand(C privateCommand) {
         try {
             Bundle data = new Bundle();
             data.putByteArray(Constants.ACTION_COMPAT_ON, privateCommand.toByteArray());

@@ -36,7 +36,6 @@ import com.android.tv.common.compat.internal.RecordingClientCompatProcessor;
 @RequiresApi(api = VERSION_CODES.N)
 public class TvRecordingClientCompat extends TvRecordingClient
         implements TvRecordingClientCompatCommands, PrivateCommandSender {
-    private static final String TAG = "TvRecordingClientCompat";
 
     private final RecordingClientCompatProcessor mProcessor;
 

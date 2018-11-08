@@ -34,7 +34,6 @@ import com.android.tv.common.compat.internal.TifSessionCompatProcessor;
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public abstract class TisSessionCompat extends Session
         implements SessionEventNotifier, SessionCompatCommands, SessionCompatEvents {
-    private static final String TAG = "TisSessionCompat";
 
     private final TifSessionCompatProcessor mTifCompatProcessor;
 
@@ -61,16 +60,15 @@ public abstract class TisSessionCompat extends Session
     /**
      * Notify the application with current signal strength.
      *
-     * <p>At each {MainActivity#tune(boolean)}, the signal strength is implicitly reset to
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}.  If a TV input supports reporting
-     * signal strength, it should set the signal strength to
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN} in
+     * <p>At each {MainActivity#tune(boolean)}, the signal strength is implicitly reset to {@link
+     * TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}. If a TV input supports reporting signal
+     * strength, it should set the signal strength to {@link
+     * TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN} in
      * {TunerSessionWorker#prepareTune(TunerChannel, String)}, until a valid strength is available.
      *
-     * @param value The current signal strength. Valid values are
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED},
-     * {@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN},
-     * and 0 - 100 inclusive.
+     * @param value The current signal strength. Valid values are {@link
+     *     TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}, {@link
+     *     TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}, and 0 - 100 inclusive.
      */
     @Override
     public void notifySignalStrength(int value) {

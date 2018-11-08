@@ -29,7 +29,7 @@ import com.google.protobuf.Parser;
 abstract class SessionCompatProcessor<
         C extends GeneratedMessageLite<C, ?>, E extends GeneratedMessageLite<E, ?>> {
     private static final String TAG = "SessionCompatProcessor";
-    protected final SessionEventNotifier mSessionEventNotifier;
+    private final SessionEventNotifier mSessionEventNotifier;
     private final Parser<C> mCommandParser;
 
     SessionCompatProcessor(SessionEventNotifier sessionEventNotifier, Parser<C> commandParser) {

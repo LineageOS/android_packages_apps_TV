@@ -36,7 +36,6 @@ public abstract class RecordingSessionCompat extends RecordingSession
         implements SessionEventNotifier,
                 RecordingSessionCompatCommands,
                 RecordingSessionCompatEvents {
-    private static final String TAG = "TisSessionCompat";
 
     private final RecordingSessionCompatProcessor mProcessor;
 

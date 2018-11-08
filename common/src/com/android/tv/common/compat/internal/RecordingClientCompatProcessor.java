@@ -52,10 +52,8 @@ public final class RecordingClientCompatProcessor
         sendCompatCommand(privateCommand);
     }
 
-    public PrivateCommand.Builder createPrivateCommandCommand() {
-        PrivateCommand.Builder builder =
-                PrivateCommand.newBuilder().setCompatVersion(Constants.TIF_COMPAT_VERSION);
-        return builder;
+    private PrivateCommand.Builder createPrivateCommandCommand() {
+        return PrivateCommand.newBuilder().setCompatVersion(Constants.TIF_COMPAT_VERSION);
     }
 
     @Override
