@@ -64,6 +64,10 @@ public final class RecordingClientCompatProcessor
             case NOTIFY_DEV_MESSAGE:
                 handle(inputId, sessionEvent.getNotifyDevMessage());
                 break;
+            case RECORDING_STARTED:
+                handle(inputId, sessionEvent.getRecordingStarted());
+                break;
+
             case EVENT_NOT_SET:
                 Log.w(TAG, "Error event not set compat notify  ");
         }
@@ -72,6 +76,12 @@ public final class RecordingClientCompatProcessor
     private void handle(String inputId, NotifyDevToast devToast) {
         if (devToast != null && mCallback != null) {
             mCallback.onDevToast(inputId, devToast.getMessage());
+        }
+    }
+
+    private void handle(String inputId, RecordingEvents.RecordingStarted recStart) {
+        if (recStart != null && mCallback != null) {
+            mCallback.onRecordingStarted(inputId, recStart.getUri());
         }
     }
 }

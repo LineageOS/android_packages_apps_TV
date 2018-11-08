@@ -19,4 +19,6 @@ package com.android.tv.common.compat.api;
 public interface RecordingSessionCompatEvents {
 
     void notifyDevToast(String message);
+
+    void notifyRecordingStarted(String value);
 }

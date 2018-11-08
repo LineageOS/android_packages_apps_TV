@@ -31,7 +31,7 @@ import com.android.tv.common.compat.internal.RecordingSessionCompatProcessor;
  *
  * <p>Extends {@code RecordingSession} in a backwards compatible way.
  */
-@RequiresApi(api = VERSION_CODES.LOLLIPOP)
+@RequiresApi(api = VERSION_CODES.N)
 public abstract class RecordingSessionCompat extends RecordingSession
         implements SessionEventNotifier,
                 RecordingSessionCompatCommands,
@@ -60,5 +60,11 @@ public abstract class RecordingSessionCompat extends RecordingSession
     @Override
     public void notifyDevToast(String message) {
         mProcessor.notifyDevToast(message);
+    }
+
+    /** Notify the client Recording started. */
+    @Override
+    public void notifyRecordingStarted(String uri) {
+        mProcessor.notifyRecordingStarted(uri);
     }
 }

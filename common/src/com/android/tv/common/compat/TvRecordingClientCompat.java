@@ -92,5 +92,9 @@ public class TvRecordingClientCompat extends TvRecordingClient
         /** Display a message as a toast on dev builds only. */
         @Override
         public void onDevToast(String inputId, String message) {}
+
+        /** Recording started. */
+        @Override
+        public void onRecordingStarted(String inputId, String recUri) {}
     }
 }

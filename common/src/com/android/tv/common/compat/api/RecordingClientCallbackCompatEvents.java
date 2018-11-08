@@ -22,4 +22,6 @@ package com.android.tv.common.compat.api;
 public interface RecordingClientCallbackCompatEvents {
     /** Display a message in the application as a toast on dev builds only */
     void onDevToast(String inputId, String message);
+
+    void onRecordingStarted(String inputId, String recUri);
 }

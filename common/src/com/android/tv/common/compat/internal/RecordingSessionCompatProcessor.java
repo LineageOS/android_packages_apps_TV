@@ -22,6 +22,7 @@ import com.android.tv.common.compat.api.SessionEventNotifier;
 import com.android.tv.common.compat.internal.RecordingCommands.PrivateRecordingCommand;
 import com.android.tv.common.compat.internal.RecordingEvents.NotifyDevToast;
 import com.android.tv.common.compat.internal.RecordingEvents.RecordingSessionEvent;
+import com.android.tv.common.compat.internal.RecordingEvents.RecordingStarted;
 
 /**
  * Sends {@link RecordingSessionCompatEvents} to the TV App via {@link SessionEventNotifier} and
@@ -31,7 +32,7 @@ public final class RecordingSessionCompatProcessor
         extends SessionCompatProcessor<PrivateRecordingCommand, RecordingSessionEvent>
         implements RecordingSessionCompatEvents {
 
-    private static final String TAG = "RecordingSessionCompatProcessor";
+    private static final String TAG = "RecordingSessionCompatProc";
 
     private final RecordingSessionCompatCommands mRecordingSessionOnCompat;
 
@@ -59,6 +60,14 @@ public final class RecordingSessionCompatProcessor
         NotifyDevToast devMessage = NotifyDevToast.newBuilder().setMessage(message).build();
         RecordingSessionEvent sessionEvent =
                 createSessionEvent().setNotifyDevMessage(devMessage).build();
+        notifyCompat(sessionEvent);
+    }
+
+    @Override
+    public void notifyRecordingStarted(String uri) {
+        RecordingStarted event = RecordingStarted.newBuilder().setUri(uri).build();
+        RecordingSessionEvent sessionEvent =
+                createSessionEvent().setRecordingStarted(event).build();
         notifyCompat(sessionEvent);
     }
 

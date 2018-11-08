@@ -24,16 +24,26 @@ option java_outer_classname = "RecordingEvents";
 option java_package = "com.android.tv.common.compat.internal";
 
 // Wraps messages for sending from a session as an Event.
+// RecordingSessionCompat will have a notify{EventMessageName} for each event
+// TvRecordingClientCompat will have a on{EventMessageName} for each event
+
 message RecordingSessionEvent {
   uint32 compat_version = 1;
 
   oneof event {
     NotifyDevToast notify_dev_message = 2;
+    RecordingStarted recording_started = 3;
   }
 }
 
 // Display a message as a toast on dev builds only
 message NotifyDevToast {
   string message = 1;
+}
+
+// Recording started.
+message RecordingStarted {
+  // Recording URI.
+  string uri = 1;
 }
 
