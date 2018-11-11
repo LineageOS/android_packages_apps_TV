@@ -35,7 +35,6 @@ import com.android.tv.common.compat.internal.TvViewCompatProcessor;
  */
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TvViewCompat extends TvView implements TvViewCompatCommands, PrivateCommandSender {
-    private static final String TAG = "TvViewCompat";
 
     private final TvViewCompatProcessor mTvViewCompatProcessor;
 
@@ -99,12 +98,12 @@ public class TvViewCompat extends TvView implements TvViewCompatCommands, Privat
          *
          * @param inputId The ID of the TV input bound to this view.
          * @param value The current signal strength. Should be one of the followings.
-         * <ul>
-         * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}
-         * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_ERROR}
-         * <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}
-         * <li>{int [0, 100]}
-         * </ul>
+         *     <ul>
+         *       <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_NOT_USED}
+         *       <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_ERROR}
+         *       <li>{@link TvInputConstantCompat#SIGNAL_STRENGTH_UNKNOWN}
+         *       <li>{int [0, 100]}
+         *     </ul>
          */
         @Override
         public void onSignalStrength(String inputId, int value) {}

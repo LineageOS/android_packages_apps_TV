@@ -17,16 +17,16 @@
 package com.android.tv.tuner.tvinput;
 
 import android.content.Context;
-import android.media.tv.TvInputService;
 import android.net.Uri;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
+import com.android.tv.common.compat.RecordingSessionCompat;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 
 /** Processes DVR recordings, and deletes the previously recorded contents. */
-public class TunerRecordingSession extends TvInputService.RecordingSession {
+public class TunerRecordingSession extends RecordingSessionCompat {
     private static final String TAG = "TunerRecordingSession";
     private static final boolean DEBUG = false;
 

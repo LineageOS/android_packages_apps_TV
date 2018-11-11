@@ -15,58 +15,57 @@
  */
 package com.android.tv.common.compat.internal;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.tv.common.compat.api.PrivateCommandSender;
-import com.android.tv.common.compat.api.TvInputCallbackCompatEvents;
+import com.android.tv.common.compat.api.RecordingClientCallbackCompatEvents;
 import com.android.tv.common.compat.api.TvViewCompatCommands;
 import com.android.tv.common.compat.internal.Commands.OnDevMessage;
 import com.android.tv.common.compat.internal.Commands.PrivateCommand;
-import com.android.tv.common.compat.internal.Events.NotifyDevToast;
-import com.android.tv.common.compat.internal.Events.NotifySignalStrength;
-import com.android.tv.common.compat.internal.Events.SessionEvent;
+import com.android.tv.common.compat.internal.RecordingEvents.NotifyDevToast;
+import com.android.tv.common.compat.internal.RecordingEvents.RecordingSessionEvent;
 
 /**
- * Sends {@link TvViewCompatCommands} to the {@link android.media.tv.TvInputService.Session} via
- * {@link PrivateCommandSender} and receives notification events from the session forwarding them to
- * {@link TvInputCallbackCompatEvents}
+ * Sends {@link RecordingCommands} to the {@link android.media.tv.TvInputService.RecordingSession}
+ * via {@link PrivateCommandSender} and receives notification events from the session forwarding
+ * them to {@link RecordingClientCallbackCompatEvents}
  */
-public final class TvViewCompatProcessor extends ViewCompatProcessor<PrivateCommand, SessionEvent>
+public final class RecordingClientCompatProcessor
+        extends ViewCompatProcessor<PrivateCommand, RecordingSessionEvent>
         implements TvViewCompatCommands {
-    private static final String TAG = "TvViewCompatProcessor";
+    private static final String TAG = "RecordingClientCompatProcessor";
 
-    private TvInputCallbackCompatEvents mCallback;
+    @Nullable private final RecordingClientCallbackCompatEvents mCallback;
 
-    public TvViewCompatProcessor(PrivateCommandSender commandSender) {
-        super(commandSender, SessionEvent.parser());
+    public RecordingClientCompatProcessor(
+            PrivateCommandSender commandSender,
+            @Nullable RecordingClientCallbackCompatEvents callback) {
+        super(commandSender, RecordingSessionEvent.parser());
+        mCallback = callback;
     }
 
     @Override
     public void devMessage(String message) {
-        OnDevMessage devMessage = Commands.OnDevMessage.newBuilder().setMessage(message).build();
-        Commands.PrivateCommand privateCommand =
+        OnDevMessage devMessage = OnDevMessage.newBuilder().setMessage(message).build();
+        PrivateCommand privateCommand =
                 createPrivateCommandCommand().setOnDevMessage(devMessage).build();
         sendCompatCommand(privateCommand);
     }
 
-    @NonNull
     private PrivateCommand.Builder createPrivateCommandCommand() {
         return PrivateCommand.newBuilder().setCompatVersion(Constants.TIF_COMPAT_VERSION);
     }
 
-    public void onDevToast(String inputId, String message) {}
-
-    public void onSignalStrength(String inputId, int value) {}
-
     @Override
-    protected final void handleSessionEvent(String inputId, Events.SessionEvent sessionEvent) {
+    protected final void handleSessionEvent(String inputId, RecordingSessionEvent sessionEvent) {
         switch (sessionEvent.getEventCase()) {
             case NOTIFY_DEV_MESSAGE:
                 handle(inputId, sessionEvent.getNotifyDevMessage());
                 break;
-            case NOTIFY_SIGNAL_STRENGTH:
-                handle(inputId, sessionEvent.getNotifySignalStrength());
+            case RECORDING_STARTED:
+                handle(inputId, sessionEvent.getRecordingStarted());
                 break;
+
             case EVENT_NOT_SET:
                 Log.w(TAG, "Error event not set compat notify  ");
         }
@@ -78,13 +77,9 @@ public final class TvViewCompatProcessor extends ViewCompatProcessor<PrivateComm
         }
     }
 
-    private void handle(String inputId, NotifySignalStrength signalStrength) {
-        if (signalStrength != null && mCallback != null) {
-            mCallback.onSignalStrength(inputId, signalStrength.getSignalStrength());
+    private void handle(String inputId, RecordingEvents.RecordingStarted recStart) {
+        if (recStart != null && mCallback != null) {
+            mCallback.onRecordingStarted(inputId, recStart.getUri());
         }
-    }
-
-    public void setCallback(TvInputCallbackCompatEvents callback) {
-        this.mCallback = callback;
     }
 }
