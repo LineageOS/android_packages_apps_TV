@@ -1592,7 +1592,13 @@ public class SectionParser {
                 return null;
             }
             String language = new String(data, pos, 3);
-            int audioType = data[pos + 3] & 0xff;
+            int audioType;
+            try {
+                audioType = AtscAudioTrack.checkAudioTypeOrThrow(data[pos + 3] & 0xff);
+            } catch (IllegalArgumentException e) {
+                Log.d(TAG, "Unknown audio type" + (data[pos + 3] & 0xff), e);
+                audioType = AtscAudioTrack.AudioType.AUDIOTYPE_UNDEFINED;
+            }
             AtscAudioTrack audioTrack = new AtscAudioTrack();
             audioTrack.language = language;
             audioTrack.audioType = audioType;
