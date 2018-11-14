@@ -390,15 +390,16 @@ public abstract class RecordedProgram extends BaseProgram {
         if (!TextUtils.isEmpty(getEpisodeNumber())) {
             if (TextUtils.equals(getSeasonNumber(), "0")) {
                 // Do not show "S0: ".
-                return String.format(
-                        context.getResources()
-                                .getString(R.string.display_episode_number_format_no_season_number),
-                        getEpisodeNumber());
+                return context.getResources()
+                        .getString(
+                                R.string.display_episode_number_format_no_season_number,
+                                getEpisodeNumber());
             } else {
-                return String.format(
-                        context.getResources().getString(R.string.display_episode_number_format),
-                        getSeasonNumber(),
-                        getEpisodeNumber());
+                return context.getResources()
+                        .getString(
+                                R.string.display_episode_number_format,
+                                getSeasonNumber(),
+                                getEpisodeNumber());
             }
         }
         return null;
