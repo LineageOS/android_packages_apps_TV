@@ -48,7 +48,6 @@ public class RecordedProgram extends BaseProgram {
     public static final int ID_NOT_SET = -1;
 
     public static final String[] PROJECTION = {
-        // These are in exactly the order listed in RecordedPrograms
         RecordedPrograms._ID,
         RecordedPrograms.COLUMN_PACKAGE_NAME,
         RecordedPrograms.COLUMN_INPUT_ID,
@@ -75,10 +74,6 @@ public class RecordedProgram extends BaseProgram {
         RecordedPrograms.COLUMN_RECORDING_DATA_BYTES,
         RecordedPrograms.COLUMN_RECORDING_DURATION_MILLIS,
         RecordedPrograms.COLUMN_RECORDING_EXPIRE_TIME_UTC_MILLIS,
-        RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG1,
-        RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG2,
-        RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG3,
-        RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG4,
         RecordedPrograms.COLUMN_VERSION_NUMBER,
         RecordedPrograms.COLUMN_INTERNAL_PROVIDER_DATA,
     };
@@ -115,10 +110,6 @@ public class RecordedProgram extends BaseProgram {
                         .setDataBytes(cursor.getLong(index++))
                         .setDurationMillis(cursor.getLong(index++))
                         .setExpireTimeUtcMillis(cursor.getLong(index++))
-                        .setInternalProviderFlag1(cursor.getInt(index++))
-                        .setInternalProviderFlag2(cursor.getInt(index++))
-                        .setInternalProviderFlag3(cursor.getInt(index++))
-                        .setInternalProviderFlag4(cursor.getInt(index++))
                         .setVersionNumber(cursor.getInt(index++));
         if (CommonUtils.isInBundledPackageSet(builder.mPackageName)) {
             InternalDataUtils.deserializeInternalProviderData(cursor.getBlob(index), builder);
@@ -185,18 +176,6 @@ public class RecordedProgram extends BaseProgram {
         values.put(
                 RecordedPrograms.COLUMN_INTERNAL_PROVIDER_DATA,
                 InternalDataUtils.serializeInternalProviderData(recordedProgram));
-        values.put(
-                RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG1,
-                recordedProgram.mInternalProviderFlag1);
-        values.put(
-                RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG2,
-                recordedProgram.mInternalProviderFlag2);
-        values.put(
-                RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG3,
-                recordedProgram.mInternalProviderFlag3);
-        values.put(
-                RecordedPrograms.COLUMN_INTERNAL_PROVIDER_FLAG4,
-                recordedProgram.mInternalProviderFlag4);
         values.put(RecordedPrograms.COLUMN_VERSION_NUMBER, recordedProgram.mVersionNumber);
         if (TvProviderUtils.checkSeriesIdColumn(context, RecordedPrograms.CONTENT_URI)) {
             values.put(COLUMN_SERIES_ID, recordedProgram.getSeriesId());
@@ -232,10 +211,6 @@ public class RecordedProgram extends BaseProgram {
         private long mDataBytes;
         private long mDurationMillis;
         private long mExpireTimeUtcMillis;
-        private int mInternalProviderFlag1;
-        private int mInternalProviderFlag2;
-        private int mInternalProviderFlag3;
-        private int mInternalProviderFlag4;
         private int mVersionNumber;
 
         public Builder setId(long id) {
@@ -401,26 +376,6 @@ public class RecordedProgram extends BaseProgram {
             return this;
         }
 
-        public Builder setInternalProviderFlag1(int internalProviderFlag1) {
-            mInternalProviderFlag1 = internalProviderFlag1;
-            return this;
-        }
-
-        public Builder setInternalProviderFlag2(int internalProviderFlag2) {
-            mInternalProviderFlag2 = internalProviderFlag2;
-            return this;
-        }
-
-        public Builder setInternalProviderFlag3(int internalProviderFlag3) {
-            mInternalProviderFlag3 = internalProviderFlag3;
-            return this;
-        }
-
-        public Builder setInternalProviderFlag4(int internalProviderFlag4) {
-            mInternalProviderFlag4 = internalProviderFlag4;
-            return this;
-        }
-
         public Builder setVersionNumber(int versionNumber) {
             mVersionNumber = versionNumber;
             return this;
@@ -462,10 +417,6 @@ public class RecordedProgram extends BaseProgram {
                     mDataBytes,
                     mDurationMillis,
                     mExpireTimeUtcMillis,
-                    mInternalProviderFlag1,
-                    mInternalProviderFlag2,
-                    mInternalProviderFlag3,
-                    mInternalProviderFlag4,
                     mVersionNumber);
         }
     }
@@ -499,10 +450,6 @@ public class RecordedProgram extends BaseProgram {
                 .setPosterArtUri(orig.getPosterArtUri())
                 .setThumbnailUri(orig.getThumbnailUri())
                 .setSearchable(orig.isSearchable())
-                .setInternalProviderFlag1(orig.getInternalProviderFlag1())
-                .setInternalProviderFlag2(orig.getInternalProviderFlag2())
-                .setInternalProviderFlag3(orig.getInternalProviderFlag3())
-                .setInternalProviderFlag4(orig.getInternalProviderFlag4())
                 .setVersionNumber(orig.getVersionNumber());
     }
 
@@ -544,10 +491,6 @@ public class RecordedProgram extends BaseProgram {
     private final long mDataBytes;
     private final long mDurationMillis;
     private final long mExpireTimeUtcMillis;
-    private final int mInternalProviderFlag1;
-    private final int mInternalProviderFlag2;
-    private final int mInternalProviderFlag3;
-    private final int mInternalProviderFlag4;
     private final int mVersionNumber;
 
     private RecordedProgram(
@@ -578,10 +521,6 @@ public class RecordedProgram extends BaseProgram {
             long dataBytes,
             long durationMillis,
             long expireTimeUtcMillis,
-            int internalProviderFlag1,
-            int internalProviderFlag2,
-            int internalProviderFlag3,
-            int internalProviderFlag4,
             int versionNumber) {
         mId = id;
         mPackageName = packageName;
@@ -611,10 +550,6 @@ public class RecordedProgram extends BaseProgram {
         mDataBytes = dataBytes;
         mDurationMillis = durationMillis;
         mExpireTimeUtcMillis = expireTimeUtcMillis;
-        mInternalProviderFlag1 = internalProviderFlag1;
-        mInternalProviderFlag2 = internalProviderFlag2;
-        mInternalProviderFlag3 = internalProviderFlag3;
-        mInternalProviderFlag4 = internalProviderFlag4;
         mVersionNumber = versionNumber;
     }
 
@@ -717,22 +652,6 @@ public class RecordedProgram extends BaseProgram {
         return mInputId;
     }
 
-    public int getInternalProviderFlag1() {
-        return mInternalProviderFlag1;
-    }
-
-    public int getInternalProviderFlag2() {
-        return mInternalProviderFlag2;
-    }
-
-    public int getInternalProviderFlag3() {
-        return mInternalProviderFlag3;
-    }
-
-    public int getInternalProviderFlag4() {
-        return mInternalProviderFlag4;
-    }
-
     @Override
     public String getDescription() {
         return mShortDescription;
@@ -809,8 +728,12 @@ public class RecordedProgram extends BaseProgram {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RecordedProgram)) {
+            return false;
+        }
         RecordedProgram that = (RecordedProgram) o;
         return Objects.equals(mId, that.mId)
                 && Objects.equals(mChannelId, that.mChannelId)
@@ -826,10 +749,6 @@ public class RecordedProgram extends BaseProgram {
                 && Objects.equals(mDataBytes, that.mDataBytes)
                 && Objects.equals(mDurationMillis, that.mDurationMillis)
                 && Objects.equals(mExpireTimeUtcMillis, that.mExpireTimeUtcMillis)
-                && Objects.equals(mInternalProviderFlag1, that.mInternalProviderFlag1)
-                && Objects.equals(mInternalProviderFlag2, that.mInternalProviderFlag2)
-                && Objects.equals(mInternalProviderFlag3, that.mInternalProviderFlag3)
-                && Objects.equals(mInternalProviderFlag4, that.mInternalProviderFlag4)
                 && Objects.equals(mVersionNumber, that.mVersionNumber)
                 && Objects.equals(mTitle, that.mTitle)
                 && Objects.equals(mEpisodeTitle, that.mEpisodeTitle)
@@ -911,14 +830,6 @@ public class RecordedProgram extends BaseProgram {
                 + mDurationMillis
                 + ", mExpireTimeUtcMillis="
                 + mExpireTimeUtcMillis
-                + ", mInternalProviderFlag1="
-                + mInternalProviderFlag1
-                + ", mInternalProviderFlag2="
-                + mInternalProviderFlag2
-                + ", mInternalProviderFlag3="
-                + mInternalProviderFlag3
-                + ", mInternalProviderFlag4="
-                + mInternalProviderFlag4
                 + ", mSeasonNumber="
                 + mSeasonNumber
                 + ", mSeasonTitle="
