@@ -23,6 +23,7 @@ LOCAL_RESOURCE_DIR := \
 
 LOCAL_JAVA_LIBRARIES := \
     android-support-annotations \
+    guava-android-jar \
     lib-exoplayer \
     lib-exoplayer-v2-core \
 

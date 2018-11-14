@@ -36,6 +36,7 @@ import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.search.LocalSearchProvider.SearchResult;
 import com.android.tv.util.Utils;
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -481,7 +482,7 @@ public class TvProviderSearch implements SearchInterface {
         if (TextUtils.isEmpty(ratings) || !mTvInputManager.isParentalControlsEnabled()) {
             return false;
         }
-        TvContentRating[] ratingArray = mTvContentRatingCache.getRatings(ratings);
+        ImmutableList<TvContentRating> ratingArray = mTvContentRatingCache.getRatings(ratings);
         if (ratingArray != null) {
             for (TvContentRating r : ratingArray) {
                 if (mTvInputManager.isRatingBlocked(r)) {

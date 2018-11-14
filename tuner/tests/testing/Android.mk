@@ -9,7 +9,7 @@ LOCAL_SRC_FILES := \
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     androidx.test.runner \
-    guava \
+    guava-android-jar \
     mockito-target \
     truth-0-36-prebuilt-jar \
     ub-uiautomator \

@@ -50,6 +50,7 @@ import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.ui.DetailsActivity;
 import com.android.tv.util.ToastUtils;
 import com.android.tv.util.images.ImageLoader;
+import com.google.common.collect.ImmutableList;
 import java.io.File;
 
 abstract class DvrDetailsFragment extends DetailsFragment {
@@ -222,7 +223,7 @@ abstract class DvrDetailsFragment extends DetailsFragment {
             checkPinToPlay(recordedProgram, seekTimeMs);
             return;
         }
-        TvContentRating[] ratings = recordedProgram.getContentRatings();
+        ImmutableList<TvContentRating> ratings = recordedProgram.getContentRatings();
         TvContentRating blockRatings = parental.getBlockedRating(ratings);
         if (blockRatings != null) {
             checkPinToPlay(recordedProgram, seekTimeMs);
@@ -253,8 +254,7 @@ abstract class DvrDetailsFragment extends DetailsFragment {
                             new OnPinCheckedListener() {
                                 @Override
                                 public void onPinChecked(boolean checked, int type, String rating) {
-                                    ((DetailsActivity) getActivity())
-                                            .setOnPinCheckListener(null);
+                                    ((DetailsActivity) getActivity()).setOnPinCheckListener(null);
                                     if (checked
                                             && type
                                                     == PinDialogFragment

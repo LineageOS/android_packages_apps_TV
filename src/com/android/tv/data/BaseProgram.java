@@ -21,6 +21,7 @@ import android.media.tv.TvContentRating;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.android.tv.R;
+import com.google.common.collect.ImmutableList;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -184,7 +185,7 @@ public abstract class BaseProgram {
 
     /** Returns the array of content ratings. */
     @Nullable
-    public abstract TvContentRating[] getContentRatings();
+    public abstract ImmutableList<TvContentRating> getContentRatings();
 
     /** Returns channel's ID of the program. */
     public abstract long getChannelId();

@@ -36,6 +36,7 @@ import com.android.tv.data.BaseProgram;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.InternalDataUtils;
 import com.android.tv.util.TvProviderUtils;
+import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -203,7 +204,7 @@ public class RecordedProgram extends BaseProgram {
         private int mVideoWidth;
         private int mVideoHeight;
         private String mAudioLanguage;
-        private TvContentRating[] mContentRatings;
+        private ImmutableList<TvContentRating> mContentRatings;
         private String mPosterArtUri;
         private String mThumbnailUri;
         private boolean mSearchable = true;
@@ -324,7 +325,7 @@ public class RecordedProgram extends BaseProgram {
             return this;
         }
 
-        public Builder setContentRatings(TvContentRating[] contentRatings) {
+        public Builder setContentRatings(ImmutableList<TvContentRating> contentRatings) {
             mContentRatings = contentRatings;
             return this;
         }
@@ -483,7 +484,7 @@ public class RecordedProgram extends BaseProgram {
     private final int mVideoWidth;
     private final int mVideoHeight;
     private final String mAudioLanguage;
-    private final TvContentRating[] mContentRatings;
+    private final ImmutableList<TvContentRating> mContentRatings;
     private final String mPosterArtUri;
     private final String mThumbnailUri;
     private final boolean mSearchable;
@@ -513,7 +514,7 @@ public class RecordedProgram extends BaseProgram {
             int videoWidth,
             int videoHeight,
             String audioLanguage,
-            TvContentRating[] contentRatings,
+            ImmutableList<TvContentRating> contentRatings,
             String posterArtUri,
             String thumbnailUri,
             boolean searchable,
@@ -585,7 +586,7 @@ public class RecordedProgram extends BaseProgram {
 
     @Nullable
     @Override
-    public TvContentRating[] getContentRatings() {
+    public ImmutableList<TvContentRating> getContentRatings() {
         return mContentRatings;
     }
 
@@ -757,7 +758,7 @@ public class RecordedProgram extends BaseProgram {
                 && Objects.equals(mShortDescription, that.mShortDescription)
                 && Objects.equals(mLongDescription, that.mLongDescription)
                 && Objects.equals(mAudioLanguage, that.mAudioLanguage)
-                && Arrays.equals(mContentRatings, that.mContentRatings)
+                && Objects.equals(mContentRatings, that.mContentRatings)
                 && Objects.equals(mPosterArtUri, that.mPosterArtUri)
                 && Objects.equals(mThumbnailUri, that.mThumbnailUri);
     }
