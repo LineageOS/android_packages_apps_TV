@@ -166,6 +166,7 @@ public abstract class BaseProgram {
     public abstract long getDurationMillis();
 
     /** Returns the series ID. */
+    @Nullable
     public abstract String getSeriesId();
 
     /** Returns the season number. */
@@ -184,7 +185,6 @@ public abstract class BaseProgram {
     public abstract int[] getCanonicalGenreIds();
 
     /** Returns the array of content ratings. */
-    @Nullable
     public abstract ImmutableList<TvContentRating> getContentRatings();
 
     /** Returns channel's ID of the program. */
