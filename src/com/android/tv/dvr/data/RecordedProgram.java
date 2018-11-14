@@ -37,7 +37,6 @@ import com.android.tv.data.GenreItems;
 import com.android.tv.data.InternalDataUtils;
 import com.android.tv.util.TvProviderUtils;
 import com.google.common.collect.ImmutableList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
@@ -197,8 +196,8 @@ public class RecordedProgram extends BaseProgram {
         private String mEpisodeTitle;
         private long mStartTimeUtcMillis;
         private long mEndTimeUtcMillis;
-        private String[] mBroadcastGenres;
-        private String[] mCanonicalGenres;
+        private ImmutableList<String> mBroadcastGenres;
+        private ImmutableList<String> mCanonicalGenres;
         private String mShortDescription;
         private String mLongDescription;
         private int mVideoWidth;
@@ -279,10 +278,11 @@ public class RecordedProgram extends BaseProgram {
                 mBroadcastGenres = null;
                 return this;
             }
-            return setBroadcastGenres(TvContract.Programs.Genres.decode(broadcastGenres));
+            return setBroadcastGenres(
+                    ImmutableList.copyOf(TvContract.Programs.Genres.decode(broadcastGenres)));
         }
 
-        private Builder setBroadcastGenres(String[] broadcastGenres) {
+        private Builder setBroadcastGenres(ImmutableList<String> broadcastGenres) {
             mBroadcastGenres = broadcastGenres;
             return this;
         }
@@ -292,10 +292,11 @@ public class RecordedProgram extends BaseProgram {
                 mCanonicalGenres = null;
                 return this;
             }
-            return setCanonicalGenres(TvContract.Programs.Genres.decode(canonicalGenres));
+            return setCanonicalGenres(
+                    ImmutableList.copyOf(TvContract.Programs.Genres.decode(canonicalGenres)));
         }
 
-        private Builder setCanonicalGenres(String[] canonicalGenres) {
+        private Builder setCanonicalGenres(ImmutableList<String> canonicalGenres) {
             mCanonicalGenres = canonicalGenres;
             return this;
         }
@@ -477,8 +478,8 @@ public class RecordedProgram extends BaseProgram {
     private final String mEpisodeTitle;
     private final long mStartTimeUtcMillis;
     private final long mEndTimeUtcMillis;
-    private final String[] mBroadcastGenres;
-    private final String[] mCanonicalGenres;
+    private final ImmutableList<String> mBroadcastGenres;
+    private final ImmutableList<String> mCanonicalGenres;
     private final String mShortDescription;
     private final String mLongDescription;
     private final int mVideoWidth;
@@ -507,8 +508,8 @@ public class RecordedProgram extends BaseProgram {
             String episodeTitle,
             long startTimeUtcMillis,
             long endTimeUtcMillis,
-            String[] broadcastGenres,
-            String[] canonicalGenres,
+            ImmutableList<String> broadcastGenres,
+            ImmutableList<String> canonicalGenres,
             String shortDescription,
             String longDescription,
             int videoWidth,
@@ -558,11 +559,11 @@ public class RecordedProgram extends BaseProgram {
         return mAudioLanguage;
     }
 
-    public String[] getBroadcastGenres() {
+    public ImmutableList<String> getBroadcastGenres() {
         return mBroadcastGenres;
     }
 
-    public String[] getCanonicalGenres() {
+    public ImmutableList<String> getCanonicalGenres() {
         return mCanonicalGenres;
     }
 
@@ -572,9 +573,9 @@ public class RecordedProgram extends BaseProgram {
         if (mCanonicalGenres == null) {
             return null;
         }
-        int[] genreIds = new int[mCanonicalGenres.length];
-        for (int i = 0; i < mCanonicalGenres.length; i++) {
-            genreIds[i] = GenreItems.getId(mCanonicalGenres[i]);
+        int[] genreIds = new int[mCanonicalGenres.size()];
+        for (int i = 0; i < mCanonicalGenres.size(); i++) {
+            genreIds[i] = GenreItems.getId(mCanonicalGenres.get(i));
         }
         return genreIds;
     }
@@ -753,8 +754,8 @@ public class RecordedProgram extends BaseProgram {
                 && Objects.equals(mVersionNumber, that.mVersionNumber)
                 && Objects.equals(mTitle, that.mTitle)
                 && Objects.equals(mEpisodeTitle, that.mEpisodeTitle)
-                && Arrays.equals(mBroadcastGenres, that.mBroadcastGenres)
-                && Arrays.equals(mCanonicalGenres, that.mCanonicalGenres)
+                && Objects.equals(mBroadcastGenres, that.mBroadcastGenres)
+                && Objects.equals(mCanonicalGenres, that.mCanonicalGenres)
                 && Objects.equals(mShortDescription, that.mShortDescription)
                 && Objects.equals(mLongDescription, that.mLongDescription)
                 && Objects.equals(mAudioLanguage, that.mAudioLanguage)
@@ -798,9 +799,9 @@ public class RecordedProgram extends BaseProgram {
                 + ", mEndTimeUtcMillis="
                 + mEndTimeUtcMillis
                 + ", mBroadcastGenres="
-                + (mBroadcastGenres != null ? Arrays.toString(mBroadcastGenres) : "null")
+                + mBroadcastGenres
                 + ", mCanonicalGenres="
-                + (mCanonicalGenres != null ? Arrays.toString(mCanonicalGenres) : "null")
+                + mCanonicalGenres
                 + ", mShortDescription='"
                 + mShortDescription
                 + '\''
@@ -846,8 +847,10 @@ public class RecordedProgram extends BaseProgram {
     }
 
     @Nullable
-    private static String safeEncode(@Nullable String[] genres) {
-        return genres == null ? null : TvContract.Programs.Genres.encode(genres);
+    private static String safeEncode(@Nullable ImmutableList<String> genres) {
+        return genres == null
+                ? null
+                : TvContract.Programs.Genres.encode(genres.toArray(new String[0]));
     }
 
     /** Returns an array containing all of the elements in the list. */

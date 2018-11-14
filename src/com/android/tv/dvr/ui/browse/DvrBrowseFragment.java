@@ -45,6 +45,7 @@ import com.android.tv.dvr.data.RecordedProgram;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.dvr.data.SeriesRecording;
 import com.android.tv.dvr.ui.SortedArrayAdapter;
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -576,9 +577,9 @@ public class DvrBrowseFragment extends BrowseFragment
         }
     }
 
-    private List<RecordedProgramAdapter> getGenreAdapters(String[] genres) {
+    private List<RecordedProgramAdapter> getGenreAdapters(ImmutableList<String> genres) {
         List<RecordedProgramAdapter> result = new ArrayList<>();
-        if (genres == null || genres.length == 0) {
+        if (genres == null || genres.isEmpty()) {
             result.add(mGenreAdapters[mGenreAdapters.length - 1]);
         } else {
             for (String genre : genres) {
