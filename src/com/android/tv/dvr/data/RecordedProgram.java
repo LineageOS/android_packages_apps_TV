@@ -49,6 +49,19 @@ import java.util.concurrent.TimeUnit;
 public abstract class RecordedProgram extends BaseProgram {
     public static final int ID_NOT_SET = -1;
 
+    /** The recording state. */
+    // TODO(b/25023911): Use @SimpleEnum  when it is supported by AutoValue
+    public enum State {
+        // TODO(b/71717809): Document each state.
+        NOT_SET,
+        STARTED,
+        FINISHED,
+        PARTIAL,
+        FAILED,
+        DELETE,
+        DELETED,
+    }
+
     public static final String[] PROJECTION = {
         RecordedPrograms._ID,
         RecordedPrograms.COLUMN_PACKAGE_NAME,
@@ -123,6 +136,7 @@ public abstract class RecordedProgram extends BaseProgram {
                 builder.setSeriesId(seriesId);
             }
         }
+        // TODO(b/71717809): add state column
         return builder.build();
     }
 
@@ -228,6 +242,8 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setEndTimeUtcMillis(long endTimeUtcMillis);
 
+        public abstract Builder setState(State state);
+
         public Builder setBroadcastGenres(String broadcastGenres) {
             return setBroadcastGenres(
                     TextUtils.isEmpty(broadcastGenres)
@@ -325,6 +341,7 @@ public abstract class RecordedProgram extends BaseProgram {
                 .setSeasonNumber("")
                 .setSeasonTitle("")
                 .setStartTimeUtcMillis(0)
+                .setState(State.NOT_SET)
                 .setSeriesId("")
                 .setTitle("")
                 .setThumbnailUri("")
@@ -428,6 +445,26 @@ public abstract class RecordedProgram extends BaseProgram {
         return true;
     }
 
+    public boolean isVisible() {
+        switch (getState()) {
+            case NOT_SET:
+            case FINISHED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isPlayable() {
+        switch (getState()) {
+            case PARTIAL:
+            case FINISHED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public abstract boolean isSearchable();
 
     @Nullable
@@ -441,6 +478,8 @@ public abstract class RecordedProgram extends BaseProgram {
 
     @Override
     public abstract long getStartTimeUtcMillis();
+
+    public abstract State getState();
 
     @Override
     public abstract String getThumbnailUri();
