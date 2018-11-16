@@ -18,7 +18,7 @@ LOCAL_USE_AAPT2 := true
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
-LOCAL_JAVA_LIBRARIES := \
+LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     guava-android-jar \
 
