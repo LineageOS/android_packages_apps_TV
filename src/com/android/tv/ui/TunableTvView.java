@@ -403,7 +403,9 @@ public class TunableTvView extends FrameLayout implements StreamInfo, TunableTvV
                 @Override
                 public void onSignalStrength(String inputId, int value) {
                     mChannelSignalStrength = value;
-                    mOnTuneListener.onChannelSignalStrength();
+                    if (mOnTuneListener != null) {
+                        mOnTuneListener.onChannelSignalStrength();
+                    }
                 }
             };
 
