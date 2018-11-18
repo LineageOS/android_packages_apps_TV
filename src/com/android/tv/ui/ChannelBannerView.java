@@ -64,6 +64,7 @@ import com.android.tv.util.images.ImageCache;
 import com.android.tv.util.images.ImageLoader;
 import com.android.tv.util.images.ImageLoader.ImageLoaderCallback;
 import com.android.tv.util.images.ImageLoader.LoadTvInputLogoTask;
+import com.google.common.collect.ImmutableList;
 import javax.inject.Provider;
 
 /** A view to render channel banner. */
@@ -732,13 +733,14 @@ public class ChannelBannerView extends FrameLayout
                 mContentRatingsTextViews[i].setVisibility(View.GONE);
             }
         } else {
-            TvContentRating[] ratings = (program == null) ? null : program.getContentRatings();
+            ImmutableList<TvContentRating> ratings =
+                    (program == null) ? null : program.getContentRatings();
             for (int i = 0; i < DISPLAYED_CONTENT_RATINGS_COUNT; i++) {
-                if (ratings == null || ratings.length <= i) {
+                if (ratings == null || ratings.size() <= i) {
                     mContentRatingsTextViews[i].setVisibility(View.GONE);
                 } else {
                     mContentRatingsTextViews[i].setText(
-                            mContentRatingsManager.getDisplayNameForRating(ratings[i]));
+                            mContentRatingsManager.getDisplayNameForRating(ratings.get(i)));
                     mContentRatingsTextViews[i].setVisibility(View.VISIBLE);
                 }
             }

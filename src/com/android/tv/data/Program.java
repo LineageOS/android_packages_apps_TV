@@ -41,6 +41,7 @@ import com.android.tv.data.api.Channel;
 import com.android.tv.util.TvProviderUtils;
 import com.android.tv.util.Utils;
 import com.android.tv.util.images.ImageLoader;
+import com.google.common.collect.ImmutableList;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,10 +177,14 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
         program.mCanonicalGenreIds = in.createIntArray();
         int length = in.readInt();
         if (length > 0) {
-            program.mContentRatings = new TvContentRating[length];
+            ImmutableList.Builder<TvContentRating> ratingsBuilder =
+                    ImmutableList.builderWithExpectedSize(length);
             for (int i = 0; i < length; ++i) {
-                program.mContentRatings[i] = TvContentRating.unflattenFromString(in.readString());
+                ratingsBuilder.add(TvContentRating.unflattenFromString(in.readString()));
             }
+            program.mContentRatings = ratingsBuilder.build();
+        } else {
+            program.mContentRatings = ImmutableList.of();
         }
         program.mRecordingProhibited = in.readByte() != (byte) 0;
         return program;
@@ -218,7 +223,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
     private String mPosterArtUri;
     private String mThumbnailUri;
     private int[] mCanonicalGenreIds;
-    private TvContentRating[] mContentRatings;
+    private ImmutableList<TvContentRating> mContentRatings;
     private boolean mRecordingProhibited;
 
     private Program() {
@@ -327,7 +332,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
 
     @Nullable
     @Override
-    public TvContentRating[] getContentRatings() {
+    public ImmutableList<TvContentRating> getContentRatings() {
         return mContentRatings;
     }
 
@@ -396,7 +401,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
                 mVideoHeight,
                 mPosterArtUri,
                 mThumbnailUri,
-                Arrays.hashCode(mContentRatings),
+                mContentRatings,
                 Arrays.hashCode(mCanonicalGenreIds),
                 mSeasonNumber,
                 mSeasonTitle,
@@ -424,7 +429,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
                 && mVideoHeight == program.mVideoHeight
                 && Objects.equals(mPosterArtUri, program.mPosterArtUri)
                 && Objects.equals(mThumbnailUri, program.mThumbnailUri)
-                && Arrays.equals(mContentRatings, program.mContentRatings)
+                && Objects.equals(mContentRatings, program.mContentRatings)
                 && Arrays.equals(mCanonicalGenreIds, program.mCanonicalGenreIds)
                 && Objects.equals(mSeasonNumber, program.mSeasonNumber)
                 && Objects.equals(mSeasonTitle, program.mSeasonTitle)
@@ -795,7 +800,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
          * @param contentRatings the content ratings
          * @return a reference to this object
          */
-        public Builder setContentRatings(TvContentRating[] contentRatings) {
+        public Builder setContentRatings(ImmutableList<TvContentRating> contentRatings) {
             mProgram.mContentRatings = contentRatings;
             return this;
         }
@@ -971,7 +976,7 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
         out.writeString(mPosterArtUri);
         out.writeString(mThumbnailUri);
         out.writeIntArray(mCanonicalGenreIds);
-        out.writeInt(mContentRatings == null ? 0 : mContentRatings.length);
+        out.writeInt(mContentRatings == null ? 0 : mContentRatings.size());
         if (mContentRatings != null) {
             for (TvContentRating rating : mContentRatings) {
                 out.writeString(rating.flattenToString());

@@ -10,7 +10,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
     androidx.test.runner \
     androidx.test.rules \
-    guava \
+    guava-android-jar \
     mockito-target \
     truth-0-36-prebuilt-jar \
     ub-uiautomator \

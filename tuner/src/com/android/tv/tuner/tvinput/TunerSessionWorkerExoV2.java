@@ -76,6 +76,7 @@ import com.android.tv.tuner.tvinput.debug.TunerDebug;
 import com.android.tv.tuner.util.StatusTextUtils;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.audio.AudioCapabilities;
+import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -170,7 +171,7 @@ public class TunerSessionWorkerExoV2
     private static final int TRICKPLAY_MONITOR_INTERVAL_MS = 250;
     private static final int RELEASE_WAIT_INTERVAL_MS = 50;
     private static final long TRICKPLAY_OFF_DURATION_MS = TimeUnit.DAYS.toMillis(14);
-    public static final TvContentRating[] NO_CONTENT_RATINGS = new TvContentRating[0];
+    public static final ImmutableList<TvContentRating> NO_CONTENT_RATINGS = ImmutableList.of();
 
     /**
      * Guarantees that at most one active worker exists at any give time. Synchronization between
@@ -1958,11 +1959,11 @@ public class TunerSessionWorkerExoV2
         if (currentProgram == null) {
             return null;
         }
-        TvContentRating[] ratings =
+        ImmutableList<TvContentRating> ratings =
                 mTvContentRatingCache.getRatings(currentProgram.getContentRating());
-        if ((ratings == null || ratings.length == 0)) {
+        if ((ratings == null || ratings.isEmpty())) {
             if (Experiments.ENABLE_UNRATED_CONTENT_SETTINGS.get()) {
-                ratings = new TvContentRating[] {TvContentRating.UNRATED};
+                ratings = ImmutableList.of(TvContentRating.UNRATED);
             } else {
                 ratings = NO_CONTENT_RATINGS;
             }

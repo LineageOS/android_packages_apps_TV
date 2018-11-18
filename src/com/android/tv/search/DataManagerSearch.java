@@ -34,6 +34,7 @@ import com.android.tv.data.api.Channel;
 import com.android.tv.search.LocalSearchProvider.SearchResult;
 import com.android.tv.util.MainThreadExecutor;
 import com.android.tv.util.Utils;
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -301,10 +302,8 @@ public class DataManagerSearch implements SearchInterface {
         return TvContract.buildChannelUri(channelId).toString();
     }
 
-    private boolean isRatingBlocked(TvContentRating[] ratings) {
-        if (ratings == null
-                || ratings.length == 0
-                || !mTvInputManager.isParentalControlsEnabled()) {
+    private boolean isRatingBlocked(ImmutableList<TvContentRating> ratings) {
+        if (ratings == null || ratings.isEmpty() || !mTvInputManager.isParentalControlsEnabled()) {
             return false;
         }
         for (TvContentRating rating : ratings) {
