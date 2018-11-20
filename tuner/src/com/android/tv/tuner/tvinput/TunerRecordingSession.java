@@ -24,6 +24,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import com.android.tv.common.compat.RecordingSessionCompat;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 
 /** Processes DVR recordings, and deletes the previously recorded contents. */
 public class TunerRecordingSession extends RecordingSessionCompat {
@@ -33,10 +34,14 @@ public class TunerRecordingSession extends RecordingSessionCompat {
     private final TunerRecordingSessionWorker mSessionWorker;
 
     public TunerRecordingSession(
-            Context context, String inputId, ChannelDataManager channelDataManager) {
+            Context context,
+            String inputId,
+            ChannelDataManager channelDataManager,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
         super(context);
         mSessionWorker =
-                new TunerRecordingSessionWorker(context, inputId, channelDataManager, this);
+                new TunerRecordingSessionWorker(
+                        context, inputId, channelDataManager, this, concurrentDvrPlaybackFlags);
     }
 
     // RecordingSession

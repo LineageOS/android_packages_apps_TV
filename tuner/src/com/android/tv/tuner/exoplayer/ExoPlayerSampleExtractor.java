@@ -51,6 +51,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
 import com.google.android.exoplayer2.upstream.TransferListener;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +72,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
     private final long mId;
 
     private final Handler.Callback mSourceReaderWorker;
+    private final ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
 
     private BufferManager.SampleBuffer mSampleBuffer;
     private Handler mSourceReaderHandler;
@@ -92,7 +94,8 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
             final DataSource source,
             BufferManager bufferManager,
             PlaybackBufferListener bufferListener,
-            boolean isRecording) {
+            boolean isRecording,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlagsoncurrentDvrPlaybackFlags) {
         this(
                 uri,
                 source,
@@ -100,7 +103,8 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                 bufferListener,
                 isRecording,
                 Looper.myLooper(),
-                new HandlerThread("SourceReaderThread"));
+                new HandlerThread("SourceReaderThread"),
+                concurrentDvrPlaybackFlagsoncurrentDvrPlaybackFlags);
     }
 
     @VisibleForTesting
@@ -112,9 +116,11 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
             PlaybackBufferListener bufferListener,
             boolean isRecording,
             Looper workerLooper,
-            HandlerThread sourceReaderThread) {
+            HandlerThread sourceReaderThread,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
         // It'll be used as a timeshift file chunk name's prefix.
         mId = System.currentTimeMillis();
+        mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
 
         EventListener eventListener =
                 new EventListener() {
@@ -191,6 +197,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                             bufferManager,
                             bufferListener,
                             false,
+                            mConcurrentDvrPlaybackFlags,
                             RecordingSampleBuffer.BUFFER_REASON_RECORDING);
         } else {
             if (bufferManager == null) {
@@ -201,6 +208,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                                 bufferManager,
                                 bufferListener,
                                 true,
+                                mConcurrentDvrPlaybackFlags,
                                 RecordingSampleBuffer.BUFFER_REASON_LIVE_PLAYBACK);
             }
         }

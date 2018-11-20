@@ -56,6 +56,7 @@ import com.android.tv.tuner.source.TsDataSourceManager;
 import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.google.android.exoplayer.C;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -136,6 +137,7 @@ public class TunerRecordingSessionWorker
 
     private static final long CHANNEL_ID_NONE = -1;
     private static final int MAX_TUNING_RETRY = 6;
+    private final ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
 
     private final Context mContext;
     private final ChannelDataManager mChannelDataManager;
@@ -165,7 +167,9 @@ public class TunerRecordingSessionWorker
             Context context,
             String inputId,
             ChannelDataManager dataManager,
-            TunerRecordingSession session) {
+            TunerRecordingSession session,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+        mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         mRandom.setSeed(System.nanoTime());
         mContext = context;
         HandlerThread handlerThread = new HandlerThread(TAG);
@@ -440,7 +444,12 @@ public class TunerRecordingSessionWorker
         mDvrStorageManager = new DvrStorageManager(mStorageDir, true);
         mRecorder =
                 new ExoPlayerSampleExtractor(
-                        Uri.EMPTY, mTunerSource, new BufferManager(mDvrStorageManager), this, true);
+                        Uri.EMPTY,
+                        mTunerSource,
+                        new BufferManager(mDvrStorageManager),
+                        this,
+                        true,
+                        mConcurrentDvrPlaybackFlags);
         mRecorder.setOnCompletionListener(this, mHandler);
         mProgramUri = programUri;
         mSessionState = STATE_RECORDING;

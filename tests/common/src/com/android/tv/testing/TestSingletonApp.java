@@ -77,7 +77,7 @@ public class TestSingletonApp extends Application implements TvSingletons, HasTu
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
     private final TunerSessionFactoryImpl mTunerSessionFactory =
-            new TunerSessionFactoryImpl(new DefaultExoplayer2Flags());
+            new TunerSessionFactoryImpl(new DefaultExoplayer2Flags(), mConcurrentDvrPlaybackFlags);
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
