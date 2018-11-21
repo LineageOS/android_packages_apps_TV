@@ -346,10 +346,12 @@ public class ProgramManager {
     /** Returns the program index of the program at {@code time} or -1 if not found. */
     int getProgramIndexAtTime(long channelId, long time) {
         List<TableEntry> entries = mChannelIdEntriesMap.get(channelId);
-        for (int i = 0; i < entries.size(); ++i) {
-            TableEntry entry = entries.get(i);
-            if (entry.entryStartUtcMillis <= time && time < entry.entryEndUtcMillis) {
-                return i;
+        if (entries != null) {
+            for (int i = 0; i < entries.size(); ++i) {
+                TableEntry entry = entries.get(i);
+                if (entry.entryStartUtcMillis <= time && time < entry.entryEndUtcMillis) {
+                    return i;
+                }
             }
         }
         return -1;
