@@ -32,6 +32,7 @@ import com.android.tv.common.compat.TisSessionCompat;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.SessionReleasedCallback;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 
 /**
  * Provides a tuner TV input session. Main tuner input functions are implemented in {@link
@@ -51,12 +52,18 @@ public class TunerSession extends TisSessionCompat implements CommonPreferencesC
     public TunerSession(
             Context context,
             ChannelDataManager channelDataManager,
-            SessionReleasedCallback releasedCallback) {
+            SessionReleasedCallback releasedCallback,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
         super(context);
         mReleasedCallback = releasedCallback;
         mTunerSessionOverlay = new TunerSessionOverlay(context);
         mSessionWorker =
-                new TunerSessionWorker(context, channelDataManager, this, mTunerSessionOverlay);
+                new TunerSessionWorker(
+                        context,
+                        channelDataManager,
+                        this,
+                        mTunerSessionOverlay,
+                        concurrentDvrPlaybackFlags);
         TunerPreferences.setCommonPreferencesChangedListener(this);
     }
 

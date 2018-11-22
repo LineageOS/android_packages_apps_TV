@@ -77,6 +77,7 @@ import com.android.tv.tuner.util.StatusTextUtils;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.common.collect.ImmutableList;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -229,6 +230,7 @@ public class TunerSessionWorker
     private boolean mIsActiveSession;
     private boolean mReleaseRequested; // Guarded by mReleaseLock
     private final Object mReleaseLock = new Object();
+    private final ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
 
     private int mSignalStrength;
 
@@ -236,8 +238,15 @@ public class TunerSessionWorker
             Context context,
             ChannelDataManager channelDataManager,
             TunerSession tunerSession,
-            TunerSessionOverlay tunerSessionOverlay) {
-        this(context, channelDataManager, tunerSession, tunerSessionOverlay, null);
+            TunerSessionOverlay tunerSessionOverlay,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+        this(
+                context,
+                channelDataManager,
+                tunerSession,
+                tunerSessionOverlay,
+                null,
+                concurrentDvrPlaybackFlags);
     }
 
     @VisibleForTesting
@@ -246,7 +255,9 @@ public class TunerSessionWorker
             ChannelDataManager channelDataManager,
             TunerSession tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
-            @Nullable Handler handler) {
+            @Nullable Handler handler,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+        this.mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         if (DEBUG) Log.d(TAG, "TunerSessionWorker created");
         mContext = context;
         if (handler != null) {
@@ -1393,7 +1404,8 @@ public class TunerSessionWorker
         }
         MpegTsPlayer player =
                 new MpegTsPlayer(
-                        new MpegTsRendererBuilder(mContext, bufferManager, this),
+                        new MpegTsRendererBuilder(
+                                mContext, bufferManager, this, mConcurrentDvrPlaybackFlags),
                         mHandler,
                         mSourceManager,
                         capabilities,

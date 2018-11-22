@@ -25,6 +25,7 @@ import android.test.InstrumentationTestCase;
 import android.util.Log;
 import android.view.Surface;
 import androidx.test.filters.LargeTest;
+import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.tuner.data.Cea708Data;
 import com.android.tv.tuner.data.PsiData;
 import com.android.tv.tuner.data.PsipData;
@@ -87,6 +88,8 @@ public class ZappingTimeTest extends InstrumentationTestCase {
     private MockMpegTsPlayerListener mMpegTsPlayerListener = new MockMpegTsPlayerListener();
     private MockPlaybackBufferListener mPlaybackBufferListener = new MockPlaybackBufferListener();
     private MockChannelScanListener mEventListener = new MockChannelScanListener();
+    private DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
+            new DefaultConcurrentDvrPlaybackFlags();
 
     @Override
     protected void setUp() throws Exception {
@@ -152,7 +155,8 @@ public class ZappingTimeTest extends InstrumentationTestCase {
                                                             new MpegTsRendererBuilder(
                                                                     mTargetContext,
                                                                     bufferManager,
-                                                                    mPlaybackBufferListener),
+                                                                    mPlaybackBufferListener,
+                                                                    mConcurrentDvrPlaybackFlags),
                                                             mHandler,
                                                             mSourceManager,
                                                             null,

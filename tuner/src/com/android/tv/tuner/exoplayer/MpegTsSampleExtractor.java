@@ -27,6 +27,7 @@ import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.util.MimeTypes;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -63,13 +64,22 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
      * @param source the {@link DataSource} to extract from
      * @param bufferManager the manager for reading & writing samples backed by physical storage
      * @param bufferListener the {@link PlaybackBufferListener} to notify buffer storage status
-     *     change
+     * @param concurrentDvrPlaybackFlags
      */
     public MpegTsSampleExtractor(
-            DataSource source, BufferManager bufferManager, PlaybackBufferListener bufferListener) {
+            DataSource source,
+            BufferManager bufferManager,
+            PlaybackBufferListener bufferListener,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+
         mSampleExtractor =
                 new ExoPlayerSampleExtractor(
-                        Uri.EMPTY, source, bufferManager, bufferListener, false);
+                        Uri.EMPTY,
+                        source,
+                        bufferManager,
+                        bufferListener,
+                        false,
+                        concurrentDvrPlaybackFlags);
         init();
     }
 
@@ -81,8 +91,11 @@ public final class MpegTsSampleExtractor implements SampleExtractor {
      *     change
      */
     public MpegTsSampleExtractor(
-            BufferManager bufferManager, PlaybackBufferListener bufferListener) {
-        mSampleExtractor = new FileSampleExtractor(bufferManager, bufferListener);
+            BufferManager bufferManager,
+            PlaybackBufferListener bufferListener,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+        mSampleExtractor =
+                new FileSampleExtractor(bufferManager, bufferListener, concurrentDvrPlaybackFlags);
         init();
     }
 

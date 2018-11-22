@@ -27,6 +27,7 @@ import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.SampleHolder;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.util.Assertions;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -68,6 +69,7 @@ public class RecordingSampleBuffer
     private final BufferManager mBufferManager;
     private final PlaybackBufferListener mBufferListener;
     private final @BufferReason int mBufferReason;
+    private final ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
 
     private int mTrackCount;
     private boolean[] mTrackSelected;
@@ -108,7 +110,9 @@ public class RecordingSampleBuffer
             BufferManager bufferManager,
             PlaybackBufferListener bufferListener,
             boolean enableTrickplay,
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
             @BufferReason int bufferReason) {
+        mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         mBufferManager = bufferManager;
         mBufferListener = bufferListener;
         if (bufferListener != null) {

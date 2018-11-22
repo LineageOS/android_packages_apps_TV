@@ -23,8 +23,10 @@ import android.content.Context;
 import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -39,6 +41,7 @@ public class BaseTunerTvInputService extends TvInputService {
 
     private final Set<Session> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
     private ChannelDataManager mChannelDataManager;
+    private ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
 
     @Override
     public void onCreate() {
@@ -50,6 +53,8 @@ public class BaseTunerTvInputService extends TvInputService {
         super.onCreate();
         if (DEBUG) Log.d(TAG, "onCreate");
         mChannelDataManager = new ChannelDataManager(getApplicationContext());
+        mConcurrentDvrPlaybackFlags =
+                HasConcurrentDvrPlaybackFlags.fromContext(getApplicationContext());
         if (CommonFeatures.DVR.isEnabled(this)) {
             JobScheduler jobScheduler =
                     (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -78,7 +83,8 @@ public class BaseTunerTvInputService extends TvInputService {
 
     @Override
     public RecordingSession onCreateRecordingSession(String inputId) {
-        return new TunerRecordingSession(this, inputId, mChannelDataManager);
+        return new TunerRecordingSession(
+                this, inputId, mChannelDataManager, mConcurrentDvrPlaybackFlags);
     }
 
     @Override
