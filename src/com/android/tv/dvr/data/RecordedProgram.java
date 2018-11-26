@@ -379,28 +379,10 @@ public abstract class RecordedProgram extends BaseProgram {
         return genreIds;
     }
 
-    @Override
-    public abstract long getChannelId();
-
-    @Override
-    public abstract ImmutableList<TvContentRating> getContentRatings();
-
     @Nullable
     public abstract Uri getDataUri();
 
     public abstract long getDataBytes();
-
-    @Override
-    public abstract long getDurationMillis();
-
-    @Override
-    public abstract long getEndTimeUtcMillis();
-
-    @Override
-    public abstract String getEpisodeNumber();
-
-    @Override
-    public abstract String getEpisodeTitle();
 
     @Nullable
     public String getEpisodeDisplayNumber(Context context) {
@@ -424,21 +406,9 @@ public abstract class RecordedProgram extends BaseProgram {
 
     public abstract long getExpireTimeUtcMillis();
 
-    @Override
-    public abstract long getId();
-
     public abstract String getPackageName();
 
     public abstract String getInputId();
-
-    @Override
-    public abstract String getDescription();
-
-    @Override
-    public abstract String getLongDescription();
-
-    @Override
-    public abstract String getPosterArtUri();
 
     @Override
     public boolean isValid() {
@@ -467,25 +437,9 @@ public abstract class RecordedProgram extends BaseProgram {
 
     public abstract boolean isSearchable();
 
-    @Nullable
-    @Override
-    public abstract String getSeriesId();
-
-    @Override
-    public abstract String getSeasonNumber();
-
     public abstract String getSeasonTitle();
 
-    @Override
-    public abstract long getStartTimeUtcMillis();
-
     public abstract State getState();
-
-    @Override
-    public abstract String getThumbnailUri();
-
-    @Override
-    public abstract String getTitle();
 
     public Uri getUri() {
         return ContentUris.withAppendedId(RecordedPrograms.CONTENT_URI, getId());
