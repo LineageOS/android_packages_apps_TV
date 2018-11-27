@@ -33,9 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Player for recorded programs.
- */
+/** Player for recorded programs. */
 public class DvrPlayer {
     private static final String TAG = "DvrPlayer";
     private static final boolean DEBUG = false;
@@ -47,6 +45,7 @@ public class DvrPlayer {
 
     private static final long SEEK_POSITION_MARGIN_MS = TimeUnit.SECONDS.toMillis(2);
     private static final long REWIND_POSITION_MARGIN_MS = 32; // Workaround value. b/29994826
+    private static final long FORWARD_POSITION_MARGIN_MS = TimeUnit.SECONDS.toMillis(5);
 
     private RecordedProgram mProgram;
     private long mInitialSeekPositionMs;
@@ -82,6 +81,8 @@ public class DvrPlayer {
         public void onPlaybackStateChanged(int playbackState, int playbackSpeed) {}
         /** Called when the playback toward the end. */
         public void onPlaybackEnded() {}
+        /** Called when the playback is resumed to live position. */
+        public void onPlaybackResume() {}
     }
 
     /** Listener for aspect ratio changed events. */
@@ -445,9 +446,16 @@ public class DvrPlayer {
                             resumeToWatchedPositionIfNeeded();
                         }
                         timeMs -= mStartPositionMs;
-                        if (mPlaybackState == PlaybackState.STATE_REWINDING
-                                && timeMs <= REWIND_POSITION_MARGIN_MS) {
+                        long bufferedTimeMs =
+                                System.currentTimeMillis()
+                                        - mProgram.getStartTimeUtcMillis()
+                                        - FORWARD_POSITION_MARGIN_MS;
+                        if ((mPlaybackState == PlaybackState.STATE_REWINDING
+                                        && timeMs <= REWIND_POSITION_MARGIN_MS)
+                                || (mPlaybackState == PlaybackState.STATE_FAST_FORWARDING
+                                        && timeMs > bufferedTimeMs)) {
                             play();
+                            mCallback.onPlaybackResume();
                         } else {
                             mTimeShiftCurrentPositionMs = getRealSeekPosition(timeMs, 0);
                             mCallback.onPlaybackPositionChanged(mTimeShiftCurrentPositionMs);
