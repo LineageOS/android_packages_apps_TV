@@ -33,6 +33,7 @@ import android.text.TextUtils;
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.CommonUtils;
+import com.android.tv.common.util.StringUtils;
 import com.android.tv.data.BaseProgram;
 import com.android.tv.data.GenreItems;
 import com.android.tv.data.InternalDataUtils;
@@ -101,7 +102,7 @@ public abstract class RecordedProgram extends BaseProgram {
                         .setPackageName(cursor.getString(index++))
                         .setInputId(cursor.getString(index++))
                         .setChannelId(cursor.getLong(index++))
-                        .setTitle(cursor.getString(index++))
+                        .setTitle(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setSeasonNumber(cursor.getString(index++))
                         .setSeasonTitle(cursor.getString(index++))
                         .setEpisodeNumber(cursor.getString(index++))
@@ -110,11 +111,11 @@ public abstract class RecordedProgram extends BaseProgram {
                         .setEndTimeUtcMillis(cursor.getLong(index++))
                         .setBroadcastGenres(cursor.getString(index++))
                         .setCanonicalGenres(cursor.getString(index++))
-                        .setDescription(cursor.getString(index++))
-                        .setLongDescription(cursor.getString(index++))
+                        .setDescription(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setLongDescription(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setVideoWidth(cursor.getInt(index++))
                         .setVideoHeight(cursor.getInt(index++))
-                        .setAudioLanguage(cursor.getString(index++))
+                        .setAudioLanguage(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setContentRatings(
                                 TvContentRatingCache.getInstance()
                                         .getRatings(cursor.getString(index++)))
@@ -228,13 +229,14 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setSeriesId(@Nullable String seriesId);
 
-        public abstract Builder setSeasonNumber(String seasonNumber);
+        public abstract Builder setSeasonNumber(@Nullable String seasonNumber);
 
-        public abstract Builder setSeasonTitle(String seasonTitle);
+        public abstract Builder setSeasonTitle(@Nullable String seasonTitle);
 
-        public abstract Builder setEpisodeNumber(String episodeNumber);
-
+        @Nullable
         abstract String getEpisodeNumber();
+
+        public abstract Builder setEpisodeNumber(@Nullable String episodeNumber);
 
         public abstract Builder setEpisodeTitle(String episodeTitle);
 
@@ -244,7 +246,7 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setState(State state);
 
-        public Builder setBroadcastGenres(String broadcastGenres) {
+        public Builder setBroadcastGenres(@Nullable String broadcastGenres) {
             return setBroadcastGenres(
                     TextUtils.isEmpty(broadcastGenres)
                             ? ImmutableList.of()
@@ -285,9 +287,9 @@ public abstract class RecordedProgram extends BaseProgram {
             }
         }
 
-        public abstract Builder setPosterArtUri(String posterArtUri);
+        public abstract Builder setPosterArtUri(@Nullable String posterArtUri);
 
-        public abstract Builder setThumbnailUri(String thumbnailUri);
+        public abstract Builder setThumbnailUri(@Nullable String thumbnailUri);
 
         public abstract Builder setSearchable(boolean searchable);
 
@@ -332,19 +334,12 @@ public abstract class RecordedProgram extends BaseProgram {
                 .setDataBytes(0)
                 .setLongDescription("")
                 .setEndTimeUtcMillis(0)
-                .setEpisodeNumber("")
-                .setEpisodeTitle("")
                 .setExpireTimeUtcMillis(0)
                 .setPackageName("")
-                .setPosterArtUri("")
                 .setSearchable(false)
-                .setSeasonNumber("")
-                .setSeasonTitle("")
                 .setStartTimeUtcMillis(0)
                 .setState(State.NOT_SET)
-                .setSeriesId("")
                 .setTitle("")
-                .setThumbnailUri("")
                 .setVersionNumber(0)
                 .setVideoHeight(0)
                 .setVideoWidth(0);
@@ -437,6 +432,7 @@ public abstract class RecordedProgram extends BaseProgram {
 
     public abstract boolean isSearchable();
 
+    @Nullable
     public abstract String getSeasonTitle();
 
     public abstract State getState();

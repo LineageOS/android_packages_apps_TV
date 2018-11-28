@@ -22,6 +22,7 @@ import android.media.tv.TvInputManager;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
+
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
@@ -45,6 +46,7 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
     private RecordedProgram mRecordedProgram;
     private DvrWatchedPositionManager mDvrWatchedPositionManager;
     private ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
+    private boolean mPaused;
     private final DvrDataManager.ScheduledRecordingListener mScheduledRecordingListener =
             new DvrDataManager.ScheduledRecordingListener() {
                 @Override
@@ -84,9 +86,26 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (mPaused) {
+            updateActions();
+            mPaused = false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPaused = true;
+    }
+
+    @Override
     protected SparseArrayObjectAdapter onCreateActionsAdapter() {
         Long recordedProgramId = getRecording().getRecordedProgramId();
-        mRecordedProgram = mDvrDataManger.getRecordedProgram(recordedProgramId);
+        if (recordedProgramId != null) {
+            mRecordedProgram = mDvrDataManger.getRecordedProgram(recordedProgramId);
+        }
         SparseArrayObjectAdapter adapter =
                 new SparseArrayObjectAdapter(new ActionPresenterSelector());
         Resources res = getResources();

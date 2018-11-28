@@ -35,6 +35,7 @@ import com.android.tv.TvFeatures;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.compat.TvInputInfoCompat;
 import com.android.tv.common.util.CommonUtils;
+import com.android.tv.common.util.SystemProperties;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.util.images.ImageCache;
@@ -194,7 +195,9 @@ public class TvInputManagerHelper {
                     }
                     mContentRatingsManager.update();
                     for (TvInputCallback callback : mCallbacks) {
-                        callback.onInputAdded(inputId);
+                        if (isInputAllowed(info)) {
+                            callback.onInputAdded(inputId);
+                        }
                     }
                 }
 
@@ -234,7 +237,9 @@ public class TvInputManagerHelper {
                     mTvInputApplicationIcons.remove(inputId);
                     mTvInputAppliactionBanners.remove(inputId);
                     for (TvInputCallback callback : mCallbacks) {
-                        callback.onInputUpdated(inputId);
+                        if (isInputAllowed(info)) {
+                            callback.onInputUpdated(inputId);
+                        }
                     }
                     ImageCache.getInstance()
                             .remove(ImageLoader.LoadTvInputLogoTask.getTvInputLogoKey(inputId));
@@ -250,7 +255,9 @@ public class TvInputManagerHelper {
                         mTvInputCustomLabels.put(inputInfo.getId(), inputCustomLabel.toString());
                     }
                     for (TvInputCallback callback : mCallbacks) {
-                        callback.onTvInputInfoUpdated(inputInfo);
+                        if (isInputAllowed(inputInfo)) {
+                            callback.onTvInputInfoUpdated(inputInfo);
+                        }
                     }
                     ImageCache.getInstance()
                             .remove(
@@ -356,6 +363,9 @@ public class TvInputManagerHelper {
                 continue;
             }
             TvInputInfo input = getTvInputInfo(pair.getKey());
+            if (!isInputAllowed(input)) {
+                continue;
+            }
             if (tunerOnly && input.getType() != TvInputInfo.TYPE_TUNER) {
                 continue;
             }
@@ -363,6 +373,11 @@ public class TvInputManagerHelper {
         }
         Collections.sort(list, mTvInputInfoComparator);
         return list;
+    }
+
+    public boolean isInputAllowed(TvInputInfo info) {
+        //TODO(b/117782538): check system settings first.
+        return SystemProperties.ALLOW_THIRD_PARTY_INPUTS.getValue() || isSystemInput(info);
     }
 
     /**

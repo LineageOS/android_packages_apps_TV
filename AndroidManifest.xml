@@ -71,6 +71,7 @@
     <application
         android:name="com.android.tv.app.LiveTvApplication"
         android:allowBackup="true"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:banner="@drawable/live_tv_banner"
         android:icon="@drawable/ic_tv_app"
         android:label="@string/app_name"
@@ -104,6 +105,8 @@
             android:exported="false"
             android:process="com.android.tv.common" />
 
+
+
         <receiver
             android:name="com.android.tv.livetv.receiver.GlobalKeyReceiver"
             android:exported="true" >
@@ -126,8 +129,8 @@
 
         <activity
             android:name="com.android.tv.TvActivity"
-            android:launchMode="singleTask"
-            android:exported="true" >
+            android:exported="true"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -289,8 +292,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
-        <!-- DVR -->
+        </activity> <!-- DVR -->
         <service
             android:name="com.android.tv.dvr.recorder.DvrRecordingService"
             android:label="@string/dvr_service_name" />
