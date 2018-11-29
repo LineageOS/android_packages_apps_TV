@@ -23,7 +23,9 @@ import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.TunableTvViewPlayingApi;
 
 /** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
-class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
+class AudioManagerHelper
+        implements AudioManager.OnAudioFocusChangeListener,
+                AudioCapabilitiesReceiver.OnAc3PassthroughCapabilityChangeListener {
     private static final float AUDIO_MAX_VOLUME = 1.0f;
     private static final float AUDIO_MIN_VOLUME = 0.0f;
     private static final float AUDIO_DUCKING_VOLUME = 0.3f;
@@ -31,7 +33,6 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     private final Activity mActivity;
     private final TunableTvViewPlayingApi mTvView;
     private final AudioManager mAudioManager;
-    private final AudioCapabilitiesReceiver mAudioCapabilitiesReceiver;
 
     private boolean mAc3PassthroughSupported;
     private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
@@ -40,16 +41,6 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
         mActivity = activity;
         mTvView = tvView;
         mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        mAudioCapabilitiesReceiver =
-                new AudioCapabilitiesReceiver(
-                        activity,
-                        new AudioCapabilitiesReceiver.OnAc3PassthroughCapabilityChangeListener() {
-                            @Override
-                            public void onAc3PassthroughCapabilityChange(boolean capability) {
-                                mAc3PassthroughSupported = capability;
-                            }
-                        });
-        mAudioCapabilitiesReceiver.register();
     }
 
     /**
@@ -119,14 +110,14 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
         return mAc3PassthroughSupported;
     }
 
-    /** Release the resources the helper class may occupied. */
-    void release() {
-        mAudioCapabilitiesReceiver.unregister();
-    }
-
     @Override
     public void onAudioFocusChange(int focusChange) {
         mAudioFocusStatus = focusChange;
         setVolumeByAudioFocusStatus();
+    }
+
+    @Override
+    public void onAc3PassthroughCapabilityChange(boolean capability) {
+        mAc3PassthroughSupported = capability;
     }
 }

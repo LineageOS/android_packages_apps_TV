@@ -109,6 +109,7 @@ import com.android.tv.onboarding.OnboardingActivity;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
+import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.NotificationService;
 import com.android.tv.search.ProgramGuideSearchFragment;
@@ -166,6 +167,7 @@ public class MainActivity extends Activity
                 HasSingletons<MySingletons> {
     private static final String TAG = "MainActivity";
     private static final boolean DEBUG = false;
+    private AudioCapabilitiesReceiver mAudioCapabilitiesReceiver;
 
     /** Singletons needed for this class. */
     public interface MySingletons extends ChannelBannerView.MySingletons {}
@@ -671,6 +673,8 @@ public class MainActivity extends Activity
         mAccessibilityManager.addAccessibilityStateChangeListener(mOverlayManager);
 
         mAudioManagerHelper = new AudioManagerHelper(this, mTvView);
+        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiver(this, mAudioManagerHelper);
+        mAudioCapabilitiesReceiver.register();
         Intent nowPlayingIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, REQUEST_CODE_NOW_PLAYING, nowPlayingIntent, 0);
@@ -2036,8 +2040,8 @@ public class MainActivity extends Activity
         if (mMediaSessionWrapper != null) {
             mMediaSessionWrapper.release();
         }
-        if (mAudioManagerHelper != null) {
-            mAudioManagerHelper.release();
+        if (mAudioCapabilitiesReceiver != null) {
+            mAudioCapabilitiesReceiver.unregister();
         }
         mHandler.removeCallbacksAndMessages(null);
         application.getMainActivityWrapper().onMainActivityDestroyed(this);
@@ -2640,7 +2644,9 @@ public class MainActivity extends Activity
                 return;
             case CommonConstants.VIDEO_UNAVAILABLE_REASON_NOT_CONNECTED:
                 Toast.makeText(
-                        this, R.string.msg_channel_unavailable_not_connected, Toast.LENGTH_SHORT)
+                                this,
+                                R.string.msg_channel_unavailable_not_connected,
+                                Toast.LENGTH_SHORT)
                         .show();
                 break;
             case TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN:
