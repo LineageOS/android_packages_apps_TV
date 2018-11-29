@@ -65,6 +65,7 @@ public class DvrPlaybackOverlayFragment extends PlaybackFragment {
 
     private static final String MEDIA_SESSION_TAG = "com.android.tv.dvr.mediasession";
     private static final float DISPLAY_ASPECT_RATIO_EPSILON = 0.01f;
+    private static final long INVALID_TIME = -1;
 
     // mProgram is only used to store program from intent. Don't use it elsewhere.
     private RecordedProgram mProgram;
@@ -496,6 +497,20 @@ public class DvrPlaybackOverlayFragment extends PlaybackFragment {
         if (view != null) {
             view.setTranslationY(verticalPadding);
         }
+    }
+
+    public void onPlaybackResume() {
+        mPlaybackControlHelper.onPlaybackResume();
+    }
+
+    public long getProgramStartTimeMs() {
+        return (mProgram != null && mProgram.isPlayable())
+                ? mProgram.getStartTimeUtcMillis()
+                : INVALID_TIME;
+    }
+
+    public void updateProgress() {
+        mPlaybackControlHelper.updateProgress();
     }
 
     private class RelatedRecordingsAdapter extends SortedArrayAdapter<BaseProgram> {

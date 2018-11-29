@@ -104,7 +104,8 @@ public class RecordingSampleBuffer
      * @param bufferManager the manager of {@link SampleChunk}
      * @param bufferListener the listener for buffer I/O event
      * @param enableTrickplay {@code true} when trickplay should be enabled
-     * @param bufferReason the reason for caching samples {@link RecordingSampleBuffer.BufferReason}
+     * @param concurrentDvrPlaybackFlags
+     * @param bufferReason the reason for caching samples {@link BufferReason}
      */
     public RecordingSampleBuffer(
             BufferManager bufferManager,
@@ -112,9 +113,9 @@ public class RecordingSampleBuffer
             boolean enableTrickplay,
             ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
             @BufferReason int bufferReason) {
-        mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         mBufferManager = bufferManager;
         mBufferListener = bufferListener;
+        mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         if (bufferListener != null) {
             bufferListener.onBufferStateChanged(enableTrickplay);
         }
@@ -132,7 +133,13 @@ public class RecordingSampleBuffer
         mReadSampleQueues = new ArrayList<>();
         mSampleChunkIoHelper =
                 new SampleChunkIoHelper(
-                        ids, mediaFormats, mBufferReason, mBufferManager, mSamplePool, mIoCallback);
+                        ids,
+                        mediaFormats,
+                        mBufferReason,
+                        mBufferManager,
+                        mSamplePool,
+                        mIoCallback,
+                        mConcurrentDvrPlaybackFlags);
         for (int i = 0; i < mTrackCount; ++i) {
             mReadSampleQueues.add(i, new SampleQueue(mSamplePool));
         }
