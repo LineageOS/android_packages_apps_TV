@@ -35,7 +35,7 @@ class AudioManagerHelper
     private final AudioManager mAudioManager;
 
     private boolean mAc3PassthroughSupported;
-    private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
+    private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_NONE;
 
     AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
         mActivity = activity;
@@ -44,9 +44,11 @@ class AudioManagerHelper
     }
 
     /**
-     * Sets suitable volume to {@link TunableTvView} according to the current audio focus. If the
-     * focus status is {@link AudioManager#AUDIOFOCUS_LOSS} and the activity is under PIP mode, this
-     * method will finish the activity.
+     * Sets suitable volume to {@link TunableTvViewPlayingApi} according to the current audio focus.
+     *
+     * <p>If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} or {@link
+     * AudioManager#AUDIOFOCUS_NONE} and the activity is under PIP mode, this method will finish the
+     * activity.
      */
     void setVolumeByAudioFocusStatus() {
         if (mTvView.isPlaying()) {
@@ -58,6 +60,7 @@ class AudioManagerHelper
                         mTvView.setStreamVolume(AUDIO_MAX_VOLUME);
                     }
                     break;
+                case AudioManager.AUDIOFOCUS_NONE:
                 case AudioManager.AUDIOFOCUS_LOSS:
                     if (TvFeatures.PICTURE_IN_PICTURE.isEnabled(mActivity)
                             && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
