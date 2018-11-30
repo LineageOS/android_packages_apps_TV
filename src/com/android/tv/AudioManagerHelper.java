@@ -17,8 +17,11 @@ package com.android.tv;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.TunableTvViewPlayingApi;
 
@@ -33,6 +36,7 @@ class AudioManagerHelper
     private final Activity mActivity;
     private final TunableTvViewPlayingApi mTvView;
     private final AudioManager mAudioManager;
+    @Nullable private final AudioFocusRequest mFocusRequest;
 
     private boolean mAc3PassthroughSupported;
     private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_NONE;
@@ -41,6 +45,23 @@ class AudioManagerHelper
         mActivity = activity;
         mTvView = tvView;
         mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mFocusRequest =
+                    new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                            .setAudioAttributes(
+                                    new AudioAttributes.Builder()
+                                            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                                            .build())
+                            .setOnAudioFocusChangeListener(this)
+                            // Auto ducking from the system does not mute the TV Input Service.
+                            // Using will pause when ducked allows us to set the stream volume
+                            // even when we are not pausing.
+                            .setWillPauseWhenDucked(true)
+                            .build();
+        } else {
+            mFocusRequest = null;
+        }
     }
 
     /**
@@ -48,7 +69,9 @@ class AudioManagerHelper
      *
      * <p>If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} or {@link
      * AudioManager#AUDIOFOCUS_NONE} and the activity is under PIP mode, this method will finish the
-     * activity.
+     * activity. Sets suitable volume to {@link TunableTvViewPlayingApi} according to the current
+     * audio focus. If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} and the activity is
+     * under PIP mode, this method will finish the activity.
      */
     void setVolumeByAudioFocusStatus() {
         if (mTvView.isPlaying()) {
@@ -92,9 +115,14 @@ class AudioManagerHelper
      * returned result.
      */
     void requestAudioFocus() {
-        int result =
-                mAudioManager.requestAudioFocus(
-                        this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            result = mAudioManager.requestAudioFocus(mFocusRequest);
+        } else {
+            result =
+                    mAudioManager.requestAudioFocus(
+                            this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
         mAudioFocusStatus =
                 (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         ? AudioManager.AUDIOFOCUS_GAIN
@@ -105,7 +133,11 @@ class AudioManagerHelper
     /** Abandons audio focus. */
     void abandonAudioFocus() {
         mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
-        mAudioManager.abandonAudioFocus(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mAudioManager.abandonAudioFocusRequest(mFocusRequest);
+        } else {
+            mAudioManager.abandonAudioFocus(this);
+        }
     }
 
     /** Returns {@code true} if the device supports AC3 pass-through. */
