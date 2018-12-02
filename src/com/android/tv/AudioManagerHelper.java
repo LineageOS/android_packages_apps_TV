@@ -17,13 +17,18 @@ package com.android.tv;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.TunableTvViewPlayingApi;
 
 /** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
-class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
+class AudioManagerHelper
+        implements AudioManager.OnAudioFocusChangeListener,
+                AudioCapabilitiesReceiver.OnAc3PassthroughCapabilityChangeListener {
     private static final float AUDIO_MAX_VOLUME = 1.0f;
     private static final float AUDIO_MIN_VOLUME = 0.0f;
     private static final float AUDIO_DUCKING_VOLUME = 0.3f;
@@ -31,31 +36,42 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     private final Activity mActivity;
     private final TunableTvViewPlayingApi mTvView;
     private final AudioManager mAudioManager;
-    private final AudioCapabilitiesReceiver mAudioCapabilitiesReceiver;
+    @Nullable private final AudioFocusRequest mFocusRequest;
 
     private boolean mAc3PassthroughSupported;
-    private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
+    private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_NONE;
 
     AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
         mActivity = activity;
         mTvView = tvView;
         mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        mAudioCapabilitiesReceiver =
-                new AudioCapabilitiesReceiver(
-                        activity,
-                        new AudioCapabilitiesReceiver.OnAc3PassthroughCapabilityChangeListener() {
-                            @Override
-                            public void onAc3PassthroughCapabilityChange(boolean capability) {
-                                mAc3PassthroughSupported = capability;
-                            }
-                        });
-        mAudioCapabilitiesReceiver.register();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mFocusRequest =
+                    new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                            .setAudioAttributes(
+                                    new AudioAttributes.Builder()
+                                            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                                            .build())
+                            .setOnAudioFocusChangeListener(this)
+                            // Auto ducking from the system does not mute the TV Input Service.
+                            // Using will pause when ducked allows us to set the stream volume
+                            // even when we are not pausing.
+                            .setWillPauseWhenDucked(true)
+                            .build();
+        } else {
+            mFocusRequest = null;
+        }
     }
 
     /**
-     * Sets suitable volume to {@link TunableTvView} according to the current audio focus. If the
-     * focus status is {@link AudioManager#AUDIOFOCUS_LOSS} and the activity is under PIP mode, this
-     * method will finish the activity.
+     * Sets suitable volume to {@link TunableTvViewPlayingApi} according to the current audio focus.
+     *
+     * <p>If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} or {@link
+     * AudioManager#AUDIOFOCUS_NONE} and the activity is under PIP mode, this method will finish the
+     * activity. Sets suitable volume to {@link TunableTvViewPlayingApi} according to the current
+     * audio focus. If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} and the activity is
+     * under PIP mode, this method will finish the activity.
      */
     void setVolumeByAudioFocusStatus() {
         if (mTvView.isPlaying()) {
@@ -67,6 +83,7 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
                         mTvView.setStreamVolume(AUDIO_MAX_VOLUME);
                     }
                     break;
+                case AudioManager.AUDIOFOCUS_NONE:
                 case AudioManager.AUDIOFOCUS_LOSS:
                     if (TvFeatures.PICTURE_IN_PICTURE.isEnabled(mActivity)
                             && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -98,9 +115,14 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
      * returned result.
      */
     void requestAudioFocus() {
-        int result =
-                mAudioManager.requestAudioFocus(
-                        this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            result = mAudioManager.requestAudioFocus(mFocusRequest);
+        } else {
+            result =
+                    mAudioManager.requestAudioFocus(
+                            this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
         mAudioFocusStatus =
                 (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         ? AudioManager.AUDIOFOCUS_GAIN
@@ -111,7 +133,11 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     /** Abandons audio focus. */
     void abandonAudioFocus() {
         mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
-        mAudioManager.abandonAudioFocus(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mAudioManager.abandonAudioFocusRequest(mFocusRequest);
+        } else {
+            mAudioManager.abandonAudioFocus(this);
+        }
     }
 
     /** Returns {@code true} if the device supports AC3 pass-through. */
@@ -119,14 +145,14 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
         return mAc3PassthroughSupported;
     }
 
-    /** Release the resources the helper class may occupied. */
-    void release() {
-        mAudioCapabilitiesReceiver.unregister();
-    }
-
     @Override
     public void onAudioFocusChange(int focusChange) {
         mAudioFocusStatus = focusChange;
         setVolumeByAudioFocusStatus();
+    }
+
+    @Override
+    public void onAc3PassthroughCapabilityChange(boolean capability) {
+        mAc3PassthroughSupported = capability;
     }
 }
