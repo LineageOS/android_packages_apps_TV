@@ -97,6 +97,7 @@ public class ProgramDataManager implements MemoryManageable {
     private final Executor mDbExecutor;
     private final BackendKnobsFlags mBackendKnobsFlags;
     private final PerformanceMonitor mPerformanceMonitor;
+    private final ChannelDataManager mChannelDataManager;
     private boolean mStarted;
     // Updated only on the main thread.
     private volatile boolean mCurrentProgramsLoadFinished;
@@ -133,7 +134,8 @@ public class ProgramDataManager implements MemoryManageable {
                 Clock.SYSTEM,
                 Looper.myLooper(),
                 TvSingletons.getSingletons(context).getBackendKnobs(),
-                TvSingletons.getSingletons(context).getPerformanceMonitor());
+                TvSingletons.getSingletons(context).getPerformanceMonitor(),
+                TvSingletons.getSingletons(context).getChannelDataManager());
     }
 
     @VisibleForTesting
@@ -144,7 +146,8 @@ public class ProgramDataManager implements MemoryManageable {
             Clock time,
             Looper looper,
             BackendKnobsFlags backendKnobsFlags,
-            PerformanceMonitor performanceMonitor) {
+            PerformanceMonitor performanceMonitor,
+            ChannelDataManager channelDataManager) {
         mContext = context;
         mDbExecutor = executor;
         mClock = time;
@@ -152,6 +155,7 @@ public class ProgramDataManager implements MemoryManageable {
         mHandler = new MyHandler(looper);
         mBackendKnobsFlags = backendKnobsFlags;
         mPerformanceMonitor = performanceMonitor;
+        mChannelDataManager = channelDataManager;
         mProgramObserver =
                 new ContentObserver(mHandler) {
                     @Override
@@ -476,10 +480,26 @@ public class ProgramDataManager implements MemoryManageable {
             long time = mClock.currentTimeMillis();
             mStartTimeMs =
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
-            long durationHours =
-                    mChannelIdProgramCache.isEmpty()
-                            ? Math.max(1L, mBackendKnobsFlags.programGuideInitialFetchHours())
-                            : Math.max(24L, mBackendKnobsFlags.programGuideMaxHours());
+            long durationHours;
+            if (mChannelIdProgramCache.isEmpty()) {
+                durationHours = Math.max(1L, mBackendKnobsFlags.programGuideInitialFetchHours());
+            } else {
+                int channelCount = mChannelDataManager.getChannelCount();
+                long knobsMaxHours = mBackendKnobsFlags.programGuideMaxHours();
+                // TODO(b/120156433): make expectedChannelCount a BackendKnobsFlag
+                long expectedChannelCount = 100;
+                if (channelCount <= expectedChannelCount) {
+                    durationHours = Math.max(48L, knobsMaxHours);
+                } else {
+                    // 2 days <= duration <= 14 days (336 hours)
+                    durationHours = knobsMaxHours * expectedChannelCount / channelCount;
+                    if (durationHours < 48L) {
+                        durationHours = 48L;
+                    } else if (durationHours > 336L) {
+                        durationHours = 336L;
+                    }
+                }
+            }
             mEndTimeMs = mStartTimeMs + TimeUnit.HOURS.toMillis(durationHours);
             mSuccess = false;
         }
