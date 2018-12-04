@@ -38,4 +38,9 @@ public final class DefaultBackendKnobsFlags
     public long programGuideMaxHours() {
         return 48;
     }
+
+    @Override
+    public long epgTargetChannelCount() {
+        return 100;
+    }
 }

@@ -486,13 +486,12 @@ public class ProgramDataManager implements MemoryManageable {
             } else {
                 int channelCount = mChannelDataManager.getChannelCount();
                 long knobsMaxHours = mBackendKnobsFlags.programGuideMaxHours();
-                // TODO(b/120156433): make expectedChannelCount a BackendKnobsFlag
-                long expectedChannelCount = 100;
-                if (channelCount <= expectedChannelCount) {
+                long targetChannelCount = mBackendKnobsFlags.epgTargetChannelCount();
+                if (channelCount <= targetChannelCount) {
                     durationHours = Math.max(48L, knobsMaxHours);
                 } else {
                     // 2 days <= duration <= 14 days (336 hours)
-                    durationHours = knobsMaxHours * expectedChannelCount / channelCount;
+                    durationHours = knobsMaxHours * targetChannelCount / channelCount;
                     if (durationHours < 48L) {
                         durationHours = 48L;
                     } else if (durationHours > 336L) {
