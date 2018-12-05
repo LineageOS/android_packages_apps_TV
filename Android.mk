@@ -45,6 +45,7 @@ LOCAL_JAVA_LIBRARIES := \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
+    error-prone-annotations-jar \
     jsr330 \
     lib-exoplayer \
     lib-exoplayer-v2-core \
@@ -90,6 +91,7 @@ prebuilts := \
     lib-exoplayer:libs/exoplayer-r1.5.16.aar \
     lib-exoplayer-v2-core:libs/exoplayer-core-2.9.0.aar \
     auto-value-jar:../../../prebuilts/tools/common/m2/repository/com/google/auto/value/auto-value/1.5.2/auto-value-1.5.2.jar \
+    error-prone-annotations-jar:../../../prebuilts/tools/common/m2/repository/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.jar \
     guava-android-jar:../../../prebuilts/tools/common/m2/repository/com/google/guava/guava/23.6-android/guava-23.6-android.jar \
     javax-annotations-jar:../../../prebuilts/tools/common/m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar \
     truth-0-36-prebuilt-jar:../../../prebuilts/tools/common/m2/repository/com/google/truth/truth/0.36/truth-0.36.jar \
