@@ -19,7 +19,7 @@ package com.android.tv.tuner.source;
 import android.content.Context;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
-import com.android.tv.tuner.TunerHal;
+import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.tvinput.EventDetector.EventListener;
@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * Manages {@link TunerTsStreamer} for playback and recording. The class hides handling of {@link
- * TunerHal} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
+ * ITunerHal} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
  * class directly.
  */
 class TunerTsStreamerManager {
@@ -248,8 +248,8 @@ class TunerTsStreamerManager {
     }
 
     /**
-     * Supports sharing {@link TunerHal} among multiple sessions. The class also supports session
-     * affinity for {@link TunerHal} allocation.
+     * Supports sharing {@link ITunerHal} among multiple sessions. The class also supports session
+     * affinity for {@link ITunerHal} allocation.
      */
     private static class TunerHalManager {
         private final Map<Integer, ITunerHal> mTunerHals = new HashMap<>();
@@ -269,7 +269,7 @@ class TunerTsStreamerManager {
                 mTunerHals.remove(key);
                 return hal;
             }
-            return TunerHal.createInstance(context);
+            return BuiltInTunerHalFactory.createInstance(context);
         }
 
         private void releaseTunerHal(ITunerHal hal, int sessionId, boolean reuse) {

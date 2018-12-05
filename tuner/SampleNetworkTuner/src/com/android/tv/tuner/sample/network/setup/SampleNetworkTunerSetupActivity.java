@@ -35,7 +35,7 @@ import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.tuner.TunerHal;
+import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.sample.network.R;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity;
 import com.android.tv.tuner.setup.ConnectionTypeFragment;
@@ -92,7 +92,9 @@ public class SampleNetworkTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return TunerHal.getTunerTypeAndCount(SampleNetworkTunerSetupActivity.this).first;
+                return BuiltInTunerHalFactory.getTunerTypeAndCount(
+                                SampleNetworkTunerSetupActivity.this)
+                        .first;
             }
 
             @Override

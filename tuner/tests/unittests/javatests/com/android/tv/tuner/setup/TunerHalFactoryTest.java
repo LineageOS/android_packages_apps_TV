@@ -23,7 +23,6 @@ import static org.junit.Assert.assertSame;
 import android.os.AsyncTask;
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.AndroidJUnit4;
-import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity.TunerHalFactory;
 import java.util.concurrent.Executor;

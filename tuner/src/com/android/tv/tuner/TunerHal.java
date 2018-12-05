@@ -17,33 +17,25 @@
 package com.android.tv.tuner;
 
 import android.content.Context;
-import android.support.annotation.WorkerThread;
 import android.util.Log;
-import android.util.Pair;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.compat.TvInputConstantCompat;
-import com.android.tv.common.customization.CustomizationManager;
-
 import com.android.tv.tuner.api.ITunerHal;
-
 import com.android.tv.common.annotation.UsedByNative;
 import java.util.Objects;
 
 /** A base class to handle a hardware tuner device. */
 public abstract class TunerHal implements ITunerHal {
-    protected static final String TAG = "TunerHal";
-    protected static final boolean DEBUG = false;
+    private static final String TAG = "TunerHal";
 
-    protected static final int PID_PAT = 0;
-    protected static final int PID_ATSC_SI_BASE = 0x1ffb;
-    protected static final int PID_DVB_SDT = 0x0011;
-    protected static final int PID_DVB_EIT = 0x0012;
-    protected static final int DEFAULT_VSB_TUNE_TIMEOUT_MS = 2000;
-    protected static final int DEFAULT_QAM_TUNE_TIMEOUT_MS = 4000; // Some device takes time for
+    private static final int PID_PAT = 0;
+    private static final int PID_ATSC_SI_BASE = 0x1ffb;
+    private static final int PID_DVB_SDT = 0x0011;
+    private static final int PID_DVB_EIT = 0x0012;
+    private static final int DEFAULT_VSB_TUNE_TIMEOUT_MS = 2000;
+    private static final int DEFAULT_QAM_TUNE_TIMEOUT_MS = 4000; // Some device takes time for
 
-    private static Integer sBuiltInTunerType;
-
-    protected @DeliverySystemType int mDeliverySystemType;
+    @DeliverySystemType private int mDeliverySystemType;
     private boolean mIsStreaming;
     private int mFrequency;
     private String mModulation;
@@ -54,62 +46,10 @@ public abstract class TunerHal implements ITunerHal {
         }
     }
 
-    /**
-     * Returns if tuner input service would use built-in tuners instead of USB tuners or network
-     * tuners.
-     */
-    public static boolean useBuiltInTuner(Context context) {
-        return getBuiltInTunerType(context) != 0;
-    }
-
-    @BuiltInTunerType
-    private static int getBuiltInTunerType(Context context) {
-        if (sBuiltInTunerType == null) {
-            sBuiltInTunerType = 0;
-            if (CustomizationManager.hasLinuxDvbBuiltInTuner(context)
-                    && DvbTunerHal.getNumberOfDevices(context) > 0) {
-                sBuiltInTunerType = BUILT_IN_TUNER_TYPE_LINUX_DVB;
-            }
-        }
-        return sBuiltInTunerType;
-    }
-
     protected TunerHal(Context context) {
         mIsStreaming = false;
         mFrequency = -1;
         mModulation = null;
-    }
-
-    /**
-     * Creates a TunerHal instance.
-     *
-     * @param context context for creating the TunerHal instance
-     * @return the TunerHal instance
-     */
-    @WorkerThread
-    public static synchronized ITunerHal createInstance(Context context) {
-        ITunerHal tunerHal = null;
-        if (DvbTunerHal.getNumberOfDevices(context) > 0) {
-            if (DEBUG) Log.d(TAG, "Use DvbTunerHal");
-            tunerHal = new DvbTunerHal(context);
-        }
-        return tunerHal != null && tunerHal.openFirstAvailable() ? tunerHal : null;
-    }
-
-    /** Gets the number of tuner devices currently present. */
-    @WorkerThread
-    public static Pair<Integer, Integer> getTunerTypeAndCount(Context context) {
-        if (useBuiltInTuner(context)) {
-            if (getBuiltInTunerType(context) == TunerHal.BUILT_IN_TUNER_TYPE_LINUX_DVB) {
-                return new Pair<>(TUNER_TYPE_BUILT_IN, DvbTunerHal.getNumberOfDevices(context));
-            }
-        } else {
-            int usbTunerCount = DvbTunerHal.getNumberOfDevices(context);
-            if (usbTunerCount > 0) {
-                return new Pair<>(TUNER_TYPE_USB, usbTunerCount);
-            }
-        }
-        return new Pair<>(null, 0);
     }
 
     protected boolean isStreaming() {
@@ -254,9 +194,9 @@ public abstract class TunerHal implements ITunerHal {
     protected native void nativeStopTune(long deviceId);
 
     /**
-     * This method must be called after {@link TunerHal#tune} and before {@link TunerHal#stopTune}.
-     * Writes at most maxSize TS frames in a buffer provided by the user. The frames employ MPEG
-     * encoding.
+     * This method must be called after {@link #tune(int, String, String)} and before {@link
+     * #stopTune()}. Writes at most maxSize TS frames in a buffer provided by the user. The frames
+     * employ MPEG encoding.
      *
      * @param javaBuffer a buffer to write the video data in
      * @param javaBufferSize the max amount of bytes to write in this buffer. Usually this number
