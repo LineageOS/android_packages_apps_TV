@@ -33,6 +33,9 @@ public interface BackendKnobsFlags {
     /** EPG fetcher interval in hours */
     long epgFetcherIntervalHour();
 
+    /** Target channel count for EPG. It is used to adjust the EPG length */
+    long epgTargetChannelCount();
+
     /** How many hours of programs are loaded in the program guide for during the initial fetch */
     long programGuideInitialFetchHours();
 
