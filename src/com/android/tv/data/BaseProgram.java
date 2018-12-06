@@ -47,6 +47,8 @@ public abstract class BaseProgram {
 
     public static final String COLUMN_SERIES_ID = "series_id";
 
+    public static final String COLUMN_STATE = "state";
+
     private static class EpisodeComparator implements Comparator<BaseProgram> {
         private final boolean mReversedSeason;
 

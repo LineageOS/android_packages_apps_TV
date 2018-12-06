@@ -30,6 +30,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
+import android.util.Log;
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.CommonUtils;
@@ -49,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 @AutoValue
 public abstract class RecordedProgram extends BaseProgram {
     public static final int ID_NOT_SET = -1;
+    private static final String TAG = "RecordingProgram";
 
     /** The recording state. */
     // TODO(b/25023911): Use @SimpleEnum  when it is supported by AutoValue
@@ -134,7 +136,13 @@ public abstract class RecordedProgram extends BaseProgram {
         if (TvProviderUtils.getRecordedProgramHasSeriesIdColumn()) {
             builder.setSeriesId(StringUtils.nullToEmpty(cursor.getString(index)));
         }
-        // TODO(b/71717809): add state column
+        index++;
+        if (TvProviderUtils.getRecordedProgramHasStateColumn()) {
+            String state = StringUtils.nullToEmpty(cursor.getString(index));
+            if (!TextUtils.isEmpty(state)) {
+                builder.setState(getRecordingState(state));
+            }
+        }
         return builder.build();
     }
 
@@ -199,6 +207,9 @@ public abstract class RecordedProgram extends BaseProgram {
         values.put(RecordedPrograms.COLUMN_VERSION_NUMBER, recordedProgram.getVersionNumber());
         if (TvProviderUtils.checkSeriesIdColumn(context, RecordedPrograms.CONTENT_URI)) {
             values.put(COLUMN_SERIES_ID, recordedProgram.getSeriesId());
+        }
+        if (TvProviderUtils.checkStateColumn(context, RecordedPrograms.CONTENT_URI)) {
+            values.put(COLUMN_STATE, recordedProgram.getState().toString());
         }
         return values;
     }
@@ -422,13 +433,16 @@ public abstract class RecordedProgram extends BaseProgram {
         }
     }
 
-    public boolean isPlayable() {
-        switch (getState()) {
-            case PARTIAL:
-            case FINISHED:
-                return true;
-            default:
-                return false;
+    public boolean isPartial() {
+        return getState() == State.PARTIAL;
+    }
+
+    private static State getRecordingState(String state) {
+        try {
+            return State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Unknown recording state  " + state, e);
+            return State.NOT_SET;
         }
     }
 
