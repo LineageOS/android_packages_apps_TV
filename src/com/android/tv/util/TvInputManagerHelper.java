@@ -130,6 +130,10 @@ public class TvInputManagerHelper {
 
     private static final String TV_INPUT_ALLOW_3RD_PARTY_INPUTS = "tv_input_allow_3rd_party_inputs";
 
+    private static final String[] SYSTEM_INPUT_ID_BLACKLIST = {
+        "com.google.android.videos/" // Play Movies
+    };
+
     /** The default tv input priority to show. */
     private static final ArrayList<Integer> DEFAULT_TV_INPUT_PRIORITY = new ArrayList<>();
 
@@ -669,7 +673,17 @@ public class TvInputManagerHelper {
     }
 
     private boolean isInputBlocked(TvInputInfo info) {
-        return (!mAllow3rdPartyInputs && !isSystemInput(info)) || isInBlackList(info.getId());
+        if (!mAllow3rdPartyInputs) {
+            if (!isSystemInput(info)) {
+                return true;
+            }
+            for (String id : SYSTEM_INPUT_ID_BLACKLIST) {
+                if (info.getId().startsWith(id)) {
+                    return true;
+                }
+            }
+        }
+        return isInBlackList(info.getId());
     }
 
     /**
