@@ -41,7 +41,7 @@ public class TunerHalFactoryTest {
         }
 
         @Override
-        protected TunerHal createInstance() {
+        protected ITunerHal createInstance() {
             return new com.android.tv.tuner.FakeTunerHal() {};
         }
     }
