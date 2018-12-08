@@ -36,11 +36,11 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
-import com.android.tv.TvFeatures;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.compat.TvInputInfoCompat;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.SystemProperties;
+import com.android.tv.features.TvFeatures;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.util.images.ImageCache;
@@ -54,9 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Helper class for {@link TvInputManager}.
- */
+/** Helper class for {@link TvInputManager}. */
 @UiThread
 public class TvInputManagerHelper {
     private static final String TAG = "TvInputManagerHelper";
@@ -337,8 +335,11 @@ public class TvInputManagerHelper {
         }
         if (DEBUG) Log.d(TAG, "start");
         mStarted = true;
-        mContext.getContentResolver().registerContentObserver(
-                Settings.Global.getUriFor(TV_INPUT_ALLOW_3RD_PARTY_INPUTS), true, mContentObserver);
+        mContext.getContentResolver()
+                .registerContentObserver(
+                        Settings.Global.getUriFor(TV_INPUT_ALLOW_3RD_PARTY_INPUTS),
+                        true,
+                        mContentObserver);
         updateAllow3rdPartyInputs();
         mTvInputManager.registerCallback(mInternalCallback, mHandler);
         initInputMaps();
@@ -663,8 +664,9 @@ public class TvInputManagerHelper {
     private void updateAllow3rdPartyInputs() {
         int setting;
         try {
-            setting = Settings.Global.getInt(
-                    mContext.getContentResolver(), TV_INPUT_ALLOW_3RD_PARTY_INPUTS);
+            setting =
+                    Settings.Global.getInt(
+                            mContext.getContentResolver(), TV_INPUT_ALLOW_3RD_PARTY_INPUTS);
         } catch (SettingNotFoundException e) {
             mAllow3rdPartyInputs = SystemProperties.ALLOW_THIRD_PARTY_INPUTS.getValue();
             return;

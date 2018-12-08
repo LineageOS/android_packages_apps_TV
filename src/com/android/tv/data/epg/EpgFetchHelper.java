@@ -28,12 +28,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.android.tv.TvFeatures;
 import com.android.tv.common.CommonConstants;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.Program;
 import com.android.tv.data.api.Channel;
+import com.android.tv.features.TvFeatures;
 import com.android.tv.util.TvProviderUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,9 +106,7 @@ class EpgFetchHelper {
                     ops.add(
                             ContentProviderOperation.newUpdate(
                                             TvContract.buildProgramUri(oldProgram.getId()))
-                                    .withValues(Program.toContentValues(
-                                            newProgram,
-                                            context))
+                                    .withValues(Program.toContentValues(newProgram, context))
                                     .build());
                     oldProgramsIndex++;
                     newProgramsIndex++;
@@ -135,9 +132,7 @@ class EpgFetchHelper {
             if (addNewProgram) {
                 ops.add(
                         ContentProviderOperation.newInsert(Programs.CONTENT_URI)
-                                .withValues(Program.toContentValues(
-                                        newProgram,
-                                        context))
+                                .withValues(Program.toContentValues(newProgram, context))
                                 .build());
             }
             // Throttle the batch operation not to cause TransactionTooLargeException.
@@ -182,8 +177,7 @@ class EpgFetchHelper {
                     TvContract.Channels.COLUMN_NETWORK_AFFILIATION,
                     channel.getNetworkAffiliation());
             ops.add(
-                    ContentProviderOperation.newUpdate(
-                            TvContract.buildChannelUri(channel.getId()))
+                    ContentProviderOperation.newUpdate(TvContract.buildChannelUri(channel.getId()))
                             .withValues(values)
                             .build());
             if (ops.size() >= BATCH_OPERATION_COUNT) {
@@ -200,7 +194,6 @@ class EpgFetchHelper {
         } catch (RemoteException | OperationApplicationException e) {
             Log.e(TAG, "Failed to update channels.", e);
         }
-
     }
 
     @WorkerThread

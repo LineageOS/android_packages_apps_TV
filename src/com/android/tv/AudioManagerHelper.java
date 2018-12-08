@@ -22,6 +22,7 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import com.android.tv.features.TvFeatures;
 import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.TunableTvViewPlayingApi;
 
