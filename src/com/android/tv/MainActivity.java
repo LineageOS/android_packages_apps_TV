@@ -674,7 +674,7 @@ public class MainActivity extends Activity
         mAccessibilityManager.addAccessibilityStateChangeListener(mOverlayManager);
 
         mAudioManagerHelper = new AudioManagerHelper(this, mTvView);
-        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiver(this, mAudioManagerHelper);
+        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiver(this, null);
         mAudioCapabilitiesReceiver.register();
         Intent nowPlayingIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =

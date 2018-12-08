@@ -23,13 +23,10 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import com.android.tv.features.TvFeatures;
-import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.api.TunableTvViewPlayingApi;
 
 /** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
-class AudioManagerHelper
-        implements AudioManager.OnAudioFocusChangeListener,
-                AudioCapabilitiesReceiver.OnAc3PassthroughCapabilityChangeListener {
+class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     private static final float AUDIO_MAX_VOLUME = 1.0f;
     private static final float AUDIO_MIN_VOLUME = 0.0f;
     private static final float AUDIO_DUCKING_VOLUME = 0.3f;
@@ -39,7 +36,6 @@ class AudioManagerHelper
     private final AudioManager mAudioManager;
     @Nullable private final AudioFocusRequest mFocusRequest;
 
-    private boolean mAc3PassthroughSupported;
     private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_NONE;
 
     AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
@@ -141,19 +137,9 @@ class AudioManagerHelper
         }
     }
 
-    /** Returns {@code true} if the device supports AC3 pass-through. */
-    boolean isAc3PassthroughSupported() {
-        return mAc3PassthroughSupported;
-    }
-
     @Override
     public void onAudioFocusChange(int focusChange) {
         mAudioFocusStatus = focusChange;
         setVolumeByAudioFocusStatus();
-    }
-
-    @Override
-    public void onAc3PassthroughCapabilityChange(boolean capability) {
-        mAc3PassthroughSupported = capability;
     }
 }
