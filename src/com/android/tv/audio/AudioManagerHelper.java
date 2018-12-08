@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv;
+package com.android.tv.audio;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,8 +25,8 @@ import android.support.annotation.Nullable;
 import com.android.tv.features.TvFeatures;
 import com.android.tv.ui.api.TunableTvViewPlayingApi;
 
-/** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
-class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
+/** A helper class to help {@code Activities} to handle audio-related stuffs. */
+public class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     private static final float AUDIO_MAX_VOLUME = 1.0f;
     private static final float AUDIO_MIN_VOLUME = 0.0f;
     private static final float AUDIO_DUCKING_VOLUME = 0.3f;
@@ -38,7 +38,7 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
 
     private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_NONE;
 
-    AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
+    public AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
         mActivity = activity;
         mTvView = tvView;
         mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
@@ -70,7 +70,7 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
      * audio focus. If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} and the activity is
      * under PIP mode, this method will finish the activity.
      */
-    void setVolumeByAudioFocusStatus() {
+    public void setVolumeByAudioFocusStatus() {
         if (mTvView.isPlaying()) {
             switch (mAudioFocusStatus) {
                 case AudioManager.AUDIOFOCUS_GAIN:
@@ -111,7 +111,7 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
      * Tries to request audio focus from {@link AudioManager} and set volume according to the
      * returned result.
      */
-    void requestAudioFocus() {
+    public void requestAudioFocus() {
         int result;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             result = mAudioManager.requestAudioFocus(mFocusRequest);
@@ -128,7 +128,7 @@ class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     }
 
     /** Abandons audio focus. */
-    void abandonAudioFocus() {
+    public void abandonAudioFocus() {
         mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mAudioManager.abandonAudioFocusRequest(mFocusRequest);
