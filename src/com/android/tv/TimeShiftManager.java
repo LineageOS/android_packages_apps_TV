@@ -34,7 +34,7 @@ import com.android.tv.data.Program;
 import com.android.tv.data.ProgramDataManager;
 import com.android.tv.data.api.Channel;
 import com.android.tv.ui.TunableTvView;
-import com.android.tv.ui.TunableTvViewPlayingApi.TimeShiftListener;
+import com.android.tv.ui.api.TunableTvViewPlayingApi.TimeShiftListener;
 import com.android.tv.util.AsyncDbTask;
 import com.android.tv.util.TimeShiftUtils;
 import com.android.tv.util.Utils;

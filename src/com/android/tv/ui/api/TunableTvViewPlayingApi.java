@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package com.android.tv.ui;
+package com.android.tv.ui.api;
 
 /** API to play pause and set the volume of a TunableTvView */
 public interface TunableTvViewPlayingApi {

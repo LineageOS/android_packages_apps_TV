@@ -76,6 +76,7 @@ import com.android.tv.features.TvFeatures;
 import com.android.tv.parental.ContentRatingsManager;
 import com.android.tv.parental.ParentalControlSettings;
 import com.android.tv.recommendation.NotificationService;
+import com.android.tv.ui.api.TunableTvViewPlayingApi;
 import com.android.tv.util.NetworkUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;

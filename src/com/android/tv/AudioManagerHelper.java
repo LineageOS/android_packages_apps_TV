@@ -24,7 +24,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import com.android.tv.features.TvFeatures;
 import com.android.tv.receiver.AudioCapabilitiesReceiver;
-import com.android.tv.ui.TunableTvViewPlayingApi;
+import com.android.tv.ui.api.TunableTvViewPlayingApi;
 
 /** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
 class AudioManagerHelper
