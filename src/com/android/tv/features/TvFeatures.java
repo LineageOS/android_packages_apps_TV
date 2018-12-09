@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package com.android.tv;
+package com.android.tv.features;
 
 import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
@@ -39,7 +39,6 @@ import com.android.tv.common.feature.PropertyFeature;
 import com.android.tv.common.feature.Sdk;
 import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.common.util.PermissionUtils;
-import com.android.tv.features.PartnerFeatures;
 
 
 /**

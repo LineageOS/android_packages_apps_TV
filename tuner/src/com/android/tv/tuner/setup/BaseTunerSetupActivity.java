@@ -44,8 +44,8 @@ import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.common.util.PostalCodeUtils;
+import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.R;
-import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
@@ -447,7 +447,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /** A static factory for {@link TunerHal} instances * */
+    /** A static factory for {@link ITunerHal} instances * */
     @VisibleForTesting
     protected static class TunerHalFactory {
         private Context mContext;
@@ -507,7 +507,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
 
         @WorkerThread
         protected ITunerHal createInstance() {
-            return TunerHal.createInstance(mContext);
+            return BuiltInTunerHalFactory.createInstance(mContext);
         }
 
         class GenerateTunerHalTask extends AsyncTask<Void, Void, ITunerHal> {

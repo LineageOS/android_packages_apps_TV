@@ -47,7 +47,6 @@ import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeL
 import com.android.tv.ChannelTuner;
 import com.android.tv.MainActivity;
 import com.android.tv.R;
-import com.android.tv.TvFeatures;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.WeakHandler;
@@ -57,6 +56,7 @@ import com.android.tv.data.GenreItems;
 import com.android.tv.data.ProgramDataManager;
 import com.android.tv.dvr.DvrDataManager;
 import com.android.tv.dvr.DvrScheduleManager;
+import com.android.tv.features.TvFeatures;
 import com.android.tv.perf.EventNames;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.TimerEvent;
@@ -339,8 +339,7 @@ public class ProgramGuide
                                     EventNames.PROGRAM_GUIDE_SCROLL_VERTICALLY);
                         }
                     }
-                }
-        );
+                });
 
         RecyclerView.OnScrollListener onScrollListener =
                 new RecyclerView.OnScrollListener() {
@@ -348,6 +347,7 @@ public class ProgramGuide
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         onHorizontalScrolled(dx);
                     }
+
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         if (DEBUG) {
@@ -376,14 +376,13 @@ public class ProgramGuide
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (mTimerEvent != null) {
-                            mPerformanceMonitor
-                                    .stopTimer(mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
+                            mPerformanceMonitor.stopTimer(
+                                    mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
                             mTimerEvent = null;
                         }
                         mPerformanceMonitor.stopJankRecorder(EventNames.PROGRAM_GUIDE_SHOW);
                     }
-                }
-        );
+                });
 
         mShowAnimatorPartial =
                 createAnimator(
@@ -401,8 +400,8 @@ public class ProgramGuide
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (mTimerEvent != null) {
-                            mPerformanceMonitor
-                                    .stopTimer(mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
+                            mPerformanceMonitor.stopTimer(
+                                    mTimerEvent, EventNames.PROGRAM_GUIDE_SHOW);
                             mTimerEvent = null;
                         }
                         mPerformanceMonitor.stopJankRecorder(EventNames.PROGRAM_GUIDE_SHOW);

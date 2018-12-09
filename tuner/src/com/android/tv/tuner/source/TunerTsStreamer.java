@@ -20,7 +20,6 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.data.TunerChannel;
@@ -261,9 +260,9 @@ public class TunerTsStreamer implements TsStreamer {
     }
 
     /**
-     * Returns the current {@link TunerHal} which provides MPEG-TS stream for TunerTsStreamer.
+     * Returns the current {@link ITunerHal} which provides MPEG-TS stream for TunerTsStreamer.
      *
-     * @return {@link TunerHal}
+     * @return {@link ITunerHal}
      */
     public ITunerHal getTunerHal() {
         return mTunerHal;

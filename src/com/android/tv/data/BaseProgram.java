@@ -47,6 +47,8 @@ public abstract class BaseProgram {
 
     public static final String COLUMN_SERIES_ID = "series_id";
 
+    public static final String COLUMN_STATE = "state";
+
     private static class EpisodeComparator implements Comparator<BaseProgram> {
         private final boolean mReversedSeason;
 
@@ -93,7 +95,6 @@ public abstract class BaseProgram {
     public abstract String getTitle();
 
     /** Returns the episode title. */
-    @Nullable
     public abstract String getEpisodeTitle();
 
     /** Returns the displayed title of the program episode. */
@@ -172,19 +173,15 @@ public abstract class BaseProgram {
     public abstract String getSeriesId();
 
     /** Returns the season number. */
-    @Nullable
     public abstract String getSeasonNumber();
 
     /** Returns the episode number. */
-    @Nullable
     public abstract String getEpisodeNumber();
 
     /** Returns URI of the program's poster. */
-    @Nullable
     public abstract String getPosterArtUri();
 
     /** Returns URI of the program's thumbnail. */
-    @Nullable
     public abstract String getThumbnailUri();
 
     /** Returns the array of the ID's of the canonical genres. */

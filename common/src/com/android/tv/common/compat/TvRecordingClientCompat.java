@@ -50,12 +50,14 @@ public class TvRecordingClientCompat extends TvRecordingClient
     public TvRecordingClientCompat(
             Context context, String tag, RecordingCallback callback, Handler handler) {
         super(context, tag, callback, handler);
-        mProcessor =
-                new RecordingClientCompatProcessor(
-                        this,
-                        callback instanceof RecordingClientCallbackCompatEvents
-                                ? (RecordingClientCallbackCompatEvents) callback
-                                : null);
+        RecordingCallbackCompat compatEvents =
+                callback instanceof RecordingCallbackCompat
+                        ? (RecordingCallbackCompat) callback
+                        : null;
+        mProcessor = new RecordingClientCompatProcessor(this, compatEvents);
+        if (compatEvents != null) {
+            compatEvents.mClientCompatProcessor = mProcessor;
+        }
     }
 
     /** Tell the session to Display a debug message dev builds only. */
@@ -72,12 +74,12 @@ public class TvRecordingClientCompat extends TvRecordingClient
     public static class RecordingCallbackCompat extends RecordingCallback
             implements RecordingClientCallbackCompatEvents {
         private final ArrayMap<String, Integer> inputCompatVersionMap = new ArrayMap<>();
-        private RecordingClientCompatProcessor mTvViewCompatProcessor;
+        private RecordingClientCompatProcessor mClientCompatProcessor;
 
         @Override
         public void onEvent(String inputId, String eventType, Bundle eventArgs) {
-            if (mTvViewCompatProcessor != null
-                    && !mTvViewCompatProcessor.handleEvent(inputId, eventType, eventArgs)) {
+            if (mClientCompatProcessor != null
+                    && !mClientCompatProcessor.handleEvent(inputId, eventType, eventArgs)) {
                 super.onEvent(inputId, eventType, eventArgs);
             }
         }

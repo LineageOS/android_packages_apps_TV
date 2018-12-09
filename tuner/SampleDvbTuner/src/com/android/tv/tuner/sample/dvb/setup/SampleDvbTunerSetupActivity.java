@@ -35,7 +35,7 @@ import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.tuner.TunerHal;
+import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.sample.dvb.R;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity;
 import com.android.tv.tuner.setup.ConnectionTypeFragment;
@@ -92,7 +92,8 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return TunerHal.getTunerTypeAndCount(SampleDvbTunerSetupActivity.this).first;
+                return BuiltInTunerHalFactory.getTunerTypeAndCount(SampleDvbTunerSetupActivity.this)
+                        .first;
             }
 
             @Override

@@ -27,6 +27,8 @@ import java.util.TreeSet;
 
 /** A class to handle a hardware Linux DVB API supported tuner device. */
 public class DvbTunerHal extends TunerHal {
+    private static final String TAG = "DvbTunerHal";
+    private static final boolean DEBUG = false;
 
     private static final Object sLock = new Object();
     // @GuardedBy("sLock")

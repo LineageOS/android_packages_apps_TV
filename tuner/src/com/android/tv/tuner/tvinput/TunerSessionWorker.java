@@ -175,6 +175,7 @@ public class TunerSessionWorker
     private static final int TRICKPLAY_MONITOR_INTERVAL_MS = 250;
     private static final int RELEASE_WAIT_INTERVAL_MS = 50;
     private static final long TRICKPLAY_OFF_DURATION_MS = TimeUnit.DAYS.toMillis(14);
+    private static final long SEEK_MARGIN_MS = TimeUnit.SECONDS.toMillis(2);
     public static final ImmutableList<TvContentRating> NO_CONTENT_RATINGS = ImmutableList.of();
 
     // Since release() is done asynchronously, synchronization between multiple TunerSessionWorker
@@ -233,6 +234,7 @@ public class TunerSessionWorker
     private final ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
 
     private int mSignalStrength;
+    private long mRecordedProgramStartTimeMs;
 
     public TunerSessionWorker(
             Context context,
@@ -647,10 +649,12 @@ public class TunerSessionWorker
     private static class RecordedProgram {
         //        private final long mChannelId;
         private final String mDataUri;
+        private final long mStartTimeMillis;
 
         private static final String[] PROJECTION = {
             TvContract.Programs.COLUMN_CHANNEL_ID,
             TvContract.RecordedPrograms.COLUMN_RECORDING_DATA_URI,
+            TvContract.RecordedPrograms.COLUMN_START_TIME_UTC_MILLIS,
         };
 
         public RecordedProgram(Cursor cursor) {
@@ -658,11 +662,13 @@ public class TunerSessionWorker
             //            mChannelId = cursor.getLong(index++);
             index++;
             mDataUri = cursor.getString(index++);
+            mStartTimeMillis = cursor.getLong(index++);
         }
 
         public RecordedProgram(long channelId, String dataUri) {
             //            mChannelId = channelId;
             mDataUri = dataUri;
+            mStartTimeMillis = 0;
         }
 
         public static RecordedProgram onQuery(Cursor c) {
@@ -675,6 +681,10 @@ public class TunerSessionWorker
 
         public String getDataUri() {
             return mDataUri;
+        }
+
+        public long getStartTime() {
+            return mStartTimeMillis;
         }
     }
 
@@ -701,6 +711,7 @@ public class TunerSessionWorker
     private String parseRecording(Uri uri) {
         RecordedProgram recording = getRecordedProgram(uri);
         if (recording != null) {
+            mRecordedProgramStartTimeMs = recording.getStartTime();
             return recording.getDataUri();
         }
         return null;
@@ -997,6 +1008,14 @@ public class TunerSessionWorker
         if (mPlayer == null) {
             return true;
         }
+        if (mRecordingId != null) {
+            long systemBufferTime =
+                    System.currentTimeMillis() - SEEK_MARGIN_MS - mRecordedProgramStartTimeMs;
+            if (seekPositionMs > systemBufferTime) {
+                doTimeShiftResume();
+                return true;
+            }
+        }
         doTrickplayBySeek(seekPositionMs);
         return true;
     }
@@ -1020,6 +1039,12 @@ public class TunerSessionWorker
         } else {
             if (position > mRecordingDuration || position < 0) {
                 doTimeShiftPause();
+                return true;
+            }
+            long systemBufferTime =
+                    systemCurrentTime - SEEK_MARGIN_MS - mRecordedProgramStartTimeMs;
+            if (position > systemBufferTime) {
+                doTimeShiftResume();
                 return true;
             }
         }

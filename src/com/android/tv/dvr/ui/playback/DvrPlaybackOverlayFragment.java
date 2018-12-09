@@ -504,7 +504,7 @@ public class DvrPlaybackOverlayFragment extends PlaybackFragment {
     }
 
     public long getProgramStartTimeMs() {
-        return (mProgram != null && mProgram.isPlayable())
+        return (mProgram != null && mProgram.isPartial())
                 ? mProgram.getStartTimeUtcMillis()
                 : INVALID_TIME;
     }

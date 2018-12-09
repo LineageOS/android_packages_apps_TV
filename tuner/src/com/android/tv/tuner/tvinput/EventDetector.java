@@ -19,7 +19,6 @@ package com.android.tv.tuner.tvinput;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.PsiData;
 import com.android.tv.tuner.data.PsipData;
@@ -246,7 +245,7 @@ public class EventDetector {
     /**
      * Creates a detector for ATSC TV channles and program information.
      *
-     * @param usbTunerInterface {@link TunerHal}
+     * @param usbTunerInterface {@link ITunerHal}
      */
     public EventDetector(ITunerHal usbTunerInterface) {
         mTunerHal = usbTunerInterface;

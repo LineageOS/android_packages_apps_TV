@@ -45,6 +45,7 @@ LOCAL_JAVA_LIBRARIES := \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-annotations \
+    error-prone-annotations-jar \
     jsr330 \
     lib-exoplayer \
     lib-exoplayer-v2-core \
@@ -86,13 +87,18 @@ include $(BUILD_PACKAGE)
 #############################################################
 # Pre-built dependency jars
 #############################################################
+# name,path,version
+m2-path =../../../prebuilts/tools/common/m2/repository/$2/$1/$3/$1-$3.jar
+m2 = $1-jar:$(call m2-path,$1,$2,$3)
+
 prebuilts := \
     lib-exoplayer:libs/exoplayer-r1.5.16.aar \
     lib-exoplayer-v2-core:libs/exoplayer-core-2.9.0.aar \
-    auto-value-jar:../../../prebuilts/tools/common/m2/repository/com/google/auto/value/auto-value/1.5.2/auto-value-1.5.2.jar \
-    guava-android-jar:../../../prebuilts/tools/common/m2/repository/com/google/guava/guava/23.6-android/guava-23.6-android.jar \
-    javax-annotations-jar:../../../prebuilts/tools/common/m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar \
-    truth-0-36-prebuilt-jar:../../../prebuilts/tools/common/m2/repository/com/google/truth/truth/0.36/truth-0.36.jar \
+    $(call m2,auto-value,com/google/auto/value,1.5.2) \
+    error-prone-annotations-jar:$(call m2-path,error_prone_annotations,com/google/errorprone,2.3.1) \
+    guava-android-jar:$(call m2-path,guava,com/google/guava,23.6-android) \
+    javax-annotations-jar:$(call m2-path,javax.annotation-api,javax/annotation,1.2) \
+    truth-0-36-prebuilt-jar:$(call m2-path,truth,com/google/truth,0.36) \
 
 define define-prebuilt
   $(eval tw := $(subst :, ,$(strip $(1)))) \

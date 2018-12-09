@@ -41,7 +41,7 @@ import com.android.tv.data.api.Channel;
 import com.android.tv.dvr.DvrTvView;
 import com.android.tv.ui.TunableTvView;
 import com.android.tv.ui.TunableTvView.OnTuneListener;
-import com.android.tv.ui.TunableTvViewPlayingApi;
+import com.android.tv.ui.api.TunableTvViewPlayingApi;
 import com.android.tv.util.TvInputManagerHelper;
 import java.util.Collections;
 import java.util.List;

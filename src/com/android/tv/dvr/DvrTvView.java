@@ -28,7 +28,7 @@ import com.android.tv.TvSingletons;
 import com.android.tv.common.compat.TvViewCompat.TvInputCallbackCompat;
 import com.android.tv.dvr.ui.playback.DvrPlayer;
 import com.android.tv.ui.AppLayerTvView;
-import com.android.tv.ui.TunableTvViewPlayingApi;
+import com.android.tv.ui.api.TunableTvViewPlayingApi;
 import java.util.List;
 
 /**

@@ -39,10 +39,12 @@ import java.util.Set;
 public final class TvProviderUtils {
     private static final String TAG = "TvProviderUtils";
 
-    public static final String EXTRA_PROGRAM_COLUMN = BaseProgram.COLUMN_SERIES_ID;
+    public static final String EXTRA_PROGRAM_COLUMN_SERIES_ID = BaseProgram.COLUMN_SERIES_ID;
+    public static final String EXTRA_PROGRAM_COLUMN_STATE = BaseProgram.COLUMN_STATE;
 
     private static boolean sProgramHasSeriesIdColumn;
     private static boolean sRecordedProgramHasSeriesIdColumn;
+    private static boolean sRecordedProgramHasStateColumn;
 
     /**
      * Checks whether a table contains a series ID column.
@@ -60,16 +62,17 @@ public final class TvProviderUtils {
         if (!canCreateColumn) {
             return false;
         }
-        return (Utils.isRecordedProgramsUri(uri) && checkRecordedProgramTable(context, uri))
-                || (Utils.isProgramsUri(uri) && checkProgramTable(context, uri));
+        return (Utils.isRecordedProgramsUri(uri)
+                        && checkRecordedProgramTableSeriesIdColumn(context, uri))
+                || (Utils.isProgramsUri(uri) && checkProgramTableSeriesIdColumn(context, uri));
     }
 
     @WorkerThread
-    private static synchronized boolean checkProgramTable(Context context, Uri uri) {
+    private static synchronized boolean checkProgramTableSeriesIdColumn(Context context, Uri uri) {
         if (!sProgramHasSeriesIdColumn) {
-            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN)) {
+            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN_SERIES_ID)) {
                 sProgramHasSeriesIdColumn = true;
-            } else if (addColumnToTable(context, uri)) {
+            } else if (addColumnToTable(context, uri, EXTRA_PROGRAM_COLUMN_SERIES_ID)) {
                 sProgramHasSeriesIdColumn = true;
             }
         }
@@ -77,15 +80,48 @@ public final class TvProviderUtils {
     }
 
     @WorkerThread
-    private static synchronized boolean checkRecordedProgramTable(Context context, Uri uri) {
+    private static synchronized boolean checkRecordedProgramTableSeriesIdColumn(
+            Context context, Uri uri) {
         if (!sRecordedProgramHasSeriesIdColumn) {
-            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN)) {
+            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN_SERIES_ID)) {
                 sRecordedProgramHasSeriesIdColumn = true;
-            } else if (addColumnToTable(context, uri)) {
+            } else if (addColumnToTable(context, uri, EXTRA_PROGRAM_COLUMN_SERIES_ID)) {
                 sRecordedProgramHasSeriesIdColumn = true;
             }
         }
         return sRecordedProgramHasSeriesIdColumn;
+    }
+
+    /**
+     * Checks whether a table contains a state column.
+     *
+     * <p>This method is different from {@link #getRecordedProgramHasStateColumn()} because it may
+     * access to database, so it should be run in worker thread.
+     *
+     * @return {@code true} if the corresponding table contains a state column; {@code false}
+     *     otherwise.
+     */
+    @WorkerThread
+    public static synchronized boolean checkStateColumn(Context context, Uri uri) {
+        boolean canCreateColumn = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        if (!canCreateColumn) {
+            return false;
+        }
+        return (Utils.isRecordedProgramsUri(uri)
+                && checkRecordedProgramTableStateColumn(context, uri));
+    }
+
+    @WorkerThread
+    private static synchronized boolean checkRecordedProgramTableStateColumn(
+            Context context, Uri uri) {
+        if (!sRecordedProgramHasStateColumn) {
+            if (getExistingColumns(context, uri).contains(EXTRA_PROGRAM_COLUMN_STATE)) {
+                sRecordedProgramHasStateColumn = true;
+            } else if (addColumnToTable(context, uri, EXTRA_PROGRAM_COLUMN_STATE)) {
+                sRecordedProgramHasStateColumn = true;
+            }
+        }
+        return sRecordedProgramHasStateColumn;
     }
 
     public static synchronized boolean getProgramHasSeriesIdColumn() {
@@ -96,10 +132,17 @@ public final class TvProviderUtils {
         return TRUE.equals(sRecordedProgramHasSeriesIdColumn);
     }
 
+    public static synchronized boolean getRecordedProgramHasStateColumn() {
+        return TRUE.equals(sRecordedProgramHasStateColumn);
+    }
+
     public static String[] addExtraColumnsToProjection(String[] projection) {
         List<String> projectionList = new ArrayList<>(Arrays.asList(projection));
-        if (!projectionList.contains(EXTRA_PROGRAM_COLUMN)) {
-            projectionList.add(EXTRA_PROGRAM_COLUMN);
+        if (!projectionList.contains(EXTRA_PROGRAM_COLUMN_SERIES_ID)) {
+            projectionList.add(EXTRA_PROGRAM_COLUMN_SERIES_ID);
+        }
+        if (!projectionList.contains(EXTRA_PROGRAM_COLUMN_STATE)) {
+            projectionList.add(EXTRA_PROGRAM_COLUMN_STATE);
         }
         projection = projectionList.toArray(projection);
         return projection;
@@ -135,9 +178,9 @@ public final class TvProviderUtils {
      *
      * @return {@code true} if the column is added successfully; {@code false} otherwise.
      */
-    private static boolean addColumnToTable(Context context, Uri contentUri) {
+    private static boolean addColumnToTable(Context context, Uri contentUri, String columnName) {
         Bundle extra = new Bundle();
-        extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, EXTRA_PROGRAM_COLUMN);
+        extra.putCharSequence(TvContract.EXTRA_COLUMN_NAME, columnName);
         extra.putCharSequence(TvContract.EXTRA_DATA_TYPE, "TEXT");
         // If the add operation fails, the following just returns null without crashing.
         Bundle allColumns = null;

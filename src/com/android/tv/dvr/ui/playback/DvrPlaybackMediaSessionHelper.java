@@ -39,9 +39,6 @@ import com.android.tv.util.Utils;
 import com.android.tv.util.images.ImageLoader;
 
 class DvrPlaybackMediaSessionHelper {
-    private static final String TAG = "DvrPlaybackMediaSessionHelper";
-    private static final boolean DEBUG = false;
-
     private int mNowPlayingCardWidth;
     private int mNowPlayingCardHeight;
     private int mSpeedLevel;
@@ -73,7 +70,7 @@ class DvrPlaybackMediaSessionHelper {
                     @Override
                     public void onPlaybackPositionChanged(long positionMs) {
                         updateMediaSessionPlaybackState();
-                        if (getProgram().isPlayable()) {
+                        if (getProgram().isPartial()) {
                             overlayFragment.updateProgress();
                         }
                         if (mDvrPlayer.isPlaybackPrepared()) {

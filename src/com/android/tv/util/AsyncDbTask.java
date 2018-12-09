@@ -121,6 +121,8 @@ public abstract class AsyncDbTask<Params, Progress, Result>
                             && TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI))
                     || (Utils.isRecordedProgramsUri(mUri)
                             && TvProviderUtils.checkSeriesIdColumn(
+                                    context, TvContract.RecordedPrograms.CONTENT_URI)
+                            && TvProviderUtils.checkStateColumn(
                                     context, TvContract.RecordedPrograms.CONTENT_URI))) {
                 mProjection = TvProviderUtils.addExtraColumnsToProjection(mProjection);
             }

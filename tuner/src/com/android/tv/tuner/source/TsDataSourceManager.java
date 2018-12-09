@@ -18,7 +18,6 @@ package com.android.tv.tuner.source;
 
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
-import com.android.tv.tuner.TunerHal;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
@@ -28,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages {@link DataSource} for playback and recording. The class hides handling of {@link
- * TunerHal} and {@link TsStreamer} from other classes. One TsDataSourceManager should be created
+ * ITunerHal} and {@link TsStreamer} from other classes. One TsDataSourceManager should be created
  * for per session.
  */
 public class TsDataSourceManager {
@@ -93,7 +92,7 @@ public class TsDataSourceManager {
     }
 
     /**
-     * Releases the specified {@link TsDataSource} and underlying {@link TunerHal}.
+     * Releases the specified {@link TsDataSource} and underlying {@link ITunerHal}.
      *
      * @param source to release
      */

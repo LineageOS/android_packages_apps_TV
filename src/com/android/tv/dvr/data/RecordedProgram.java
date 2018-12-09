@@ -30,6 +30,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
+import android.util.Log;
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
 import com.android.tv.common.util.CommonUtils;
@@ -49,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 @AutoValue
 public abstract class RecordedProgram extends BaseProgram {
     public static final int ID_NOT_SET = -1;
+    private static final String TAG = "RecordingProgram";
 
     /** The recording state. */
     // TODO(b/25023911): Use @SimpleEnum  when it is supported by AutoValue
@@ -103,10 +105,10 @@ public abstract class RecordedProgram extends BaseProgram {
                         .setInputId(cursor.getString(index++))
                         .setChannelId(cursor.getLong(index++))
                         .setTitle(StringUtils.nullToEmpty(cursor.getString(index++)))
-                        .setSeasonNumber(cursor.getString(index++))
-                        .setSeasonTitle(cursor.getString(index++))
-                        .setEpisodeNumber(cursor.getString(index++))
-                        .setEpisodeTitle(cursor.getString(index++))
+                        .setSeasonNumber(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setSeasonTitle(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setEpisodeNumber(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setEpisodeTitle(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setStartTimeUtcMillis(cursor.getLong(index++))
                         .setEndTimeUtcMillis(cursor.getLong(index++))
                         .setBroadcastGenres(cursor.getString(index++))
@@ -119,10 +121,10 @@ public abstract class RecordedProgram extends BaseProgram {
                         .setContentRatings(
                                 TvContentRatingCache.getInstance()
                                         .getRatings(cursor.getString(index++)))
-                        .setPosterArtUri(cursor.getString(index++))
-                        .setThumbnailUri(cursor.getString(index++))
+                        .setPosterArtUri(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setThumbnailUri(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setSearchable(cursor.getInt(index++) == 1)
-                        .setDataUri(cursor.getString(index++))
+                        .setDataUri(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setDataBytes(cursor.getLong(index++))
                         .setDurationMillis(cursor.getLong(index++))
                         .setExpireTimeUtcMillis(cursor.getLong(index++))
@@ -132,12 +134,15 @@ public abstract class RecordedProgram extends BaseProgram {
         }
         index++;
         if (TvProviderUtils.getRecordedProgramHasSeriesIdColumn()) {
-            String seriesId = cursor.getString(index);
-            if (!TextUtils.isEmpty(seriesId)) {
-                builder.setSeriesId(seriesId);
+            builder.setSeriesId(StringUtils.nullToEmpty(cursor.getString(index)));
+        }
+        index++;
+        if (TvProviderUtils.getRecordedProgramHasStateColumn()) {
+            String state = StringUtils.nullToEmpty(cursor.getString(index));
+            if (!TextUtils.isEmpty(state)) {
+                builder.setState(getRecordingState(state));
             }
         }
-        // TODO(b/71717809): add state column
         return builder.build();
     }
 
@@ -203,6 +208,9 @@ public abstract class RecordedProgram extends BaseProgram {
         if (TvProviderUtils.checkSeriesIdColumn(context, RecordedPrograms.CONTENT_URI)) {
             values.put(COLUMN_SERIES_ID, recordedProgram.getSeriesId());
         }
+        if (TvProviderUtils.checkStateColumn(context, RecordedPrograms.CONTENT_URI)) {
+            values.put(COLUMN_STATE, recordedProgram.getState().toString());
+        }
         return values;
     }
 
@@ -224,19 +232,18 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setTitle(String title);
 
-        @Nullable
         abstract String getSeriesId();
 
-        public abstract Builder setSeriesId(@Nullable String seriesId);
+        public abstract Builder setSeriesId(String seriesId);
 
-        public abstract Builder setSeasonNumber(@Nullable String seasonNumber);
+        public abstract Builder setSeasonNumber(String seasonNumber);
 
-        public abstract Builder setSeasonTitle(@Nullable String seasonTitle);
+        public abstract Builder setSeasonTitle(String seasonTitle);
 
         @Nullable
         abstract String getEpisodeNumber();
 
-        public abstract Builder setEpisodeNumber(@Nullable String episodeNumber);
+        public abstract Builder setEpisodeNumber(String episodeNumber);
 
         public abstract Builder setEpisodeTitle(String episodeTitle);
 
@@ -278,18 +285,17 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setContentRatings(ImmutableList<TvContentRating> contentRatings);
 
-        @Nullable
         private Uri toUri(@Nullable String uriString) {
             try {
                 return uriString == null ? null : Uri.parse(uriString);
             } catch (Exception e) {
-                return null;
+                return Uri.EMPTY;
             }
         }
 
-        public abstract Builder setPosterArtUri(@Nullable String posterArtUri);
+        public abstract Builder setPosterArtUri(String posterArtUri);
 
-        public abstract Builder setThumbnailUri(@Nullable String thumbnailUri);
+        public abstract Builder setThumbnailUri(String thumbnailUri);
 
         public abstract Builder setSearchable(boolean searchable);
 
@@ -297,7 +303,7 @@ public abstract class RecordedProgram extends BaseProgram {
             return setDataUri(toUri(dataUri));
         }
 
-        public abstract Builder setDataUri(@Nullable Uri dataUri);
+        public abstract Builder setDataUri(Uri dataUri);
 
         public abstract Builder setDataBytes(long dataBytes);
 
@@ -329,16 +335,24 @@ public abstract class RecordedProgram extends BaseProgram {
                 .setBroadcastGenres("")
                 .setCanonicalGenres("")
                 .setContentRatings(ImmutableList.of())
+                .setDataUri("")
                 .setDurationMillis(0)
                 .setDescription("")
                 .setDataBytes(0)
                 .setLongDescription("")
                 .setEndTimeUtcMillis(0)
+                .setEpisodeNumber("")
+                .setEpisodeTitle("")
                 .setExpireTimeUtcMillis(0)
                 .setPackageName("")
+                .setPosterArtUri("")
+                .setSeasonNumber("")
+                .setSeasonTitle("")
                 .setSearchable(false)
+                .setSeriesId("")
                 .setStartTimeUtcMillis(0)
                 .setState(State.NOT_SET)
+                .setThumbnailUri("")
                 .setTitle("")
                 .setVersionNumber(0)
                 .setVideoHeight(0)
@@ -374,7 +388,6 @@ public abstract class RecordedProgram extends BaseProgram {
         return genreIds;
     }
 
-    @Nullable
     public abstract Uri getDataUri();
 
     public abstract long getDataBytes();
@@ -420,19 +433,21 @@ public abstract class RecordedProgram extends BaseProgram {
         }
     }
 
-    public boolean isPlayable() {
-        switch (getState()) {
-            case PARTIAL:
-            case FINISHED:
-                return true;
-            default:
-                return false;
+    public boolean isPartial() {
+        return getState() == State.PARTIAL;
+    }
+
+    private static State getRecordingState(String state) {
+        try {
+            return State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Unknown recording state  " + state, e);
+            return State.NOT_SET;
         }
     }
 
     public abstract boolean isSearchable();
 
-    @Nullable
     public abstract String getSeasonTitle();
 
     public abstract State getState();

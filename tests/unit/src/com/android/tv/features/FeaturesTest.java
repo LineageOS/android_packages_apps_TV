@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package com.android.tv;
+package com.android.tv.features;
 
 import static com.google.common.truth.Truth.assertThat;
 

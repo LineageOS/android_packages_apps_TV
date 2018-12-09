@@ -22,7 +22,6 @@ import android.media.tv.TvInputManager;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
-
 import com.android.tv.R;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
@@ -118,7 +117,7 @@ public class CurrentRecordingDetailsFragment extends RecordingDetailsFragment {
                         res.getDrawable(R.drawable.lb_ic_stop)));
         if (mConcurrentDvrPlaybackFlags.enabled()
                 && mRecordedProgram != null
-                && mRecordedProgram.isPlayable()) {
+                && mRecordedProgram.isPartial()) {
             if (mDvrWatchedPositionManager.getWatchedStatus(mRecordedProgram)
                     == DvrWatchedPositionManager.DVR_WATCHED_STATUS_WATCHING) {
                 adapter.set(
