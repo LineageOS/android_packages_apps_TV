@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv;
+package com.android.tv.audio;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,13 +23,10 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import com.android.tv.features.TvFeatures;
-import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.ui.api.TunableTvViewPlayingApi;
 
-/** A helper class to help {@link MainActivity} to handle audio-related stuffs. */
-class AudioManagerHelper
-        implements AudioManager.OnAudioFocusChangeListener,
-                AudioCapabilitiesReceiver.OnAc3PassthroughCapabilityChangeListener {
+/** A helper class to help {@code Activities} to handle audio-related stuffs. */
+public class AudioManagerHelper implements AudioManager.OnAudioFocusChangeListener {
     private static final float AUDIO_MAX_VOLUME = 1.0f;
     private static final float AUDIO_MIN_VOLUME = 0.0f;
     private static final float AUDIO_DUCKING_VOLUME = 0.3f;
@@ -39,10 +36,9 @@ class AudioManagerHelper
     private final AudioManager mAudioManager;
     @Nullable private final AudioFocusRequest mFocusRequest;
 
-    private boolean mAc3PassthroughSupported;
     private int mAudioFocusStatus = AudioManager.AUDIOFOCUS_NONE;
 
-    AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
+    public AudioManagerHelper(Activity activity, TunableTvViewPlayingApi tvView) {
         mActivity = activity;
         mTvView = tvView;
         mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
@@ -74,7 +70,7 @@ class AudioManagerHelper
      * audio focus. If the focus status is {@link AudioManager#AUDIOFOCUS_LOSS} and the activity is
      * under PIP mode, this method will finish the activity.
      */
-    void setVolumeByAudioFocusStatus() {
+    public void setVolumeByAudioFocusStatus() {
         if (mTvView.isPlaying()) {
             switch (mAudioFocusStatus) {
                 case AudioManager.AUDIOFOCUS_GAIN:
@@ -115,7 +111,7 @@ class AudioManagerHelper
      * Tries to request audio focus from {@link AudioManager} and set volume according to the
      * returned result.
      */
-    void requestAudioFocus() {
+    public void requestAudioFocus() {
         int result;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             result = mAudioManager.requestAudioFocus(mFocusRequest);
@@ -132,7 +128,7 @@ class AudioManagerHelper
     }
 
     /** Abandons audio focus. */
-    void abandonAudioFocus() {
+    public void abandonAudioFocus() {
         mAudioFocusStatus = AudioManager.AUDIOFOCUS_LOSS;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mAudioManager.abandonAudioFocusRequest(mFocusRequest);
@@ -141,19 +137,9 @@ class AudioManagerHelper
         }
     }
 
-    /** Returns {@code true} if the device supports AC3 pass-through. */
-    boolean isAc3PassthroughSupported() {
-        return mAc3PassthroughSupported;
-    }
-
     @Override
     public void onAudioFocusChange(int focusChange) {
         mAudioFocusStatus = focusChange;
         setVolumeByAudioFocusStatus();
-    }
-
-    @Override
-    public void onAc3PassthroughCapabilityChange(boolean capability) {
-        mAc3PassthroughSupported = capability;
     }
 }

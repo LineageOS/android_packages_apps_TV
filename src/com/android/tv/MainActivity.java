@@ -69,6 +69,7 @@ import com.android.tv.MainActivity.MySingletons;
 import com.android.tv.analytics.SendChannelStatusRunnable;
 import com.android.tv.analytics.SendConfigInfoRunnable;
 import com.android.tv.analytics.Tracker;
+import com.android.tv.audio.AudioManagerHelper;
 import com.android.tv.audiotvservice.AudioOnlyTvServiceUtil;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.CommonConstants;
@@ -674,7 +675,7 @@ public class MainActivity extends Activity
         mAccessibilityManager.addAccessibilityStateChangeListener(mOverlayManager);
 
         mAudioManagerHelper = new AudioManagerHelper(this, mTvView);
-        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiver(this, mAudioManagerHelper);
+        mAudioCapabilitiesReceiver = new AudioCapabilitiesReceiver(this, null);
         mAudioCapabilitiesReceiver.register();
         Intent nowPlayingIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
