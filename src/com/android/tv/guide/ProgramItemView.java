@@ -371,7 +371,7 @@ public class ProgramItemView extends TextView {
         int iconResId = 0;
         if (isEntryWideEnough() && mTableEntry.scheduledRecording != null) {
             if (mDvrManager.isConflicting(mTableEntry.scheduledRecording)) {
-                iconResId = R.drawable.ic_warning_white_18dp;
+                iconResId = R.drawable.quantum_ic_warning_white_18;
             } else {
                 switch (mTableEntry.scheduledRecording.getState()) {
                     case ScheduledRecording.STATE_RECORDING_NOT_STARTED:

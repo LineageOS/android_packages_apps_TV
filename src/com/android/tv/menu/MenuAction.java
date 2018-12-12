@@ -55,7 +55,7 @@ public class MenuAction {
             new MenuAction(
                     R.string.options_item_developer,
                     TvOptionsManager.OPTION_DEVELOPER,
-                    R.drawable.ic_developer_mode_tv_white_48dp);
+                    R.drawable.quantum_ic_developer_mode_tv_white_48);
     public static final MenuAction SETTINGS_ACTION =
             new MenuAction(
                     R.string.options_item_settings,
