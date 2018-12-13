@@ -64,8 +64,15 @@ public abstract class BaseApplication extends Application implements BaseSinglet
             StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
                     new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
             // TODO(b/69565157): Turn penaltyDeath on for VMPolicy when tests are fixed.
+            // TODO(b/120840665): Restore detecting untagged network sockets
             StrictMode.VmPolicy.Builder vmPolicyBuilder =
-                    new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
+                    new StrictMode.VmPolicy.Builder()
+                            .detectActivityLeaks()
+                            .detectLeakedClosableObjects()
+                            .detectLeakedRegistrationObjects()
+                            .detectFileUriExposure()
+                            .detectContentUriWithoutPermission()
+                            .penaltyLog();
 
             if (!CommonUtils.isRunningInTest()) {
                 threadPolicyBuilder.penaltyDialog();
