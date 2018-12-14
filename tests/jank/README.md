@@ -18,7 +18,7 @@ adb shell am instrument \
   -w com.android.tv.testinput/.instrument.TestSetupInstrumentation
 echo "Running the test"
 adb shell am instrument \
-  -w com.android.tv.tests.jank/androidx.test.runner.AndroidJUnitRunner
+  -w com.android.tv.tests.jank/android.support.test.runner.AndroidJUnitRunner
 
 ```
 
