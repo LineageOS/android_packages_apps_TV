@@ -193,6 +193,8 @@ public class MainActivity extends Activity
     private static final float FRAME_RATE_FOR_FILM = 23.976f;
     private static final float FRAME_RATE_EPSILON = 0.1f;
 
+// AOSP_Comment_Out     private static final String PLUTO_TV_PACKAGE_NAME = "tv.pluto.android";
+
     private static final int PERMISSIONS_REQUEST_READ_TV_LISTINGS = 1;
     private static final String PERMISSION_READ_TV_LISTINGS = "android.permission.READ_TV_LISTINGS";
 
@@ -2872,6 +2874,12 @@ public class MainActivity extends Activity
                                 + channel);
                 return;
             }
+            /* Begin_AOSP_Comment_Out
+            if (PLUTO_TV_PACKAGE_NAME.equals(currentChannel.getPackageName())) {
+                // Do nothing for the Pluto TV input because it misuses this API. b/22720711.
+                return;
+            }
+            End_AOSP_Comment_Out */
             if (isChannelChangeKeyDownReceived()) {
                 // Ignore this message if the user is changing the channel.
                 return;
