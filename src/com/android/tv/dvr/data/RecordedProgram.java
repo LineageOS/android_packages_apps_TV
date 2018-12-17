@@ -33,6 +33,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
+import com.android.tv.common.data.RecordedProgramState;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.StringUtils;
 import com.android.tv.data.BaseProgram;
@@ -50,20 +51,7 @@ import java.util.concurrent.TimeUnit;
 @AutoValue
 public abstract class RecordedProgram extends BaseProgram {
     public static final int ID_NOT_SET = -1;
-    private static final String TAG = "RecordingProgram";
-
-    /** The recording state. */
-    // TODO(b/25023911): Use @SimpleEnum  when it is supported by AutoValue
-    public enum State {
-        // TODO(b/71717809): Document each state.
-        NOT_SET,
-        STARTED,
-        FINISHED,
-        PARTIAL,
-        FAILED,
-        DELETE,
-        DELETED,
-    }
+    private static final String TAG = "RecordedProgram";
 
     public static final String[] PROJECTION = {
         RecordedPrograms._ID,
@@ -251,7 +239,7 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setEndTimeUtcMillis(long endTimeUtcMillis);
 
-        public abstract Builder setState(State state);
+        public abstract Builder setState(RecordedProgramState state);
 
         public Builder setBroadcastGenres(@Nullable String broadcastGenres) {
             return setBroadcastGenres(
@@ -351,7 +339,7 @@ public abstract class RecordedProgram extends BaseProgram {
                 .setSearchable(false)
                 .setSeriesId("")
                 .setStartTimeUtcMillis(0)
-                .setState(State.NOT_SET)
+                .setState(RecordedProgramState.NOT_SET)
                 .setThumbnailUri("")
                 .setTitle("")
                 .setVersionNumber(0)
@@ -434,15 +422,15 @@ public abstract class RecordedProgram extends BaseProgram {
     }
 
     public boolean isPartial() {
-        return getState() == State.PARTIAL;
+        return getState() == RecordedProgramState.PARTIAL;
     }
 
-    private static State getRecordingState(String state) {
+    private static RecordedProgramState getRecordingState(String state) {
         try {
-            return State.valueOf(state);
+            return RecordedProgramState.valueOf(state);
         } catch (IllegalArgumentException e) {
             Log.w(TAG, "Unknown recording state  " + state, e);
-            return State.NOT_SET;
+            return RecordedProgramState.NOT_SET;
         }
     }
 
@@ -450,7 +438,7 @@ public abstract class RecordedProgram extends BaseProgram {
 
     public abstract String getSeasonTitle();
 
-    public abstract State getState();
+    public abstract RecordedProgramState getState();
 
     public Uri getUri() {
         return ContentUris.withAppendedId(RecordedPrograms.CONTENT_URI, getId());
