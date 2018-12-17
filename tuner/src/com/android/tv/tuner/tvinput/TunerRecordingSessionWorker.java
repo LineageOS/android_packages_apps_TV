@@ -16,6 +16,8 @@
 
 package com.android.tv.tuner.tvinput;
 
+import static com.android.tv.tuner.features.TunerFeatures.TVPROVIDER_ALLOWS_COLUMN_CREATION;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -26,7 +28,6 @@ import android.media.tv.TvContract.RecordedPrograms;
 import android.media.tv.TvInputManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -604,7 +605,7 @@ public class TunerRecordingSessionWorker
     }
 
     private boolean checkProgramTable() {
-        boolean canCreateColumn = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        boolean canCreateColumn = TVPROVIDER_ALLOWS_COLUMN_CREATION.isEnabled(mContext);
         if (!canCreateColumn) {
             return false;
         }
@@ -620,7 +621,7 @@ public class TunerRecordingSessionWorker
     }
 
     private boolean checkRecordedProgramTable() {
-        boolean canCreateColumn = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        boolean canCreateColumn = TVPROVIDER_ALLOWS_COLUMN_CREATION.isEnabled(mContext);
         if (!canCreateColumn) {
             return false;
         }

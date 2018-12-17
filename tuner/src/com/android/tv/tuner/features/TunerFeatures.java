@@ -22,9 +22,12 @@ import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.Feature;
 import com.android.tv.common.feature.Model;
 import com.android.tv.common.feature.PropertyFeature;
+import com.android.tv.common.feature.Sdk;
 
 /**
  * List of {@link Feature} for Tuner.
+ *
+ * <p>Only for use in Tuners.
  *
  * <p>Remove the {@code Feature} once it is launched.
  */
@@ -40,6 +43,14 @@ public class TunerFeatures extends CommonFeatures {
                     "use_sw_codec_for_sd",
                     false
                     );
+
+    /**
+     * Does the TvProvider on the installed device allow systems inserts to the programs table.
+     *
+     * <p>This is available in {@link Sdk#AT_LEAST_O} but vendors may choose to backport support to
+     * the TvProvider.
+     */
+    public static final Feature TVPROVIDER_ALLOWS_COLUMN_CREATION = Sdk.AT_LEAST_O;
 
     /** Enable Dvb parsers and listeners. */
     public static final Feature ENABLE_FILE_DVB = OFF;
