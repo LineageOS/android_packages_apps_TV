@@ -22,7 +22,7 @@ import com.android.tv.common.flags.CloudEpgFlags;
 public interface HasCloudEpgFlags {
 
     static CloudEpgFlags fromContext(Context context) {
-        return ((HasCloudEpgFlags) context).getCloudEpgFlags();
+        return ((HasCloudEpgFlags) HasUtils.getApplicationContext(context)).getCloudEpgFlags();
     }
 
     CloudEpgFlags getCloudEpgFlags();
