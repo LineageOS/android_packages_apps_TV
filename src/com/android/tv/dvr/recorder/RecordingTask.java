@@ -17,6 +17,8 @@
 package com.android.tv.dvr.recorder;
 
 import android.annotation.TargetApi;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputManager;
@@ -220,6 +222,14 @@ public class RecordingTask extends RecordingCallbackCompat
                         mScheduledRecording.getStartTimeMs() - RECORDING_EARLY_START_OFFSET_MS)) {
             failAndQuit(ScheduledRecording.FAILED_REASON_MESSAGE_NOT_SENT);
         }
+    }
+
+    @Override
+    public void onRecordingStarted(String inputId, String recUri) {
+        if (DEBUG) {
+            Log.d(TAG, "onRecordingStart");
+        }
+        addRecordedProgramId(recUri);
     }
 
     @Override
@@ -475,6 +485,43 @@ public class RecordingTask extends RecordingCallbackCompat
                                     && reason != null) {
                                 builder.setFailedReason(reason);
                             }
+                            mDataManager.updateScheduledRecording(builder.build());
+                        }
+                    }
+                });
+    }
+
+    private void addRecordedProgramId(String recordedProgramUri) {
+        if (DEBUG) {
+            Log.d(TAG, "Adding Recorded Program Id to " + mScheduledRecording);
+        }
+        mRecordedProgramUri = Uri.parse(recordedProgramUri);
+        long id = ContentUris.parseId(mRecordedProgramUri);
+        mScheduledRecording =
+                ScheduledRecording.buildFrom(mScheduledRecording).setRecordedProgramId(id).build();
+        ContentValues values = new ContentValues();
+        values.put(
+                TvContract.RecordedPrograms.COLUMN_RECORDING_DURATION_MILLIS,
+                mScheduledRecording.getEndTimeMs() - mScheduledRecording.getStartTimeMs());
+        values.put(
+                TvContract.RecordedPrograms.COLUMN_END_TIME_UTC_MILLIS,
+                mScheduledRecording.getEndTimeMs());
+        mContext.getContentResolver().update(mRecordedProgramUri, values, null, null);
+        runOnMainThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ScheduledRecording schedule =
+                                mDataManager.getScheduledRecording(mScheduledRecording.getId());
+                        if (schedule == null) {
+                            // Schedule has been deleted. Delete the recorded program.
+                            removeRecordedProgram();
+                        } else {
+                            // Update the state based on the object in DataManager in case when it
+                            // has been updated. mScheduledRecording will be updated from
+                            // onScheduledRecordingStateChanged.
+                            ScheduledRecording.Builder builder =
+                                    ScheduledRecording.buildFrom(schedule).setRecordedProgramId(id);
                             mDataManager.updateScheduledRecording(builder.build());
                         }
                     }

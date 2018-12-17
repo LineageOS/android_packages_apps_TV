@@ -22,7 +22,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.tv.TvContentRating;
-import android.media.tv.TvContract;
+import android.media.tv.TvContract.Programs.Genres;
 import android.media.tv.TvContract.RecordedPrograms;
 import android.net.Uri;
 import android.os.Build;
@@ -112,7 +112,7 @@ public abstract class RecordedProgram extends BaseProgram {
                         .setPosterArtUri(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setThumbnailUri(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setSearchable(cursor.getInt(index++) == 1)
-                        .setDataUri(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setDataUri(cursor.getString(index++))
                         .setDataBytes(cursor.getLong(index++))
                         .setDurationMillis(cursor.getLong(index++))
                         .setExpireTimeUtcMillis(cursor.getLong(index++))
@@ -126,10 +126,7 @@ public abstract class RecordedProgram extends BaseProgram {
         }
         index++;
         if (TvProviderUtils.getRecordedProgramHasStateColumn()) {
-            String state = StringUtils.nullToEmpty(cursor.getString(index));
-            if (!TextUtils.isEmpty(state)) {
-                builder.setState(getRecordingState(state));
-            }
+            builder.setState(cursor.getString(index));
         }
         return builder.build();
     }
@@ -241,12 +238,23 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setState(RecordedProgramState state);
 
+        public Builder setState(@Nullable String state) {
+
+            if (!TextUtils.isEmpty(state)) {
+                try {
+                    return setState(RecordedProgramState.valueOf(state));
+                } catch (IllegalArgumentException e) {
+                    Log.w(TAG, "Unknown recording state " + state, e);
+                }
+            }
+            return setState(RecordedProgramState.NOT_SET);
+        }
+
         public Builder setBroadcastGenres(@Nullable String broadcastGenres) {
             return setBroadcastGenres(
                     TextUtils.isEmpty(broadcastGenres)
                             ? ImmutableList.of()
-                            : ImmutableList.copyOf(
-                                    TvContract.Programs.Genres.decode(broadcastGenres)));
+                            : ImmutableList.copyOf(Genres.decode(broadcastGenres)));
         }
 
         public abstract Builder setBroadcastGenres(ImmutableList<String> broadcastGenres);
@@ -255,8 +263,7 @@ public abstract class RecordedProgram extends BaseProgram {
             return setCanonicalGenres(
                     TextUtils.isEmpty(canonicalGenres)
                             ? ImmutableList.of()
-                            : ImmutableList.copyOf(
-                                    TvContract.Programs.Genres.decode(canonicalGenres)));
+                            : ImmutableList.copyOf(Genres.decode(canonicalGenres)));
         }
 
         public abstract Builder setCanonicalGenres(ImmutableList<String> canonicalGenres);
@@ -425,15 +432,6 @@ public abstract class RecordedProgram extends BaseProgram {
         return getState() == RecordedProgramState.PARTIAL;
     }
 
-    private static RecordedProgramState getRecordingState(String state) {
-        try {
-            return RecordedProgramState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Unknown recording state  " + state, e);
-            return RecordedProgramState.NOT_SET;
-        }
-    }
-
     public abstract boolean isSearchable();
 
     public abstract String getSeasonTitle();
@@ -470,9 +468,7 @@ public abstract class RecordedProgram extends BaseProgram {
 
     @Nullable
     private static String safeEncode(@Nullable ImmutableList<String> genres) {
-        return genres == null
-                ? null
-                : TvContract.Programs.Genres.encode(genres.toArray(new String[0]));
+        return genres == null ? null : Genres.encode(genres.toArray(new String[0]));
     }
 
     /** Returns an array containing all of the elements in the list. */
