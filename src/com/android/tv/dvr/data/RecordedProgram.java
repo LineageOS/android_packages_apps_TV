@@ -22,7 +22,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.tv.TvContentRating;
-import android.media.tv.TvContract;
+import android.media.tv.TvContract.Programs.Genres;
 import android.media.tv.TvContract.RecordedPrograms;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +33,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.android.tv.common.R;
 import com.android.tv.common.TvContentRatingCache;
+import com.android.tv.common.data.RecordedProgramState;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.StringUtils;
 import com.android.tv.data.BaseProgram;
@@ -50,20 +51,7 @@ import java.util.concurrent.TimeUnit;
 @AutoValue
 public abstract class RecordedProgram extends BaseProgram {
     public static final int ID_NOT_SET = -1;
-    private static final String TAG = "RecordingProgram";
-
-    /** The recording state. */
-    // TODO(b/25023911): Use @SimpleEnum  when it is supported by AutoValue
-    public enum State {
-        // TODO(b/71717809): Document each state.
-        NOT_SET,
-        STARTED,
-        FINISHED,
-        PARTIAL,
-        FAILED,
-        DELETE,
-        DELETED,
-    }
+    private static final String TAG = "RecordedProgram";
 
     public static final String[] PROJECTION = {
         RecordedPrograms._ID,
@@ -124,7 +112,7 @@ public abstract class RecordedProgram extends BaseProgram {
                         .setPosterArtUri(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setThumbnailUri(StringUtils.nullToEmpty(cursor.getString(index++)))
                         .setSearchable(cursor.getInt(index++) == 1)
-                        .setDataUri(StringUtils.nullToEmpty(cursor.getString(index++)))
+                        .setDataUri(cursor.getString(index++))
                         .setDataBytes(cursor.getLong(index++))
                         .setDurationMillis(cursor.getLong(index++))
                         .setExpireTimeUtcMillis(cursor.getLong(index++))
@@ -138,10 +126,7 @@ public abstract class RecordedProgram extends BaseProgram {
         }
         index++;
         if (TvProviderUtils.getRecordedProgramHasStateColumn()) {
-            String state = StringUtils.nullToEmpty(cursor.getString(index));
-            if (!TextUtils.isEmpty(state)) {
-                builder.setState(getRecordingState(state));
-            }
+            builder.setState(cursor.getString(index));
         }
         return builder.build();
     }
@@ -251,14 +236,25 @@ public abstract class RecordedProgram extends BaseProgram {
 
         public abstract Builder setEndTimeUtcMillis(long endTimeUtcMillis);
 
-        public abstract Builder setState(State state);
+        public abstract Builder setState(RecordedProgramState state);
+
+        public Builder setState(@Nullable String state) {
+
+            if (!TextUtils.isEmpty(state)) {
+                try {
+                    return setState(RecordedProgramState.valueOf(state));
+                } catch (IllegalArgumentException e) {
+                    Log.w(TAG, "Unknown recording state " + state, e);
+                }
+            }
+            return setState(RecordedProgramState.NOT_SET);
+        }
 
         public Builder setBroadcastGenres(@Nullable String broadcastGenres) {
             return setBroadcastGenres(
                     TextUtils.isEmpty(broadcastGenres)
                             ? ImmutableList.of()
-                            : ImmutableList.copyOf(
-                                    TvContract.Programs.Genres.decode(broadcastGenres)));
+                            : ImmutableList.copyOf(Genres.decode(broadcastGenres)));
         }
 
         public abstract Builder setBroadcastGenres(ImmutableList<String> broadcastGenres);
@@ -267,8 +263,7 @@ public abstract class RecordedProgram extends BaseProgram {
             return setCanonicalGenres(
                     TextUtils.isEmpty(canonicalGenres)
                             ? ImmutableList.of()
-                            : ImmutableList.copyOf(
-                                    TvContract.Programs.Genres.decode(canonicalGenres)));
+                            : ImmutableList.copyOf(Genres.decode(canonicalGenres)));
         }
 
         public abstract Builder setCanonicalGenres(ImmutableList<String> canonicalGenres);
@@ -351,7 +346,7 @@ public abstract class RecordedProgram extends BaseProgram {
                 .setSearchable(false)
                 .setSeriesId("")
                 .setStartTimeUtcMillis(0)
-                .setState(State.NOT_SET)
+                .setState(RecordedProgramState.NOT_SET)
                 .setThumbnailUri("")
                 .setTitle("")
                 .setVersionNumber(0)
@@ -434,23 +429,14 @@ public abstract class RecordedProgram extends BaseProgram {
     }
 
     public boolean isPartial() {
-        return getState() == State.PARTIAL;
-    }
-
-    private static State getRecordingState(String state) {
-        try {
-            return State.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Unknown recording state  " + state, e);
-            return State.NOT_SET;
-        }
+        return getState() == RecordedProgramState.PARTIAL;
     }
 
     public abstract boolean isSearchable();
 
     public abstract String getSeasonTitle();
 
-    public abstract State getState();
+    public abstract RecordedProgramState getState();
 
     public Uri getUri() {
         return ContentUris.withAppendedId(RecordedPrograms.CONTENT_URI, getId());
@@ -482,9 +468,7 @@ public abstract class RecordedProgram extends BaseProgram {
 
     @Nullable
     private static String safeEncode(@Nullable ImmutableList<String> genres) {
-        return genres == null
-                ? null
-                : TvContract.Programs.Genres.encode(genres.toArray(new String[0]));
+        return genres == null ? null : Genres.encode(genres.toArray(new String[0]));
     }
 
     /** Returns an array containing all of the elements in the list. */

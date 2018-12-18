@@ -91,6 +91,15 @@ public class TunerRecordingSession extends RecordingSessionCompat {
         notifyTuned(channelUri);
     }
 
+    // Called from TunerRecordingSessionImpl in a worker thread.
+    @WorkerThread
+    public void onRecordingUri(String recUri) {
+        if (DEBUG) {
+            Log.d(TAG, "Notifying recording session URI." + recUri);
+        }
+        notifyRecordingStarted(recUri);
+    }
+
     @WorkerThread
     public void onRecordFinished(final Uri recordedProgramUri) {
         if (DEBUG) {

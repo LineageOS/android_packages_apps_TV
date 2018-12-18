@@ -290,7 +290,9 @@ public class DvrBrowseFragment extends BrowseFragment
     @Override
     public void onRecordedProgramsChanged(RecordedProgram... recordedPrograms) {
         for (RecordedProgram recordedProgram : recordedPrograms) {
-            handleRecordedProgramChanged(recordedProgram);
+            if (recordedProgram.isVisible()) {
+                handleRecordedProgramChanged(recordedProgram);
+            }
         }
         postUpdateRows();
     }
@@ -429,7 +431,9 @@ public class DvrBrowseFragment extends BrowseFragment
             mScheduleAdapter.addExtraItem(FullScheduleCardHolder.FULL_SCHEDULE_CARD_HOLDER);
             // Recorded Programs.
             for (RecordedProgram recordedProgram : mDvrDataManager.getRecordedPrograms()) {
-                handleRecordedProgramAdded(recordedProgram, false);
+                if (recordedProgram.isVisible()) {
+                    handleRecordedProgramAdded(recordedProgram, false);
+                }
             }
             // only get failed recordings
             for (ScheduledRecording scheduledRecording :

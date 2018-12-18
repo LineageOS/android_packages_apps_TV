@@ -16,15 +16,15 @@
 package com.android.tv.common.flags.has;
 
 import android.content.Context;
-import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 
-/** Has {@link ConcurrentDvrPlaybackFlags} */
-public interface HasConcurrentDvrPlaybackFlags {
+/** Static utilities for Has interfaces. */
+public final class HasUtils {
 
-    static ConcurrentDvrPlaybackFlags fromContext(Context context) {
-        return ((HasConcurrentDvrPlaybackFlags) HasUtils.getApplicationContext(context))
-                .getConcurrentDvrPlaybackFlags();
+    /** Returns the application context. */
+    public static Context getApplicationContext(Context context) {
+        Context appContext = context.getApplicationContext();
+        return appContext != null ? appContext : context;
     }
 
-    ConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags();
+    private HasUtils() {}
 }
