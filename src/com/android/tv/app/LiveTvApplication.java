@@ -37,7 +37,7 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
-import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.account.AccountHelperImpl;
 import com.google.common.base.Optional;
@@ -59,7 +59,6 @@ public class LiveTvApplication extends TvApplication {
                 }
             };
 
-    private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobsFlags = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
@@ -157,8 +156,8 @@ public class LiveTvApplication extends TvApplication {
     }
 
     @Override
-    public Optional<TunerInputController> getTunerInputController() {
-        return mOptionalTunerInputController;
+    public Optional<BuiltInTunerManager> getBuiltInTunerManager() {
+        return Optional.absent();
     }
 
     @Override

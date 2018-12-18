@@ -172,12 +172,12 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                             new TvInputCallback() {
                                 @Override
                                 public void onInputAdded(String inputId) {
-                                    if (getTunerInputController().isPresent()
-                                            && TvFeatures.TUNER.isEnabled(TvApplication.this)
+                                    if (getBuiltInTunerManager().isPresent()
                                             && TextUtils.equals(
                                                     inputId, getEmbeddedTunerInputId())) {
-                                        getTunerInputController()
+                                        getBuiltInTunerManager()
                                                 .get()
+                                                .getTunerInputController()
                                                 .updateTunerInputInfo(TvApplication.this);
                                     }
                                     handleInputCountChanged();
@@ -188,10 +188,13 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                                     handleInputCountChanged();
                                 }
                             });
-            if (getTunerInputController().isPresent() && TvFeatures.TUNER.isEnabled(this)) {
+            if (getBuiltInTunerManager().isPresent()) {
                 // If the tuner input service is added before the app is started, we need to
                 // handle it here.
-                getTunerInputController().get().updateTunerInputInfo(TvApplication.this);
+                getBuiltInTunerManager()
+                        .get()
+                        .getTunerInputController()
+                        .updateTunerInputInfo(TvApplication.this);
             }
             if (CommonFeatures.DVR.isEnabled(this)) {
                 mDvrScheduleManager = new DvrScheduleManager(this);
@@ -215,9 +218,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         boolean isFirstLaunch = sharedPreferences.getBoolean(PREFERENCE_IS_FIRST_LAUNCH, true);
         if (isFirstLaunch) {
             if (DEBUG) Log.d(TAG, "Congratulations, it's the first launch!");
-            if (getTunerInputController().isPresent()) {
-                getTunerInputController()
+            if (getBuiltInTunerManager().isPresent()) {
+                getBuiltInTunerManager()
                         .get()
+                        .getTunerInputController()
                         .onCheckingUsbTunerStatus(this, ACTION_APPLICATION_FIRST_LAUNCHED);
             }
             SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -29,7 +29,6 @@ import com.android.tv.common.CommonPreferences;
 import com.android.tv.common.customization.CustomizationManager;
 import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.dialog.PinDialogFragment;
-import com.android.tv.features.TvFeatures;
 import com.android.tv.license.LicenseSideFragment;
 import com.android.tv.license.Licenses;
 import com.android.tv.util.Utils;
@@ -80,10 +79,9 @@ public class SettingsFragment extends SideFragment {
         customizeChannelListItem.setEnabled(false);
         items.add(customizeChannelListItem);
         final MainActivity activity = getMainActivity();
+        TvSingletons singletons = TvSingletons.getSingletons(getContext());
         boolean hasNewInput =
-                TvSingletons.getSingletons(getContext())
-                        .getSetupUtils()
-                        .hasNewInput(activity.getTvInputManagerHelper());
+                singletons.getSetupUtils().hasNewInput(activity.getTvInputManagerHelper());
         items.add(
                 new ActionItem(
                         getString(R.string.settings_channel_source_item_setup),
@@ -126,11 +124,9 @@ public class SettingsFragment extends SideFragment {
             // It's TBD.
         }
         boolean showTrickplaySetting = false;
-        if (TvFeatures.TUNER.isEnabled(getContext())) {
+        if (singletons.getBuiltInTunerManager().isPresent()) {
             for (TvInputInfo inputInfo :
-                    TvSingletons.getSingletons(getContext())
-                            .getTvInputManagerHelper()
-                            .getTvInputInfos(true, true)) {
+                    singletons.getTvInputManagerHelper().getTvInputInfos(true, true)) {
                 if (Utils.isInternalTvInput(getContext(), inputInfo.getId())) {
                     showTrickplaySetting = true;
                     break;

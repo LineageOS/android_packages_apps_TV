@@ -115,7 +115,7 @@ import com.android.tv.receiver.AudioCapabilitiesReceiver;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.NotificationService;
 import com.android.tv.search.ProgramGuideSearchFragment;
-import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.ui.ChannelBannerView;
 import com.android.tv.ui.DetailsActivity;
 import com.android.tv.ui.InputBannerView;
@@ -272,6 +272,7 @@ public class MainActivity extends Activity
     private DvrManager mDvrManager;
     private ConflictChecker mDvrConflictChecker;
     private SetupUtils mSetupUtils;
+    private Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
     @VisibleForTesting protected TunableTvView mTvView;
     private View mContentView;
@@ -433,7 +434,7 @@ public class MainActivity extends Activity
             new TvInputCallback() {
                 @Override
                 public void onInputAdded(String inputId) {
-                    if (TvFeatures.TUNER.isEnabled(MainActivity.this)
+                    if (mOptionalBuiltInTunerManager.isPresent()
                             && mTunerInputId.equals(inputId)
                             && CommonPreferences.shouldShowSetupActivity(MainActivity.this)) {
                         Intent intent =
@@ -483,6 +484,7 @@ public class MainActivity extends Activity
             finishAndRemoveTask();
             return;
         }
+        mOptionalBuiltInTunerManager = tvSingletons.getBuiltInTunerManager();
         mSetupUtils = tvSingletons.getSetupUtils();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
@@ -545,7 +547,7 @@ public class MainActivity extends Activity
             Toast.makeText(this, "Using Strict Mode for eng builds", Toast.LENGTH_SHORT).show();
         }
         mTracker = tvApplication.getTracker();
-        if (TvFeatures.TUNER.isEnabled(this)) {
+        if (mOptionalBuiltInTunerManager.isPresent()) {
             mTvInputManagerHelper.addCallback(mTvInputCallback);
         }
         mTunerInputId = tvSingletons.getEmbeddedTunerInputId();
@@ -816,12 +818,13 @@ public class MainActivity extends Activity
             notificationIntent.setAction(NotificationService.ACTION_SHOW_RECOMMENDATION);
             startService(notificationIntent);
         }
-        TvSingletons singletons = TvSingletons.getSingletons(this);
-        Optional<TunerInputController> tunerInputController = singletons.getTunerInputController();
-        if (tunerInputController.isPresent()) {
-            tunerInputController.get().executeNetworkTunerDiscoveryAsyncTask(this);
+        if (mOptionalBuiltInTunerManager.isPresent()) {
+            mOptionalBuiltInTunerManager
+                    .get()
+                    .getTunerInputController()
+                    .executeNetworkTunerDiscoveryAsyncTask(this);
         }
-        singletons.getEpgFetcher().fetchImmediatelyIfNeeded();
+        TvSingletons.getSingletons(this).getEpgFetcher().fetchImmediatelyIfNeeded();
     }
 
     @Override
@@ -2059,7 +2062,7 @@ public class MainActivity extends Activity
         }
         if (mTvInputManagerHelper != null) {
             mTvInputManagerHelper.clearTvInputLabels();
-            if (TvFeatures.TUNER.isEnabled(this)) {
+            if (mOptionalBuiltInTunerManager.isPresent()) {
                 mTvInputManagerHelper.removeCallback(mTvInputCallback);
             }
         }

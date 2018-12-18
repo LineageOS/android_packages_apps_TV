@@ -20,8 +20,6 @@ import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.ON;
 import static com.android.tv.common.feature.FeatureUtils.and;
-import static com.android.tv.common.feature.FeatureUtils.aospFeature;
-import static com.android.tv.common.feature.FeatureUtils.not;
 import static com.android.tv.common.feature.FeatureUtils.or;
 
 import android.content.Context;
@@ -34,7 +32,6 @@ import com.android.tv.common.feature.ExperimentFeature;
 import com.android.tv.common.feature.Feature;
 import com.android.tv.common.feature.FeatureUtils;
 import com.android.tv.common.feature.GServiceFeature;
-
 import com.android.tv.common.feature.PropertyFeature;
 import com.android.tv.common.feature.Sdk;
 import com.android.tv.common.feature.TestableFeature;
@@ -60,11 +57,6 @@ public final class TvFeatures extends CommonFeatures {
      * <p>See <a href="http://b/22062676">b/22062676</a>
      */
     public static final Feature ANALYTICS_V2 = and(ON, ANALYTICS_OPT_IN);
-
-    /** Enables Embedded tuner */
-    public static final Feature TUNER =
-            aospFeature(
-                    OFF);
 
     // TODO(b/76149661): Fix EPG search or remove it
     public static final Feature EPG_SEARCH = OFF;

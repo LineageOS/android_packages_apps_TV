@@ -51,7 +51,7 @@ import com.android.tv.testing.testdata.TestData;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
-import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
@@ -71,7 +71,7 @@ public class TestSingletonApp extends Application implements TvSingletons, HasTu
     public DvrDataManager mDvrDataManager;
 
     private final Provider<EpgReader> mEpgReaderProvider = SingletonProvider.create(epgReader);
-    private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
+    private final Optional<BuiltInTunerManager> mBuiltInTunerManagerOptional = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobs = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
@@ -190,8 +190,8 @@ public class TestSingletonApp extends Application implements TvSingletons, HasTu
     }
 
     @Override
-    public Optional<TunerInputController> getTunerInputController() {
-        return mOptionalTunerInputController;
+    public Optional<BuiltInTunerManager> getBuiltInTunerManager() {
+        return mBuiltInTunerManagerOptional;
     }
 
     @Override
