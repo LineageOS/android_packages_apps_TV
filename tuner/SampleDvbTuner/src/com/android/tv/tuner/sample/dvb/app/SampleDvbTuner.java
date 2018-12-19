@@ -24,12 +24,15 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
+import com.android.tv.tuner.sample.dvb.singletons.SampleDvbSingletons;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 
 /** The top level application for Sample DVB Tuner. */
-public class SampleDvbTuner extends BaseApplication {
+public class SampleDvbTuner extends BaseApplication
+        implements SampleDvbSingletons, HasSingletons<SampleDvbSingletons> {
     private String mEmbeddedInputId;
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
@@ -68,5 +71,10 @@ public class SampleDvbTuner extends BaseApplication {
     @Override
     public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
         return mConcurrentDvrPlaybackFlags;
+    }
+
+    @Override
+    public SampleDvbSingletons singletons() {
+        return this;
     }
 }
