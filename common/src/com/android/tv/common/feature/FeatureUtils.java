@@ -73,11 +73,20 @@ public class FeatureUtils {
     }
     /**
      * A feature available in AOSP.
+     *
+     * @param googleFeature the feature used in non AOSP builds
      * @param aospFeature the feature used in AOSP builds
      */
     public static Feature aospFeature(
+// AOSP_Comment_Out             final Feature googleFeature,
             final Feature aospFeature) {
+        /* Begin_AOSP_Comment_Out
+        if (!BuildConfig.AOSP) {
+            return googleFeature;
+        } else {
+            End_AOSP_Comment_Out */
             return aospFeature;
+// AOSP_Comment_Out         }
     }
 
     /**
