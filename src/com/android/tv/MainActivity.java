@@ -301,7 +301,6 @@ public class MainActivity extends Activity
     private boolean mNeedShowBackKeyGuide;
     private boolean mVisibleBehind;
     private boolean mShowNewSourcesFragment = true;
-    private String mTunerInputId;
     private boolean mOtherActivityLaunched;
 
     private boolean mIsInPIPMode;
@@ -435,14 +434,17 @@ public class MainActivity extends Activity
                 @Override
                 public void onInputAdded(String inputId) {
                     if (mOptionalBuiltInTunerManager.isPresent()
-                            && mTunerInputId.equals(inputId)
                             && CommonPreferences.shouldShowSetupActivity(MainActivity.this)) {
-                        Intent intent =
-                                TvSingletons.getSingletons(MainActivity.this)
-                                        .getTunerSetupIntent(MainActivity.this);
-                        startActivity(intent);
-                        CommonPreferences.setShouldShowSetupActivity(MainActivity.this, false);
-                        mSetupUtils.markAsKnownInput(mTunerInputId);
+                        String tunerInputId =
+                                mOptionalBuiltInTunerManager.get().getEmbeddedTunerInputId();
+                        if (tunerInputId.equals(inputId)) {
+                            Intent intent =
+                                    TvSingletons.getSingletons(MainActivity.this)
+                                            .getTunerSetupIntent(MainActivity.this);
+                            startActivity(intent);
+                            CommonPreferences.setShouldShowSetupActivity(MainActivity.this, false);
+                            mSetupUtils.markAsKnownInput(tunerInputId);
+                        }
                     }
                 }
             };
@@ -550,7 +552,6 @@ public class MainActivity extends Activity
         if (mOptionalBuiltInTunerManager.isPresent()) {
             mTvInputManagerHelper.addCallback(mTvInputCallback);
         }
-        mTunerInputId = tvSingletons.getEmbeddedTunerInputId();
         mProgramDataManager.addOnCurrentProgramUpdatedListener(
                 Channel.INVALID_ID, mOnCurrentProgramUpdatedListener);
         mProgramDataManager.setPrefetchEnabled(true);

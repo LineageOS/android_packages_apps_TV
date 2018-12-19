@@ -30,7 +30,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
-import com.android.tv.common.BaseSingletons;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.ui.setup.SetupFragment;
@@ -46,6 +45,7 @@ import com.android.tv.tuner.setup.PostalCodeFragment;
 import com.android.tv.tuner.setup.ScanFragment;
 import com.android.tv.tuner.setup.ScanResultFragment;
 import com.android.tv.tuner.setup.WelcomeFragment;
+import com.android.tv.tuner.singletons.TunerSingletons;
 import com.google.android.tv.partner.support.EpgContract;
 import com.google.android.tv.partner.support.EpgInput;
 import com.google.android.tv.partner.support.EpgInputs;
@@ -84,7 +84,7 @@ public class SampleNetworkTunerSetupActivity extends BaseTunerSetupActivity {
             Log.d(TAG, "onCreate");
         }
         embeddedInputId =
-                HasSingletons.get(BaseSingletons.class, getApplicationContext())
+                HasSingletons.get(TunerSingletons.class, getApplicationContext())
                         .getEmbeddedTunerInputId();
         new QueryEpgInputTask(embeddedInputId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         super.onCreate(savedInstanceState);

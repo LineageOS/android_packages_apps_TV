@@ -49,6 +49,7 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
+import com.android.tv.tuner.singletons.TunerSingletons;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
@@ -62,7 +63,10 @@ import javax.inject.Provider;
 
 /** Test application for Live TV. */
 public class TestSingletonApp extends Application
-        implements TvSingletons, HasTunerSessionFactory, HasSingletons<TvSingletons> {
+        implements TvSingletons,
+                TunerSingletons,
+                HasTunerSessionFactory,
+                HasSingletons<TvSingletons> {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();

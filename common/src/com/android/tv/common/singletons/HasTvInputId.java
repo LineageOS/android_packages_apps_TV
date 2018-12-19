@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.tv.common.singletons;
 
-package com.android.tv.tuner.sample.network.singletons;
+/**
+ * Has TunerInputId.
+ *
+ * <p>This is used buy both the tuner to get its input id and by the Live TV to get the
+ * embedded tuner input id.
+ */
+public interface HasTvInputId {
 
-import com.android.tv.common.BaseSingletons;
-import com.android.tv.tuner.singletons.TunerSingletons;
-
-/** Singletons for SampleNetworkTuner. */
-public interface SampleNetworkSingletons extends BaseSingletons, TunerSingletons {}
+    String getEmbeddedTunerInputId();
+}

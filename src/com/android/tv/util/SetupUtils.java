@@ -33,10 +33,13 @@ import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
 import com.android.tv.TvSingletons;
-import com.android.tv.common.BaseApplication;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.singletons.HasSingletons;
+import com.android.tv.common.singletons.HasTvInputId;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.api.Channel;
+import com.android.tv.tunerinputcontroller.HasBuiltInTunerManager;
+import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,7 +64,7 @@ public class SetupUtils {
     private final Set<String> mSetUpInputs;
     private final Set<String> mRecognizedInputs;
     private boolean mIsFirstTune;
-    private final String mTunerInputId;
+    private final Optional<String> mOptionalTunerInputId;
 
     @VisibleForTesting
     protected SetupUtils(Context context) {
@@ -77,7 +80,10 @@ public class SetupUtils {
         mRecognizedInputs.addAll(
                 mSharedPreferences.getStringSet(PREF_KEY_RECOGNIZED_INPUTS, mKnownInputs));
         mIsFirstTune = mSharedPreferences.getBoolean(PREF_KEY_IS_FIRST_TUNE, true);
-        mTunerInputId = BaseApplication.getSingletons(context).getEmbeddedTunerInputId();
+        mOptionalTunerInputId =
+                HasSingletons.get(HasBuiltInTunerManager.class, context)
+                        .getBuiltInTunerManager()
+                        .transform(HasTvInputId::getEmbeddedTunerInputId);
     }
 
     /**
@@ -329,7 +335,9 @@ public class SetupUtils {
         // A USB tuner device can be temporarily unplugged. We do not remove the USB tuner input
         // from the known inputs so that the input won't appear as a new input whenever the user
         // plugs in the USB tuner device again.
-        removedInputList.remove(mTunerInputId);
+        if (mOptionalTunerInputId.isPresent()) {
+            removedInputList.remove(mOptionalTunerInputId.get());
+        }
 
         if (!removedInputList.isEmpty()) {
             boolean inputPackageDeleted = false;

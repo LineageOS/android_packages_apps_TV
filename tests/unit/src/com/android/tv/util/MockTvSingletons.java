@@ -201,11 +201,6 @@ public class MockTvSingletons implements TvSingletons, HasSingletons<TvSingleton
     }
 
     @Override
-    public String getEmbeddedTunerInputId() {
-        return "com.android.tv/.tuner.tvinput.LiveTvTunerTvInputService";
-    }
-
-    @Override
     public DefaultCloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
     }

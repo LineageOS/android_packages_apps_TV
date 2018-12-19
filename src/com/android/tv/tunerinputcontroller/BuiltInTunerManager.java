@@ -15,7 +15,9 @@
  */
 package com.android.tv.tunerinputcontroller;
 
+import com.android.tv.common.singletons.HasTvInputId;
+
 /** Controllers and parameters needed to access a built in tuner. */
-public interface BuiltInTunerManager {
+public interface BuiltInTunerManager extends HasTvInputId {
     TunerInputController getTunerInputController();
 }
