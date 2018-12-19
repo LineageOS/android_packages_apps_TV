@@ -606,7 +606,7 @@ public class TunerRecordingSessionWorker
         if (checkRecordedProgramTable(COLUMN_STATE)) {
             values.put(COLUMN_STATE, state.name());
         }
-        if (state.equals(RecordedProgramState.FAILED)) {
+        if (state.equals(RecordedProgramState.FINISHED)) {
             values.put(RecordedPrograms.COLUMN_RECORDING_DATA_BYTES, totalBytes);
             values.put(
                     RecordedPrograms.COLUMN_RECORDING_DURATION_MILLIS, endTime - mRecordStartTime);
