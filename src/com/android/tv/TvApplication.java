@@ -39,6 +39,7 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
+import com.android.tv.common.singletons.HasTvInputId;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.Debug;
@@ -61,10 +62,12 @@ import com.android.tv.perf.PerformanceMonitorManager;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.tunerinputcontroller.TunerInputController;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.google.common.base.Optional;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -167,20 +170,26 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         mRunningInMainProcess = true;
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("start TvApplication.start");
         if (mRunningInMainProcess) {
+            final Optional<BuiltInTunerManager> optionalBuiltInTunerManager =
+                    getBuiltInTunerManager();
             getTvInputManagerHelper()
                     .addCallback(
                             new TvInputCallback() {
                                 @Override
                                 public void onInputAdded(String inputId) {
-                                    if (getBuiltInTunerManager().isPresent()
-                                            && TextUtils.equals(
-                                                    inputId, getEmbeddedTunerInputId())) {
-                                        getBuiltInTunerManager()
-                                                .get()
-                                                .getTunerInputController()
-                                                .updateTunerInputInfo(TvApplication.this);
+                                    if (optionalBuiltInTunerManager.isPresent()) {
+                                        BuiltInTunerManager builtInTunerManager =
+                                                optionalBuiltInTunerManager.get();
+                                        if (TextUtils.equals(
+                                                inputId,
+                                                builtInTunerManager.getEmbeddedTunerInputId())) {
+
+                                            builtInTunerManager
+                                                    .getTunerInputController()
+                                                    .updateTunerInputInfo(TvApplication.this);
+                                        }
+                                        handleInputCountChanged();
                                     }
-                                    handleInputCountChanged();
                                 }
 
                                 @Override
@@ -188,10 +197,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                                     handleInputCountChanged();
                                 }
                             });
-            if (getBuiltInTunerManager().isPresent()) {
+            if (optionalBuiltInTunerManager.isPresent()) {
                 // If the tuner input service is added before the app is started, we need to
                 // handle it here.
-                getBuiltInTunerManager()
+                optionalBuiltInTunerManager
                         .get()
                         .getTunerInputController()
                         .updateTunerInputInfo(TvApplication.this);
@@ -484,12 +493,15 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         if (!enable) {
             List<TvInputInfo> inputs = inputManager.getTvInputList();
             boolean skipTunerInputCheck = false;
+            Optional<String> optionalEmbeddedTunerInputId = getBuiltInTunerManager()
+                    .transform(HasTvInputId::getEmbeddedTunerInputId);
             // Enable the TvActivity only if there is at least one tuner type input.
             if (!skipTunerInputCheck) {
                 for (TvInputInfo input : inputs) {
                     if (calledByTunerServiceChanged
                             && !tunerServiceEnabled
-                            && getEmbeddedTunerInputId().equals(input.getId())) {
+                            && optionalEmbeddedTunerInputId.isPresent()
+                            && optionalEmbeddedTunerInputId.get().equals(input.getId())) {
                         continue;
                     }
                     if (input.getType() == TvInputInfo.TYPE_TUNER) {

@@ -17,6 +17,7 @@
 package com.android.tv.tuner.sample.dvb.singletons;
 
 import com.android.tv.common.BaseSingletons;
+import com.android.tv.tuner.singletons.TunerSingletons;
 
 /** Singletons for SampleDvbTuner. */
-public interface SampleDvbSingletons extends BaseSingletons {}
+public interface SampleDvbSingletons extends BaseSingletons, TunerSingletons {}

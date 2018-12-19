@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.tv.tuner.singletons;
 
-package com.android.tv.tuner.sample.network.singletons;
+import com.android.tv.common.singletons.HasTvInputId;
 
-import com.android.tv.common.BaseSingletons;
-import com.android.tv.tuner.singletons.TunerSingletons;
-
-/** Singletons for SampleNetworkTuner. */
-public interface SampleNetworkSingletons extends BaseSingletons, TunerSingletons {}
+/** Singletons used in tuner applications */
+public interface TunerSingletons extends HasTvInputId {}

@@ -32,7 +32,8 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.Log;
-import com.android.tv.common.BaseApplication;
+import com.android.tv.common.singletons.HasSingletons;
+import com.android.tv.common.singletons.HasTvInputId;
 import com.android.tv.common.util.PermissionUtils;
 import com.android.tv.tuner.data.PsipData.EitItem;
 import com.android.tv.tuner.data.TunerChannel;
@@ -147,7 +148,7 @@ public class ChannelDataManager implements Handler.Callback {
 
     public ChannelDataManager(Context context) {
         mContext = context;
-        mInputId = BaseApplication.getSingletons(context).getEmbeddedTunerInputId();
+        mInputId = HasSingletons.get(HasTvInputId.class, context).getEmbeddedTunerInputId();
         mChannelsUri = TvContract.buildChannelsUriForInput(mInputId);
         mTunerChannelMap = new ConcurrentHashMap<>();
         mTunerChannelIdMap = new ConcurrentSkipListMap<>();
