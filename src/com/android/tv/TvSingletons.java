@@ -44,7 +44,13 @@ import javax.inject.Provider;
 /** Interface with getters for application scoped singletons. */
 public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager {
 
-    /** Returns the @{@link TvSingletons} using the application context. */
+    /**
+     * Returns the @{@link TvSingletons} using the application context.
+     *
+     * @deprecated use {@link com.android.tv.common.singletons.HasSingletons#get(Class, Context)}
+     *     instead
+     */
+    @Deprecated
     static TvSingletons getSingletons(Context context) {
         return (TvSingletons) BaseApplication.getSingletons(context);
     }

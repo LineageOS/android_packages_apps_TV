@@ -15,11 +15,18 @@
  */
 package com.android.tv.common.singletons;
 
+import android.content.Context;
+
 /**
  * A type that can know about and supply a singleton, typically a type t such as an android activity
  * or application.
  */
 public interface HasSingletons<C> {
+
+    @SuppressWarnings("unchecked") // injection
+    static <C> C get(Class<C> clazz, Context context) {
+        return ((HasSingletons<C>) context).singletons();
+    }
 
     /** Returns the strongly typed singleton. */
     C singletons();

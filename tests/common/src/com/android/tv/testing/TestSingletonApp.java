@@ -33,6 +33,7 @@ import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.PreviewDataManager;
@@ -60,7 +61,8 @@ import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Test application for Live TV. */
-public class TestSingletonApp extends Application implements TvSingletons, HasTunerSessionFactory {
+public class TestSingletonApp extends Application
+        implements TvSingletons, HasTunerSessionFactory, HasSingletons<TvSingletons> {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();
@@ -270,5 +272,10 @@ public class TestSingletonApp extends Application implements TvSingletons, HasTu
     @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
+    }
+
+    @Override
+    public TvSingletons singletons() {
+        return this;
     }
 }

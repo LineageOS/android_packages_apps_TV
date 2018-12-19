@@ -40,7 +40,13 @@ public abstract class BaseApplication extends Application implements BaseSinglet
      */
     @VisibleForTesting public static BaseSingletons sSingletons;
 
-    /** Returns the {@link BaseSingletons} using the application context. */
+    /**
+     * Returns the {@link BaseSingletons} using the application context.
+     *
+     * @deprecated use {@link com.android.tv.common.singletons.HasSingletons#get(Class, Context)}
+     *     instead
+     */
+    @Deprecated
     public static BaseSingletons getSingletons(Context context) {
         // STOP-SHIP: changing the method to protected once the Tuner application is created.
         // No need to be "synchronized" because this doesn't create any instance.
