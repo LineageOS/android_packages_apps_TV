@@ -33,6 +33,7 @@ import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
+import com.android.tv.modules.TvSingletonsModule;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
@@ -72,6 +73,10 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
     @Override
     public void onCreate() {
         super.onCreate();
+        DaggerLiveTvApplicationComponent.builder()
+                .tvSingletonsModule(new TvSingletonsModule(this))
+                .build()
+                .inject(this);
         PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppCreate(this);
     }
 
