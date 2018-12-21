@@ -24,11 +24,14 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
+import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.sample.dvb.singletons.SampleDvbSingletons;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 
 /** The top level application for Sample DVB Tuner. */
 public class SampleDvbTuner extends BaseApplication
@@ -37,6 +40,9 @@ public class SampleDvbTuner extends BaseApplication
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
+    private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
+    private final TunerSessionFactoryImpl mTunerSessionFactory =
+            new TunerSessionFactoryImpl(mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
 
     @Override
     public Intent getTunerSetupIntent(Context context) {
@@ -76,5 +82,10 @@ public class SampleDvbTuner extends BaseApplication
     @Override
     public SampleDvbSingletons singletons() {
         return this;
+    }
+
+    @Override
+    public TunerSessionFactory getTunerSessionFactory() {
+        return mTunerSessionFactory;
     }
 }

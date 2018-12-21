@@ -16,6 +16,7 @@
 package com.android.tv.tuner.singletons;
 
 import com.android.tv.common.singletons.HasTvInputId;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 
 /** Singletons used in tuner applications */
-public interface TunerSingletons extends HasTvInputId {}
+public interface TunerSingletons extends HasTvInputId, TunerSessionFactory.HasTunerSessionFactory {}
