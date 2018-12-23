@@ -25,15 +25,21 @@ import java.lang.annotation.Retention;
  * Constants for performance event names.
  *
  * <p>Only constants are used to insure no PII is sent.
- *
+
  */
 public final class EventNames {
 
     @Retention(SOURCE)
-    @StringDef({FETCH_EPG_TASK, ON_DEVICE_SEARCH, PROGRAM_GUIDE_SHOW,
-            PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND,
-            PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE, PROGRAM_GUIDE_SCROLL_HORIZONTALLY,
-            PROGRAM_GUIDE_SCROLL_VERTICALLY, MEMORY_ON_PROGRAM_GUIDE_CLOSE})
+    @StringDef({
+        FETCH_EPG_TASK,
+        ON_DEVICE_SEARCH,
+        PROGRAM_GUIDE_SHOW,
+        PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND,
+        PROGRAM_GUIDE_SHOW_FROM_EMPTY_CACHE,
+        PROGRAM_GUIDE_SCROLL_HORIZONTALLY,
+        PROGRAM_GUIDE_SCROLL_VERTICALLY,
+        MEMORY_ON_PROGRAM_GUIDE_CLOSE
+    })
     public @interface EventName {}
 
     public static final String FETCH_EPG_TASK = "FetchEpgTask";
@@ -42,6 +48,7 @@ public final class EventNames {
      * com.android.tv.search.LocalSearchProvider}.
      */
     public static final String ON_DEVICE_SEARCH = "OnDeviceSearch";
+
     public static final String PROGRAM_GUIDE_SHOW = "ProgramGuide.show";
     public static final String PROGRAM_DATA_MANAGER_PROGRAMS_PREFETCH_TASK_DO_IN_BACKGROUND =
             "ProgramDataManager.ProgramsPrefetchTask.doInBackground";

@@ -19,6 +19,7 @@ package com.android.tv.common.experiments;
 import static com.android.tv.common.experiments.ExperimentFlag.createFlag;
 
 import com.android.tv.common.BuildConfig;
+// AOSP_Comment_Out import com.android.tv.common.flags.LiveChannels;
 
 /**
  * Set of experiments visible in AOSP.
@@ -28,15 +29,18 @@ import com.android.tv.common.BuildConfig;
 public final class Experiments {
     public static final ExperimentFlag<Boolean> CLOUD_EPG =
             ExperimentFlag.createFlag(
+// AOSP_Comment_Out                     LiveChannels::enableCloudEpg,
                     true);
 
     public static final ExperimentFlag<Boolean> ENABLE_UNRATED_CONTENT_SETTINGS =
             ExperimentFlag.createFlag(
+// AOSP_Comment_Out                     LiveChannels::enableUnratedContentSettings,
                     false);
 
     /** Turn analytics on or off based on the System Checkbox for logging. */
     public static final ExperimentFlag<Boolean> ENABLE_ANALYTICS_VIA_CHECKBOX =
             createFlag(
+// AOSP_Comment_Out                     LiveChannels::enableAnalyticsViaCheckbox,
                     false);
 
     /**
@@ -46,6 +50,7 @@ public final class Experiments {
      */
     public static final ExperimentFlag<Boolean> ENABLE_DEVELOPER_FEATURES =
             ExperimentFlag.createFlag(
+// AOSP_Comment_Out                     LiveChannels::enableDeveloperFeatures,
                     BuildConfig.ENG);
 
     /**
@@ -57,6 +62,7 @@ public final class Experiments {
      */
     public static final ExperimentFlag<Boolean> ENABLE_QA_FEATURES =
             ExperimentFlag.createFlag(
+// AOSP_Comment_Out                     LiveChannels::enableQaFeatures,
                     false);
 
     private Experiments() {}

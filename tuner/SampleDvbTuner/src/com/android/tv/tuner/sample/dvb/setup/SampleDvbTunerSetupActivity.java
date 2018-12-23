@@ -30,8 +30,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
-import com.android.tv.common.BaseApplication;
+import com.android.tv.common.BaseSingletons;
 import com.android.tv.common.feature.CommonFeatures;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.PostalCodeUtils;
@@ -82,7 +83,9 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
         if (DEBUG) {
             Log.d(TAG, "onCreate");
         }
-        embeddedInputId = BaseApplication.getSingletons(this).getEmbeddedTunerInputId();
+        embeddedInputId =
+                HasSingletons.get(BaseSingletons.class, getApplicationContext())
+                        .getEmbeddedTunerInputId();
         new QueryEpgInputTask(embeddedInputId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         super.onCreate(savedInstanceState);
     }

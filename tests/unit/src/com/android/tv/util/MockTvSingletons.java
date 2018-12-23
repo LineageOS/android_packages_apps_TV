@@ -29,6 +29,7 @@ import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.Clock;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.PreviewDataManager;
@@ -42,13 +43,13 @@ import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.testing.FakeClock;
-import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.google.common.base.Optional;
 import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Mock {@link TvSingletons} class. */
-public class MockTvSingletons implements TvSingletons {
+public class MockTvSingletons implements TvSingletons, HasSingletons<TvSingletons> {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
 
     private final TvApplication mApp;
@@ -161,8 +162,8 @@ public class MockTvSingletons implements TvSingletons {
     }
 
     @Override
-    public Optional<TunerInputController> getTunerInputController() {
-        return mApp.getTunerInputController();
+    public Optional<BuiltInTunerManager> getBuiltInTunerManager() {
+        return mApp.getBuiltInTunerManager();
     }
 
     @Override
@@ -227,5 +228,10 @@ public class MockTvSingletons implements TvSingletons {
     @Override
     public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
         return mConcurrentDvrPlaybackFlags;
+    }
+
+    @Override
+    public TvSingletons singletons() {
+        return this;
     }
 }

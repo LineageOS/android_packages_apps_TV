@@ -64,6 +64,7 @@ public class CommonFeatures {
                                     HasCloudEpgFlags::fromContext, CloudEpgFlags::supportedRegion),
                             new Feature() {
                                 private final String[] supportedRegions = {
+// AOSP_Comment_Out                                     "US", "GB"
                                 };
 
                                 @Override

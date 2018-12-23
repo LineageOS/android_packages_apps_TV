@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.media.tv.TvContract;
 import com.android.tv.TvActivity;
 import com.android.tv.TvApplication;
+import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.StubAnalytics;
 import com.android.tv.analytics.Tracker;
@@ -30,6 +31,7 @@ import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
@@ -37,14 +39,14 @@ import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
 import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
-import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.account.AccountHelperImpl;
 import com.google.common.base.Optional;
 import javax.inject.Provider;
 
 /** The top level application for Live TV. */
-public class LiveTvApplication extends TvApplication {
+public class LiveTvApplication extends TvApplication implements HasSingletons<TvSingletons> {
 
     static {
         PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppClassLoaded();
@@ -59,7 +61,6 @@ public class LiveTvApplication extends TvApplication {
                 }
             };
 
-    private final Optional<TunerInputController> mOptionalTunerInputController = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobsFlags = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
@@ -157,8 +158,8 @@ public class LiveTvApplication extends TvApplication {
     }
 
     @Override
-    public Optional<TunerInputController> getTunerInputController() {
-        return mOptionalTunerInputController;
+    public Optional<BuiltInTunerManager> getBuiltInTunerManager() {
+        return Optional.absent();
     }
 
     @Override
@@ -169,5 +170,10 @@ public class LiveTvApplication extends TvApplication {
     @Override
     public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
         return mConcurrentDvrPlaybackFlags;
+    }
+
+    @Override
+    public TvSingletons singletons() {
+        return this;
     }
 }

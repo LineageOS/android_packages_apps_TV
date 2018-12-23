@@ -33,19 +33,24 @@ import com.android.tv.dvr.DvrScheduleManager;
 import com.android.tv.dvr.DvrWatchedPositionManager;
 import com.android.tv.dvr.recorder.RecordingScheduler;
 import com.android.tv.perf.PerformanceMonitor;
-import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.tunerinputcontroller.HasBuiltInTunerManager;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.account.AccountHelper;
-import com.google.common.base.Optional;
 import com.android.tv.common.flags.BackendKnobsFlags;
 import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Interface with getters for application scoped singletons. */
-public interface TvSingletons extends BaseSingletons {
+public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager {
 
-    /** Returns the @{@link TvSingletons} using the application context. */
+    /**
+     * Returns the @{@link TvSingletons} using the application context.
+     *
+     * @deprecated use {@link com.android.tv.common.singletons.HasSingletons#get(Class, Context)}
+     *     instead
+     */
+    @Deprecated
     static TvSingletons getSingletons(Context context) {
         return (TvSingletons) BaseApplication.getSingletons(context);
     }
@@ -101,8 +106,6 @@ public interface TvSingletons extends BaseSingletons {
     EpgFetcher getEpgFetcher();
 
     SetupUtils getSetupUtils();
-
-    Optional<TunerInputController> getTunerInputController();
 
     ExperimentLoader getExperimentLoader();
 
