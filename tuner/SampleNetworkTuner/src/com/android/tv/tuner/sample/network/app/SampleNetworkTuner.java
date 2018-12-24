@@ -16,6 +16,7 @@
 
 package com.android.tv.tuner.sample.network.app;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,15 +28,25 @@ import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
+import com.android.tv.tuner.modules.TunerSingletonsModule;
 import com.android.tv.tuner.sample.network.singletons.SampleNetworkSingletons;
 import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+import javax.inject.Inject;
 
 /** The top level application for Sample DVB Tuner. */
 public class SampleNetworkTuner extends BaseApplication
-        implements SampleNetworkSingletons, HasSingletons<SampleNetworkSingletons> {
+        implements SampleNetworkSingletons,
+                HasSingletons<SampleNetworkSingletons>,
+                HasActivityInjector {
+
+    @Inject DispatchingAndroidInjector<Activity> mDispatchingActivityInjector;
+
     private String mEmbeddedInputId;
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
@@ -43,6 +54,15 @@ public class SampleNetworkTuner extends BaseApplication
     private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
     private final TunerSessionFactoryImpl mTunerSessionFactory =
             new TunerSessionFactoryImpl(mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        DaggerSampleNetworkTunerComponent.builder()
+                .tunerSingletonsModule(new TunerSingletonsModule(this))
+                .build()
+                .inject(this);
+    }
 
     @Override
     public Intent getTunerSetupIntent(Context context) {
@@ -87,5 +107,10 @@ public class SampleNetworkTuner extends BaseApplication
     @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
+    }
+
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return mDispatchingActivityInjector;
     }
 }
