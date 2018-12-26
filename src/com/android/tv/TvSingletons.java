@@ -22,6 +22,7 @@ import com.android.tv.analytics.Tracker;
 import com.android.tv.common.BaseApplication;
 import com.android.tv.common.BaseSingletons;
 import com.android.tv.common.experiments.ExperimentLoader;
+import com.android.tv.common.flags.has.HasUiFlags;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.PreviewDataManager;
 import com.android.tv.data.ProgramDataManager;
@@ -42,7 +43,7 @@ import java.util.concurrent.Executor;
 import javax.inject.Provider;
 
 /** Interface with getters for application scoped singletons. */
-public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager {
+public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager, HasUiFlags {
 
     /**
      * Returns the @{@link TvSingletons} using the application context.

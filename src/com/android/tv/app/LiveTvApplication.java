@@ -29,6 +29,7 @@ import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
+import com.android.tv.common.flags.impl.DefaultUiFlags;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
@@ -62,6 +63,7 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
 
     private final DefaultBackendKnobsFlags mBackendKnobsFlags = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
+    private final DefaultUiFlags mUiFlags = new DefaultUiFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
     private AccountHelper mAccountHelper;
@@ -151,6 +153,11 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
     @Override
     public DefaultCloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
+    }
+
+    @Override
+    public DefaultUiFlags getUiFlags() {
+        return mUiFlags;
     }
 
     @Override

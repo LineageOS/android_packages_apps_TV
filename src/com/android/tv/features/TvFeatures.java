@@ -31,10 +31,12 @@ import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.feature.ExperimentFeature;
 import com.android.tv.common.feature.Feature;
 import com.android.tv.common.feature.FeatureUtils;
-import com.android.tv.common.feature.GServiceFeature;
+import com.android.tv.common.feature.FlagFeature;
 import com.android.tv.common.feature.PropertyFeature;
 import com.android.tv.common.feature.Sdk;
 import com.android.tv.common.feature.TestableFeature;
+import com.android.tv.common.flags.has.HasUiFlags;
+import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.PermissionUtils;
 
 
@@ -61,18 +63,14 @@ public final class TvFeatures extends CommonFeatures {
     // TODO(b/76149661): Fix EPG search or remove it
     public static final Feature EPG_SEARCH = OFF;
 
-    private static final String GSERVICE_KEY_UNHIDE = "live_channels_unhide";
     /** A flag which indicates that LC app is unhidden even when there is no input. */
     public static final Feature UNHIDE =
             or(
-                    new GServiceFeature(GSERVICE_KEY_UNHIDE, false),
-                    new Feature() {
-                        @Override
-                        public boolean isEnabled(Context context) {
-                            // If LC app runs as non-system app, we unhide the app.
-                            return !PermissionUtils.hasAccessAllEpg(context);
-                        }
-                    });
+                    FlagFeature.from(
+                            context -> HasSingletons.get(HasUiFlags.class, context),
+                            input -> input.getUiFlags().uhideLauncher()),
+                    // If LC app runs as non-system app, we unhide the app.
+                    FeatureUtils.not(PermissionUtils::hasAccessAllEpg));
 
     public static final Feature PICTURE_IN_PICTURE =
             new Feature() {

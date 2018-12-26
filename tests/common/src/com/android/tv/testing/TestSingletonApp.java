@@ -32,6 +32,7 @@ import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
+import com.android.tv.common.flags.impl.DefaultUiFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.Clock;
@@ -80,6 +81,7 @@ public class TestSingletonApp extends Application
     private final Optional<BuiltInTunerManager> mBuiltInTunerManagerOptional = Optional.absent();
     private final DefaultBackendKnobsFlags mBackendKnobs = new DefaultBackendKnobsFlags();
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
+    private final DefaultUiFlags mUiFlags = new DefaultUiFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
     private final TunerSessionFactoryImpl mTunerSessionFactory =
@@ -261,6 +263,11 @@ public class TestSingletonApp extends Application
     @Override
     public DefaultCloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
+    }
+
+    @Override
+    public DefaultUiFlags getUiFlags() {
+        return mUiFlags;
     }
 
     @Override
