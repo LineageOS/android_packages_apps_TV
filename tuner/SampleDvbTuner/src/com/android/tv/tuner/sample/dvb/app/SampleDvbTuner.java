@@ -16,7 +16,6 @@
 
 package com.android.tv.tuner.sample.dvb.app;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -35,15 +34,10 @@ import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import javax.inject.Inject;
 
 /** The top level application for Sample DVB Tuner. */
 public class SampleDvbTuner extends BaseApplication
-        implements SampleDvbSingletons, HasSingletons<SampleDvbSingletons>, HasActivityInjector {
-
-    @Inject DispatchingAndroidInjector<Activity> mDispatchingActivityInjector;
+        implements SampleDvbSingletons, HasSingletons<SampleDvbSingletons> {
 
     private String mEmbeddedInputId;
     private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
@@ -54,12 +48,10 @@ public class SampleDvbTuner extends BaseApplication
             new TunerSessionFactoryImpl(mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        DaggerSampleDvbTunerComponent.builder()
+    protected AndroidInjector<SampleDvbTuner> applicationInjector() {
+        return DaggerSampleDvbTunerComponent.builder()
                 .tunerSingletonsModule(new TunerSingletonsModule(this))
-                .build()
-                .inject(this);
+                .build();
     }
 
     @Override
@@ -105,10 +97,5 @@ public class SampleDvbTuner extends BaseApplication
     @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
-    }
-
-    @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return mDispatchingActivityInjector;
     }
 }

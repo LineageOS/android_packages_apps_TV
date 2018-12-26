@@ -16,7 +16,6 @@
 
 package com.android.tv.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import com.android.tv.TvActivity;
@@ -43,20 +42,14 @@ import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.account.AccountHelperImpl;
 import com.google.common.base.Optional;
 import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 /** The top level application for Live TV. */
-public class LiveTvApplication extends TvApplication
-    implements HasSingletons<TvSingletons>, HasActivityInjector {
+public class LiveTvApplication extends TvApplication implements HasSingletons<TvSingletons> {
 
     static {
         PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppClassLoaded();
     }
-
-  @Inject DispatchingAndroidInjector<Activity> mDispatchingActivityInjector;
 
     private final Provider<EpgReader> mEpgReaderProvider =
             new Provider<EpgReader>() {
@@ -79,12 +72,15 @@ public class LiveTvApplication extends TvApplication
     private PerformanceMonitor mPerformanceMonitor;
 
     @Override
+    protected AndroidInjector<LiveTvApplication> applicationInjector() {
+        return DaggerLiveTvApplicationComponent.builder()
+                .tvSingletonsModule(new TvSingletonsModule(this))
+                .build();
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
-        DaggerLiveTvApplicationComponent.builder()
-                .tvSingletonsModule(new TvSingletonsModule(this))
-                .build()
-                .inject(this);
         PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppCreate(this);
     }
 
@@ -176,9 +172,4 @@ public class LiveTvApplication extends TvApplication
     public TvSingletons singletons() {
         return this;
     }
-
-  @Override
-  public AndroidInjector<Activity> activityInjector() {
-    return mDispatchingActivityInjector;
-  }
 }
