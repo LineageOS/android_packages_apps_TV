@@ -26,7 +26,6 @@ import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.features.TunerFeatures;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.android.tv.tuner.ts.TsParser;
-import com.android.tv.tuner.tvinput.FileSourceEventDetector;
 import com.google.android.exoplayer.C;
 import com.google.android.exoplayer.upstream.DataSpec;
 import java.io.BufferedInputStream;
