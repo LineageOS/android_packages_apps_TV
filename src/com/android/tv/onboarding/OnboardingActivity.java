@@ -37,6 +37,9 @@ import com.android.tv.data.ChannelDataManager;
 import com.android.tv.util.OnboardingUtils;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
+import dagger.android.AndroidInjection;
+import dagger.android.ContributesAndroidInjector;
+import javax.inject.Inject;
 
 public class OnboardingActivity extends SetupActivity {
     private static final String KEY_INTENT_AFTER_COMPLETION = "key_intent_after_completion";
@@ -47,7 +50,7 @@ public class OnboardingActivity extends SetupActivity {
 
     private static final int REQUEST_CODE_START_SETUP_ACTIVITY = 1;
 
-    private ChannelDataManager mChannelDataManager;
+    @Inject ChannelDataManager mChannelDataManager;
     private TvInputManagerHelper mInputManager;
     private SetupUtils mSetupUtils;
     private final ChannelDataManager.Listener mChannelListener =
@@ -80,12 +83,12 @@ public class OnboardingActivity extends SetupActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         TvSingletons singletons = TvSingletons.getSingletons(this);
         mInputManager = singletons.getTvInputManagerHelper();
         mSetupUtils = singletons.getSetupUtils();
         if (PermissionUtils.hasAccessAllEpg(this) || PermissionUtils.hasReadTvListings(this)) {
-            mChannelDataManager = singletons.getChannelDataManager();
             // Make the channels of the new inputs which have been setup outside Live TV
             // browsable.
             if (mChannelDataManager.isDbLoadFinished()) {
@@ -221,5 +224,12 @@ public class OnboardingActivity extends SetupActivity {
                 break;
         }
         return false;
+    }
+
+    /** Exports {@link OnboardingActivity} for Dagger codegen to create the appropriate injector. */
+    @dagger.Module
+    public abstract static class Module {
+        @ContributesAndroidInjector
+        abstract OnboardingActivity contributeOnboardingActivityInjector();
     }
 }

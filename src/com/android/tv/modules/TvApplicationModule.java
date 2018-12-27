@@ -17,8 +17,10 @@ package com.android.tv.modules;
 
 import com.android.tv.MainActivity;
 import com.android.tv.TvApplication;
+import com.android.tv.onboarding.OnboardingActivity;
 import dagger.Module;
 
 /** Dagger module for {@link TvApplication}. */
-@Module(includes = {TvSingletonsModule.class, MainActivity.Module.class})
+@Module(includes = {
+        TvSingletonsModule.class, MainActivity.Module.class, OnboardingActivity.Module.class})
 public class TvApplicationModule {}
