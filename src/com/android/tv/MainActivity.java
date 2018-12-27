@@ -263,8 +263,8 @@ public class MainActivity extends Activity
 
     private AccessibilityManager mAccessibilityManager;
     @Inject ChannelDataManager mChannelDataManager;
-    private ProgramDataManager mProgramDataManager;
-    private TvInputManagerHelper mTvInputManagerHelper;
+    @Inject ProgramDataManager mProgramDataManager;
+    @Inject TvInputManagerHelper mTvInputManagerHelper;
     private ChannelTuner mChannelTuner;
     private final TvOptionsManager mTvOptionsManager = new TvOptionsManager(this);
     private TvViewUiManager mTvViewUiManager;
@@ -274,7 +274,7 @@ public class MainActivity extends Activity
     private final DurationTimer mTuneDurationTimer = new DurationTimer();
     private DvrManager mDvrManager;
     private ConflictChecker mDvrConflictChecker;
-    private SetupUtils mSetupUtils;
+    @Inject SetupUtils mSetupUtils;
     private Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
     @VisibleForTesting protected TunableTvView mTvView;
@@ -485,13 +485,12 @@ public class MainActivity extends Activity
         }
         Starter.start(this);
         super.onCreate(savedInstanceState);
-        if (!tvSingletons.getTvInputManagerHelper().hasTvInputManager()) {
+        if (!mTvInputManagerHelper.hasTvInputManager()) {
             Log.wtf(TAG, "Stopping because device does not have a TvInputManager");
             finishAndRemoveTask();
             return;
         }
         mOptionalBuiltInTunerManager = tvSingletons.getBuiltInTunerManager();
-        mSetupUtils = tvSingletons.getSetupUtils();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.
@@ -510,8 +509,6 @@ public class MainActivity extends Activity
             return;
         }
         setContentView(R.layout.activity_tv);
-        mProgramDataManager = tvApplication.getProgramDataManager();
-        mTvInputManagerHelper = tvApplication.getTvInputManagerHelper();
         mTvView = (TunableTvView) findViewById(R.id.main_tunable_tv_view);
         mTvView.initialize(mProgramDataManager, mTvInputManagerHelper);
         mTvView.setOnUnhandledInputEventListener(
