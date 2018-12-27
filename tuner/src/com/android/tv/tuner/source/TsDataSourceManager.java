@@ -21,7 +21,7 @@ import android.support.annotation.VisibleForTesting;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
-import com.android.tv.tuner.tvinput.EventDetector.EventListener;
+import com.android.tv.tuner.ts.EventDetector.EventListener;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

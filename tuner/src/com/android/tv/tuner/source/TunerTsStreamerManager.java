@@ -22,7 +22,7 @@ import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.api.ITunerHal;
 import com.android.tv.tuner.data.TunerChannel;
-import com.android.tv.tuner.tvinput.EventDetector.EventListener;
+import com.android.tv.tuner.ts.EventDetector.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;

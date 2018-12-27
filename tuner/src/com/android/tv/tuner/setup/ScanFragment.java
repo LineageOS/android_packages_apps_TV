@@ -51,7 +51,7 @@ import com.android.tv.tuner.source.FileTsStreamer;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsStreamer;
 import com.android.tv.tuner.source.TunerTsStreamer;
-import com.android.tv.tuner.tvinput.EventDetector;
+import com.android.tv.tuner.ts.EventDetector;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import java.util.ArrayList;
 import java.util.List;
