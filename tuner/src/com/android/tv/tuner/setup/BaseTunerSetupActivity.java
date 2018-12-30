@@ -86,7 +86,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
     protected boolean mActivityStopped;
     protected boolean mPendingShowInitialFragment;
 
-    private TunerHalFactory mTunerHalFactory;
+    private TunerHalCreator mTunerHalCreator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +95,8 @@ public class BaseTunerSetupActivity extends SetupActivity {
         }
         mActivityStopped = false;
         executeGetTunerTypeAndCountAsyncTask();
-        mTunerHalFactory =
-                new TunerHalFactory(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
+        mTunerHalCreator =
+                new TunerHalCreator(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
         super.onCreate(savedInstanceState);
         try {
             // Updating postal code takes time, therefore we called it here for "warm-up".
@@ -205,7 +205,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
                 }
                 return true;
             case ConnectionTypeFragment.ACTION_CATEGORY:
-                if (mTunerHalFactory.getOrCreate() == null) {
+                if (mTunerHalCreator.getOrCreate() == null) {
                     finish();
                     Toast.makeText(
                                     getApplicationContext(),
@@ -228,7 +228,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
                         getFragmentManager().popBackStack();
                         return true;
                     case ScanFragment.ACTION_FINISH:
-                        mTunerHalFactory.clear();
+                        mTunerHalCreator.clear();
                         showScanResultFragment();
                         return true;
                     default: // fall out
@@ -265,17 +265,17 @@ public class BaseTunerSetupActivity extends SetupActivity {
 
     /** Gets the currently used tuner HAL. */
     Tuner getTunerHal() {
-        return mTunerHalFactory.getOrCreate();
+        return mTunerHalCreator.getOrCreate();
     }
 
     /** Generates tuner HAL. */
     void generateTunerHal() {
-        mTunerHalFactory.generate();
+        mTunerHalCreator.generate();
     }
 
     /** Clears the currently used tuner HAL. */
     protected void clearTunerHal() {
-        mTunerHalFactory.clear();
+        mTunerHalCreator.clear();
     }
 
     protected void showLocationFragment() {
@@ -447,19 +447,19 @@ public class BaseTunerSetupActivity extends SetupActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /** A static factory for {@link Tuner} instances * */
+    /** Creates {@link Tuner} instances in a worker thread * */
     @VisibleForTesting
-    protected static class TunerHalFactory {
+    protected static class TunerHalCreator {
         private Context mContext;
         @VisibleForTesting Tuner mTunerHal;
-        private TunerHalFactory.GenerateTunerHalTask mGenerateTunerHalTask;
+        private TunerHalCreator.GenerateTunerHalTask mGenerateTunerHalTask;
         private final Executor mExecutor;
 
-        TunerHalFactory(Context context) {
+        TunerHalCreator(Context context) {
             this(context, AsyncTask.SERIAL_EXECUTOR);
         }
 
-        TunerHalFactory(Context context, Executor executor) {
+        TunerHalCreator(Context context, Executor executor) {
             mContext = context;
             mExecutor = executor;
         }
@@ -487,7 +487,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
         @MainThread
         void generate() {
             if (mGenerateTunerHalTask == null && mTunerHal == null) {
-                mGenerateTunerHalTask = new TunerHalFactory.GenerateTunerHalTask();
+                mGenerateTunerHalTask = new TunerHalCreator.GenerateTunerHalTask();
                 mGenerateTunerHalTask.executeOnExecutor(mExecutor);
             }
         }
