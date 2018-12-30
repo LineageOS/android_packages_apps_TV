@@ -20,7 +20,7 @@ import android.content.Context;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
-import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * Manages {@link TunerTsStreamer} for playback and recording. The class hides handling of {@link
- * ITunerHal} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
+ * Tuner} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
  * class directly.
  */
 class TunerTsStreamerManager {
@@ -96,7 +96,7 @@ class TunerTsStreamerManager {
         }
         // Created streamer was cancelled by a new tune request.
         streamer.stopStream();
-        ITunerHal hal = streamer.getTunerHal();
+        Tuner hal = streamer.getTunerHal();
         hal.setHasPendingTune(false);
         mTunerHalManager.releaseTunerHal(hal, sessionId, reuse);
         return null;
@@ -120,7 +120,7 @@ class TunerTsStreamerManager {
             }
         }
         streamer.stopStream();
-        ITunerHal hal = streamer.getTunerHal();
+        Tuner hal = streamer.getTunerHal();
         hal.setHasPendingTune(false);
         mTunerHalManager.releaseTunerHal(hal, sessionId, reuse);
     }
@@ -134,7 +134,7 @@ class TunerTsStreamerManager {
     }
 
     /** Add tuner hal into TunerHalManager for test. */
-    void addTunerHal(ITunerHal tunerHal, int sessionId) {
+    void addTunerHal(Tuner tunerHal, int sessionId) {
         mTunerHalManager.addTunerHal(tunerHal, sessionId);
     }
 
@@ -193,7 +193,7 @@ class TunerTsStreamerManager {
         // mCancelled will be {@code true} if a new tune request for the same session
         // cancels create().
         private boolean mCancelled;
-        private ITunerHal mTunerHal;
+        private Tuner mTunerHal;
 
         private TsStreamerCreator(Context context, TunerChannel channel, EventListener listener) {
             mContext = context;
@@ -202,7 +202,7 @@ class TunerTsStreamerManager {
         }
 
         private TunerTsStreamer create(int sessionId, boolean reuse) {
-            ITunerHal hal = mTunerHalManager.getOrCreateTunerHal(mContext, sessionId);
+            Tuner hal = mTunerHalManager.getOrCreateTunerHal(mContext, sessionId);
             if (hal == null) {
                 return null;
             }
@@ -248,15 +248,15 @@ class TunerTsStreamerManager {
     }
 
     /**
-     * Supports sharing {@link ITunerHal} among multiple sessions. The class also supports session
-     * affinity for {@link ITunerHal} allocation.
+     * Supports sharing {@link Tuner} among multiple sessions. The class also supports session
+     * affinity for {@link Tuner} allocation.
      */
     private static class TunerHalManager {
-        private final Map<Integer, ITunerHal> mTunerHals = new HashMap<>();
+        private final Map<Integer, Tuner> mTunerHals = new HashMap<>();
 
-        private ITunerHal getOrCreateTunerHal(Context context, int sessionId) {
+        private Tuner getOrCreateTunerHal(Context context, int sessionId) {
             // Handles session affinity.
-            ITunerHal hal = mTunerHals.get(sessionId);
+            Tuner hal = mTunerHals.get(sessionId);
             if (hal != null) {
                 mTunerHals.remove(sessionId);
                 return hal;
@@ -272,12 +272,12 @@ class TunerTsStreamerManager {
             return BuiltInTunerHalFactory.createInstance(context);
         }
 
-        private void releaseTunerHal(ITunerHal hal, int sessionId, boolean reuse) {
+        private void releaseTunerHal(Tuner hal, int sessionId, boolean reuse) {
             if (!reuse || !hal.isReusable()) {
                 AutoCloseableUtils.closeQuietly(hal);
                 return;
             }
-            ITunerHal cachedHal = mTunerHals.get(sessionId);
+            Tuner cachedHal = mTunerHals.get(sessionId);
             if (cachedHal != hal) {
                 mTunerHals.put(sessionId, hal);
                 if (cachedHal != null) {
@@ -287,7 +287,7 @@ class TunerTsStreamerManager {
         }
 
         private void releaseCachedHal(int sessionId) {
-            ITunerHal hal = mTunerHals.get(sessionId);
+            Tuner hal = mTunerHals.get(sessionId);
             if (hal != null) {
                 mTunerHals.remove(sessionId);
             }
@@ -296,7 +296,7 @@ class TunerTsStreamerManager {
             }
         }
 
-        private void addTunerHal(ITunerHal tunerHal, int sessionId) {
+        private void addTunerHal(Tuner tunerHal, int sessionId) {
             mTunerHals.put(sessionId, tunerHal);
         }
     }

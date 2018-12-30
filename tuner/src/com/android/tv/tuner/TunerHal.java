@@ -20,12 +20,12 @@ import android.content.Context;
 import android.util.Log;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.compat.TvInputConstantCompat;
-import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.Tuner;
 import com.android.tv.common.annotation.UsedByNative;
 import java.util.Objects;
 
 /** A base class to handle a hardware tuner device. */
-public abstract class TunerHal implements ITunerHal {
+public abstract class TunerHal implements Tuner {
     private static final String TAG = "TunerHal";
 
     private static final int PID_PAT = 0;
@@ -105,7 +105,7 @@ public abstract class TunerHal implements ITunerHal {
         if (mFrequency == frequency && Objects.equals(mModulation, modulation)) {
             addPidFilter(PID_PAT, FILTER_TYPE_OTHER);
             addPidFilter(PID_ATSC_SI_BASE, FILTER_TYPE_OTHER);
-            if (ITunerHal.isDvbDeliverySystem(mDeliverySystemType)) {
+            if (Tuner.isDvbDeliverySystem(mDeliverySystemType)) {
                 addPidFilter(PID_DVB_SDT, FILTER_TYPE_OTHER);
                 addPidFilter(PID_DVB_EIT, FILTER_TYPE_OTHER);
             }
@@ -119,7 +119,7 @@ public abstract class TunerHal implements ITunerHal {
         if (nativeTune(getDeviceId(), frequency, modulation, timeout_ms)) {
             addPidFilter(PID_PAT, FILTER_TYPE_OTHER);
             addPidFilter(PID_ATSC_SI_BASE, FILTER_TYPE_OTHER);
-            if (ITunerHal.isDvbDeliverySystem(mDeliverySystemType)) {
+            if (Tuner.isDvbDeliverySystem(mDeliverySystemType)) {
                 addPidFilter(PID_DVB_SDT, FILTER_TYPE_OTHER);
                 addPidFilter(PID_DVB_EIT, FILTER_TYPE_OTHER);
             }

@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A interface a hardware tuner device. */
-public interface ITunerHal extends AutoCloseable {
+public interface Tuner extends AutoCloseable {
 
     int FILTER_TYPE_OTHER = 0;
     int FILTER_TYPE_AUDIO = 1;

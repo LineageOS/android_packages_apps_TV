@@ -19,7 +19,7 @@ package com.android.tv.tuner.ts;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.data.PsiData;
 import com.android.tv.tuner.data.PsipData;
 import com.android.tv.tuner.data.PsipData.EitItem;
@@ -39,7 +39,7 @@ public class EventDetector {
     private static final boolean DEBUG = false;
     public static final int ALL_PROGRAM_NUMBERS = -1;
 
-    private final ITunerHal mTunerHal;
+    private final Tuner mTunerHal;
 
     private TsParser mTsParser;
     private final Set<Integer> mPidSet = new HashSet<>();
@@ -62,7 +62,7 @@ public class EventDetector {
                     for (PsiData.PatItem i : items) {
                         if (mProgramNumber == ALL_PROGRAM_NUMBERS
                                 || mProgramNumber == i.getProgramNo()) {
-                            mTunerHal.addPidFilter(i.getPmtPid(), ITunerHal.FILTER_TYPE_OTHER);
+                            mTunerHal.addPidFilter(i.getPmtPid(), Tuner.FILTER_TYPE_OTHER);
                         }
                     }
                 }
@@ -246,7 +246,7 @@ public class EventDetector {
      *
      * @param tunerHal
      */
-    public EventDetector(ITunerHal tunerHal) {
+    public EventDetector(Tuner tunerHal) {
         mTunerHal = tunerHal;
     }
 
@@ -255,7 +255,7 @@ public class EventDetector {
         mTsParser =
                 new TsParser(
                         mTsOutputListener,
-                        ITunerHal.isDvbDeliverySystem(mTunerHal.getDeliverySystemType()));
+                        Tuner.isDvbDeliverySystem(mTunerHal.getDeliverySystemType()));
         mPidSet.clear();
         mVctProgramNumberSet.clear();
         mSdtProgramNumberSet.clear();
@@ -284,7 +284,7 @@ public class EventDetector {
             return;
         }
         mPidSet.add(pid);
-        mTunerHal.addPidFilter(pid, ITunerHal.FILTER_TYPE_OTHER);
+        mTunerHal.addPidFilter(pid, Tuner.FILTER_TYPE_OTHER);
     }
 
     /**

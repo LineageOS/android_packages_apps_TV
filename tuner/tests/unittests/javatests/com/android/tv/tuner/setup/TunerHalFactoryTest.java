@@ -23,7 +23,7 @@ import static org.junit.Assert.assertSame;
 import android.os.AsyncTask;
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.AndroidJUnit4;
-import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity.TunerHalFactory;
 import java.util.concurrent.Executor;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class TunerHalFactoryTest {
         }
 
         @Override
-        protected ITunerHal createInstance() {
+        protected Tuner createInstance() {
             return new com.android.tv.tuner.FakeTunerHal() {};
         }
     }
@@ -66,7 +66,7 @@ public class TunerHalFactoryTest {
         tunerHalFactory.generate();
         assertNull(tunerHalFactory.mTunerHal);
         mFakeExecutor.executeActually();
-        ITunerHal tunerHal = tunerHalFactory.getOrCreate();
+        Tuner tunerHal = tunerHalFactory.getOrCreate();
         assertNotNull(tunerHal);
         assertSame(tunerHal, tunerHalFactory.getOrCreate());
         tunerHalFactory.clear();
