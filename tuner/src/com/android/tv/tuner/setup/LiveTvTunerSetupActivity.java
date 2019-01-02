@@ -48,7 +48,8 @@ public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return BuiltInTunerHalFactory.getTunerTypeAndCount(LiveTvTunerSetupActivity.this)
+                return BuiltInTunerHalFactory.INSTANCE.getTunerTypeAndCount(
+                                LiveTvTunerSetupActivity.this)
                         .first;
             }
 

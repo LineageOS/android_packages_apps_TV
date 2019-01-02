@@ -269,7 +269,7 @@ class TunerTsStreamerManager {
                 mTunerHals.remove(key);
                 return hal;
             }
-            return BuiltInTunerHalFactory.createInstance(context);
+            return BuiltInTunerHalFactory.INSTANCE.createInstance(context);
         }
 
         private void releaseTunerHal(Tuner hal, int sessionId, boolean reuse) {

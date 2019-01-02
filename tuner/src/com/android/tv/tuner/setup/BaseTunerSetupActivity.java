@@ -507,7 +507,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
 
         @WorkerThread
         protected Tuner createInstance() {
-            return BuiltInTunerHalFactory.createInstance(mContext);
+            return BuiltInTunerHalFactory.INSTANCE.createInstance(mContext);
         }
 
         class GenerateTunerHalTask extends AsyncTask<Void, Void, Tuner> {

@@ -95,7 +95,7 @@ public class SampleNetworkTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return BuiltInTunerHalFactory.getTunerTypeAndCount(
+                return BuiltInTunerHalFactory.INSTANCE.getTunerTypeAndCount(
                                 SampleNetworkTunerSetupActivity.this)
                         .first;
             }

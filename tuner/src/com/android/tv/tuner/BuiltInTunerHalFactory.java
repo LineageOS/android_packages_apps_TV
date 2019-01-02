@@ -30,18 +30,22 @@ public final class BuiltInTunerHalFactory {
     private static final String TAG = "BuiltInTunerHalFactory";
     private static final boolean DEBUG = false;
 
-    private static Integer sBuiltInTunerType;
+    private Integer mBuiltInTunerType;
+
+    public static final BuiltInTunerHalFactory INSTANCE = new BuiltInTunerHalFactory();
+
+    private BuiltInTunerHalFactory() {}
 
     @Tuner.BuiltInTunerType
-    private static int getBuiltInTunerType(Context context) {
-        if (sBuiltInTunerType == null) {
-            sBuiltInTunerType = 0;
+    private int getBuiltInTunerType(Context context) {
+        if (mBuiltInTunerType == null) {
+            mBuiltInTunerType = 0;
             if (CustomizationManager.hasLinuxDvbBuiltInTuner(context)
                     && DvbTunerHal.getNumberOfDevices(context) > 0) {
-                sBuiltInTunerType = Tuner.BUILT_IN_TUNER_TYPE_LINUX_DVB;
+                mBuiltInTunerType = Tuner.BUILT_IN_TUNER_TYPE_LINUX_DVB;
             }
         }
-        return sBuiltInTunerType;
+        return mBuiltInTunerType;
     }
 
     /**
@@ -51,7 +55,7 @@ public final class BuiltInTunerHalFactory {
      * @return the TunerHal instance
      */
     @WorkerThread
-    public static synchronized Tuner createInstance(Context context) {
+    public synchronized Tuner createInstance(Context context) {
         Tuner tunerHal = null;
         if (DvbTunerHal.getNumberOfDevices(context) > 0) {
             if (DEBUG) Log.d(TAG, "Use DvbTunerHal");
@@ -64,13 +68,13 @@ public final class BuiltInTunerHalFactory {
      * Returns if tuner input service would use built-in tuners instead of USB tuners or network
      * tuners.
      */
-    public static boolean useBuiltInTuner(Context context) {
+    public boolean useBuiltInTuner(Context context) {
         return getBuiltInTunerType(context) != 0;
     }
 
     /** Gets the number of tuner devices currently present. */
     @WorkerThread
-    public static Pair<Integer, Integer> getTunerTypeAndCount(Context context) {
+    public Pair<Integer, Integer> getTunerTypeAndCount(Context context) {
         if (useBuiltInTuner(context)) {
             if (getBuiltInTunerType(context) == Tuner.BUILT_IN_TUNER_TYPE_LINUX_DVB) {
                 return new Pair<>(

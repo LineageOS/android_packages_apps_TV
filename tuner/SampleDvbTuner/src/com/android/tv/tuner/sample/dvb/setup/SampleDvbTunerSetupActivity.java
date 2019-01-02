@@ -95,7 +95,8 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return BuiltInTunerHalFactory.getTunerTypeAndCount(SampleDvbTunerSetupActivity.this)
+                return BuiltInTunerHalFactory.INSTANCE.getTunerTypeAndCount(
+                                SampleDvbTunerSetupActivity.this)
                         .first;
             }
 
