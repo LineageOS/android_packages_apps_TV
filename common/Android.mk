@@ -40,7 +40,6 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     lib-dagger-android \
-    lib-dagger-android-support \
 
 LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar-host \

@@ -21,7 +21,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     lib-dagger-android \
-    lib-dagger-android-support \
     live-channels-partner-support \
     live-tv-tuner \
     tv-common \
@@ -29,15 +28,8 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
 LOCAL_ANNOTATION_PROCESSORS := \
     guava-jre-jar-host \
     jsr330 \
-    lib-dagger-host \
-    lib-dagger-android-jarimpl-host \
-    lib-dagger-android-support-jarimpl-host \
-    lib-dagger-android-processor-host \
-    lib-dagger-compiler-host \
-    lib-dagger-producers-host \
-    lib-dagger-spi-host \
-    lib-google-java-format-host \
-    lib-javapoet-host \
+    lib-dagger-android-processor\
+    lib-dagger-compiler \
 
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \

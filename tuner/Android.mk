@@ -41,7 +41,6 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-v17-leanback \
     androidx.tvprovider_tvprovider \
     lib-dagger-android \
-    lib-dagger-android-support \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
