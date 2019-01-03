@@ -28,12 +28,12 @@ import android.media.tv.TvInputManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.dagger.annotations.ApplicationContext;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.singletons.HasTvInputId;
 import com.android.tv.data.ChannelDataManager;
@@ -43,8 +43,11 @@ import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /** A utility class related to input setup. */
+@Singleton
 public class SetupUtils {
     private static final String TAG = "SetupUtils";
     private static final boolean DEBUG = false;
@@ -66,8 +69,8 @@ public class SetupUtils {
     private boolean mIsFirstTune;
     private final Optional<String> mOptionalTunerInputId;
 
-    @VisibleForTesting
-    protected SetupUtils(Context context) {
+    @Inject
+    public SetupUtils(@ApplicationContext Context context) {
         mContext = context;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         mSetUpInputs = new ArraySet<>();
@@ -84,15 +87,6 @@ public class SetupUtils {
                 HasSingletons.get(HasBuiltInTunerManager.class, context)
                         .getBuiltInTunerManager()
                         .transform(HasTvInputId::getEmbeddedTunerInputId);
-    }
-
-    /**
-     * Creates an instance of {@link SetupUtils}.
-     *
-     * <p><b>WARNING</b> this should only be called by the top level application.
-     */
-    public static SetupUtils createForTvSingletons(Context context) {
-        return new SetupUtils(context.getApplicationContext());
     }
 
     /** Additional work after the setup of TV input. */

@@ -52,7 +52,7 @@ public class OnboardingActivity extends SetupActivity {
 
     @Inject ChannelDataManager mChannelDataManager;
     private TvInputManagerHelper mInputManager;
-    private SetupUtils mSetupUtils;
+    @Inject SetupUtils mSetupUtils;
     private final ChannelDataManager.Listener mChannelListener =
             new ChannelDataManager.Listener() {
                 @Override
@@ -87,7 +87,6 @@ public class OnboardingActivity extends SetupActivity {
         super.onCreate(savedInstanceState);
         TvSingletons singletons = TvSingletons.getSingletons(this);
         mInputManager = singletons.getTvInputManagerHelper();
-        mSetupUtils = singletons.getSetupUtils();
         if (PermissionUtils.hasAccessAllEpg(this) || PermissionUtils.hasReadTvListings(this)) {
             // Make the channels of the new inputs which have been setup outside Live TV
             // browsable.
