@@ -34,11 +34,10 @@ import android.util.Log;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.dagger.annotations.ApplicationContext;
-import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.singletons.HasTvInputId;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.api.Channel;
-import com.android.tv.tunerinputcontroller.HasBuiltInTunerManager;
+import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.HashSet;
@@ -70,7 +69,9 @@ public class SetupUtils {
     private final Optional<String> mOptionalTunerInputId;
 
     @Inject
-    public SetupUtils(@ApplicationContext Context context) {
+    public SetupUtils(
+            @ApplicationContext Context context,
+            Optional<BuiltInTunerManager> optionalBuiltInTunerManager) {
         mContext = context;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         mSetUpInputs = new ArraySet<>();
@@ -84,9 +85,7 @@ public class SetupUtils {
                 mSharedPreferences.getStringSet(PREF_KEY_RECOGNIZED_INPUTS, mKnownInputs));
         mIsFirstTune = mSharedPreferences.getBoolean(PREF_KEY_IS_FIRST_TUNE, true);
         mOptionalTunerInputId =
-                HasSingletons.get(HasBuiltInTunerManager.class, context)
-                        .getBuiltInTunerManager()
-                        .transform(HasTvInputId::getEmbeddedTunerInputId);
+                optionalBuiltInTunerManager.transform(HasTvInputId::getEmbeddedTunerInputId);
     }
 
     /** Additional work after the setup of TV input. */

@@ -51,7 +51,7 @@ import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
 
 /** The base setup activity class for tuner. */
-public class BaseTunerSetupActivity extends SetupActivity {
+public abstract class BaseTunerSetupActivity extends SetupActivity {
     private static final String TAG = "BaseTunerSetupActivity";
     private static final boolean DEBUG = false;
 

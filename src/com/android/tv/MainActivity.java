@@ -275,7 +275,7 @@ public class MainActivity extends Activity
     private DvrManager mDvrManager;
     private ConflictChecker mDvrConflictChecker;
     @Inject SetupUtils mSetupUtils;
-    private Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
+    @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
     @VisibleForTesting protected TunableTvView mTvView;
     private View mContentView;
@@ -490,7 +490,6 @@ public class MainActivity extends Activity
             finishAndRemoveTask();
             return;
         }
-        mOptionalBuiltInTunerManager = tvSingletons.getBuiltInTunerManager();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.

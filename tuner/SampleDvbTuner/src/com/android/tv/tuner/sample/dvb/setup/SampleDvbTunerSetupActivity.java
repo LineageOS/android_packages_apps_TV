@@ -52,6 +52,7 @@ import com.google.android.tv.partner.support.EpgInputs;
 import com.google.android.tv.partner.support.Lineup;
 import com.google.android.tv.partner.support.Lineups;
 import com.google.android.tv.partner.support.TunerSetupUtils;
+import dagger.android.ContributesAndroidInjector;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -467,6 +468,16 @@ public class SampleDvbTunerSetupActivity extends BaseTunerSetupActivity {
             setResult(RESULT_OK, data);
             finish();
         }
+    }
+
+    /**
+     * Exports {@link SampleDvbTunerSetupActivity} for Dagger codegen to create the appropriate
+     * injector.
+     */
+    @dagger.Module
+    public abstract static class Module {
+        @ContributesAndroidInjector
+        abstract SampleDvbTunerSetupActivity contributeSampleDvbTunerSetupActivityInjector();
     }
 
     private class QueryEpgInputTask extends AsyncTask<Void, Void, EpgInput> {
