@@ -23,16 +23,17 @@ import android.util.Pair;
 import com.android.tv.common.customization.CustomizationManager;
 import com.android.tv.common.feature.Model;
 import com.android.tv.tuner.api.Tuner;
+import com.android.tv.tuner.api.TunerFactory;
 
 
 /** TunerHal factory that creates all built in tuner types. */
-public final class BuiltInTunerHalFactory {
+public final class BuiltInTunerHalFactory implements TunerFactory {
     private static final String TAG = "BuiltInTunerHalFactory";
     private static final boolean DEBUG = false;
 
     private Integer mBuiltInTunerType;
 
-    public static final BuiltInTunerHalFactory INSTANCE = new BuiltInTunerHalFactory();
+    public static final TunerFactory INSTANCE = new BuiltInTunerHalFactory();
 
     private BuiltInTunerHalFactory() {}
 
@@ -54,6 +55,7 @@ public final class BuiltInTunerHalFactory {
      * @param context context for creating the TunerHal instance
      * @return the TunerHal instance
      */
+    @Override
     @WorkerThread
     public synchronized Tuner createInstance(Context context) {
         Tuner tunerHal = null;
@@ -68,11 +70,13 @@ public final class BuiltInTunerHalFactory {
      * Returns if tuner input service would use built-in tuners instead of USB tuners or network
      * tuners.
      */
+    @Override
     public boolean useBuiltInTuner(Context context) {
         return getBuiltInTunerType(context) != 0;
     }
 
     /** Gets the number of tuner devices currently present. */
+    @Override
     @WorkerThread
     public Pair<Integer, Integer> getTunerTypeAndCount(Context context) {
         if (useBuiltInTuner(context)) {

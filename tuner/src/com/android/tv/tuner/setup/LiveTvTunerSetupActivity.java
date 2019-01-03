@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import dagger.android.ContributesAndroidInjector;
 
 /** An activity that serves tuner setup process. */
@@ -49,9 +48,7 @@ public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return BuiltInTunerHalFactory.INSTANCE.getTunerTypeAndCount(
-                                LiveTvTunerSetupActivity.this)
-                        .first;
+                return mTunerFactory.getTunerTypeAndCount(LiveTvTunerSetupActivity.this).first;
             }
 
             @Override

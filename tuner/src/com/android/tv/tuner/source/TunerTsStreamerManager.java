@@ -21,6 +21,7 @@ import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.api.Tuner;
+import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import java.util.HashMap;
@@ -43,7 +44,8 @@ class TunerTsStreamerManager {
     private final Map<Integer, TsStreamerCreator> mCreators = new HashMap<>();
     private final Map<Integer, EventListener> mListeners = new HashMap<>();
     private final Map<TsDataSource, TunerTsStreamer> mSourceToStreamerMap = new HashMap<>();
-    private final TunerHalManager mTunerHalManager = new TunerHalManager();
+    private final TunerFactory mTunerFactory = BuiltInTunerHalFactory.INSTANCE;
+    private final TunerHalManager mTunerHalManager = new TunerHalManager(mTunerFactory);
     private static TunerTsStreamerManager sInstance;
 
     /**
@@ -253,6 +255,11 @@ class TunerTsStreamerManager {
      */
     private static class TunerHalManager {
         private final Map<Integer, Tuner> mTunerHals = new HashMap<>();
+        private final TunerFactory mTunerFactory;
+
+        private TunerHalManager(TunerFactory mTunerFactory) {
+            this.mTunerFactory = mTunerFactory;
+        }
 
         private Tuner getOrCreateTunerHal(Context context, int sessionId) {
             // Handles session affinity.
@@ -269,7 +276,7 @@ class TunerTsStreamerManager {
                 mTunerHals.remove(key);
                 return hal;
             }
-            return BuiltInTunerHalFactory.INSTANCE.createInstance(context);
+            return mTunerFactory.createInstance(context);
         }
 
         private void releaseTunerHal(Tuner hal, int sessionId, boolean reuse) {

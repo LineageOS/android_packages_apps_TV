@@ -47,6 +47,7 @@ import com.android.tv.common.util.PostalCodeUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.api.Tuner;
+import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
 
@@ -85,6 +86,7 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     protected String mPreviousPostalCode;
     protected boolean mActivityStopped;
     protected boolean mPendingShowInitialFragment;
+    protected TunerFactory mTunerFactory;
 
     private TunerHalCreator mTunerHalCreator;
 
@@ -93,11 +95,13 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
         if (DEBUG) {
             Log.d(TAG, "onCreate");
         }
+        super.onCreate(savedInstanceState);
+        mTunerFactory = BuiltInTunerHalFactory.INSTANCE;
         mActivityStopped = false;
         executeGetTunerTypeAndCountAsyncTask();
         mTunerHalCreator =
-                new TunerHalCreator(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
-        super.onCreate(savedInstanceState);
+                new TunerHalCreator(
+                        getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR, mTunerFactory);
         try {
             // Updating postal code takes time, therefore we called it here for "warm-up".
             mPreviousPostalCode = PostalCodeUtils.getLastPostalCode(this);
@@ -454,14 +458,12 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
         @VisibleForTesting Tuner mTunerHal;
         private TunerHalCreator.GenerateTunerHalTask mGenerateTunerHalTask;
         private final Executor mExecutor;
+        private final TunerFactory mTunerFactory;
 
-        TunerHalCreator(Context context) {
-            this(context, AsyncTask.SERIAL_EXECUTOR);
-        }
-
-        TunerHalCreator(Context context, Executor executor) {
+        TunerHalCreator(Context context, Executor executor, TunerFactory tunerFactory) {
             mContext = context;
             mExecutor = executor;
+            mTunerFactory = tunerFactory;
         }
 
         /**
@@ -507,7 +509,7 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
 
         @WorkerThread
         protected Tuner createInstance() {
-            return BuiltInTunerHalFactory.INSTANCE.createInstance(mContext);
+            return mTunerFactory.createInstance(mContext);
         }
 
         class GenerateTunerHalTask extends AsyncTask<Void, Void, Tuner> {
