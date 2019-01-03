@@ -100,7 +100,7 @@ public class ScanFragment extends SetupFragment {
         if (DEBUG) Log.d(TAG, "onCreateView");
         View view = super.onCreateView(inflater, container, savedInstanceState);
         mChannelNumbers = new ArrayList<>();
-        mChannelDataManager = new ChannelDataManager(getActivity());
+        mChannelDataManager = new ChannelDataManager(getActivity().getApplicationContext());
         mChannelDataManager.checkDataVersion(getActivity());
         mAdapter = new ChannelAdapter();
         mProgressBar = (ProgressBar) view.findViewById(R.id.tune_progress);

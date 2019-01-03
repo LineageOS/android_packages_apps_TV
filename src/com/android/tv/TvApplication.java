@@ -39,7 +39,6 @@ import com.android.tv.common.BaseApplication;
 import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
-import com.android.tv.common.singletons.HasTvInputId;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.Debug;
@@ -495,8 +494,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         if (!enable) {
             List<TvInputInfo> inputs = inputManager.getTvInputList();
             boolean skipTunerInputCheck = false;
-            Optional<String> optionalEmbeddedTunerInputId = getBuiltInTunerManager()
-                    .transform(HasTvInputId::getEmbeddedTunerInputId);
             // Enable the TvActivity only if there is at least one tuner type input.
             if (!skipTunerInputCheck) {
                 for (TvInputInfo input : inputs) {
