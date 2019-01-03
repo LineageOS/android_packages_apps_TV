@@ -81,6 +81,7 @@ public class SampleNetworkTunerSetupActivity extends BaseTunerSetupActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (DEBUG) {
             Log.d(TAG, "onCreate");
         }
@@ -88,7 +89,6 @@ public class SampleNetworkTunerSetupActivity extends BaseTunerSetupActivity {
                 HasSingletons.get(TunerSingletons.class, getApplicationContext())
                         .getEmbeddedTunerInputId();
         new QueryEpgInputTask(embeddedInputId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        super.onCreate(savedInstanceState);
     }
 
     @Override

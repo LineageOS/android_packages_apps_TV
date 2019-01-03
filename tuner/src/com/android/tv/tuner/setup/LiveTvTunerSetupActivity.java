@@ -33,6 +33,7 @@ public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         // TODO(shubang): use LocationFragment
         if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -41,7 +42,6 @@ public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
                     new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
         }
-        super.onCreate(savedInstanceState);
     }
 
     @Override
