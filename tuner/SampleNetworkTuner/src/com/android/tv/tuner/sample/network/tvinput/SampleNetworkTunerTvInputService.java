@@ -16,6 +16,19 @@
 package com.android.tv.tuner.sample.network.tvinput;
 
 import com.android.tv.tuner.tvinput.BaseTunerTvInputService;
+import dagger.android.ContributesAndroidInjector;
 
 /** Sample DVB Tuner {@link android.media.tv.TvInputService}. */
-public class SampleNetworkTunerTvInputService extends BaseTunerTvInputService {}
+public class SampleNetworkTunerTvInputService extends BaseTunerTvInputService {
+
+    /**
+     * Exports {@link SampleNetworkTunerTvInputService} for Dagger codegen to create the appropriate
+     * injector.
+     */
+    @dagger.Module
+    public abstract static class Module {
+        @ContributesAndroidInjector
+        abstract SampleNetworkTunerTvInputService
+                contributesSampleNetworkTunerTvInputServiceInjector();
+    }
+}

@@ -15,6 +15,8 @@ public interface TunerSessionFactory {
             return (HasTunerSessionFactory) context;
         }
 
+        /** @deprecated use dagger instead */
+        @Deprecated
         TunerSessionFactory getTunerSessionFactory();
     }
 

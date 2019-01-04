@@ -70,8 +70,8 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
     @Override
     protected AndroidInjector<LiveTvApplication> applicationInjector() {
         return DaggerLiveTvApplicationComponent.builder()
-                .tvSingletonsModule(new TvSingletonsModule(this))
                 .applicationModule(new ApplicationModule(this))
+                .tvSingletonsModule(new TvSingletonsModule(this))
                 .build();
     }
 

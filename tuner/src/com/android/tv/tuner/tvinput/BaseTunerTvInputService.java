@@ -25,12 +25,14 @@ import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
-import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
+import dagger.android.AndroidInjection;
 import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
 /** {@link BaseTunerTvInputService} serves TV channels coming from a tuner device. */
 public class BaseTunerTvInputService extends TvInputService {
@@ -42,6 +44,7 @@ public class BaseTunerTvInputService extends TvInputService {
     private final Set<Session> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
     private ChannelDataManager mChannelDataManager;
     private ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
+    @Inject TunerSessionFactory mTunerSessionFactory;
 
     @Override
     public void onCreate() {
@@ -50,6 +53,7 @@ public class BaseTunerTvInputService extends TvInputService {
             this.stopSelf();
             return;
         }
+        AndroidInjection.inject(this);
         super.onCreate();
         if (DEBUG) Log.d(TAG, "onCreate");
         mChannelDataManager = new ChannelDataManager(getApplicationContext());
@@ -97,9 +101,7 @@ public class BaseTunerTvInputService extends TvInputService {
                 return null;
             }
             final Session session =
-                    HasTunerSessionFactory.cast(this)
-                            .getTunerSessionFactory()
-                            .create(this, mChannelDataManager, this::onReleased);
+                    mTunerSessionFactory.create(this, mChannelDataManager, this::onReleased);
             mTunerSessions.add(session);
             session.setOverlayViewEnabled(true);
             return session;

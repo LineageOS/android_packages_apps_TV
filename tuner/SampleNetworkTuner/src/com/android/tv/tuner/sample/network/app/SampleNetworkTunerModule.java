@@ -16,8 +16,9 @@
 package com.android.tv.tuner.sample.network.app;
 
 import com.android.tv.tuner.modules.TunerModule;
+import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
 import dagger.Module;
 
 /** Dagger module for {@link SampleNetworkTuner}. */
-@Module(includes = {TunerModule.class})
+@Module(includes = {TunerModule.class, SampleNetworkTunerTvInputService.Module.class})
 class SampleNetworkTunerModule {}

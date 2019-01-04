@@ -16,8 +16,9 @@
 package com.android.tv.tuner.sample.dvb.app;
 
 import com.android.tv.tuner.modules.TunerModule;
+import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import dagger.Module;
 
 /** Dagger module for {@link SampleDvbTuner}. */
-@Module(includes = {TunerModule.class})
+@Module(includes = {TunerModule.class, SampleDvbTunerTvInputService.Module.class})
 class SampleDvbTunerModule {}
