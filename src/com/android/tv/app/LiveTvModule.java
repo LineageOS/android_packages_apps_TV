@@ -16,14 +16,13 @@
 package com.android.tv.app;
 
 import com.android.tv.modules.TvApplicationModule;
-import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.google.common.base.Optional;
 import dagger.Module;
 import dagger.Provides;
 
 /** Dagger module for {@link LiveTvApplication}. */
-@Module(includes = {TvApplicationModule.class, LiveTvTunerSetupActivity.Module.class})
+@Module(includes = {TvApplicationModule.class})
 class LiveTvModule {
 
     @Provides
