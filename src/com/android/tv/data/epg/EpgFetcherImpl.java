@@ -41,6 +41,7 @@ import android.util.Log;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.BuildConfig;
 import com.android.tv.common.SoftPreconditions;
+import com.android.tv.common.buildtype.HasBuildType;
 import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.LocationUtils;
@@ -60,6 +61,7 @@ import com.android.tv.perf.TimerEvent;
 import com.android.tv.util.Utils;
 import com.google.android.tv.partner.support.EpgInput;
 import com.google.android.tv.partner.support.EpgInputs;
+import com.google.common.collect.ImmutableSet;
 import com.android.tv.common.flags.BackendKnobsFlags;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,7 +116,9 @@ public class EpgFetcherImpl implements EpgFetcher {
     private final ChannelDataManager mChannelDataManager;
     private final EpgReader mEpgReader;
     private final PerformanceMonitor mPerformanceMonitor;
+    private final EpgInputWhiteList mEpgInputWhiteList;
     private final BackendKnobsFlags mBackendKnobsFlags;
+    private final HasBuildType.BuildType mBuildType;
     private FetchAsyncTask mFetchTask;
     private FetchDuringScanHandler mFetchDuringScanHandler;
     private long mEpgTimeStamp;
@@ -133,30 +137,39 @@ public class EpgFetcherImpl implements EpgFetcher {
         PerformanceMonitor performanceMonitor = tvSingletons.getPerformanceMonitor();
         EpgReader epgReader = tvSingletons.providesEpgReader().get();
         Clock clock = tvSingletons.getClock();
+        EpgInputWhiteList epgInputWhiteList =
+                new EpgInputWhiteList(tvSingletons.getCloudEpgFlags());
         BackendKnobsFlags backendKnobsFlags = tvSingletons.getBackendKnobs();
+        HasBuildType.BuildType buildType = tvSingletons.getBuildType();
         return new EpgFetcherImpl(
                 context,
+                epgInputWhiteList,
                 channelDataManager,
                 epgReader,
                 performanceMonitor,
                 clock,
-                backendKnobsFlags);
+                backendKnobsFlags,
+                buildType);
     }
 
     @VisibleForTesting
     EpgFetcherImpl(
             Context context,
+            EpgInputWhiteList epgInputWhiteList,
             ChannelDataManager channelDataManager,
             EpgReader epgReader,
             PerformanceMonitor performanceMonitor,
             Clock clock,
-            BackendKnobsFlags backendKnobsFlags) {
+            BackendKnobsFlags backendKnobsFlags,
+            HasBuildType.BuildType buildType) {
         mContext = context;
         mChannelDataManager = channelDataManager;
         mEpgReader = epgReader;
         mPerformanceMonitor = performanceMonitor;
         mClock = clock;
+        mEpgInputWhiteList = epgInputWhiteList;
         mBackendKnobsFlags = backendKnobsFlags;
+        mBuildType = buildType;
     }
 
     private long getFastFetchDurationSec() {
@@ -352,6 +365,19 @@ public class EpgFetcherImpl implements EpgFetcher {
             if (DEBUG) Log.d(TAG, "Cannot start routine service: scanning channels.");
             return false;
         }
+        if (!TvFeatures.CLOUD_EPG_FOR_3RD_PARTY.isEnabled(mContext)
+                && mBuildType != HasBuildType.BuildType.AOSP) {
+            if (getTunerChannelCount() == 0) {
+                if (DEBUG) Log.d(TAG, "Cannot start routine service: no internal tuner channels.");
+                return false;
+            }
+            if (!TextUtils.isEmpty(EpgFetchHelper.getLastLineupId(mContext))) {
+                return true;
+            }
+            if (!TextUtils.isEmpty(PostalCodeUtils.getLastPostalCode(mContext))) {
+                return true;
+            }
+        }
         return true;
     }
 
@@ -511,6 +537,17 @@ public class EpgFetcherImpl implements EpgFetcher {
         return numbers.size();
     }
 
+    private boolean isInputInWhiteList(EpgInput epgInput) {
+        if (mBuildType == HasBuildType.BuildType.AOSP) {
+            return false;
+        }
+        return (BuildConfig.ENG
+                        && epgInput.getInputId()
+                                .equals(
+                                        "com.example.partnersupportsampletvinput/.SampleTvInputService"))
+                || mEpgInputWhiteList.isInputWhiteListed(epgInput.getInputId());
+    }
+
     @VisibleForTesting
     class FetchAsyncTask extends AsyncTask<Void, Void, Integer> {
         private final JobService mService;
@@ -538,10 +575,43 @@ public class EpgFetcherImpl implements EpgFetcher {
                 Integer builtInResult = fetchEpgForBuiltInTuner();
                 boolean anyCloudEpgFailure = false;
                 boolean anyCloudEpgSuccess = false;
+                if (TvFeatures.CLOUD_EPG_FOR_3RD_PARTY.isEnabled(mContext)
+                        && mBuildType != HasBuildType.BuildType.AOSP) {
+                    for (EpgInput epgInput : getEpgInputs()) {
+                        if (DEBUG) Log.d(TAG, "Start EPG fetch for " + epgInput);
+                        if (isCancelled()) {
+                            break;
+                        }
+                        if (isInputInWhiteList(epgInput)) {
+                            // TODO(b/66191312) check timestamp and result code and decide if update
+                            // is needed.
+                            Set<Channel> channels = getExistingChannelsFor(epgInput.getInputId());
+                            Integer result = fetchEpgFor(epgInput.getLineupId(), channels);
+                            anyCloudEpgFailure = anyCloudEpgFailure || result != null;
+                            anyCloudEpgSuccess = anyCloudEpgSuccess || result == null;
+                            updateCloudEpgInput(epgInput, result);
+                        } else {
+                            Log.w(
+                                    TAG,
+                                    "Fetching the EPG for "
+                                            + epgInput.getInputId()
+                                            + " is not supported.");
+                        }
+                    }
+                }
+                if (builtInResult == null || builtInResult == REASON_NO_BUILT_IN_CHANNELS) {
+                    return anyCloudEpgFailure
+                            ? ((Integer) REASON_CLOUD_EPG_FAILURE)
+                            : anyCloudEpgSuccess ? null : builtInResult;
+                }
                 return builtInResult;
             } finally {
                 TrafficStats.setThreadStatsTag(oldTag);
             }
+        }
+
+        private void updateCloudEpgInput(EpgInput unusedEpgInput, Integer unusedResult) {
+            // TODO(b/66191312) write the result and timestamp to the input table
         }
 
         private Set<Channel> getExistingChannelsFor(String inputId) {
@@ -561,6 +631,15 @@ public class EpgFetcherImpl implements EpgFetcher {
                 }
                 return result;
             }
+        }
+
+        private Set<EpgInput> getEpgInputs() {
+            if (mBuildType == HasBuildType.BuildType.AOSP) {
+                return ImmutableSet.of();
+            }
+            Set<EpgInput> epgInputs = EpgInputs.queryEpgInputs(mContext.getContentResolver());
+            if (DEBUG) Log.d(TAG, "getEpgInputs " + epgInputs);
+            return epgInputs;
         }
 
         private Integer fetchEpgForBuiltInTuner() {
