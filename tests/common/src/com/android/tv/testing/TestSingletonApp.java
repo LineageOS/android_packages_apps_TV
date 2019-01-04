@@ -17,8 +17,6 @@
 package com.android.tv.testing;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
 import android.media.tv.TvInputManager;
 import android.os.AsyncTask;
 import com.android.tv.InputSessionManager;
@@ -224,11 +222,6 @@ public class TestSingletonApp extends Application
 
     @Override
     public RecordingStorageStatusManager getRecordingStorageStatusManager() {
-        return null;
-    }
-
-    @Override
-    public Intent getTunerSetupIntent(Context context) {
         return null;
     }
 

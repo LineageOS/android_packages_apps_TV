@@ -17,20 +17,15 @@
 package com.android.tv.tuner.sample.network.app;
 
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.media.tv.TvContract;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.singletons.HasSingletons;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.modules.TunerSingletonsModule;
 import com.android.tv.tuner.sample.network.singletons.SampleNetworkSingletons;
 import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
-import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import dagger.android.AndroidInjector;
@@ -52,16 +47,6 @@ public class SampleNetworkTuner extends BaseApplication
         return DaggerSampleNetworkTunerComponent.builder()
                 .tunerSingletonsModule(new TunerSingletonsModule(this))
                 .build();
-    }
-
-    @Override
-    public Intent getTunerSetupIntent(Context context) {
-        // Make an intent to launch the setup activity of TV tuner input.
-        Intent intent =
-                CommonUtils.createSetupIntent(
-                        new Intent(context, LiveTvTunerSetupActivity.class), mEmbeddedInputId);
-        intent.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, mEmbeddedInputId);
-        return intent;
     }
 
     @Override

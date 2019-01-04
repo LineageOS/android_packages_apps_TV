@@ -17,9 +17,12 @@
 package com.android.tv.tunerinputcontroller;
 
 import android.content.Context;
+import android.content.Intent;
 
 /** Controls the package visibility of built in tuner services. */
 public interface TunerInputController {
+
+    Intent createSetupIntent(Context context);
 
     void onCheckingUsbTunerStatus(Context context, String action);
 

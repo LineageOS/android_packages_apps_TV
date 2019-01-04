@@ -16,8 +16,6 @@
 
 package com.android.tv.common;
 
-import android.content.Context;
-import android.content.Intent;
 import com.android.tv.common.buildtype.HasBuildType;
 import com.android.tv.common.flags.has.HasCloudEpgFlags;
 import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
@@ -31,6 +29,4 @@ public interface BaseSingletons
     Clock getClock();
 
     RecordingStorageStatusManager getRecordingStorageStatusManager();
-
-    Intent getTunerSetupIntent(Context context);
 }

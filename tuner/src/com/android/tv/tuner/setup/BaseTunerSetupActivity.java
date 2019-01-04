@@ -22,6 +22,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -36,7 +37,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-import com.android.tv.common.BaseApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupActivity;
@@ -333,25 +333,28 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     /**
      * A callback to be invoked when the TvInputService is enabled or disabled.
      *
+     * @param tunerSetupIntent
      * @param context a {@link Context} instance
      * @param enabled {@code true} for the {@link TunerTvInputService} to be enabled; otherwise
      *     {@code false}
      */
-    public static void onTvInputEnabled(Context context, boolean enabled, Integer tunerType) {
+    public static void onTvInputEnabled(
+            Context context, boolean enabled, Integer tunerType, Intent tunerSetupIntent) {
         // Send a notification for tuner setup if there's no channels and the tuner TV input
         // setup has been not done.
         boolean channelScanDoneOnPreference = TunerPreferences.isScanDone(context);
         int channelCountOnPreference = TunerPreferences.getScannedChannelCount(context);
         if (enabled && !channelScanDoneOnPreference && channelCountOnPreference == 0) {
             TunerPreferences.setShouldShowSetupActivity(context, true);
-            sendNotification(context, tunerType);
+            sendNotification(context, tunerType, tunerSetupIntent);
         } else {
             TunerPreferences.setShouldShowSetupActivity(context, false);
             cancelNotification(context);
         }
     }
 
-    private static void sendNotification(Context context, Integer tunerType) {
+    private static void sendNotification(
+            Context context, Integer tunerType, Intent tunerSetupIntent) {
         SoftPreconditions.checkState(
                 tunerType != null, TAG, "tunerType is null when send notification");
         if (tunerType == null) {
@@ -374,16 +377,16 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
         }
         String contentText = resources.getString(contentTextId);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            sendNotificationInternal(context, contentTitle, contentText);
+            sendNotificationInternal(context, contentTitle, contentText, tunerSetupIntent);
         } else {
             Bitmap largeIcon =
                     BitmapFactory.decodeResource(resources, R.drawable.recommendation_antenna);
-            sendRecommendationCard(context, contentTitle, contentText, largeIcon);
+            sendRecommendationCard(context, contentTitle, contentText, largeIcon, tunerSetupIntent);
         }
     }
 
     private static void sendNotificationInternal(
-            Context context, String contentTitle, String contentText) {
+            Context context, String contentTitle, String contentText, Intent tunerSetupIntent) {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.createNotificationChannel(
@@ -400,7 +403,8 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
                                 context.getResources()
                                         .getIdentifier(
                                                 TAG_ICON, TAG_DRAWABLE, context.getPackageName()))
-                        .setContentIntent(createPendingIntentForSetupActivity(context))
+                        .setContentIntent(
+                                createPendingIntentForSetupActivity(context, tunerSetupIntent))
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .extend(new Notification.TvExtender())
                         .build();
@@ -410,10 +414,15 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     /**
      * Sends the recommendation card to start the tuner TV input setup activity.
      *
+     * @param tunerSetupIntent
      * @param context a {@link Context} instance
      */
     private static void sendRecommendationCard(
-            Context context, String contentTitle, String contentText, Bitmap largeIcon) {
+            Context context,
+            String contentTitle,
+            String contentText,
+            Bitmap largeIcon,
+            Intent tunerSetupIntent) {
         // Build and send the notification.
         Notification notification =
                 new NotificationCompat.BigPictureStyle(
@@ -431,7 +440,8 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
                                                                 TAG_DRAWABLE,
                                                                 context.getPackageName()))
                                         .setContentIntent(
-                                                createPendingIntentForSetupActivity(context)))
+                                                createPendingIntentForSetupActivity(
+                                                        context, tunerSetupIntent)))
                         .build();
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -442,13 +452,12 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
      * Returns a {@link PendingIntent} to launch the tuner TV input service.
      *
      * @param context a {@link Context} instance
+     * @param tunerSetupIntent
      */
-    private static PendingIntent createPendingIntentForSetupActivity(Context context) {
+    private static PendingIntent createPendingIntentForSetupActivity(
+            Context context, Intent tunerSetupIntent) {
         return PendingIntent.getActivity(
-                context,
-                0,
-                BaseApplication.getSingletons(context).getTunerSetupIntent(context),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                context, 0, tunerSetupIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /** Creates {@link Tuner} instances in a worker thread * */

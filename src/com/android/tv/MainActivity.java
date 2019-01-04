@@ -438,12 +438,14 @@ public class MainActivity extends Activity
                 public void onInputAdded(String inputId) {
                     if (mOptionalBuiltInTunerManager.isPresent()
                             && CommonPreferences.shouldShowSetupActivity(MainActivity.this)) {
-                        String tunerInputId =
-                                mOptionalBuiltInTunerManager.get().getEmbeddedTunerInputId();
+                        BuiltInTunerManager builtInTunerManager =
+                                mOptionalBuiltInTunerManager.get();
+                        String tunerInputId = builtInTunerManager.getEmbeddedTunerInputId();
                         if (tunerInputId.equals(inputId)) {
                             Intent intent =
-                                    TvSingletons.getSingletons(MainActivity.this)
-                                            .getTunerSetupIntent(MainActivity.this);
+                                    builtInTunerManager
+                                            .getTunerInputController()
+                                            .createSetupIntent(MainActivity.this);
                             startActivity(intent);
                             CommonPreferences.setShouldShowSetupActivity(MainActivity.this, false);
                             mSetupUtils.markAsKnownInput(tunerInputId);
