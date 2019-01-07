@@ -36,7 +36,7 @@ public final class DefaultBackendKnobsFlags
 
     @Override
     public long programGuideMaxHours() {
-        return 168;
+        return 336;
     }
 
     @Override
