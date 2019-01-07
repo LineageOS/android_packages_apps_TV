@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Manages {@link DataSource} for playback and recording. The class hides handling of {@link Tuner}
- * and {@link TsStreamer} from other classes. One TsDataSourceManager should be created for per
- * session.
+ * Manages {@link TsDataSource} for playback and recording. The class hides handling of {@link
+ * Tuner} and {@link TsStreamer} from other classes. One TsDataSourceManager should be created for
+ * per session.
  */
 public class TsDataSourceManager {
     private static final Object sLock = new Object();
@@ -114,10 +114,10 @@ public class TsDataSourceManager {
     }
 
     /**
-     * Indicates whether the underlying {@link TunerHal} should be kept or not when data source is
+     * Indicates whether the underlying {@link Tuner} should be kept or not when data source is
      * being released. TODO: If b/30750953 is fixed, we can remove this function.
      *
-     * @param keepTuneStatus underlying {@link TunerHal} will be reused when data source releasing.
+     * @param keepTuneStatus underlying {@link Tuner} will be reused when data source releasing.
      */
     public void setKeepTuneStatus(boolean keepTuneStatus) {
         mKeepTuneStatus = keepTuneStatus;
