@@ -72,7 +72,6 @@
     <application
         android:name="com.android.tv.app.LiveTvApplication"
         android:allowBackup="true"
-        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:banner="@drawable/live_tv_banner"
         android:icon="@drawable/ic_tv_app"
         android:label="@string/app_name"
@@ -274,7 +273,7 @@
             android:name="com.android.tv.setup.SystemSetupActivity"
             android:configChanges="keyboard|keyboardHidden"
             android:exported="true"
-            android:label="@string/bt_app_name"
+            android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.Setup.GuidedStep" >
             <intent-filter>
@@ -289,11 +288,6 @@
 
         <receiver android:name="com.android.tv.dvr.recorder.DvrStartRecordingReceiver" />
 
-        <service
-            android:name="com.android.tv.tuner.tvinput.TunerStorageCleanUpService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:process="com.android.tv.tuner" />
         <service
             android:name="com.android.tv.data.epg.EpgFetchService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
