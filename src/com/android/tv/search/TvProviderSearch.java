@@ -271,7 +271,7 @@ public class TvProviderSearch implements SearchInterface {
                     result.setIntentData(buildIntentData(id));
                     result.setContentType(Programs.CONTENT_ITEM_TYPE);
                     result.setIsLive(true);
-                    result.setProgressPercentage(LocalSearchProvider.PROGRESS_PERCENTAGE_HIDE);
+                    result.setProgressPercentage(SearchInterface.PROGRESS_PERCENTAGE_HIDE);
 
                     searchResults.add(result.build());
 
@@ -344,7 +344,7 @@ public class TvProviderSearch implements SearchInterface {
     private int getProgressPercentage(long startUtcMillis, long endUtcMillis) {
         long current = System.currentTimeMillis();
         if (startUtcMillis > current || endUtcMillis <= current) {
-            return LocalSearchProvider.PROGRESS_PERCENTAGE_HIDE;
+            return SearchInterface.PROGRESS_PERCENTAGE_HIDE;
         }
         return (int) (100 * (current - startUtcMillis) / (endUtcMillis - startUtcMillis));
     }
