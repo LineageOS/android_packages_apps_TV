@@ -18,7 +18,9 @@ package com.android.tv.tuner.sample.dvb.app;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
+import javax.inject.Singleton;
 
 /** Dagger component for {@link SampleDvbTuner}. */
+@Singleton
 @Component(modules = {AndroidInjectionModule.class, SampleDvbTunerModule.class})
 public interface SampleDvbTunerComponent extends AndroidInjector<SampleDvbTuner> {}

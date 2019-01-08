@@ -18,7 +18,9 @@ package com.android.tv.tuner.sample.network.app;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
+import javax.inject.Singleton;
 
 /** Dagger component for {@link SampleNetworkTuner}. */
+@Singleton
 @Component(modules = {AndroidInjectionModule.class, SampleNetworkTunerModule.class})
 public interface SampleNetworkTunerComponent extends AndroidInjector<SampleNetworkTuner> {}

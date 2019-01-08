@@ -45,6 +45,7 @@ public class BaseTunerTvInputService extends TvInputService {
     private final Set<Session> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
     private ChannelDataManager mChannelDataManager;
     private ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
+    @Inject TsDataSourceManagerFactory mTsDataSourceManagerFactory;
     @Inject TunerSessionFactory mTunerSessionFactory;
 
     @Override
@@ -93,7 +94,7 @@ public class BaseTunerTvInputService extends TvInputService {
                 inputId,
                 mChannelDataManager,
                 mConcurrentDvrPlaybackFlags,
-                new TsDataSourceManagerFactory());
+                mTsDataSourceManagerFactory);
     }
 
     @Override

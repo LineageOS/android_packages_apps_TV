@@ -30,6 +30,7 @@ import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import dagger.android.AndroidInjector;
+import javax.inject.Inject;
 
 /** The top level application for Sample DVB Tuner. */
 public class SampleDvbTuner extends BaseApplication
@@ -40,11 +41,16 @@ public class SampleDvbTuner extends BaseApplication
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
     private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
-    private final TunerSessionFactoryImpl mTunerSessionFactory =
-            new TunerSessionFactoryImpl(
-                    mExoplayer2Flags,
-                    mConcurrentDvrPlaybackFlags,
-                    new TsDataSourceManagerFactory());
+    @Inject TsDataSourceManagerFactory mTsDataSourceManagerFactory;
+    private TunerSessionFactoryImpl mTunerSessionFactory;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mTunerSessionFactory =
+                new TunerSessionFactoryImpl(
+                        mExoplayer2Flags, mConcurrentDvrPlaybackFlags, mTsDataSourceManagerFactory);
+    }
 
     @Override
     protected AndroidInjector<SampleDvbTuner> applicationInjector() {

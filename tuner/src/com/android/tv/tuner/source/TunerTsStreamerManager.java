@@ -17,6 +17,7 @@
 package com.android.tv.tuner.source;
 
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
@@ -29,13 +30,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Manages {@link TunerTsStreamer} for playback and recording. The class hides handling of {@link
  * Tuner} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
  * class directly.
  */
-class TunerTsStreamerManager {
+@Singleton
+@VisibleForTesting
+public class TunerTsStreamerManager {
     // The lock will protect mStreamerFinder, mSourceToStreamerMap and some part of TsStreamCreator
     // to support timely {@link TunerTsStreamer} cancellation due to a new tune request from
     // the same session.
@@ -46,21 +51,10 @@ class TunerTsStreamerManager {
     private final Map<TsDataSource, TunerTsStreamer> mSourceToStreamerMap = new HashMap<>();
     private final TunerFactory mTunerFactory = BuiltInTunerHalFactory.INSTANCE;
     private final TunerHalManager mTunerHalManager = new TunerHalManager(mTunerFactory);
-    private static TunerTsStreamerManager sInstance;
 
-    /**
-     * Returns the singleton instance for the class
-     *
-     * @return TunerTsStreamerManager
-     */
-    static synchronized TunerTsStreamerManager getInstance() {
-        if (sInstance == null) {
-            sInstance = new TunerTsStreamerManager();
-        }
-        return sInstance;
-    }
-
-    private TunerTsStreamerManager() {}
+    @Inject
+    @VisibleForTesting
+    public TunerTsStreamerManager() {}
 
     synchronized TsDataSource createDataSource(
             Context context,

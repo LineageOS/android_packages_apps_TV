@@ -23,6 +23,7 @@ import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,13 +41,14 @@ public class TsDataSourceManager {
 
     private final int mId = sSequenceId.incrementAndGet();
     private final boolean mIsRecording;
-    private final TunerTsStreamerManager mTunerStreamerManager =
-            TunerTsStreamerManager.getInstance();
+    private final TunerTsStreamerManager mTunerStreamerManager;
 
     private boolean mKeepTuneStatus;
 
-    TsDataSourceManager(boolean isRecording) {
+    TsDataSourceManager(
+            boolean isRecording, @Provided TunerTsStreamerManager tunerStreamerManager) {
         mIsRecording = isRecording;
+        this.mTunerStreamerManager = tunerStreamerManager;
         mKeepTuneStatus = true;
     }
 
