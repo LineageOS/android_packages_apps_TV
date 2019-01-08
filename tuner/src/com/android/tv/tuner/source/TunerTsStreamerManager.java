@@ -20,7 +20,6 @@ import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.data.TunerChannel;
@@ -49,12 +48,13 @@ public class TunerTsStreamerManager {
     private final Map<Integer, TsStreamerCreator> mCreators = new HashMap<>();
     private final Map<Integer, EventListener> mListeners = new HashMap<>();
     private final Map<TsDataSource, TunerTsStreamer> mSourceToStreamerMap = new HashMap<>();
-    private final TunerFactory mTunerFactory = BuiltInTunerHalFactory.INSTANCE;
-    private final TunerHalManager mTunerHalManager = new TunerHalManager(mTunerFactory);
+    private final TunerHalManager mTunerHalManager;
 
     @Inject
     @VisibleForTesting
-    public TunerTsStreamerManager() {}
+    public TunerTsStreamerManager(TunerFactory tunerFactory) {
+        mTunerHalManager = new TunerHalManager(tunerFactory);
+    }
 
     synchronized TsDataSource createDataSource(
             Context context,

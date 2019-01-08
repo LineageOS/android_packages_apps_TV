@@ -15,6 +15,7 @@
  */
 package com.android.tv.tuner.source;
 
+import com.android.tv.tuner.api.TunerFactory;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
@@ -24,7 +25,7 @@ import javax.inject.Singleton;
 public class TunerSourceModule {
     @Provides
     @Singleton
-    TunerTsStreamerManager providesTunerTsStreamerManager() {
-        return new TunerTsStreamerManager();
+    TunerTsStreamerManager providesTunerTsStreamerManager(TunerFactory tunerFactory) {
+        return new TunerTsStreamerManager(tunerFactory);
     }
 }

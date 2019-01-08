@@ -15,10 +15,18 @@
  */
 package com.android.tv.tuner.sample.network.app;
 
+import com.android.tv.tuner.BuiltInTunerHalFactory;
+import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.modules.TunerModule;
 import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
 import dagger.Module;
+import dagger.Provides;
 
 /** Dagger module for {@link SampleNetworkTuner}. */
 @Module(includes = {TunerModule.class, SampleNetworkTunerTvInputService.Module.class})
-class SampleNetworkTunerModule {}
+class SampleNetworkTunerModule {
+    @Provides
+    TunerFactory providesTunerFactory() {
+        return BuiltInTunerHalFactory.INSTANCE;
+    }
+}

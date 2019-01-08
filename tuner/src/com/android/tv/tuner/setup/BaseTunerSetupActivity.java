@@ -44,12 +44,12 @@ import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
+import javax.inject.Inject;
 
 /** The base setup activity class for tuner. */
 public abstract class BaseTunerSetupActivity extends SetupActivity {
@@ -86,7 +86,7 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     protected String mPreviousPostalCode;
     protected boolean mActivityStopped;
     protected boolean mPendingShowInitialFragment;
-    protected TunerFactory mTunerFactory;
+    @Inject protected TunerFactory mTunerFactory;
 
     private TunerHalCreator mTunerHalCreator;
 
@@ -96,7 +96,6 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
             Log.d(TAG, "onCreate");
         }
         super.onCreate(savedInstanceState);
-        mTunerFactory = BuiltInTunerHalFactory.INSTANCE;
         mActivityStopped = false;
         executeGetTunerTypeAndCountAsyncTask();
         mTunerHalCreator =
