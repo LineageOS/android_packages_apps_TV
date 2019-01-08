@@ -37,7 +37,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.ui.setup.SetupFragment;
-import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.api.Tuner;
