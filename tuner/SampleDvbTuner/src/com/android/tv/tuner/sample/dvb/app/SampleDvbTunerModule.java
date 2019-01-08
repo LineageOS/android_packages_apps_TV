@@ -15,8 +15,8 @@
  */
 package com.android.tv.tuner.sample.dvb.app;
 
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.api.TunerFactory;
+import com.android.tv.tuner.builtin.BuiltInTunerHalFactory;
 import com.android.tv.tuner.modules.TunerModule;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import dagger.Module;
