@@ -24,6 +24,7 @@ import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
+import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import dagger.android.AndroidInjection;
@@ -88,7 +89,11 @@ public class BaseTunerTvInputService extends TvInputService {
     @Override
     public RecordingSession onCreateRecordingSession(String inputId) {
         return new TunerRecordingSession(
-                this, inputId, mChannelDataManager, mConcurrentDvrPlaybackFlags);
+                this,
+                inputId,
+                mChannelDataManager,
+                mConcurrentDvrPlaybackFlags,
+                new TsDataSourceManagerFactory());
     }
 
     @Override

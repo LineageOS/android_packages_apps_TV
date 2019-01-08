@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import com.android.tv.common.compat.RecordingSessionCompat;
+import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 
@@ -37,11 +38,17 @@ public class TunerRecordingSession extends RecordingSessionCompat {
             Context context,
             String inputId,
             ChannelDataManager channelDataManager,
-            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
+            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
         super(context);
         mSessionWorker =
                 new TunerRecordingSessionWorker(
-                        context, inputId, channelDataManager, this, concurrentDvrPlaybackFlags);
+                        context,
+                        inputId,
+                        channelDataManager,
+                        this,
+                        concurrentDvrPlaybackFlags,
+                        tsDataSourceManagerFactory);
     }
 
     // RecordingSession

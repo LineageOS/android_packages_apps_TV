@@ -26,6 +26,7 @@ import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.tuner.modules.TunerSingletonsModule;
 import com.android.tv.tuner.sample.network.singletons.SampleNetworkSingletons;
 import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
+import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import dagger.android.AndroidInjector;
@@ -40,7 +41,10 @@ public class SampleNetworkTuner extends BaseApplication
             new DefaultConcurrentDvrPlaybackFlags();
     private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
     private final TunerSessionFactoryImpl mTunerSessionFactory =
-            new TunerSessionFactoryImpl(mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
+            new TunerSessionFactoryImpl(
+                    mExoplayer2Flags,
+                    mConcurrentDvrPlaybackFlags,
+                    new TsDataSourceManagerFactory());
 
     @Override
     protected AndroidInjector<SampleNetworkTuner> applicationInjector() {

@@ -70,6 +70,7 @@ import com.android.tv.tuner.exoplayer.buffer.TrickplayStorageManager;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
+import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.debug.TunerDebug;
@@ -240,14 +241,16 @@ public class TunerSessionWorkerExoV2
             ChannelDataManager channelDataManager,
             TunerSessionExoV2 tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
-            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
+            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
         this(
                 context,
                 channelDataManager,
                 tunerSession,
                 tunerSessionOverlay,
                 null,
-                concurrentDvrPlaybackFlags);
+                concurrentDvrPlaybackFlags,
+                tsDataSourceManagerFactory);
     }
 
     @VisibleForTesting
@@ -257,7 +260,8 @@ public class TunerSessionWorkerExoV2
             TunerSessionExoV2 tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
             @Nullable Handler handler,
-            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
+            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
         mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         if (DEBUG) {
             Log.d(TAG, "TunerSessionWorkerExoV2 created");
@@ -277,7 +281,7 @@ public class TunerSessionWorkerExoV2
         mChannelDataManager = channelDataManager;
         mChannelDataManager.setListener(this);
         mChannelDataManager.checkDataVersion(mContext);
-        mSourceManager = TsDataSourceManager.createSourceManager(false);
+        mSourceManager = tsDataSourceManagerFactory.create(false);
         mTvInputManager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
         mTvTracks = new ArrayList<>();
         mAudioCapabilitiesReceiver =

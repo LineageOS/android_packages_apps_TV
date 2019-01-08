@@ -22,44 +22,30 @@ import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Channel;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
+import com.google.auto.factory.AutoFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Manages {@link TsDataSource} for playback and recording. The class hides handling of {@link
  * Tuner} and {@link TsStreamer} from other classes. One TsDataSourceManager should be created for
  * per session.
  */
+@AutoFactory
 public class TsDataSourceManager {
-    private static final Object sLock = new Object();
     private static final Map<TsDataSource, TsStreamer> sTsStreamers = new ConcurrentHashMap<>();
 
-    private static int sSequenceId;
+    private static final AtomicInteger sSequenceId = new AtomicInteger();
 
-    private final int mId;
+    private final int mId = sSequenceId.incrementAndGet();
     private final boolean mIsRecording;
     private final TunerTsStreamerManager mTunerStreamerManager =
             TunerTsStreamerManager.getInstance();
 
     private boolean mKeepTuneStatus;
 
-    /**
-     * Creates TsDataSourceManager to create and release {@link DataSource} which will be used for
-     * playing and recording.
-     *
-     * @param isRecording {@code true} when for recording, {@code false} otherwise
-     * @return {@link TsDataSourceManager}
-     */
-    public static TsDataSourceManager createSourceManager(boolean isRecording) {
-        int id;
-        synchronized (sLock) {
-            id = ++sSequenceId;
-        }
-        return new TsDataSourceManager(id, isRecording);
-    }
-
-    private TsDataSourceManager(int id, boolean isRecording) {
-        mId = id;
+    TsDataSourceManager(boolean isRecording) {
         mIsRecording = isRecording;
         mKeepTuneStatus = true;
     }
