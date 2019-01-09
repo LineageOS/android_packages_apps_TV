@@ -23,15 +23,12 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_CONTENT_RATING_SYSTEMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />
     <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
-    <!--Permission to modify Recorded Program-->
-    <uses-permission android:name="com.android.providers.tv.permission.ACCESS_ALL_EPG_DATA" />
 
     <!-- Permissions/feature for USB tuner -->
     <uses-permission android:name="android.permission.DVB_DEVICE" />
@@ -53,12 +50,10 @@
 
     <application
         android:name="com.android.tv.tuner.sample.dvb.app.SampleDvbTuner"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/sample_dvb_tuner_app_name" >
-        <activity
-            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
 
         <activity
             android:name="com.android.tv.tuner.sample.dvb.setup.SampleDvbTunerSetupActivity"
@@ -76,7 +71,7 @@
             android:name="com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService"
             android:label="@string/sample_dvb_tuner_app_name"
             android:permission="android.permission.BIND_TV_INPUT"
-            android:process="com.google.android.tv.tuner.sample.dvb.tvinput" >
+            android:process="com.android.tv.tuner.sample.dvb.tvinput" >
             <intent-filter>
                 <action android:name="android.media.tv.TvInputService" />
             </intent-filter>
