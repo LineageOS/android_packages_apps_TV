@@ -18,7 +18,6 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-
 LOCAL_MODULE_TAGS := optional
 
 include $(LOCAL_PATH)/version.mk
@@ -26,6 +25,9 @@ include $(LOCAL_PATH)/version.mk
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_PACKAGE_NAME := LiveTv
+
+# TODO(b/122608868) turn proguard back on
+LOCAL_PROGUARD_ENABLED := disabled
 
 # It is required for com.android.providers.tv.permission.ALL_EPG_DATA
 LOCAL_PRIVILEGED_MODULE := true
