@@ -26,9 +26,9 @@ import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.tuner.modules.TunerSingletonsModule;
 import com.android.tv.tuner.sample.dvb.singletons.SampleDvbSingletons;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
-import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
+import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImplFactory;
 import dagger.android.AndroidInjector;
 import javax.inject.Inject;
 
@@ -41,20 +41,21 @@ public class SampleDvbTuner extends BaseApplication
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
     private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
-    @Inject TsDataSourceManagerFactory mTsDataSourceManagerFactory;
+    @Inject TunerSessionFactoryImplFactory mTunerSessionFactoryImplFactory;
     private TunerSessionFactoryImpl mTunerSessionFactory;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mTunerSessionFactory =
-                new TunerSessionFactoryImpl(
-                        mExoplayer2Flags, mConcurrentDvrPlaybackFlags, mTsDataSourceManagerFactory);
+                mTunerSessionFactoryImplFactory.create(
+                        mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
     }
 
     @Override
     protected AndroidInjector<SampleDvbTuner> applicationInjector() {
         return DaggerSampleDvbTunerComponent.builder()
+                .sampleDvbTunerModule(new SampleDvbTunerModule(this))
                 .tunerSingletonsModule(new TunerSingletonsModule(this))
                 .build();
     }
@@ -89,7 +90,6 @@ public class SampleDvbTuner extends BaseApplication
         return this;
     }
 
-    @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
     }

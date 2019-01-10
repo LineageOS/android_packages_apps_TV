@@ -6,10 +6,13 @@ import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.tvinput.TunerSession;
 import com.android.tv.tuner.tvinput.TunerSessionExoV2;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
 import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.Exoplayer2Flags;
 
 /** Creates a {@link TunerSessionFactory}. */
+@AutoFactory
 public class TunerSessionFactoryImpl implements TunerSessionFactory {
     private final Exoplayer2Flags mExoplayer2Flags;
     private final ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
@@ -18,7 +21,7 @@ public class TunerSessionFactoryImpl implements TunerSessionFactory {
     public TunerSessionFactoryImpl(
             Exoplayer2Flags exoplayer2Flags,
             ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
-            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
+            @Provided TsDataSourceManagerFactory tsDataSourceManagerFactory) {
         mExoplayer2Flags = exoplayer2Flags;
         mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         mTsDataSourceManagerFactory = tsDataSourceManagerFactory;

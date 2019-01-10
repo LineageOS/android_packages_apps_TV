@@ -7,19 +7,6 @@ import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 /** {@link android.media.tv.TvInputService.Session} factory */
 public interface TunerSessionFactory {
 
-    /** Has a {@link TunerSessionFactory}. */
-    interface HasTunerSessionFactory {
-        static HasTunerSessionFactory cast(Context context) {
-            Context appContext = context.getApplicationContext();
-            context = appContext != null ? appContext : context;
-            return (HasTunerSessionFactory) context;
-        }
-
-        /** @deprecated use dagger instead */
-        @Deprecated
-        TunerSessionFactory getTunerSessionFactory();
-    }
-
     /** Called when a session is released */
     interface SessionReleasedCallback {
 

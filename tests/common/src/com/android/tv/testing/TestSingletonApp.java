@@ -52,7 +52,6 @@ import com.android.tv.tuner.singletons.TunerSingletons;
 import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.source.TunerTsStreamerManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
-import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.SetupUtils;
@@ -64,10 +63,7 @@ import javax.inject.Provider;
 
 /** Test application for Live TV. */
 public class TestSingletonApp extends Application
-        implements TvSingletons,
-                TunerSingletons,
-                HasTunerSessionFactory,
-                HasSingletons<TvSingletons> {
+        implements TvSingletons, TunerSingletons, HasSingletons<TvSingletons> {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();
@@ -280,7 +276,6 @@ public class TestSingletonApp extends Application
         return mConcurrentDvrPlaybackFlags;
     }
 
-    @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
     }
