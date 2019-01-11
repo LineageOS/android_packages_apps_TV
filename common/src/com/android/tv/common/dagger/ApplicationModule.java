@@ -16,6 +16,7 @@
 package com.android.tv.common.dagger;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Looper;
 import com.android.tv.common.dagger.annotations.ApplicationContext;
@@ -29,26 +30,31 @@ import dagger.Provides;
  */
 @Module
 public final class ApplicationModule {
-    private final Application application;
+    private final Application mApplication;
 
     public ApplicationModule(Application application) {
-        this.application = application;
+        mApplication = application;
     }
 
     @Provides
     Application provideApplication() {
-        return application;
+        return mApplication;
     }
 
     @Provides
     @ApplicationContext
     Context provideContext() {
-        return application.getApplicationContext();
+        return mApplication.getApplicationContext();
     }
 
     @Provides
     @MainLooper
     static Looper provideMainLooper() {
         return Looper.getMainLooper();
+    }
+
+    @Provides
+    ContentResolver provideContentResolver() {
+        return mApplication.getContentResolver();
     }
 }

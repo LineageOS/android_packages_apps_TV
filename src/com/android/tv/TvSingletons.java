@@ -116,6 +116,8 @@ public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager, Ha
 
     ExperimentLoader getExperimentLoader();
 
+    /** @deprecated use injection instead. */
+    @Deprecated
     Executor getDbExecutor();
 
     BackendKnobsFlags getBackendKnobs();

@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+import javax.inject.Qualifier;
 
 /**
  * {@link AsyncTask} that defaults to executing on its own single threaded Executor Service.
@@ -52,6 +53,10 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         extends AsyncTask<Params, Progress, Result> {
     private static final String TAG = "AsyncDbTask";
     private static final boolean DEBUG = false;
+
+    /** Annotation for requesting the {@link Executor} for data base access. */
+    @Qualifier
+    public @interface DbExecutor {}
 
     private final Executor mExecutor;
     boolean mCalledExecuteOnDbThread;
@@ -78,7 +83,7 @@ public abstract class AsyncDbTask<Params, Progress, Result>
         private String[] mProjection;
 
         public AsyncQueryTask(
-                Executor executor,
+                @DbExecutor Executor executor,
                 Context context,
                 Uri uri,
                 String[] projection,

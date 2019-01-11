@@ -36,7 +36,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
@@ -63,14 +62,13 @@ import com.android.tv.recommendation.ChannelPreviewUpdater;
 import com.android.tv.recommendation.RecordedProgramPreviewUpdater;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.tunerinputcontroller.TunerInputController;
+import com.android.tv.util.AsyncDbTask.DbExecutor;
 import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import com.google.common.base.Optional;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 /**
@@ -98,10 +96,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
 
     private static final String PREFERENCE_IS_FIRST_LAUNCH = "is_first_launch";
 
-    private static final NamedThreadFactory THREAD_FACTORY = new NamedThreadFactory("tv-app-db");
-    private static final ExecutorService DB_EXECUTOR =
-            Executors.newSingleThreadExecutor(THREAD_FACTORY);
-
     private String mVersionName = "";
 
     private final MainActivityWrapper mMainActivityWrapper = new MainActivityWrapper();
@@ -123,9 +117,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
-    @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
+    @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
     @Inject SetupUtils mSetupUtils;
+    @Inject @DbExecutor Executor mDbExecutor;
 
     @Override
     public void onCreate() {
@@ -530,6 +525,6 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
 
     @Override
     public Executor getDbExecutor() {
-        return DB_EXECUTOR;
+        return mDbExecutor;
     }
 }

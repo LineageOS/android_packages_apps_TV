@@ -28,6 +28,7 @@ import dagger.Provides;
  * <p>Use this module to inject items directly instead of using {@code TvSingletons}.
  */
 @Module
+@SuppressWarnings("deprecation")
 public class TvSingletonsModule {
     private final TvSingletons mTvSingletons;
 

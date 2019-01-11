@@ -136,6 +136,7 @@ import com.android.tv.ui.sidepanel.SettingsFragment;
 import com.android.tv.ui.sidepanel.SideFragment;
 import com.android.tv.ui.sidepanel.parentalcontrols.ParentalControlsFragment;
 import com.android.tv.util.AsyncDbTask;
+import com.android.tv.util.AsyncDbTask.DbExecutor;
 import com.android.tv.util.CaptionSettings;
 import com.android.tv.util.OnboardingUtils;
 import com.android.tv.util.RecurringRunner;
@@ -260,6 +261,7 @@ public class MainActivity extends Activity
     }
 
     private final MySingletonsImpl mMySingletons = new MySingletonsImpl();
+    @Inject @DbExecutor Executor mDbExecutor;
 
     private AccessibilityManager mAccessibilityManager;
     @Inject ChannelDataManager mChannelDataManager;
@@ -1497,7 +1499,7 @@ public class MainActivity extends Activity
             long channelIdFromIntent = ContentUriUtils.safeParseId(mInitChannelUri);
             if (programUriFromIntent != null && channelIdFromIntent != Channel.INVALID_ID) {
                 new AsyncQueryProgramTask(
-                                TvSingletons.getSingletons(this).getDbExecutor(),
+                                mDbExecutor,
                                 programUriFromIntent,
                                 Program.PROJECTION,
                                 null,
