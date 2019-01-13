@@ -149,6 +149,8 @@ import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.images.ImageCache;
 
 import com.google.common.base.Optional;
+import dagger.android.AndroidInjection;
+import dagger.android.ContributesAndroidInjector;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -159,6 +161,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 /** The main activity for the Live TV app. */
@@ -259,7 +262,7 @@ public class MainActivity extends Activity
     private final MySingletonsImpl mMySingletons = new MySingletonsImpl();
 
     private AccessibilityManager mAccessibilityManager;
-    private ChannelDataManager mChannelDataManager;
+    @Inject ChannelDataManager mChannelDataManager;
     private ProgramDataManager mProgramDataManager;
     private TvInputManagerHelper mTvInputManagerHelper;
     private ChannelTuner mChannelTuner;
@@ -301,7 +304,6 @@ public class MainActivity extends Activity
     private boolean mNeedShowBackKeyGuide;
     private boolean mVisibleBehind;
     private boolean mShowNewSourcesFragment = true;
-    private String mTunerInputId;
     private boolean mOtherActivityLaunched;
 
     private boolean mIsInPIPMode;
@@ -435,14 +437,17 @@ public class MainActivity extends Activity
                 @Override
                 public void onInputAdded(String inputId) {
                     if (mOptionalBuiltInTunerManager.isPresent()
-                            && mTunerInputId.equals(inputId)
                             && CommonPreferences.shouldShowSetupActivity(MainActivity.this)) {
-                        Intent intent =
-                                TvSingletons.getSingletons(MainActivity.this)
-                                        .getTunerSetupIntent(MainActivity.this);
-                        startActivity(intent);
-                        CommonPreferences.setShouldShowSetupActivity(MainActivity.this, false);
-                        mSetupUtils.markAsKnownInput(mTunerInputId);
+                        String tunerInputId =
+                                mOptionalBuiltInTunerManager.get().getEmbeddedTunerInputId();
+                        if (tunerInputId.equals(inputId)) {
+                            Intent intent =
+                                    TvSingletons.getSingletons(MainActivity.this)
+                                            .getTunerSetupIntent(MainActivity.this);
+                            startActivity(intent);
+                            CommonPreferences.setShouldShowSetupActivity(MainActivity.this, false);
+                            mSetupUtils.markAsKnownInput(tunerInputId);
+                        }
                     }
                 }
             };
@@ -463,6 +468,7 @@ public class MainActivity extends Activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         mAccessibilityManager =
                 (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         TvSingletons tvSingletons = TvSingletons.getSingletons(this);
@@ -488,7 +494,6 @@ public class MainActivity extends Activity
         mSetupUtils = tvSingletons.getSetupUtils();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
-        mChannelDataManager = tvApplication.getChannelDataManager();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.
         boolean isPassthroughInput =
                 TvContract.isChannelUriForPassthroughInput(getIntent().getData());
@@ -550,7 +555,6 @@ public class MainActivity extends Activity
         if (mOptionalBuiltInTunerManager.isPresent()) {
             mTvInputManagerHelper.addCallback(mTvInputCallback);
         }
-        mTunerInputId = tvSingletons.getEmbeddedTunerInputId();
         mProgramDataManager.addOnCurrentProgramUpdatedListener(
                 Channel.INVALID_ID, mOnCurrentProgramUpdatedListener);
         mProgramDataManager.setPrefetchEnabled(true);
@@ -2964,5 +2968,12 @@ public class MainActivity extends Activity
         public DvrManager getDvrManagerSingleton() {
             return TvSingletons.getSingletons(getApplicationContext()).getDvrManager();
         }
+    }
+
+    /** Exports {@link MainActivity} for Dagger codegen to create the appropriate injector. */
+    @dagger.Module
+    public abstract static class Module {
+        @ContributesAndroidInjector
+        abstract MainActivity contributesMainActivityActivityInjector();
     }
 }

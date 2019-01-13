@@ -16,10 +16,8 @@
 
 package com.android.tv.app;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.media.tv.TvContract;
 import com.android.tv.TvActivity;
 import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
@@ -35,9 +33,9 @@ import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
+import com.android.tv.modules.TvSingletonsModule;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
-import com.android.tv.tuner.livetuner.LiveTvTunerTvInputService;
 import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.account.AccountHelper;
@@ -75,6 +73,10 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
     @Override
     public void onCreate() {
         super.onCreate();
+        DaggerLiveTvApplicationComponent.builder()
+                .tvSingletonsModule(new TvSingletonsModule(this))
+                .build()
+                .inject(this);
         PERFORMANCE_MONITOR_MANAGER.getStartupMeasure().onAppCreate(this);
     }
 
@@ -140,16 +142,6 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
 
         intent.putExtra(InputSetupActionUtils.EXTRA_ACTIVITY_AFTER_COMPLETION, tvActivityIntent);
         return intent;
-    }
-
-    @Override
-    public synchronized String getEmbeddedTunerInputId() {
-        if (mEmbeddedInputId == null) {
-            mEmbeddedInputId =
-                    TvContract.buildInputId(
-                            new ComponentName(this, LiveTvTunerTvInputService.class));
-        }
-        return mEmbeddedInputId;
     }
 
     @Override

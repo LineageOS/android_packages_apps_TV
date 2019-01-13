@@ -224,7 +224,7 @@ public class ChannelBannerView extends FrameLayout
         mResources = getResources();
 
         @SuppressWarnings("unchecked") // injection
-        MySingletons singletons = ((HasSingletons<MySingletons>) context).singletons();
+        MySingletons singletons = HasSingletons.get(MySingletons.class, context);
         mCurrentChannelProvider = singletons.getCurrentChannelProvider();
         mCurrentProgramProvider = singletons.getCurrentProgramProvider();
         mCurrentPlayingPositionProvider = singletons.getCurrentPlayingPositionProvider();

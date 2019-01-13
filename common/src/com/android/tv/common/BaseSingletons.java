@@ -33,6 +33,4 @@ public interface BaseSingletons
     RecordingStorageStatusManager getRecordingStorageStatusManager();
 
     Intent getTunerSetupIntent(Context context);
-
-    String getEmbeddedTunerInputId();
 }

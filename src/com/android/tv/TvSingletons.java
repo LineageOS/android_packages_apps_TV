@@ -47,8 +47,7 @@ public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager {
     /**
      * Returns the @{@link TvSingletons} using the application context.
      *
-     * @deprecated use {@link com.android.tv.common.singletons.HasSingletons#get(Class, Context)}
-     *     instead
+     * @deprecated use injection instead.
      */
     @Deprecated
     static TvSingletons getSingletons(Context context) {
@@ -59,6 +58,7 @@ public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager {
 
     void handleInputCountChanged();
 
+    @Deprecated
     ChannelDataManager getChannelDataManager();
 
     /**

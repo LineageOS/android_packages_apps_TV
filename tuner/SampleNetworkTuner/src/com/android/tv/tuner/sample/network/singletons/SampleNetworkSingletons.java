@@ -17,6 +17,7 @@
 package com.android.tv.tuner.sample.network.singletons;
 
 import com.android.tv.common.BaseSingletons;
+import com.android.tv.tuner.singletons.TunerSingletons;
 
 /** Singletons for SampleNetworkTuner. */
-public interface SampleNetworkSingletons extends BaseSingletons {}
+public interface SampleNetworkSingletons extends BaseSingletons, TunerSingletons {}

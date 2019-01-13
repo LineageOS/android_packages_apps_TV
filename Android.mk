@@ -18,7 +18,6 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-
 LOCAL_MODULE_TAGS := optional
 
 include $(LOCAL_PATH)/version.mk
@@ -26,6 +25,9 @@ include $(LOCAL_PATH)/version.mk
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_PACKAGE_NAME := LiveTv
+
+# TODO(b/122608868) turn proguard back on
+LOCAL_PROGUARD_ENABLED := disabled
 
 # It is required for com.android.providers.tv.permission.ALL_EPG_DATA
 LOCAL_PRIVILEGED_MODULE := true
@@ -40,13 +42,14 @@ LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/material_res \
 
 LOCAL_JAVA_LIBRARIES := \
-    auto-value-jar \
     guava-android-jar \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
+    auto-value-jar \
     android-support-annotations \
     error-prone-annotations-jar \
     jsr330 \
+    lib-dagger \
     lib-exoplayer \
     lib-exoplayer-v2-core \
 
@@ -62,15 +65,29 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v14-preference \
     android-support-v17-leanback \
     android-support-v17-preference-leanback \
+    lib-dagger-android \
+    lib-dagger-android-support \
     live-channels-partner-support \
     live-tv-tuner \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar-host \
+    guava-jre-jar-host \
+    jsr330 \
+    lib-dagger-host \
+    lib-dagger-android-jarimpl-host \
+    lib-dagger-android-support-jarimpl-host \
+    lib-dagger-android-processor-host \
+    lib-dagger-compiler-host \
+    lib-dagger-producers-host \
+    lib-dagger-spi-host \
+    lib-google-java-format-host \
+    lib-javapoet-host \
+
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
-    com.google.auto.value.processor.AutoValueProcessor
+  com.google.auto.value.processor.AutoValueProcessor,dagger.internal.codegen.ComponentProcessor,dagger.android.processor.AndroidProcessor
 
 
 LOCAL_JAVACFLAGS := -Xlint:deprecation -Xlint:unchecked
@@ -92,12 +109,24 @@ m2-path =../../../prebuilts/tools/common/m2/repository/$2/$1/$3/$1-$3.jar
 m2 = $1-jar:$(call m2-path,$1,$2,$3)
 
 prebuilts := \
-    lib-exoplayer:libs/exoplayer-r1.5.16.aar \
-    lib-exoplayer-v2-core:libs/exoplayer-core-2.9.0.aar \
     $(call m2,auto-value,com/google/auto/value,1.5.2) \
     error-prone-annotations-jar:$(call m2-path,error_prone_annotations,com/google/errorprone,2.3.1) \
+    guava-jre-jar:$(call m2-path,guava,com/google/guava,23.5-jre) \
     guava-android-jar:$(call m2-path,guava,com/google/guava,23.6-android) \
     javax-annotations-jar:$(call m2-path,javax.annotation-api,javax/annotation,1.2) \
+    lib-dagger:libs/dagger-2.15.jar \
+    lib-dagger-compiler:libs/dagger-compiler-2.15.jar \
+    lib-dagger-android:libs/dagger-android-2.15.aar \
+    lib-dagger-android-jarimpl:libs/dagger-android-jarimpl-2.15.jar \
+    lib-dagger-android-processor:libs/dagger-android-processor-2.15.jar \
+    lib-dagger-android-support:libs/dagger-android-support-2.15.aar \
+    lib-dagger-android-support-jarimpl:libs/dagger-android-support-jarimpl-2.15.jar \
+    lib-dagger-producers:libs/dagger-producers-2.15.jar \
+    lib-dagger-spi:libs/dagger-spi-2.15.jar \
+    lib-exoplayer:libs/exoplayer-r1.5.16.aar \
+    lib-exoplayer-v2-core:libs/exoplayer-core-2.9.0.aar \
+    lib-google-java-format:libs/google-java-format-1.4-all-deps.jar \
+    lib-javapoet:libs/javapoet-1.8.0.jar \
     truth-0-36-prebuilt-jar:$(call m2-path,truth,com/google/truth,0.36) \
 
 define define-prebuilt
