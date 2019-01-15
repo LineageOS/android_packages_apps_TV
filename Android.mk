@@ -46,6 +46,7 @@ LOCAL_JAVA_LIBRARIES := \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     auto-value-jar \
+    auto-factory-jar \
     android-support-annotations \
     error-prone-annotations-jar \
     jsr330 \
@@ -73,7 +74,9 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
 
 LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar-host \
+    auto-factory-jar-host \
     guava-jre-jar-host \
+    javawriter-jar-host \
     jsr330 \
     lib-dagger-host \
     lib-dagger-android-jarimpl-host \
@@ -87,7 +90,7 @@ LOCAL_ANNOTATION_PROCESSORS := \
 
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
-  com.google.auto.value.processor.AutoValueProcessor,dagger.internal.codegen.ComponentProcessor,dagger.android.processor.AndroidProcessor
+  com.google.auto.factory.processor.AutoFactoryProcessor,com.google.auto.value.processor.AutoValueProcessor,dagger.internal.codegen.ComponentProcessor,dagger.android.processor.AndroidProcessor
 
 
 LOCAL_JAVACFLAGS := -Xlint:deprecation -Xlint:unchecked
@@ -110,6 +113,8 @@ m2 = $1-jar:$(call m2-path,$1,$2,$3)
 
 prebuilts := \
     $(call m2,auto-value,com/google/auto/value,1.5.2) \
+    $(call m2,auto-factory,com/google/auto/factory,1.0-beta2) \
+    $(call m2,javawriter,com/squareup,2.5.1) \
     error-prone-annotations-jar:$(call m2-path,error_prone_annotations,com/google/errorprone,2.3.1) \
     guava-jre-jar:$(call m2-path,guava,com/google/guava,23.5-jre) \
     guava-android-jar:$(call m2-path,guava,com/google/guava,23.6-android) \
