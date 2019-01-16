@@ -18,9 +18,16 @@ LOCAL_USE_AAPT2 := true
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
-LOCAL_STATIC_JAVA_LIBRARIES := \
+LOCAL_JAVA_LIBRARIES := \
+    auto-value-jar \
+    auto-factory-jar \
     android-support-annotations \
+    error-prone-annotations-jar \
     guava-android-jar \
+    jsr330 \
+    lib-dagger \
+    lib-exoplayer \
+    lib-exoplayer-v2-core \
 
 
 LOCAL_DISABLE_RESOLVE_SUPPORT_LIBRARIES := true
@@ -29,7 +36,22 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-compat \
     android-support-core-ui \
     android-support-v7-recyclerview \
-    android-support-v17-leanback
+    android-support-v17-leanback \
+
+LOCAL_STATIC_ANDROID_LIBRARIES := \
+    lib-dagger-android \
+    lib-dagger-android-support \
+
+LOCAL_ANNOTATION_PROCESSORS := \
+    auto-value-jar-host \
+    auto-factory-jar-host \
+    guava-jre-jar-host \
+    javawriter-jar-host \
+    javax-annotations-jar-host \
+    jsr330 \
+
+LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
+  com.google.auto.factory.processor.AutoFactoryProcessor,com.google.auto.value.processor.AutoValueProcessor
 
 LOCAL_MIN_SDK_VERSION := 23
 
