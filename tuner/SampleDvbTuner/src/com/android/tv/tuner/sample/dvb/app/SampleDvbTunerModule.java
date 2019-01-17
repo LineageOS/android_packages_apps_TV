@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv.modules;
+package com.android.tv.tuner.sample.dvb.app;
 
-import com.android.tv.MainActivity;
-import com.android.tv.TvApplication;
-import com.android.tv.onboarding.OnboardingActivity;
+import com.android.tv.tuner.modules.TunerModule;
 import dagger.Module;
 
-/** Dagger module for {@link TvApplication}. */
-@Module(includes = {
-        TvSingletonsModule.class, MainActivity.Module.class, OnboardingActivity.Module.class})
-public class TvApplicationModule {}
+/** Dagger module for {@link SampleDvbTuner}. */
+@Module(includes = {TunerModule.class})
+class SampleDvbTunerModule {}

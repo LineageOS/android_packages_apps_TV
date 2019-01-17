@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.source;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -27,9 +27,8 @@ import com.android.tv.tuner.data.PsipData.VctItem;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Track.AtscAudioTrack;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
-import com.android.tv.tuner.source.FileTsStreamer;
+import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.android.tv.tuner.ts.TsParser;
-import com.android.tv.tuner.tvinput.EventDetector.EventListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

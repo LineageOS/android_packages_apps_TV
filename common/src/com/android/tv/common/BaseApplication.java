@@ -17,7 +17,6 @@
 package com.android.tv.common;
 
 import android.annotation.TargetApi;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -29,9 +28,10 @@ import com.android.tv.common.util.Clock;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.Debug;
 import com.android.tv.common.util.SystemProperties;
+import dagger.android.DaggerApplication;
 
 /** The base application class for Live TV applications. */
-public abstract class BaseApplication extends Application implements BaseSingletons {
+public abstract class BaseApplication extends DaggerApplication implements BaseSingletons {
     private RecordingStorageStatusManager mRecordingStorageStatusManager;
 
     /**

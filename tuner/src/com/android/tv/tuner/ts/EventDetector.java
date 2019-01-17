@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner.tvinput;
+package com.android.tv.tuner.ts;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -26,7 +26,6 @@ import com.android.tv.tuner.data.PsipData.EitItem;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.data.nano.Track.AtscAudioTrack;
 import com.android.tv.tuner.data.nano.Track.AtscCaptionTrack;
-import com.android.tv.tuner.ts.TsParser;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -243,12 +242,12 @@ public class EventDetector {
     }
 
     /**
-     * Creates a detector for ATSC TV channles and program information.
+     * Creates a detector for ATSC TV channels and program information.
      *
-     * @param usbTunerInterface {@link ITunerHal}
+     * @param tunerHal
      */
-    public EventDetector(ITunerHal usbTunerInterface) {
-        mTunerHal = usbTunerInterface;
+    public EventDetector(ITunerHal tunerHal) {
+        mTunerHal = tunerHal;
     }
 
     private void reset() {

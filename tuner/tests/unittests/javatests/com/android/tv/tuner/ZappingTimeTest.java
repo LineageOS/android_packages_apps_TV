@@ -37,7 +37,7 @@ import com.android.tv.tuner.exoplayer.buffer.BufferManager;
 import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.exoplayer.buffer.TrickplayStorageManager;
 import com.android.tv.tuner.source.TsDataSourceManager;
-import com.android.tv.tuner.tvinput.EventDetector.EventListener;
+import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.google.android.exoplayer.ExoPlayer;
 import java.io.File;
 import java.io.FileOutputStream;

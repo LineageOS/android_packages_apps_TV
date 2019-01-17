@@ -22,8 +22,14 @@ LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
 
 LOCAL_JAVA_LIBRARIES := \
+    auto-value-jar \
+    auto-factory-jar \
     android-support-annotations \
+    error-prone-annotations-jar \
     guava-android-jar \
+    javax-annotations-jar \
+    jsr330 \
+    lib-dagger \
     lib-exoplayer \
     lib-exoplayer-v2-core \
 
@@ -34,7 +40,20 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
     androidx.tvprovider_tvprovider \
+    lib-dagger-android \
+    lib-dagger-android-support \
     tv-common \
+
+LOCAL_ANNOTATION_PROCESSORS := \
+    auto-value-jar-host \
+    auto-factory-jar-host \
+    guava-jre-jar-host \
+    javawriter-jar-host \
+    javax-annotations-jar-host \
+    jsr330 \
+
+LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
+  com.google.auto.factory.processor.AutoFactoryProcessor,com.google.auto.value.processor.AutoValueProcessor
 
 LOCAL_MIN_SDK_VERSION := 23
 
