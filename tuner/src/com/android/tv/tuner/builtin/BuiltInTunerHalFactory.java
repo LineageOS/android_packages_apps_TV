@@ -23,7 +23,6 @@ import android.util.Pair;
 import com.android.tv.common.customization.CustomizationManager;
 import com.android.tv.common.feature.Model;
 import com.android.tv.tuner.DvbTunerHal;
-import com.android.tv.tuner.MtkTunerHal;
 import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.api.TunerFactory;
 
