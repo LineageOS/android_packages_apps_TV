@@ -74,7 +74,7 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
 LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar-host \
     auto-factory-jar-host \
-    guava-jre-jar-host \
+    guava-jre-jar \
     lib-dagger-android-processor \
     lib-dagger-compiler \
 
@@ -106,8 +106,6 @@ prebuilts := \
     $(call m2,auto-factory,com/google/auto/factory,1.0-beta2) \
     $(call m2,javawriter,com/squareup,2.5.1) \
     error-prone-annotations-jar:$(call m2-path,error_prone_annotations,com/google/errorprone,2.3.1) \
-    guava-jre-jar:$(call m2-path,guava,com/google/guava,23.5-jre) \
-    guava-android-jar:$(call m2-path,guava,com/google/guava,23.6-android) \
     javax-annotations-jar:$(call m2-path,javax.annotation-api,javax/annotation,1.2) \
 
 define define-prebuilt
