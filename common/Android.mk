@@ -42,11 +42,11 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     lib-dagger-android \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    auto-value-jar-host \
-    auto-factory-jar-host \
+    auto-value-jar \
+    auto-factory-jar \
     guava-jre-jar \
-    javawriter-jar-host \
-    javax-annotations-jar-host \
+    javawriter-jar \
+    javax-annotations-jar \
     jsr330 \
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \

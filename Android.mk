@@ -72,8 +72,8 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    auto-value-jar-host \
-    auto-factory-jar-host \
+    auto-value-jar \
+    auto-factory-jar \
     guava-jre-jar \
     lib-dagger-android-processor \
     lib-dagger-compiler \
@@ -93,39 +93,5 @@ LOCAL_JNI_SHARED_LIBRARIES := libtunertvinput_jni
 LOCAL_AAPT_FLAGS += --extra-packages com.android.tv.tuner
 
 include $(BUILD_PACKAGE)
-
-#############################################################
-# Pre-built dependency jars
-#############################################################
-# name,path,version
-m2-path =../../../prebuilts/tools/common/m2/repository/$2/$1/$3/$1-$3.jar
-m2 = $1-jar:$(call m2-path,$1,$2,$3)
-
-prebuilts := \
-    $(call m2,auto-value,com/google/auto/value,1.5.2) \
-    $(call m2,auto-factory,com/google/auto/factory,1.0-beta2) \
-    $(call m2,javawriter,com/squareup,2.5.1) \
-    error-prone-annotations-jar:$(call m2-path,error_prone_annotations,com/google/errorprone,2.3.1) \
-    javax-annotations-jar:$(call m2-path,javax.annotation-api,javax/annotation,1.2) \
-
-define define-prebuilt
-  $(eval tw := $(subst :, ,$(strip $(1)))) \
-  $(eval include $(CLEAR_VARS)) \
-  $(eval LOCAL_MODULE := $(word 1,$(tw))) \
-  $(eval LOCAL_MODULE_TAGS := optional) \
-  $(eval LOCAL_MODULE_CLASS := JAVA_LIBRARIES) \
-  $(eval LOCAL_SRC_FILES := $(word 2,$(tw))) \
-  $(eval LOCAL_UNINSTALLABLE_MODULE := true) \
-  $(eval LOCAL_SDK_VERSION := current) \
-  $(eval include $(BUILD_PREBUILT)) \
-  $(eval include $(CLEAR_VARS)) \
-  $(eval LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := $(word 1,$(tw))-host:$(word 2,$(tw))) \
-  $(eval include $(BUILD_HOST_PREBUILT))
-endef
-
-$(foreach p,$(prebuilts),\
-  $(call define-prebuilt,$(p)))
-
-prebuilts :=
 
 include $(call all-makefiles-under,$(LOCAL_PATH))

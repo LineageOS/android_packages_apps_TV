@@ -13,6 +13,33 @@
 // limitations under the License.
 
 java_import {
+    name: "auto-factory-jar",
+    jars: ["auto-factory-1.0-beta2.jar"],
+    host_supported: true,
+    sdk_version: "current",
+}
+
+
+java_import {
+    name: "auto-value-jar",
+    jars: ["auto-value-1.5.2.jar"],
+    host_supported: true,
+    sdk_version: "current",
+}
+
+// TODO: fix remote dep on this
+java_import_host {
+    name: "auto-value-jar-host",
+    jars: ["auto-value-1.5.2.jar"],
+}
+
+java_import {
+    name: "error-prone-annotations-jar",
+    jars: ["error_prone_annotations-2.3.1.jar"],
+    sdk_version: "current",
+}
+
+java_import {
     name: "guava-jre-jar",
     jars: ["guava-23.3-jre.jar"],
     host_supported: true,
@@ -24,6 +51,19 @@ java_import {
     jars: ["guava-23.6-android.jar"],
     sdk_version: "current",
 }
+
+java_import_host{
+    name: "javawriter-jar",
+    jars: ["javawriter-2.5.1.jar"],
+}
+
+java_import {
+    name: "javax-annotations-jar",
+    jars: ["javax.annotation-api-1.2.jar"],
+    host_supported: true,
+    sdk_version: "current",
+}
+
 
 android_library_import {
     name: "lib-exoplayer",
