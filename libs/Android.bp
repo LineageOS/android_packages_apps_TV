@@ -83,3 +83,10 @@ java_library_host {
         "lib-dagger",
     ],
 }
+
+java_import {
+    name: "lib-truth",
+    jars: ["truth-0.36.jar"],
+    host_supported: true,
+    sdk_version: "current",
+}

@@ -109,7 +109,6 @@ prebuilts := \
     guava-jre-jar:$(call m2-path,guava,com/google/guava,23.5-jre) \
     guava-android-jar:$(call m2-path,guava,com/google/guava,23.6-android) \
     javax-annotations-jar:$(call m2-path,javax.annotation-api,javax/annotation,1.2) \
-    truth-0-36-prebuilt-jar:$(call m2-path,truth,com/google/truth,0.36) \
 
 define define-prebuilt
   $(eval tw := $(subst :, ,$(strip $(1)))) \
