@@ -67,7 +67,6 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v17-leanback \
     android-support-v17-preference-leanback \
     lib-dagger-android \
-    lib-dagger-android-support \
     live-channels-partner-support \
     live-tv-tuner \
     tv-common \
@@ -76,17 +75,8 @@ LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar-host \
     auto-factory-jar-host \
     guava-jre-jar-host \
-    javawriter-jar-host \
-    jsr330 \
-    lib-dagger-host \
-    lib-dagger-android-jarimpl-host \
-    lib-dagger-android-support-jarimpl-host \
-    lib-dagger-android-processor-host \
-    lib-dagger-compiler-host \
-    lib-dagger-producers-host \
-    lib-dagger-spi-host \
-    lib-google-java-format-host \
-    lib-javapoet-host \
+    lib-dagger-android-processor \
+    lib-dagger-compiler \
 
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
@@ -119,20 +109,6 @@ prebuilts := \
     guava-jre-jar:$(call m2-path,guava,com/google/guava,23.5-jre) \
     guava-android-jar:$(call m2-path,guava,com/google/guava,23.6-android) \
     javax-annotations-jar:$(call m2-path,javax.annotation-api,javax/annotation,1.2) \
-    lib-dagger:libs/dagger-2.15.jar \
-    lib-dagger-compiler:libs/dagger-compiler-2.15.jar \
-    lib-dagger-android:libs/dagger-android-2.15.aar \
-    lib-dagger-android-jarimpl:libs/dagger-android-jarimpl-2.15.jar \
-    lib-dagger-android-processor:libs/dagger-android-processor-2.15.jar \
-    lib-dagger-android-support:libs/dagger-android-support-2.15.aar \
-    lib-dagger-android-support-jarimpl:libs/dagger-android-support-jarimpl-2.15.jar \
-    lib-dagger-producers:libs/dagger-producers-2.15.jar \
-    lib-dagger-spi:libs/dagger-spi-2.15.jar \
-    lib-exoplayer:libs/exoplayer-r1.5.16.aar \
-    lib-exoplayer-v2-core:libs/exoplayer-core-2.9.0.aar \
-    lib-google-java-format:libs/google-java-format-1.4-all-deps.jar \
-    lib-javapoet:libs/javapoet-1.8.0.jar \
-    truth-0-36-prebuilt-jar:$(call m2-path,truth,com/google/truth,0.36) \
 
 define define-prebuilt
   $(eval tw := $(subst :, ,$(strip $(1)))) \

@@ -68,6 +68,8 @@ public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager, Ha
      */
     boolean isChannelDataManagerLoadFinished();
 
+    /** @deprecated use injection instead. */
+    @Deprecated
     ProgramDataManager getProgramDataManager();
 
     /**
@@ -100,12 +102,16 @@ public interface TvSingletons extends BaseSingletons, HasBuiltInTunerManager, Ha
 
     PerformanceMonitor getPerformanceMonitor();
 
+    /** @deprecated use injection instead. */
+    @Deprecated
     TvInputManagerHelper getTvInputManagerHelper();
 
     Provider<EpgReader> providesEpgReader();
 
     EpgFetcher getEpgFetcher();
 
+    /** @deprecated use injection instead. */
+    @Deprecated
     SetupUtils getSetupUtils();
 
     ExperimentLoader getExperimentLoader();

@@ -46,7 +46,7 @@ import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.common.util.PostalCodeUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.R;
-import com.android.tv.tuner.api.ITunerHal;
+import com.android.tv.tuner.api.Tuner;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
 
@@ -86,7 +86,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
     protected boolean mActivityStopped;
     protected boolean mPendingShowInitialFragment;
 
-    private TunerHalFactory mTunerHalFactory;
+    private TunerHalCreator mTunerHalCreator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +95,8 @@ public class BaseTunerSetupActivity extends SetupActivity {
         }
         mActivityStopped = false;
         executeGetTunerTypeAndCountAsyncTask();
-        mTunerHalFactory =
-                new TunerHalFactory(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
+        mTunerHalCreator =
+                new TunerHalCreator(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
         super.onCreate(savedInstanceState);
         try {
             // Updating postal code takes time, therefore we called it here for "warm-up".
@@ -205,7 +205,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
                 }
                 return true;
             case ConnectionTypeFragment.ACTION_CATEGORY:
-                if (mTunerHalFactory.getOrCreate() == null) {
+                if (mTunerHalCreator.getOrCreate() == null) {
                     finish();
                     Toast.makeText(
                                     getApplicationContext(),
@@ -228,7 +228,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
                         getFragmentManager().popBackStack();
                         return true;
                     case ScanFragment.ACTION_FINISH:
-                        mTunerHalFactory.clear();
+                        mTunerHalCreator.clear();
                         showScanResultFragment();
                         return true;
                     default: // fall out
@@ -264,18 +264,18 @@ public class BaseTunerSetupActivity extends SetupActivity {
     }
 
     /** Gets the currently used tuner HAL. */
-    ITunerHal getTunerHal() {
-        return mTunerHalFactory.getOrCreate();
+    Tuner getTunerHal() {
+        return mTunerHalCreator.getOrCreate();
     }
 
     /** Generates tuner HAL. */
     void generateTunerHal() {
-        mTunerHalFactory.generate();
+        mTunerHalCreator.generate();
     }
 
     /** Clears the currently used tuner HAL. */
     protected void clearTunerHal() {
-        mTunerHalFactory.clear();
+        mTunerHalCreator.clear();
     }
 
     protected void showLocationFragment() {
@@ -357,13 +357,13 @@ public class BaseTunerSetupActivity extends SetupActivity {
         String contentTitle = resources.getString(R.string.ut_setup_notification_content_title);
         int contentTextId = 0;
         switch (tunerType) {
-            case ITunerHal.TUNER_TYPE_BUILT_IN:
+            case Tuner.TUNER_TYPE_BUILT_IN:
                 contentTextId = R.string.bt_setup_notification_content_text;
                 break;
-            case ITunerHal.TUNER_TYPE_USB:
+            case Tuner.TUNER_TYPE_USB:
                 contentTextId = R.string.ut_setup_notification_content_text;
                 break;
-            case ITunerHal.TUNER_TYPE_NETWORK:
+            case Tuner.TUNER_TYPE_NETWORK:
                 contentTextId = R.string.nt_setup_notification_content_text;
                 break;
             default: // fall out
@@ -447,19 +447,19 @@ public class BaseTunerSetupActivity extends SetupActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /** A static factory for {@link ITunerHal} instances * */
+    /** Creates {@link Tuner} instances in a worker thread * */
     @VisibleForTesting
-    protected static class TunerHalFactory {
+    protected static class TunerHalCreator {
         private Context mContext;
-        @VisibleForTesting ITunerHal mTunerHal;
-        private TunerHalFactory.GenerateTunerHalTask mGenerateTunerHalTask;
+        @VisibleForTesting Tuner mTunerHal;
+        private TunerHalCreator.GenerateTunerHalTask mGenerateTunerHalTask;
         private final Executor mExecutor;
 
-        TunerHalFactory(Context context) {
+        TunerHalCreator(Context context) {
             this(context, AsyncTask.SERIAL_EXECUTOR);
         }
 
-        TunerHalFactory(Context context, Executor executor) {
+        TunerHalCreator(Context context, Executor executor) {
             mContext = context;
             mExecutor = executor;
         }
@@ -469,7 +469,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
          * before, tries to generate it synchronously.
          */
         @WorkerThread
-        ITunerHal getOrCreate() {
+        Tuner getOrCreate() {
             if (mGenerateTunerHalTask != null
                     && mGenerateTunerHalTask.getStatus() != AsyncTask.Status.FINISHED) {
                 try {
@@ -487,7 +487,7 @@ public class BaseTunerSetupActivity extends SetupActivity {
         @MainThread
         void generate() {
             if (mGenerateTunerHalTask == null && mTunerHal == null) {
-                mGenerateTunerHalTask = new TunerHalFactory.GenerateTunerHalTask();
+                mGenerateTunerHalTask = new TunerHalCreator.GenerateTunerHalTask();
                 mGenerateTunerHalTask.executeOnExecutor(mExecutor);
             }
         }
@@ -506,18 +506,18 @@ public class BaseTunerSetupActivity extends SetupActivity {
         }
 
         @WorkerThread
-        protected ITunerHal createInstance() {
-            return BuiltInTunerHalFactory.createInstance(mContext);
+        protected Tuner createInstance() {
+            return BuiltInTunerHalFactory.INSTANCE.createInstance(mContext);
         }
 
-        class GenerateTunerHalTask extends AsyncTask<Void, Void, ITunerHal> {
+        class GenerateTunerHalTask extends AsyncTask<Void, Void, Tuner> {
             @Override
-            protected ITunerHal doInBackground(Void... args) {
+            protected Tuner doInBackground(Void... args) {
                 return createInstance();
             }
 
             @Override
-            protected void onPostExecute(ITunerHal tunerHal) {
+            protected void onPostExecute(Tuner tunerHal) {
                 mTunerHal = tunerHal;
             }
         }

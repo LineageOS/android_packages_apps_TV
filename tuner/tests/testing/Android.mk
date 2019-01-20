@@ -11,7 +11,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     androidx.test.runner \
     guava-android-jar \
     mockito-target \
-    truth-0-36-prebuilt-jar \
+    lib-truth \
     ub-uiautomator \
 
 # Link tv-common as shared library to avoid the problem of initialization of the constants

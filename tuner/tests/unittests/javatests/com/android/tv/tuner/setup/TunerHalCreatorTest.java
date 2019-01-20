@@ -23,25 +23,25 @@ import static org.junit.Assert.assertSame;
 import android.os.AsyncTask;
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.AndroidJUnit4;
-import com.android.tv.tuner.api.ITunerHal;
-import com.android.tv.tuner.setup.BaseTunerSetupActivity.TunerHalFactory;
+import com.android.tv.tuner.api.Tuner;
+import com.android.tv.tuner.setup.BaseTunerSetupActivity.TunerHalCreator;
 import java.util.concurrent.Executor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/** Tests for {@link TunerHalFactory}. */
+/** Tests for {@link TunerHalCreator}. */
 @SmallTest
 @RunWith(AndroidJUnit4.class)
-public class TunerHalFactoryTest {
+public class TunerHalCreatorTest {
     private final FakeExecutor mFakeExecutor = new FakeExecutor();
 
-    private static class TestTunerHalFactory extends TunerHalFactory {
-        private TestTunerHalFactory(Executor executor) {
+    private static class TestTunerHalCreator extends TunerHalCreator {
+        private TestTunerHalCreator(Executor executor) {
             super(null, executor);
         }
 
         @Override
-        protected ITunerHal createInstance() {
+        protected Tuner createInstance() {
             return new com.android.tv.tuner.FakeTunerHal() {};
         }
     }
@@ -61,29 +61,29 @@ public class TunerHalFactoryTest {
 
     @Test
     public void test_asyncGet() {
-        TunerHalFactory tunerHalFactory = new TestTunerHalFactory(mFakeExecutor);
-        assertNull(tunerHalFactory.mTunerHal);
-        tunerHalFactory.generate();
-        assertNull(tunerHalFactory.mTunerHal);
+        TunerHalCreator tunerHalCreator = new TestTunerHalCreator(mFakeExecutor);
+        assertNull(tunerHalCreator.mTunerHal);
+        tunerHalCreator.generate();
+        assertNull(tunerHalCreator.mTunerHal);
         mFakeExecutor.executeActually();
-        ITunerHal tunerHal = tunerHalFactory.getOrCreate();
+        Tuner tunerHal = tunerHalCreator.getOrCreate();
         assertNotNull(tunerHal);
-        assertSame(tunerHal, tunerHalFactory.getOrCreate());
-        tunerHalFactory.clear();
+        assertSame(tunerHal, tunerHalCreator.getOrCreate());
+        tunerHalCreator.clear();
     }
 
     @Test
     public void test_syncGet() {
-        TunerHalFactory tunerHalFactory = new TestTunerHalFactory(AsyncTask.SERIAL_EXECUTOR);
-        assertNull(tunerHalFactory.mTunerHal);
-        tunerHalFactory.generate();
-        assertNotNull(tunerHalFactory.getOrCreate());
+        TunerHalCreator tunerHalCreator = new TestTunerHalCreator(AsyncTask.SERIAL_EXECUTOR);
+        assertNull(tunerHalCreator.mTunerHal);
+        tunerHalCreator.generate();
+        assertNotNull(tunerHalCreator.getOrCreate());
     }
 
     @Test
     public void test_syncGetWithoutGenerate() {
-        TunerHalFactory tunerHalFactory = new TestTunerHalFactory(mFakeExecutor);
-        assertNull(tunerHalFactory.mTunerHal);
-        assertNotNull(tunerHalFactory.getOrCreate());
+        TunerHalCreator tunerHalCreator = new TestTunerHalCreator(mFakeExecutor);
+        assertNull(tunerHalCreator.mTunerHal);
+        assertNotNull(tunerHalCreator.getOrCreate());
     }
 }
