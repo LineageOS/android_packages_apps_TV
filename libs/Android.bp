@@ -12,6 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+java_import {
+    name: "guava-jre-jar",
+    jars: ["guava-23.3-jre.jar"],
+    host_supported: true,
+    sdk_version: "current",
+}
+
+java_import {
+    name: "guava-android-jar",
+    jars: ["guava-23.6-android.jar"],
+    sdk_version: "current",
+}
+
 android_library_import {
     name: "lib-exoplayer",
     aars: ["exoplayer-r1.5.16.aar"],

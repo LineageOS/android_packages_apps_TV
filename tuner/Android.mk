@@ -46,7 +46,7 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
 LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar-host \
     auto-factory-jar-host \
-    guava-jre-jar-host \
+    guava-jre-jar \
     javawriter-jar-host \
     javax-annotations-jar-host \
     jsr330 \

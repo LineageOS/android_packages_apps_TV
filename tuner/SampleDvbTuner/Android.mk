@@ -26,7 +26,7 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    guava-jre-jar-host \
+    guava-jre-jar \
     jsr330 \
     lib-dagger-android-processor \
     lib-dagger-compiler \
