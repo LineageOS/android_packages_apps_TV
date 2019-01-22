@@ -16,7 +16,9 @@
 -->
 <!-- This manifest is for LiveTv -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
     package="com.android.tv" >
+
 
     <uses-sdk
         android:minSdkVersion="23"
@@ -77,7 +79,8 @@
         android:icon="@drawable/ic_tv_app"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TV" >
+        android:theme="@style/Theme.TV"
+        tools:replace="android:appComponentFactory">
         <activity
             android:name="com.android.tv.tuner.setup.LiveTvTunerSetupActivity"
             android:configChanges="keyboard|keyboardHidden"
