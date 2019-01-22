@@ -56,8 +56,6 @@ LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
 
 LOCAL_MIN_SDK_VERSION := 23
 
-include $(LOCAL_PATH)/buildconfig.mk
-
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
