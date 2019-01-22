@@ -53,6 +53,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     lib-dagger \
     lib-exoplayer \
     lib-exoplayer-v2-core \
+    live-tv-tuner-proto \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-compat \
