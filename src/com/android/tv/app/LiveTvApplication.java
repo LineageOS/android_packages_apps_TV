@@ -25,6 +25,7 @@ import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.StubAnalytics;
 import com.android.tv.analytics.Tracker;
 import com.android.tv.common.actions.InputSetupActionUtils;
+import com.android.tv.common.dagger.ApplicationModule;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
@@ -77,6 +78,7 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
     protected AndroidInjector<LiveTvApplication> applicationInjector() {
         return DaggerLiveTvApplicationComponent.builder()
                 .tvSingletonsModule(new TvSingletonsModule(this))
+                .applicationModule(new ApplicationModule(this))
                 .build();
     }
 

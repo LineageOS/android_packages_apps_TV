@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.inject.Inject;
 
 /**
  * Live TV application.
@@ -123,6 +124,8 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
+
+    @Inject SetupUtils mSetupUtils;
 
     @Override
     public void onCreate() {
@@ -246,7 +249,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
 
     @Override
     public synchronized SetupUtils getSetupUtils() {
-        return SetupUtils.createForTvSingletons(this);
+        return mSetupUtils;
     }
 
     /** Returns the {@link DvrManager}. */
@@ -523,7 +526,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                     name, newState, dontKillApp ? PackageManager.DONT_KILL_APP : 0);
             Log.i(TAG, (enable ? "Un-hide" : "Hide") + " Live TV.");
         }
-        getSetupUtils().onInputListUpdated(inputManager);
+        mSetupUtils.onInputListUpdated(inputManager);
     }
 
     @Override

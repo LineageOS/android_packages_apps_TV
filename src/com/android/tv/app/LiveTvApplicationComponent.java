@@ -18,7 +18,9 @@ package com.android.tv.app;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
+import javax.inject.Singleton;
 
 /** Dagger component for {@link LiveTvApplication}. */
+@Singleton
 @Component(modules = {AndroidInjectionModule.class, LiveTvModule.class})
 public interface LiveTvApplicationComponent extends AndroidInjector<LiveTvApplication> {}
