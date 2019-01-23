@@ -19,12 +19,31 @@ java_import {
     sdk_version: "current",
 }
 
+java_plugin {
+    name: "tv-auto-factory",
+    static_libs: [
+        "tv-auto-factory-jar",
+        "tv-guava-jre-jar",
+    ],
+    processor_class: "com.google.auto.factory.processor.AutoFactoryProcessor",
+    generates_api: true,
+}
+
 
 java_import {
     name: "tv-auto-value-jar",
     jars: ["auto-value-1.5.2.jar"],
     host_supported: true,
     sdk_version: "current",
+}
+
+java_plugin {
+    name: "tv-auto-value",
+    static_libs: [
+        "tv-auto-value-jar",
+        "tv-guava-jre-jar",
+    ],
+    processor_class: "com.google.auto.value.processor.AutoValueProcessor",
 }
 
 java_import {
@@ -96,7 +115,7 @@ java_import {
     sdk_version: "current",
 }
 
-java_library_host {
+java_plugin {
     name: "tv-lib-dagger-compiler",
     static_libs: [
         "tv-lib-dagger-compiler-import",
@@ -104,6 +123,8 @@ java_library_host {
         "jsr330",
         "tv-lib-dagger",
     ],
+    processor_class: "dagger.internal.codegen.ComponentProcessor",
+    generates_api: true,
 }
 
 android_library_import {
@@ -121,7 +142,7 @@ java_import_host {
     ],
 }
 
-java_library_host {
+java_plugin {
     name: "tv-lib-dagger-android-processor",
     static_libs: [
         "tv-lib-dagger-android-processor-import",
@@ -129,6 +150,8 @@ java_library_host {
         "jsr330",
         "tv-lib-dagger",
     ],
+    processor_class: "dagger.android.processor.AndroidProcessor",
+    generates_api: true,
 }
 
 java_import {
