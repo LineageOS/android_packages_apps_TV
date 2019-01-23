@@ -19,15 +19,15 @@ LOCAL_USE_AAPT2 := true
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
 LOCAL_JAVA_LIBRARIES := \
-    auto-value-jar \
-    auto-factory-jar \
+    tv-auto-value-jar \
+    tv-auto-factory-jar \
     android-support-annotations \
-    error-prone-annotations-jar \
-    guava-android-jar \
+    tv-error-prone-annotations-jar \
+    tv-guava-android-jar \
     jsr330 \
-    lib-dagger \
-    lib-exoplayer \
-    lib-exoplayer-v2-core \
+    tv-lib-dagger \
+    tv-lib-exoplayer \
+    tv-lib-exoplayer-v2-core \
 
 
 LOCAL_DISABLE_RESOLVE_SUPPORT_LIBRARIES := true
@@ -39,14 +39,14 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-v17-leanback \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
-    lib-dagger-android \
+    tv-lib-dagger-android \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    auto-value-jar \
-    auto-factory-jar \
-    guava-jre-jar \
-    javawriter-jar \
-    javax-annotations-jar \
+    tv-auto-value-jar \
+    tv-auto-factory-jar \
+    tv-guava-jre-jar \
+    tv-javawriter-jar \
+    tv-javax-annotations-jar \
     jsr330 \
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \

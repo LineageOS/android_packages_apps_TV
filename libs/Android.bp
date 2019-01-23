@@ -13,7 +13,7 @@
 // limitations under the License.
 
 java_import {
-    name: "auto-factory-jar",
+    name: "tv-auto-factory-jar",
     jars: ["auto-factory-1.0-beta2.jar"],
     host_supported: true,
     sdk_version: "current",
@@ -21,44 +21,38 @@ java_import {
 
 
 java_import {
-    name: "auto-value-jar",
+    name: "tv-auto-value-jar",
     jars: ["auto-value-1.5.2.jar"],
     host_supported: true,
     sdk_version: "current",
 }
 
-// TODO: fix remote dep on this
-java_import_host {
-    name: "auto-value-jar-host",
-    jars: ["auto-value-1.5.2.jar"],
-}
-
 java_import {
-    name: "error-prone-annotations-jar",
+    name: "tv-error-prone-annotations-jar",
     jars: ["error_prone_annotations-2.3.1.jar"],
     sdk_version: "current",
 }
 
 java_import {
-    name: "guava-jre-jar",
+    name: "tv-guava-jre-jar",
     jars: ["guava-23.3-jre.jar"],
     host_supported: true,
     sdk_version: "current",
 }
 
 java_import {
-    name: "guava-android-jar",
+    name: "tv-guava-android-jar",
     jars: ["guava-23.6-android.jar"],
     sdk_version: "current",
 }
 
 java_import_host{
-    name: "javawriter-jar",
+    name: "tv-javawriter-jar",
     jars: ["javawriter-2.5.1.jar"],
 }
 
 java_import {
-    name: "javax-annotations-jar",
+    name: "tv-javax-annotations-jar",
     jars: ["javax.annotation-api-1.2.jar"],
     host_supported: true,
     sdk_version: "current",
@@ -66,19 +60,19 @@ java_import {
 
 
 android_library_import {
-    name: "lib-exoplayer",
+    name: "tv-lib-exoplayer",
     aars: ["exoplayer-r1.5.16.aar"],
     sdk_version: "current",
 }
 
 android_library_import {
-    name: "lib-exoplayer-v2-core",
+    name: "tv-lib-exoplayer-v2-core",
     aars: ["exoplayer-core-2.9.0.aar"],
     sdk_version: "current",
 }
 
 java_import_host {
-    name: "lib-dagger-compiler-deps",
+    name: "tv-lib-dagger-compiler-deps",
     jars: [
         "google-java-format-1.4-all-deps.jar",
         "guava-23.3-jre.jar",
@@ -87,7 +81,7 @@ java_import_host {
 }
 
 java_import_host {
-    name: "lib-dagger-compiler-import",
+    name: "tv-lib-dagger-compiler-import",
     jars: [
         "dagger-compiler-2.15.jar",
         "dagger-producers-2.15.jar",
@@ -96,30 +90,30 @@ java_import_host {
 }
 
 java_import {
-    name: "lib-dagger",
+    name: "tv-lib-dagger",
     jars: ["dagger-2.15.jar"],
     host_supported: true,
     sdk_version: "current",
 }
 
 java_library_host {
-    name: "lib-dagger-compiler",
+    name: "tv-lib-dagger-compiler",
     static_libs: [
-        "lib-dagger-compiler-import",
-        "lib-dagger-compiler-deps",
+        "tv-lib-dagger-compiler-import",
+        "tv-lib-dagger-compiler-deps",
         "jsr330",
-        "lib-dagger",
+        "tv-lib-dagger",
     ],
 }
 
 android_library_import {
-    name: "lib-dagger-android",
+    name: "tv-lib-dagger-android",
     aars: ["dagger-android-2.15.aar"],
     sdk_version: "current",
 }
 
 java_import_host {
-    name: "lib-dagger-android-processor-import",
+    name: "tv-lib-dagger-android-processor-import",
     jars: [
         "dagger-android-jarimpl-2.15.jar",
         "dagger-android-processor-2.15.jar",
@@ -128,17 +122,17 @@ java_import_host {
 }
 
 java_library_host {
-    name: "lib-dagger-android-processor",
+    name: "tv-lib-dagger-android-processor",
     static_libs: [
-        "lib-dagger-android-processor-import",
-        "lib-dagger-compiler-deps",
+        "tv-lib-dagger-android-processor-import",
+        "tv-lib-dagger-compiler-deps",
         "jsr330",
-        "lib-dagger",
+        "tv-lib-dagger",
     ],
 }
 
 java_import {
-    name: "lib-truth",
+    name: "tv-lib-truth",
     jars: ["truth-0.36.jar"],
     host_supported: true,
     sdk_version: "current",
