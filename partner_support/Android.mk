@@ -20,7 +20,7 @@ LOCAL_JAVA_LIBRARIES := \
     auto-value-jar \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    auto-value-jar-host \
+    auto-value-jar \
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
     com.google.auto.value.processor.AutoValueProcessor

@@ -1,10 +1,25 @@
+#
+# Copyright (C) 2019 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 # Include all java and proto files.
 LOCAL_SRC_FILES := \
     $(call all-java-files-under, src) \
-    $(call all-proto-files-under, proto)
 
 
 LOCAL_MODULE := live-tv-tuner
@@ -13,10 +28,6 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_SDK_VERSION := system_current
 
 LOCAL_USE_AAPT2 := true
-
-LOCAL_PROTOC_OPTIMIZE_TYPE := nano
-LOCAL_PROTOC_FLAGS := --proto_path=$(LOCAL_PATH)/proto/
-LOCAL_PROTO_JAVA_OUTPUT_PARAMS := enum_style=java
 
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
@@ -32,6 +43,7 @@ LOCAL_JAVA_LIBRARIES := \
     lib-dagger \
     lib-exoplayer \
     lib-exoplayer-v2-core \
+    live-tv-tuner-proto \
 
 LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-compat \
@@ -44,19 +56,17 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    auto-value-jar-host \
-    auto-factory-jar-host \
+    auto-value-jar \
+    auto-factory-jar \
     guava-jre-jar \
-    javawriter-jar-host \
-    javax-annotations-jar-host \
+    javawriter-jar \
+    javax-annotations-jar \
     jsr330 \
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
   com.google.auto.factory.processor.AutoFactoryProcessor,com.google.auto.value.processor.AutoValueProcessor
 
 LOCAL_MIN_SDK_VERSION := 23
-
-include $(LOCAL_PATH)/buildconfig.mk
 
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
