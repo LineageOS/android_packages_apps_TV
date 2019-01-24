@@ -25,6 +25,11 @@ public final class DefaultBackendKnobsFlags
     }
 
     @Override
+    public boolean enablePartialProgramFetch() {
+        return false;
+    }
+
+    @Override
     public long epgFetcherIntervalHour() {
         return 25;
     }
