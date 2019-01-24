@@ -93,7 +93,7 @@ public class TestSingletonApp extends Application
     public void onCreate() {
         super.onCreate();
         tvInputManagerHelper = new FakeTvInputManagerHelper(this);
-        setupUtils = SetupUtils.createForTvSingletons(this);
+        setupUtils = new SetupUtils(this);
         tvInputManagerHelper.start();
         mChannelDataManager = new ChannelDataManager(this, tvInputManagerHelper);
         mChannelDataManager.start();

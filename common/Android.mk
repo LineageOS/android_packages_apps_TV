@@ -54,6 +54,7 @@ LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
 
 LOCAL_MIN_SDK_VERSION := 23
 
-include $(LOCAL_PATH)/buildconfig.mk
+# TODO(b/77284273): generate build config after dagger supports libraries
+#include $(LOCAL_PATH)/buildconfig.mk
 
 include $(BUILD_STATIC_JAVA_LIBRARY)

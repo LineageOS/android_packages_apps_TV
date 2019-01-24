@@ -22,7 +22,15 @@ LOCAL_MODULE_TAGS := optional
 
 include $(LOCAL_PATH)/version.mk
 
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_SRC_FILES += $(call all-java-files-under, src)
+
+# TODO(b/77284273): Stop compiling everything at once dagger properly supported in libraries
+LOCAL_SRC_FILES += $(call all-java-files-under, common/src)
+LOCAL_SRC_FILES += $(call all-proto-files-under, common/src)
+
+LOCAL_SRC_FILES += $(call all-java-files-under, tuner/src)
+
+
 
 LOCAL_PACKAGE_NAME := LiveTv
 
@@ -40,6 +48,8 @@ LOCAL_USE_AAPT2 := true
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
     $(LOCAL_PATH)/material_res \
+    $(LOCAL_PATH)/common/res \
+    $(LOCAL_PATH)/tuner/res \
 
 LOCAL_JAVA_LIBRARIES := \
     guava-android-jar \
@@ -69,8 +79,6 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v17-preference-leanback \
     lib-dagger-android \
     live-channels-partner-support \
-    live-tv-tuner \
-    tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
     auto-value-jar \
@@ -92,6 +100,7 @@ LOCAL_AAPT_FLAGS += \
 
 LOCAL_JNI_SHARED_LIBRARIES := libtunertvinput_jni
 LOCAL_AAPT_FLAGS += --extra-packages com.android.tv.tuner
+LOCAL_AAPT_FLAGS += --extra-packages com.android.tv.common
 
 include $(BUILD_PACKAGE)
 

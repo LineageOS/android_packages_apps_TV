@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The Android Open Source Project
+ * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv.app;
+package com.android.tv.common;
 
-import dagger.Component;
-import dagger.android.AndroidInjectionModule;
-import dagger.android.AndroidInjector;
-import javax.inject.Singleton;
-
-/** Dagger component for {@link LiveTvApplication}. */
-@Singleton
-@Component(modules = {AndroidInjectionModule.class, LiveTvModule.class})
-public interface LiveTvApplicationComponent extends AndroidInjector<LiveTvApplication> {}
+/* Hard coded BuildConfig. */
+public final class BuildConfig {
+    public static final boolean DEBUG = true;
+    public static final boolean ENG = true;
+    public static final boolean NO_JNI_TEST = false;
+    private BuildConfig() {}
+}
