@@ -8,28 +8,28 @@ LOCAL_PACKAGE_NAME := SampleNetworkTuner
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_JAVA_LIBRARIES := \
-    guava-android-jar \
+    tv-guava-android-jar \
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
-    auto-value-jar \
+    tv-auto-value-jar \
     android-support-annotations \
-    error-prone-annotations-jar \
+    tv-error-prone-annotations-jar \
     jsr330 \
-    lib-dagger \
-    lib-exoplayer \
-    lib-exoplayer-v2-core \
+    tv-lib-dagger \
+    tv-lib-exoplayer \
+    tv-lib-exoplayer-v2-core \
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
-    lib-dagger-android \
+    tv-lib-dagger-android \
     live-channels-partner-support \
     live-tv-tuner \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    guava-jre-jar \
+    tv-guava-jre-jar \
     jsr330 \
-    lib-dagger-android-processor\
-    lib-dagger-compiler \
+    tv-lib-dagger-android-processor\
+    tv-lib-dagger-compiler \
 
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \

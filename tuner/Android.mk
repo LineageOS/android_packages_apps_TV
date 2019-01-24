@@ -33,16 +33,16 @@ LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
 
 LOCAL_JAVA_LIBRARIES := \
-    auto-value-jar \
-    auto-factory-jar \
+    tv-auto-value-jar \
+    tv-auto-factory-jar \
     android-support-annotations \
-    error-prone-annotations-jar \
-    guava-android-jar \
-    javax-annotations-jar \
+    tv-error-prone-annotations-jar \
+    tv-guava-android-jar \
+    tv-javax-annotations-jar \
     jsr330 \
-    lib-dagger \
-    lib-exoplayer \
-    lib-exoplayer-v2-core \
+    tv-lib-dagger \
+    tv-lib-exoplayer \
+    tv-lib-exoplayer-v2-core \
     live-tv-tuner-proto \
 
 LOCAL_SHARED_ANDROID_LIBRARIES := \
@@ -52,15 +52,15 @@ LOCAL_SHARED_ANDROID_LIBRARIES := \
     android-support-v7-recyclerview \
     android-support-v17-leanback \
     androidx.tvprovider_tvprovider \
-    lib-dagger-android \
+    tv-lib-dagger-android \
     tv-common \
 
 LOCAL_ANNOTATION_PROCESSORS := \
-    auto-value-jar \
-    auto-factory-jar \
-    guava-jre-jar \
-    javawriter-jar \
-    javax-annotations-jar \
+    tv-auto-value-jar \
+    tv-auto-factory-jar \
+    tv-guava-jre-jar \
+    tv-javawriter-jar \
+    tv-javax-annotations-jar \
     jsr330 \
 
 LOCAL_ANNOTATION_PROCESSOR_CLASSES := \
