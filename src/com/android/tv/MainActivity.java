@@ -152,6 +152,7 @@ import com.android.tv.util.images.ImageCache;
 import com.google.common.base.Optional;
 import dagger.android.AndroidInjection;
 import dagger.android.ContributesAndroidInjector;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -276,6 +277,7 @@ public class MainActivity extends Activity
     private final DurationTimer mTuneDurationTimer = new DurationTimer();
     private DvrManager mDvrManager;
     private ConflictChecker mDvrConflictChecker;
+    private BackendKnobsFlags mBackendKnobs;
     @Inject SetupUtils mSetupUtils;
     @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
@@ -494,6 +496,7 @@ public class MainActivity extends Activity
             finishAndRemoveTask();
             return;
         }
+        mBackendKnobs = tvSingletons.getBackendKnobs();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.
@@ -2821,6 +2824,11 @@ public class MainActivity extends Activity
             Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.MyOnTuneListener.onTune");
             mChannel = channel;
             mWasUnderShrunkenTvView = wasUnderShrunkenTvView;
+
+            if (mBackendKnobs.enablePartialProgramFetch()) {
+                // Fetch complete projection of tuned channel.
+                mProgramDataManager.prefetchChannel(channel.getId());
+            }
         }
 
         @Override

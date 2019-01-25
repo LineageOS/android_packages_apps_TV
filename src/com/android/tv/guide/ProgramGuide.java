@@ -65,6 +65,7 @@ import com.android.tv.ui.ViewUtils;
 import com.android.tv.ui.hideable.AutoHideScheduler;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -182,14 +183,17 @@ public class ProgramGuide
             Runnable preShowRunnable,
             Runnable postHideRunnable) {
         mActivity = activity;
-        mPerformanceMonitor = TvSingletons.getSingletons(mActivity).getPerformanceMonitor();
+        TvSingletons singletons = TvSingletons.getSingletons(mActivity);
+        mPerformanceMonitor = singletons.getPerformanceMonitor();
+        BackendKnobsFlags backendKnobsFlags = singletons.getBackendKnobs();
         mProgramManager =
                 new ProgramManager(
                         tvInputManagerHelper,
                         channelDataManager,
                         programDataManager,
                         dvrDataManager,
-                        dvrScheduleManager);
+                        dvrScheduleManager,
+                        backendKnobsFlags);
         mChannelTuner = channelTuner;
         mTracker = tracker;
         mPreShowRunnable = preShowRunnable;
