@@ -48,6 +48,8 @@ android_library {
     plugins: [
         "tv-auto-value",
         "tv-auto-factory",
+        "tv-lib-dagger-android-processor",
+        "tv-lib-dagger-compiler",
     ],
 
 
