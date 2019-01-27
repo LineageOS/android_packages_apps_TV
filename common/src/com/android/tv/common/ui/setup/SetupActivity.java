@@ -16,7 +16,6 @@
 
 package com.android.tv.common.ui.setup;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import android.view.View;
 import com.android.tv.common.R;
 import com.android.tv.common.WeakHandler;
 import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
+import dagger.android.DaggerActivity;
 
 /**
  * Setup activity for onboarding screens or TIS.
@@ -37,7 +37,7 @@ import com.android.tv.common.ui.setup.animation.SetupAnimationHelper;
  * <p>The inherited class should add theme {@code Theme.Setup.GuidedStep} to its definition in
  * AndroidManifest.xml.
  */
-public abstract class SetupActivity extends Activity implements OnActionClickListener {
+public abstract class SetupActivity extends DaggerActivity implements OnActionClickListener {
     private static final int MSG_EXECUTE_ACTION = 1;
 
     private boolean mShowInitialFragment = true;

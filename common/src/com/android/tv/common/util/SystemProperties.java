@@ -42,7 +42,7 @@ public final class SystemProperties {
 
     /** Allow third party inputs. */
     public static final BooleanSystemProperty ALLOW_THIRD_PARTY_INPUTS =
-            new BooleanSystemProperty("ro.android.media.tv.allow_third_party_inputs", true);
+            new BooleanSystemProperty("ro.tv_allow_third_party_inputs", true);
 
     static {
         updateSystemProperties();

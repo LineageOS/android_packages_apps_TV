@@ -124,6 +124,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     private TvInputManagerHelper mTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
+    @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
     @Inject SetupUtils mSetupUtils;
 
@@ -173,16 +174,14 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         mRunningInMainProcess = true;
         Debug.getTimer(Debug.TAG_START_UP_TIMER).log("start TvApplication.start");
         if (mRunningInMainProcess) {
-            final Optional<BuiltInTunerManager> optionalBuiltInTunerManager =
-                    getBuiltInTunerManager();
             getTvInputManagerHelper()
                     .addCallback(
                             new TvInputCallback() {
                                 @Override
                                 public void onInputAdded(String inputId) {
-                                    if (optionalBuiltInTunerManager.isPresent()) {
+                                    if (mOptionalBuiltInTunerManager.isPresent()) {
                                         BuiltInTunerManager builtInTunerManager =
-                                                optionalBuiltInTunerManager.get();
+                                                mOptionalBuiltInTunerManager.get();
                                         if (TextUtils.equals(
                                                 inputId,
                                                 builtInTunerManager.getEmbeddedTunerInputId())) {
@@ -200,10 +199,10 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
                                     handleInputCountChanged();
                                 }
                             });
-            if (optionalBuiltInTunerManager.isPresent()) {
+            if (mOptionalBuiltInTunerManager.isPresent()) {
                 // If the tuner input service is added before the app is started, we need to
                 // handle it here.
-                optionalBuiltInTunerManager
+                mOptionalBuiltInTunerManager
                         .get()
                         .getTunerInputController()
                         .updateTunerInputInfo(TvApplication.this);
@@ -230,8 +229,8 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
         boolean isFirstLaunch = sharedPreferences.getBoolean(PREFERENCE_IS_FIRST_LAUNCH, true);
         if (isFirstLaunch) {
             if (DEBUG) Log.d(TAG, "Congratulations, it's the first launch!");
-            if (getBuiltInTunerManager().isPresent()) {
-                getBuiltInTunerManager()
+            if (mOptionalBuiltInTunerManager.isPresent()) {
+                mOptionalBuiltInTunerManager
                         .get()
                         .getTunerInputController()
                         .onCheckingUsbTunerStatus(this, ACTION_APPLICATION_FIRST_LAUNCHED);

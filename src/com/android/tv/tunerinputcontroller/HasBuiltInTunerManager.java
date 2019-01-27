@@ -24,5 +24,7 @@ import com.google.common.base.Optional;
  */
 public interface HasBuiltInTunerManager {
 
+    /** @deprecated inject instead */
+    @Deprecated
     Optional<BuiltInTunerManager> getBuiltInTunerManager();
 }

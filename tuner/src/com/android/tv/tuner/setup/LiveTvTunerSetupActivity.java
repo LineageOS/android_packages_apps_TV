@@ -25,6 +25,7 @@ import android.view.KeyEvent;
 import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.PostalCodeUtils;
 import com.android.tv.tuner.BuiltInTunerHalFactory;
+import dagger.android.ContributesAndroidInjector;
 
 /** An activity that serves tuner setup process. */
 public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
@@ -110,5 +111,15 @@ public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
                 }
             }
         }
+    }
+
+    /**
+     * Exports {@link LiveTvTunerSetupActivity} for Dagger codegen to create the appropriate
+     * injector.
+     */
+    @dagger.Module
+    public abstract static class Module {
+        @ContributesAndroidInjector
+        abstract LiveTvTunerSetupActivity contributeLiveTvTunerSetupActivityInjector();
     }
 }
