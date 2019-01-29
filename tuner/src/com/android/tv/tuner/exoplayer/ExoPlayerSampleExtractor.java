@@ -248,7 +248,7 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                             // For now, this will cause EOS and playback reset.
                         }
                     };
-            mSampleSource.prepareSource(mSampleSourceListener, null);
+            mSampleSource.prepareSource(null, false, mSampleSourceListener, null);
             mDecoderInputBuffer =
                     new DecoderInputBuffer(DecoderInputBuffer.BUFFER_REPLACEMENT_MODE_NORMAL);
             mSampleHolder = new SampleHolder(SampleHolder.BUFFER_REPLACEMENT_MODE_NORMAL);
