@@ -18,7 +18,9 @@ package com.android.tv.common;
 /* Hard coded BuildConfig. */
 public final class BuildConfig {
     public static final boolean DEBUG = true;
-    public static final boolean ENG = true;
+    public static final boolean ENG = false;
     public static final boolean NO_JNI_TEST = false;
+    public static final boolean AOSP = true;
+
     private BuildConfig() {}
 }
