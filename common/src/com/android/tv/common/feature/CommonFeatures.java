@@ -16,7 +16,7 @@
 
 package com.android.tv.common.feature;
 
-import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
+import static com.android.tv.common.feature.BuildTypeFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.and;
 import static com.android.tv.common.feature.FeatureUtils.or;
 import static com.android.tv.common.feature.TestableFeature.createTestableFeature;
