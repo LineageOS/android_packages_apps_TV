@@ -39,7 +39,6 @@ import com.android.tv.common.flags.has.HasUiFlags;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.PermissionUtils;
 
-
 /**
  * List of {@link Feature} for the Live TV App.
  *
@@ -63,23 +62,19 @@ public final class TvFeatures extends CommonFeatures {
     private static final Feature TV_PROVIDER_ALLOWS_INSERT_TO_PROGRAM_TABLE =
             or(Sdk.AT_LEAST_O, PartnerFeatures.TVPROVIDER_ALLOWS_SYSTEM_INSERTS_TO_PROGRAM_TABLE);
 
-  /**
-   * Enable cloud EPG for third parties.
-   *
-   * @see <a href="http://go/cloud-epg-3p-proposal">go/cloud-epg-3p-proposal</a>
-   */
-  // TODO verify customization for N
-  public static final TestableFeature CLOUD_EPG_FOR_3RD_PARTY =
-      TestableFeature.createTestableFeature(
-          and(
-              // TODO(b/66696290): use newer version of robolectric.
-              or(TV_PROVIDER_ALLOWS_INSERT_TO_PROGRAM_TABLE, FeatureUtils.ROBOLECTRIC),
-              or(
-                  ENG_ONLY_FEATURE,
-                  // Begin_AOSP_Comment_Out
-                  ExperimentFeature.from(GoogleExperiments.ENABLE_CLOUD_EPG_FOR_3RD_PARTY),
-                  // End_AOSP_Comment_Out
-                  PropertyFeature.create("enable_cloud_epg_for_3rd_party", false))));
+    /**
+     * Enable cloud EPG for third parties.
+     *
+     * @see <a href="http://go/cloud-epg-3p-proposal">go/cloud-epg-3p-proposal</a>
+     */
+    // TODO verify customization for N
+    public static final TestableFeature CLOUD_EPG_FOR_3RD_PARTY =
+            TestableFeature.createTestableFeature(
+                    and(
+                            // TODO(b/66696290): use newer version of robolectric.
+                            or(
+                                    TV_PROVIDER_ALLOWS_INSERT_TO_PROGRAM_TABLE,
+                                    FeatureUtils.ROBOLECTRIC)));
 
     // TODO(b/76149661): Fix EPG search or remove it
     public static final Feature EPG_SEARCH = OFF;
