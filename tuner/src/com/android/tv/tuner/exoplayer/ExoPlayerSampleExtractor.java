@@ -365,8 +365,9 @@ public class ExoPlayerSampleExtractor implements SampleExtractor {
                         mMediaPeriod =
                                 mSampleSource.createPeriod(
                                         new MediaSource.MediaPeriodId(0),
-                                        new DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
-                                        0);
+                                        new DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE)
+// AOSP_Comment_Out                                         , 0
+                                );
                         mMediaPeriod.prepare(this, 0);
                         try {
                             mMediaPeriod.maybeThrowPrepareError();
