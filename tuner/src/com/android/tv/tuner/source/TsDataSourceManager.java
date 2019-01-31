@@ -27,6 +27,8 @@ import com.google.auto.factory.Provided;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
  * Manages {@link TsDataSource} for playback and recording. The class hides handling of {@link
@@ -44,6 +46,25 @@ public class TsDataSourceManager {
     private final TunerTsStreamerManager mTunerStreamerManager;
 
     private boolean mKeepTuneStatus;
+
+    /**
+     * Factory for {@link }TsDataSourceManager}.
+     *
+     * <p>This wrapper class keeps other classes from needing to reference the {@link AutoFactory}
+     * generated class.
+     */
+    public static final class Factory {
+        private final TsDataSourceManagerFactory mDelegate;
+
+        @Inject
+        public Factory(Provider<TunerTsStreamerManager> tunerStreamerManagerProvider) {
+            mDelegate = new TsDataSourceManagerFactory(tunerStreamerManagerProvider);
+        }
+
+        public TsDataSourceManager create(boolean isRecording) {
+            return mDelegate.create(isRecording);
+        }
+    }
 
     TsDataSourceManager(
             boolean isRecording, @Provided TunerTsStreamerManager tunerStreamerManager) {

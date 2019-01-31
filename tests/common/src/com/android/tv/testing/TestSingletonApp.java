@@ -49,7 +49,7 @@ import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
 import com.android.tv.tuner.singletons.TunerSingletons;
-import com.android.tv.tuner.source.TsDataSourceManagerFactory;
+import com.android.tv.tuner.source.TsDataSourceManager;
 import com.android.tv.tuner.source.TunerTsStreamerManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
@@ -80,8 +80,8 @@ public class TestSingletonApp extends Application
     private final DefaultUiFlags mUiFlags = new DefaultUiFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
-    private final TsDataSourceManagerFactory mTsDataSourceManagerFactory =
-            new TsDataSourceManagerFactory(() -> new TunerTsStreamerManager(null));
+    private final TsDataSourceManager.Factory mTsDataSourceManagerFactory =
+            new TsDataSourceManager.Factory(() -> new TunerTsStreamerManager(null));
     private final TunerSessionFactoryImpl mTunerSessionFactory =
             new TunerSessionFactoryImpl(
                     new DefaultExoplayer2Flags(),

@@ -70,7 +70,6 @@ import com.android.tv.tuner.exoplayer.buffer.TrickplayStorageManager;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
-import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.debug.TunerDebug;
@@ -242,7 +241,7 @@ public class TunerSessionWorkerExoV2
             TunerSessionExoV2 tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
             ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
-            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         this(
                 context,
                 channelDataManager,
@@ -261,7 +260,7 @@ public class TunerSessionWorkerExoV2
             TunerSessionOverlay tunerSessionOverlay,
             @Nullable Handler handler,
             ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
-            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         if (DEBUG) {
             Log.d(TAG, "TunerSessionWorkerExoV2 created");

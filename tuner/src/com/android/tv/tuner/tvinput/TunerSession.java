@@ -30,7 +30,7 @@ import android.view.View;
 import com.android.tv.common.CommonPreferences.CommonPreferencesChangedListener;
 import com.android.tv.common.compat.TisSessionCompat;
 import com.android.tv.tuner.prefs.TunerPreferences;
-import com.android.tv.tuner.source.TsDataSourceManagerFactory;
+import com.android.tv.tuner.source.TsDataSourceManager;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.SessionReleasedCallback;
 import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
@@ -55,7 +55,7 @@ public class TunerSession extends TisSessionCompat implements CommonPreferencesC
             ChannelDataManager channelDataManager,
             SessionReleasedCallback releasedCallback,
             ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
-            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         super(context);
         mReleasedCallback = releasedCallback;
         mTunerSessionOverlay = new TunerSessionOverlay(context);

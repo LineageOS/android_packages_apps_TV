@@ -55,7 +55,6 @@ import com.android.tv.tuner.exoplayer.buffer.DvrStorageManager;
 import com.android.tv.tuner.exoplayer.buffer.PlaybackBufferListener;
 import com.android.tv.tuner.source.TsDataSource;
 import com.android.tv.tuner.source.TsDataSourceManager;
-import com.android.tv.tuner.source.TsDataSourceManagerFactory;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.google.android.exoplayer.C;
@@ -176,7 +175,7 @@ public class TunerRecordingSessionWorker
             ChannelDataManager dataManager,
             TunerRecordingSession session,
             ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
-            TsDataSourceManagerFactory tsDataSourceManagerFactory) {
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         mRandom.setSeed(System.nanoTime());
         mContext = context;

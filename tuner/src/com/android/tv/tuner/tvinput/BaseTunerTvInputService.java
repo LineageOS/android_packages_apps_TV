@@ -23,8 +23,7 @@ import android.content.Context;
 import android.media.tv.TvInputService;
 import android.util.Log;
 import com.android.tv.common.feature.CommonFeatures;
-import com.android.tv.common.flags.has.HasConcurrentDvrPlaybackFlags;
-import com.android.tv.tuner.source.TsDataSourceManagerFactory;
+import com.android.tv.tuner.source.TsDataSourceManager;
 import com.android.tv.tuner.tvinput.datamanager.ChannelDataManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import dagger.android.AndroidInjection;
@@ -44,8 +43,8 @@ public class BaseTunerTvInputService extends TvInputService {
 
     private final Set<Session> mTunerSessions = Collections.newSetFromMap(new WeakHashMap<>());
     private ChannelDataManager mChannelDataManager;
-    private ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
-    @Inject TsDataSourceManagerFactory mTsDataSourceManagerFactory;
+    @Inject ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
+    @Inject TsDataSourceManager.Factory mTsDataSourceManagerFactory;
     @Inject TunerSessionFactory mTunerSessionFactory;
 
     @Override
@@ -59,8 +58,6 @@ public class BaseTunerTvInputService extends TvInputService {
         super.onCreate();
         if (DEBUG) Log.d(TAG, "onCreate");
         mChannelDataManager = new ChannelDataManager(getApplicationContext());
-        mConcurrentDvrPlaybackFlags =
-                HasConcurrentDvrPlaybackFlags.fromContext(getApplicationContext());
         if (CommonFeatures.DVR.isEnabled(this)) {
             JobScheduler jobScheduler =
                     (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);

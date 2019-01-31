@@ -19,17 +19,15 @@ package com.android.tv.tuner.sample.network.app;
 import android.content.ComponentName;
 import android.media.tv.TvContract;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
-import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
-import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.tuner.modules.TunerSingletonsModule;
 import com.android.tv.tuner.sample.network.singletons.SampleNetworkSingletons;
 import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
-import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImplFactory;
 import dagger.android.AndroidInjector;
+import com.android.tv.common.flags.CloudEpgFlags;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import javax.inject.Inject;
 
 /** The top level application for Sample DVB Tuner. */
@@ -37,19 +35,13 @@ public class SampleNetworkTuner extends BaseApplication
         implements SampleNetworkSingletons, HasSingletons<SampleNetworkSingletons> {
 
     private String mEmbeddedInputId;
-    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
-    private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
-            new DefaultConcurrentDvrPlaybackFlags();
-    private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
-    @Inject TunerSessionFactoryImplFactory mTunerSessionFactoryImplFactory;
-    private TunerSessionFactoryImpl mTunerSessionFactory;
+    @Inject CloudEpgFlags mCloudEpgFlags;
+    @Inject ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
+    @Inject TunerSessionFactoryImpl mTunerSessionFactory;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mTunerSessionFactory =
-                mTunerSessionFactoryImplFactory.create(
-                        mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
     }
 
     @Override
@@ -71,7 +63,7 @@ public class SampleNetworkTuner extends BaseApplication
     }
 
     @Override
-    public DefaultCloudEpgFlags getCloudEpgFlags() {
+    public CloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
     }
 
@@ -81,7 +73,7 @@ public class SampleNetworkTuner extends BaseApplication
     }
 
     @Override
-    public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
+    public ConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
         return mConcurrentDvrPlaybackFlags;
     }
 
