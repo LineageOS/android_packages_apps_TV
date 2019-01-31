@@ -15,6 +15,7 @@
  */
 package com.android.tv.app;
 
+import com.android.tv.common.flags.impl.DefaultFlagsModule;
 import com.android.tv.modules.TvApplicationModule;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.google.common.base.Optional;
@@ -22,7 +23,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /** Dagger module for {@link LiveTvApplication}. */
-@Module(includes = {TvApplicationModule.class})
+@Module(includes = {DefaultFlagsModule.class, TvApplicationModule.class})
 class LiveTvModule {
 
     @Provides

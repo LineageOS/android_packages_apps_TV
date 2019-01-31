@@ -15,6 +15,7 @@
  */
 package com.android.tv.tuner.sample.network.app;
 
+import com.android.tv.common.flags.impl.DefaultFlagsModule;
 import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.builtin.BuiltInTunerHalFactory;
 import com.android.tv.tuner.modules.TunerModule;
@@ -24,7 +25,12 @@ import dagger.Module;
 import dagger.Provides;
 
 /** Dagger module for {@link SampleNetworkTuner}. */
-@Module(includes = {TunerModule.class, SampleNetworkTunerTvInputService.Module.class})
+@Module(
+        includes = {
+            DefaultFlagsModule.class,
+            SampleNetworkTunerTvInputService.Module.class,
+            TunerModule.class,
+        })
 class SampleNetworkTunerModule {
     private final SampleNetworkTuner mSampleNetworkTuner;
 
