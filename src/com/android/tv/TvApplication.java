@@ -67,6 +67,7 @@ import com.android.tv.util.SetupUtils;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
 import com.google.common.base.Optional;
+import dagger.Lazy;
 import java.util.List;
 import java.util.concurrent.Executor;
 import javax.inject.Inject;
@@ -114,7 +115,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     // STOP-SHIP: Remove this variable when Tuner Process is split to another application.
     // When this variable is null, we don't know in which process TvApplication runs.
     private Boolean mRunningInMainProcess;
-    private TvInputManagerHelper mTvInputManagerHelper;
+    @Inject Lazy<TvInputManagerHelper> mLazyTvInputManagerHelper;
     private boolean mStarted;
     private EpgFetcher mEpgFetcher;
 
@@ -359,11 +360,7 @@ public abstract class TvApplication extends BaseApplication implements TvSinglet
     /** Returns {@link TvInputManagerHelper}. */
     @Override
     public TvInputManagerHelper getTvInputManagerHelper() {
-        if (mTvInputManagerHelper == null) {
-            mTvInputManagerHelper = new TvInputManagerHelper(this);
-            mTvInputManagerHelper.start();
-        }
-        return mTvInputManagerHelper;
+        return mLazyTvInputManagerHelper.get();
     }
 
     @Override
