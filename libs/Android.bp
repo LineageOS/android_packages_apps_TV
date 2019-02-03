@@ -22,8 +22,11 @@ java_import {
 java_plugin {
     name: "tv-auto-factory",
     static_libs: [
+	"jsr330",
         "tv-auto-factory-jar",
         "tv-guava-jre-jar",
+	"tv-javawriter-jar",
+	"tv-javax-annotations-jar",
     ],
     processor_class: "com.google.auto.factory.processor.AutoFactoryProcessor",
     generates_api: true,
