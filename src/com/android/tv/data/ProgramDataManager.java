@@ -545,7 +545,9 @@ public class ProgramDataManager implements MemoryManageable {
                                 : Program.PROJECTION;
                 if (TvProviderUtils.checkSeriesIdColumn(mContext, Programs.CONTENT_URI)) {
                     if (Utils.isProgramsUri(uri)) {
-                        projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+                        projection =
+                                TvProviderUtils.addExtraColumnsToProjection(
+                                        projection, TvProviderUtils.EXTRA_PROGRAM_COLUMN_SERIES_ID);
                     }
                 }
                 try (Cursor c = mContentResolver.query(uri, projection, null, null, SORT_BY_TIME)) {

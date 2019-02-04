@@ -122,11 +122,10 @@ public abstract class RecordedProgram extends BaseProgram {
         }
         index++;
         if (TvProviderUtils.getRecordedProgramHasSeriesIdColumn()) {
-            builder.setSeriesId(StringUtils.nullToEmpty(cursor.getString(index)));
+            builder.setSeriesId(StringUtils.nullToEmpty(cursor.getString(index++)));
         }
-        index++;
         if (TvProviderUtils.getRecordedProgramHasStateColumn()) {
-            builder.setState(cursor.getString(index));
+            builder.setState(cursor.getString(index++));
         }
         return builder.build();
     }

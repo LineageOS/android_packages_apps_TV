@@ -327,7 +327,9 @@ public class Utils {
         String[] projection = Program.PROJECTION;
         if (TvProviderUtils.checkSeriesIdColumn(context, TvContract.Programs.CONTENT_URI)) {
             if (Utils.isProgramsUri(uri)) {
-                projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+                projection =
+                        TvProviderUtils.addExtraColumnsToProjection(
+                                projection, TvProviderUtils.EXTRA_PROGRAM_COLUMN_SERIES_ID);
             }
         }
         try (Cursor cursor = resolver.query(uri, projection, null, null, null)) {
