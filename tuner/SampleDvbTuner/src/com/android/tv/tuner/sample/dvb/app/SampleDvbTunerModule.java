@@ -19,6 +19,7 @@ import com.android.tv.common.flags.impl.DefaultFlagsModule;
 import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.builtin.BuiltInTunerHalFactory;
 import com.android.tv.tuner.modules.TunerModule;
+import com.android.tv.tuner.sample.dvb.setup.SampleDvbTunerSetupActivity;
 import com.android.tv.tuner.sample.dvb.tvinput.SampleDvbTunerTvInputService;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import dagger.Module;
@@ -29,6 +30,7 @@ import dagger.Provides;
         includes = {
             DefaultFlagsModule.class,
             SampleDvbTunerTvInputService.Module.class,
+            SampleDvbTunerSetupActivity.Module.class,
             TunerModule.class,
         })
 class SampleDvbTunerModule {
