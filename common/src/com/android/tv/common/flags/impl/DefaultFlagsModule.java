@@ -22,6 +22,7 @@ import com.android.tv.common.flags.BackendKnobsFlags;
 import com.android.tv.common.flags.CloudEpgFlags;
 import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.Exoplayer2Flags;
+import com.android.tv.common.flags.TunerFlags;
 import com.android.tv.common.flags.UiFlags;
 
 /** Provides default flags. */
@@ -50,6 +51,12 @@ public class DefaultFlagsModule {
     @Reusable
     Exoplayer2Flags provideExoplayer2Flags() {
         return new DefaultExoplayer2Flags();
+    }
+
+    @Provides
+    @Reusable
+    TunerFlags provideTunerFlags() {
+        return new DefaultTunerFlags();
     }
 
     @Provides
