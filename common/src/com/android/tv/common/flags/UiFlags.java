@@ -28,4 +28,7 @@ public interface UiFlags {
 
     /** Unhide the launcher all the time */
     boolean uhideLauncher();
+
+    /** Use the Leanback Pin Picker */
+    boolean useLeanbackPinPicker();
 }
