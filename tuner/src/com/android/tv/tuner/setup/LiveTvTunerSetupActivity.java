@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
-import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.PostalCodeUtils;
 import dagger.android.ContributesAndroidInjector;
 
@@ -95,9 +94,7 @@ public class LiveTvTunerSetupActivity extends BaseTunerSetupActivity {
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && Experiments.CLOUD_EPG.get()) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 try {
                     // Updating postal code takes time, therefore we should update postal code
                     // right after the permission is granted, so that the subsequent operations,

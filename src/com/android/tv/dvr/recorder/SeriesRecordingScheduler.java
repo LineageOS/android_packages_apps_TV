@@ -29,7 +29,6 @@ import android.util.Log;
 import android.util.LongSparseArray;
 import com.android.tv.TvSingletons;
 import com.android.tv.common.SoftPreconditions;
-import com.android.tv.common.experiments.Experiments;
 import com.android.tv.common.util.CollectionUtils;
 import com.android.tv.common.util.SharedPreferencesUtils;
 import com.android.tv.data.Program;
@@ -260,14 +259,11 @@ public class SeriesRecordingScheduler {
     }
 
     private void executeFetchSeriesInfoTask(SeriesRecording seriesRecording) {
-        if (Experiments.CLOUD_EPG.get()) {
-            FetchSeriesInfoTask task =
-                    new FetchSeriesInfoTask(
-                            seriesRecording,
-                            TvSingletons.getSingletons(mContext).providesEpgReader());
-            task.execute();
-            mFetchSeriesInfoTasks.put(seriesRecording.getId(), task);
-        }
+        FetchSeriesInfoTask task =
+                new FetchSeriesInfoTask(
+                        seriesRecording, TvSingletons.getSingletons(mContext).providesEpgReader());
+        task.execute();
+        mFetchSeriesInfoTasks.put(seriesRecording.getId(), task);
     }
 
     /** Pauses the updates of the series recordings. */
