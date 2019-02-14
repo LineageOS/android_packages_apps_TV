@@ -35,6 +35,11 @@ public final class DefaultBackendKnobsFlags
     }
 
     @Override
+    public boolean fetchProgramsAsNeeded() {
+        return false;
+    }
+
+    @Override
     public long programGuideInitialFetchHours() {
         return 8;
     }
