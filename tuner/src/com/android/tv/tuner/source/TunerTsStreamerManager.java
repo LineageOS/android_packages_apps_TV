@@ -17,10 +17,11 @@
 package com.android.tv.tuner.source;
 
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.util.AutoCloseableUtils;
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.api.Tuner;
+import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.data.TunerChannel;
 import com.android.tv.tuner.ts.EventDetector.EventListener;
 import java.util.HashMap;
@@ -28,13 +29,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Manages {@link TunerTsStreamer} for playback and recording. The class hides handling of {@link
  * Tuner} from other classes. This class is used by {@link TsDataSourceManager}. Don't use this
  * class directly.
  */
-class TunerTsStreamerManager {
+@Singleton
+@VisibleForTesting
+public class TunerTsStreamerManager {
     // The lock will protect mStreamerFinder, mSourceToStreamerMap and some part of TsStreamCreator
     // to support timely {@link TunerTsStreamer} cancellation due to a new tune request from
     // the same session.
@@ -43,22 +48,13 @@ class TunerTsStreamerManager {
     private final Map<Integer, TsStreamerCreator> mCreators = new HashMap<>();
     private final Map<Integer, EventListener> mListeners = new HashMap<>();
     private final Map<TsDataSource, TunerTsStreamer> mSourceToStreamerMap = new HashMap<>();
-    private final TunerHalManager mTunerHalManager = new TunerHalManager();
-    private static TunerTsStreamerManager sInstance;
+    private final TunerHalManager mTunerHalManager;
 
-    /**
-     * Returns the singleton instance for the class
-     *
-     * @return TunerTsStreamerManager
-     */
-    static synchronized TunerTsStreamerManager getInstance() {
-        if (sInstance == null) {
-            sInstance = new TunerTsStreamerManager();
-        }
-        return sInstance;
+    @Inject
+    @VisibleForTesting
+    public TunerTsStreamerManager(TunerFactory tunerFactory) {
+        mTunerHalManager = new TunerHalManager(tunerFactory);
     }
-
-    private TunerTsStreamerManager() {}
 
     synchronized TsDataSource createDataSource(
             Context context,
@@ -253,6 +249,11 @@ class TunerTsStreamerManager {
      */
     private static class TunerHalManager {
         private final Map<Integer, Tuner> mTunerHals = new HashMap<>();
+        private final TunerFactory mTunerFactory;
+
+        private TunerHalManager(TunerFactory mTunerFactory) {
+            this.mTunerFactory = mTunerFactory;
+        }
 
         private Tuner getOrCreateTunerHal(Context context, int sessionId) {
             // Handles session affinity.
@@ -269,7 +270,7 @@ class TunerTsStreamerManager {
                 mTunerHals.remove(key);
                 return hal;
             }
-            return BuiltInTunerHalFactory.INSTANCE.createInstance(context);
+            return mTunerFactory.createInstance(context);
         }
 
         private void releaseTunerHal(Tuner hal, int sessionId, boolean reuse) {

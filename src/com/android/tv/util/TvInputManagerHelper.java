@@ -38,6 +38,7 @@ import android.util.ArrayMap;
 import android.util.Log;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.compat.TvInputInfoCompat;
+import com.android.tv.common.dagger.annotations.ApplicationContext;
 import com.android.tv.common.util.CommonUtils;
 import com.android.tv.common.util.SystemProperties;
 import com.android.tv.features.TvFeatures;
@@ -53,9 +54,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /** Helper class for {@link TvInputManager}. */
 @UiThread
+@Singleton
 public class TvInputManagerHelper {
     private static final String TAG = "TvInputManagerHelper";
     private static final boolean DEBUG = false;
@@ -287,7 +291,8 @@ public class TvInputManagerHelper {
     private final Comparator<TvInputInfo> mTvInputInfoComparator;
     private boolean mAllow3rdPartyInputs;
 
-    public TvInputManagerHelper(Context context) {
+    @Inject
+    public TvInputManagerHelper(@ApplicationContext Context context) {
         this(context, createTvInputManagerWrapper(context));
     }
 

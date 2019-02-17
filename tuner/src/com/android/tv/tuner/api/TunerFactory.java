@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The Android Open Source Project
+ * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv.tuner.modules;
+package com.android.tv.tuner.api;
 
-import com.android.tv.tuner.source.TunerSourceModule;
-import dagger.Module;
+import android.content.Context;
+import android.support.annotation.WorkerThread;
+import android.util.Pair;
 
-/** Dagger module for TV Tuners. */
-@Module(includes = {TunerSingletonsModule.class, TunerSourceModule.class})
-public class TunerModule {}
+/** Factory for {@link Tuner}. */
+public interface TunerFactory {
+    @WorkerThread
+    Tuner createInstance(Context context);
+
+    boolean useBuiltInTuner(Context context);
+
+    @WorkerThread
+    Pair<Integer, Integer> getTunerTypeAndCount(Context context);
+}

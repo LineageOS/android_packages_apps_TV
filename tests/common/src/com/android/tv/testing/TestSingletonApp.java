@@ -17,8 +17,6 @@
 package com.android.tv.testing;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
 import android.media.tv.TvInputManager;
 import android.os.AsyncTask;
 import com.android.tv.InputSessionManager;
@@ -51,8 +49,9 @@ import com.android.tv.perf.stub.StubPerformanceMonitor;
 import com.android.tv.testing.dvr.DvrDataManagerInMemoryImpl;
 import com.android.tv.testing.testdata.TestData;
 import com.android.tv.tuner.singletons.TunerSingletons;
+import com.android.tv.tuner.source.TsDataSourceManager;
+import com.android.tv.tuner.source.TunerTsStreamerManager;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
-import com.android.tv.tuner.tvinput.factory.TunerSessionFactory.HasTunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.SetupUtils;
@@ -64,10 +63,7 @@ import javax.inject.Provider;
 
 /** Test application for Live TV. */
 public class TestSingletonApp extends Application
-        implements TvSingletons,
-                TunerSingletons,
-                HasTunerSessionFactory,
-                HasSingletons<TvSingletons> {
+        implements TvSingletons, TunerSingletons, HasSingletons<TvSingletons> {
     public final FakeClock fakeClock = FakeClock.createWithCurrentTime();
     public final FakeEpgReader epgReader = new FakeEpgReader(fakeClock);
     public final FakeEpgFetcher epgFetcher = new FakeEpgFetcher();
@@ -84,8 +80,13 @@ public class TestSingletonApp extends Application
     private final DefaultUiFlags mUiFlags = new DefaultUiFlags();
     private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
             new DefaultConcurrentDvrPlaybackFlags();
+    private final TsDataSourceManager.Factory mTsDataSourceManagerFactory =
+            new TsDataSourceManager.Factory(() -> new TunerTsStreamerManager(null));
     private final TunerSessionFactoryImpl mTunerSessionFactory =
-            new TunerSessionFactoryImpl(new DefaultExoplayer2Flags(), mConcurrentDvrPlaybackFlags);
+            new TunerSessionFactoryImpl(
+                    new DefaultExoplayer2Flags(),
+                    mConcurrentDvrPlaybackFlags,
+                    mTsDataSourceManagerFactory);
     private PerformanceMonitor mPerformanceMonitor;
     private ChannelDataManager mChannelDataManager;
 
@@ -228,11 +229,6 @@ public class TestSingletonApp extends Application
     }
 
     @Override
-    public Intent getTunerSetupIntent(Context context) {
-        return null;
-    }
-
-    @Override
     public boolean isRunningInMainProcess() {
         return false;
     }
@@ -280,7 +276,6 @@ public class TestSingletonApp extends Application
         return mConcurrentDvrPlaybackFlags;
     }
 
-    @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
     }

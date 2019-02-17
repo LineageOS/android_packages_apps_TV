@@ -23,11 +23,14 @@ import android.media.tv.TvContract;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.StringDef;
 import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import com.android.tv.data.BaseProgram;
 import com.android.tv.features.PartnerFeatures;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,6 +44,11 @@ public final class TvProviderUtils {
 
     public static final String EXTRA_PROGRAM_COLUMN_SERIES_ID = BaseProgram.COLUMN_SERIES_ID;
     public static final String EXTRA_PROGRAM_COLUMN_STATE = BaseProgram.COLUMN_STATE;
+
+    /** Possible extra columns in TV provider. */
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({EXTRA_PROGRAM_COLUMN_SERIES_ID, EXTRA_PROGRAM_COLUMN_STATE})
+    public @interface TvProviderExtraColumn {}
 
     private static boolean sProgramHasSeriesIdColumn;
     private static boolean sRecordedProgramHasSeriesIdColumn;
@@ -136,13 +144,11 @@ public final class TvProviderUtils {
         return TRUE.equals(sRecordedProgramHasStateColumn);
     }
 
-    public static String[] addExtraColumnsToProjection(String[] projection) {
+    public static String[] addExtraColumnsToProjection(String[] projection,
+            @TvProviderExtraColumn String column) {
         List<String> projectionList = new ArrayList<>(Arrays.asList(projection));
-        if (!projectionList.contains(EXTRA_PROGRAM_COLUMN_SERIES_ID)) {
-            projectionList.add(EXTRA_PROGRAM_COLUMN_SERIES_ID);
-        }
-        if (!projectionList.contains(EXTRA_PROGRAM_COLUMN_STATE)) {
-            projectionList.add(EXTRA_PROGRAM_COLUMN_STATE);
+        if (!projectionList.contains(column)) {
+            projectionList.add(column);
         }
         projection = projectionList.toArray(projection);
         return projection;

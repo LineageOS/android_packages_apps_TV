@@ -18,7 +18,6 @@ package com.android.tv.modules;
 import com.android.tv.TvSingletons;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ProgramDataManager;
-import com.android.tv.util.TvInputManagerHelper;
 import dagger.Module;
 import dagger.Provides;
 
@@ -28,6 +27,7 @@ import dagger.Provides;
  * <p>Use this module to inject items directly instead of using {@code TvSingletons}.
  */
 @Module
+@SuppressWarnings("deprecation")
 public class TvSingletonsModule {
     private final TvSingletons mTvSingletons;
 
@@ -43,10 +43,5 @@ public class TvSingletonsModule {
     @Provides
     ProgramDataManager providesProgramDataManager() {
         return mTvSingletons.getProgramDataManager();
-    }
-
-    @Provides
-    TvInputManagerHelper providesTvInputManagerHelper() {
-        return mTvSingletons.getTvInputManagerHelper();
     }
 }

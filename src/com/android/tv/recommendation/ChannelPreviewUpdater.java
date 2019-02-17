@@ -174,7 +174,7 @@ public class ChannelPreviewUpdater {
                     for (Channel channel : channels) {
                         if (channel.isPhysicalTunerChannel()) {
                             final Program program =
-                                Utils.getCurrentProgram(mContext, channel.getId());
+                                    Utils.getCurrentProgram(mContext, channel.getId());
                             if (program != null
                                     && isChannelRecommendationApplicable(channel, program)) {
                                 programs.add(program);
@@ -246,6 +246,17 @@ public class ChannelPreviewUpdater {
                                 }
                             }
                         });
+            } else if (mJobService != null && mJobParams != null) {
+                if (DEBUG) {
+                    Log.d(
+                            TAG,
+                            "Preview channel not created because there is only "
+                                    + programs.size()
+                                    + " programs");
+                }
+                mJobService.jobFinished(mJobParams, false);
+                mJobService = null;
+                mJobParams = null;
             }
         } else {
             updatePreviewProgramsForPreviewChannel(

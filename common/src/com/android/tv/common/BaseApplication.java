@@ -18,7 +18,6 @@ package com.android.tv.common;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.annotation.VisibleForTesting;
@@ -105,7 +104,4 @@ public abstract class BaseApplication extends DaggerApplication implements BaseS
         }
         return mRecordingStorageStatusManager;
     }
-
-    @Override
-    public abstract Intent getTunerSetupIntent(Context context);
 }

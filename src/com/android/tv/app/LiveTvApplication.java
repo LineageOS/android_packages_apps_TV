@@ -16,15 +16,11 @@
 
 package com.android.tv.app;
 
-import android.content.Context;
-import android.content.Intent;
-import com.android.tv.TvActivity;
 import com.android.tv.TvApplication;
 import com.android.tv.TvSingletons;
 import com.android.tv.analytics.Analytics;
 import com.android.tv.analytics.StubAnalytics;
 import com.android.tv.analytics.Tracker;
-import com.android.tv.common.actions.InputSetupActionUtils;
 import com.android.tv.common.dagger.ApplicationModule;
 import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
@@ -32,13 +28,11 @@ import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
 import com.android.tv.common.flags.impl.DefaultUiFlags;
 import com.android.tv.common.singletons.HasSingletons;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.data.epg.EpgReader;
 import com.android.tv.data.epg.StubEpgReader;
 import com.android.tv.modules.TvSingletonsModule;
 import com.android.tv.perf.PerformanceMonitor;
 import com.android.tv.perf.PerformanceMonitorManagerFactory;
-import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tunerinputcontroller.BuiltInTunerManager;
 import com.android.tv.util.account.AccountHelper;
 import com.android.tv.util.account.AccountHelperImpl;
@@ -70,15 +64,14 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
     private AccountHelper mAccountHelper;
     private Analytics mAnalytics;
     private Tracker mTracker;
-    private String mEmbeddedInputId;
     private ExperimentLoader mExperimentLoader;
     private PerformanceMonitor mPerformanceMonitor;
 
     @Override
     protected AndroidInjector<LiveTvApplication> applicationInjector() {
         return DaggerLiveTvApplicationComponent.builder()
-                .tvSingletonsModule(new TvSingletonsModule(this))
                 .applicationModule(new ApplicationModule(this))
+                .tvSingletonsModule(new TvSingletonsModule(this))
                 .build();
     }
 
@@ -137,19 +130,6 @@ public class LiveTvApplication extends TvApplication implements HasSingletons<Tv
             mTracker = getAnalytics().getDefaultTracker();
         }
         return mTracker;
-    }
-
-    @Override
-    public Intent getTunerSetupIntent(Context context) {
-        // Make an intent to launch the setup activity of TV tuner input.
-        Intent intent =
-                CommonUtils.createSetupIntent(
-                        new Intent(context, LiveTvTunerSetupActivity.class), mEmbeddedInputId);
-        intent.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, mEmbeddedInputId);
-        Intent tvActivityIntent = new Intent(context, TvActivity.class);
-
-        intent.putExtra(InputSetupActionUtils.EXTRA_ACTIVITY_AFTER_COMPLETION, tvActivityIntent);
-        return intent;
     }
 
     @Override

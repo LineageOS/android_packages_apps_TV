@@ -23,7 +23,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_CONTENT_RATING_SYSTEMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
@@ -51,12 +50,10 @@
 
     <application
         android:name="com.android.tv.tuner.sample.network.app.SampleNetworkTuner"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/sample_network_tuner_app_name" >
-        <activity
-            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
 
         <activity
             android:name="com.android.tv.tuner.sample.network.setup.SampleNetworkTunerSetupActivity"
@@ -74,7 +71,7 @@
             android:name="com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService"
             android:label="@string/sample_network_tuner_app_name"
             android:permission="android.permission.BIND_TV_INPUT"
-            android:process="com.google.android.tv.tuner.sample.network.tvinput" >
+            android:process="com.android.tv.tuner.sample.network.tvinput" >
             <intent-filter>
                 <action android:name="android.media.tv.TvInputService" />
             </intent-filter>

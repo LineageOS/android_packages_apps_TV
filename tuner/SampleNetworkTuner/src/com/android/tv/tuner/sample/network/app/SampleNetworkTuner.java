@@ -17,51 +17,39 @@
 package com.android.tv.tuner.sample.network.app;
 
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.media.tv.TvContract;
 import com.android.tv.common.BaseApplication;
-import com.android.tv.common.actions.InputSetupActionUtils;
-import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
-import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
-import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
 import com.android.tv.common.singletons.HasSingletons;
-import com.android.tv.common.util.CommonUtils;
 import com.android.tv.tuner.modules.TunerSingletonsModule;
 import com.android.tv.tuner.sample.network.singletons.SampleNetworkSingletons;
 import com.android.tv.tuner.sample.network.tvinput.SampleNetworkTunerTvInputService;
-import com.android.tv.tuner.setup.LiveTvTunerSetupActivity;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactory;
 import com.android.tv.tuner.tvinput.factory.TunerSessionFactoryImpl;
 import dagger.android.AndroidInjector;
+import com.android.tv.common.flags.CloudEpgFlags;
+import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
+import javax.inject.Inject;
 
 /** The top level application for Sample DVB Tuner. */
 public class SampleNetworkTuner extends BaseApplication
         implements SampleNetworkSingletons, HasSingletons<SampleNetworkSingletons> {
 
     private String mEmbeddedInputId;
-    private final DefaultCloudEpgFlags mCloudEpgFlags = new DefaultCloudEpgFlags();
-    private final DefaultConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags =
-            new DefaultConcurrentDvrPlaybackFlags();
-    private final DefaultExoplayer2Flags mExoplayer2Flags = new DefaultExoplayer2Flags();
-    private final TunerSessionFactoryImpl mTunerSessionFactory =
-            new TunerSessionFactoryImpl(mExoplayer2Flags, mConcurrentDvrPlaybackFlags);
+    @Inject CloudEpgFlags mCloudEpgFlags;
+    @Inject ConcurrentDvrPlaybackFlags mConcurrentDvrPlaybackFlags;
+    @Inject TunerSessionFactoryImpl mTunerSessionFactory;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
 
     @Override
     protected AndroidInjector<SampleNetworkTuner> applicationInjector() {
         return DaggerSampleNetworkTunerComponent.builder()
+                .sampleNetworkTunerModule(new SampleNetworkTunerModule(this))
                 .tunerSingletonsModule(new TunerSingletonsModule(this))
                 .build();
-    }
-
-    @Override
-    public Intent getTunerSetupIntent(Context context) {
-        // Make an intent to launch the setup activity of TV tuner input.
-        Intent intent =
-                CommonUtils.createSetupIntent(
-                        new Intent(context, LiveTvTunerSetupActivity.class), mEmbeddedInputId);
-        intent.putExtra(InputSetupActionUtils.EXTRA_INPUT_ID, mEmbeddedInputId);
-        return intent;
     }
 
     @Override
@@ -75,7 +63,7 @@ public class SampleNetworkTuner extends BaseApplication
     }
 
     @Override
-    public DefaultCloudEpgFlags getCloudEpgFlags() {
+    public CloudEpgFlags getCloudEpgFlags() {
         return mCloudEpgFlags;
     }
 
@@ -85,7 +73,7 @@ public class SampleNetworkTuner extends BaseApplication
     }
 
     @Override
-    public DefaultConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
+    public ConcurrentDvrPlaybackFlags getConcurrentDvrPlaybackFlags() {
         return mConcurrentDvrPlaybackFlags;
     }
 
@@ -94,7 +82,6 @@ public class SampleNetworkTuner extends BaseApplication
         return this;
     }
 
-    @Override
     public TunerSessionFactory getTunerSessionFactory() {
         return mTunerSessionFactory;
     }

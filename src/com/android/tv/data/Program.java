@@ -89,6 +89,16 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
 
     public static final String[] PROJECTION = createProjection();
 
+    public static final String[] PARTIAL_PROJECTION = {
+        TvContract.Programs._ID,
+        TvContract.Programs.COLUMN_CHANNEL_ID,
+        TvContract.Programs.COLUMN_TITLE,
+        TvContract.Programs.COLUMN_EPISODE_TITLE,
+        TvContract.Programs.COLUMN_CANONICAL_GENRE,
+        TvContract.Programs.COLUMN_START_TIME_UTC_MILLIS,
+        TvContract.Programs.COLUMN_END_TIME_UTC_MILLIS,
+    };
+
     private static String[] createProjection() {
         return CollectionUtils.concatAll(
                 PROJECTION_BASE,
@@ -151,6 +161,21 @@ public final class Program extends BaseProgram implements Comparable<Program>, P
                 builder.setSeriesId(seriesId);
             }
         }
+        return builder.build();
+    }
+
+    /** Creates {@code Program} object from cursor. */
+    public static Program fromCursorPartialProjection(Cursor cursor) {
+        // Columns read must match the order of match {@link #PARTIAL_PROJECTION}
+        Builder builder = new Builder();
+        int index = 0;
+        builder.setId(cursor.getLong(index++));
+        builder.setChannelId(cursor.getLong(index++));
+        builder.setTitle(cursor.getString(index++));
+        builder.setEpisodeTitle(cursor.getString(index++));
+        builder.setCanonicalGenres(cursor.getString(index++));
+        builder.setStartTimeUtcMillis(cursor.getLong(index++));
+        builder.setEndTimeUtcMillis(cursor.getLong(index++));
         return builder.build();
     }
 

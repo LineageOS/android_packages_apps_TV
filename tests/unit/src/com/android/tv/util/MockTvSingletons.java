@@ -17,7 +17,6 @@
 package com.android.tv.util;
 
 import android.content.Context;
-import android.content.Intent;
 import com.android.tv.InputSessionManager;
 import com.android.tv.MainActivityWrapper;
 import com.android.tv.TvApplication;
@@ -181,11 +180,6 @@ public class MockTvSingletons implements TvSingletons, HasSingletons<TvSingleton
     @Override
     public com.android.tv.util.account.AccountHelper getAccountHelper() {
         return mApp.getAccountHelper();
-    }
-
-    @Override
-    public Intent getTunerSetupIntent(Context context) {
-        return mApp.getTunerSetupIntent(context);
     }
 
     @Override

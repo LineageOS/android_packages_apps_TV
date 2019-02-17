@@ -108,14 +108,15 @@ public class ProgramDataManager implements MemoryManageable {
     private final MultiLongSparseArray<OnCurrentProgramUpdatedListener>
             mChannelId2ProgramUpdatedListeners = new MultiLongSparseArray<>();
     private final Handler mHandler;
-    private final Set<Listener> mListeners = new ArraySet<>();
+    private final Set<Callback> mCallbacks = new ArraySet<>();
+    private Map<Long, ArrayList<Program>> mChannelIdProgramCache = new ConcurrentHashMap<>();
+    private final Set<Long> mCompleteInfoChannelIds = new HashSet<>();
     private final ContentObserver mProgramObserver;
 
     private boolean mPrefetchEnabled;
     private long mProgramPrefetchUpdateWaitMs;
     private long mLastPrefetchTaskRunMs;
     private ProgramsPrefetchTask mProgramsPrefetchTask;
-    private Map<Long, ArrayList<Program>> mChannelIdProgramCache = new HashMap<>();
 
     // Any program that ends prior to this time will be removed from the cache
     // when a channel's current program is updated.
@@ -258,24 +259,43 @@ public class ProgramDataManager implements MemoryManageable {
         }
     }
 
-    /** A listener interface to receive notification on program data retrieval from DB. */
-    public interface Listener {
+    public void prefetchChannel(long channelId) {
+        if (mCompleteInfoChannelIds.add(channelId)) {
+            long startTimeMs =
+                    Utils.floorTime(
+                            mClock.currentTimeMillis() - PROGRAM_GUIDE_SNAP_TIME_MS,
+                            PROGRAM_GUIDE_SNAP_TIME_MS);
+            long endTimeMs = startTimeMs + TimeUnit.HOURS.toMillis(getFetchDuration());
+            new SingleChannelPrefetchTask(channelId, startTimeMs, endTimeMs).executeOnDbThread();
+        }
+    }
+
+    /** A Callback interface to receive notification on program data retrieval from DB. */
+    public interface Callback {
         /**
          * Called when a Program data is now available through getProgram() after the DB operation
          * is done which wasn't before. This would be called only if fetched data is around the
          * selected program.
          */
         void onProgramUpdated();
+
+        /**
+         * Called when we update complete program data of specific channel during scrolling. Data is
+         * loaded from DB on request basis.
+         *
+         * @param channelId
+         */
+        void onSingleChannelUpdated(long channelId);
     }
 
-    /** Adds the {@link Listener}. */
-    public void addListener(Listener listener) {
-        mListeners.add(listener);
+    /** Adds the {@link Callback}. */
+    public void addCallback(Callback callback) {
+        mCallbacks.add(callback);
     }
 
-    /** Removes the {@link Listener}. */
-    public void removeListener(Listener listener) {
-        mListeners.remove(listener);
+    /** Removes the {@link Callback}. */
+    public void removeCallback(Callback callback) {
+        mCallbacks.remove(callback);
     }
 
     /** Enables or Disables program prefetch. */
@@ -480,26 +500,7 @@ public class ProgramDataManager implements MemoryManageable {
             long time = mClock.currentTimeMillis();
             mStartTimeMs =
                     Utils.floorTime(time - PROGRAM_GUIDE_SNAP_TIME_MS, PROGRAM_GUIDE_SNAP_TIME_MS);
-            long durationHours;
-            if (mChannelIdProgramCache.isEmpty()) {
-                durationHours = Math.max(1L, mBackendKnobsFlags.programGuideInitialFetchHours());
-            } else {
-                int channelCount = mChannelDataManager.getChannelCount();
-                long knobsMaxHours = mBackendKnobsFlags.programGuideMaxHours();
-                long targetChannelCount = mBackendKnobsFlags.epgTargetChannelCount();
-                if (channelCount <= targetChannelCount) {
-                    durationHours = Math.max(48L, knobsMaxHours);
-                } else {
-                    // 2 days <= duration <= 14 days (336 hours)
-                    durationHours = knobsMaxHours * targetChannelCount / channelCount;
-                    if (durationHours < 48L) {
-                        durationHours = 48L;
-                    } else if (durationHours > 336L) {
-                        durationHours = 336L;
-                    }
-                }
-            }
-            mEndTimeMs = mStartTimeMs + TimeUnit.HOURS.toMillis(durationHours);
+            mEndTimeMs = mStartTimeMs + TimeUnit.HOURS.toMillis(getFetchDuration());
             mSuccess = false;
         }
 
@@ -538,10 +539,15 @@ public class ProgramDataManager implements MemoryManageable {
                 }
                 programMap.clear();
 
-                String[] projection = Program.PROJECTION;
+                String[] projection =
+                        mBackendKnobsFlags.enablePartialProgramFetch()
+                                ? Program.PARTIAL_PROJECTION
+                                : Program.PROJECTION;
                 if (TvProviderUtils.checkSeriesIdColumn(mContext, Programs.CONTENT_URI)) {
                     if (Utils.isProgramsUri(uri)) {
-                        projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+                        projection =
+                                TvProviderUtils.addExtraColumnsToProjection(
+                                        projection, TvProviderUtils.EXTRA_PROGRAM_COLUMN_SERIES_ID);
                     }
                 }
                 try (Cursor c = mContentResolver.query(uri, projection, null, null, SORT_BY_TIME)) {
@@ -556,7 +562,10 @@ public class ProgramDataManager implements MemoryManageable {
                             }
                             return null;
                         }
-                        Program program = Program.fromCursor(c);
+                        Program program =
+                                mBackendKnobsFlags.enablePartialProgramFetch()
+                                        ? Program.fromCursorPartialProjection(c)
+                                        : Program.fromCursor(c);
                         if (Program.isDuplicate(program, lastReadProgram)) {
                             duplicateCount++;
                             continue;
@@ -566,6 +575,15 @@ public class ProgramDataManager implements MemoryManageable {
                         ArrayList<Program> programs = programMap.get(program.getChannelId());
                         if (programs == null) {
                             programs = new ArrayList<>();
+                            if (mBackendKnobsFlags.enablePartialProgramFetch()) {
+                                // To skip already loaded complete data.
+                                Program currentProgramInfo =
+                                        mChannelIdCurrentProgramMap.get(program.getChannelId());
+                                if (currentProgramInfo != null
+                                        && Program.isDuplicate(program, currentProgramInfo)) {
+                                    program = currentProgramInfo;
+                                }
+                            }
                             programMap.put(program.getChannelId(), programs);
                         }
                         programs.add(program);
@@ -615,6 +633,10 @@ public class ProgramDataManager implements MemoryManageable {
                     nextMessageDelayedTime = 0;
                 }
                 mChannelIdProgramCache = programs;
+                if (mBackendKnobsFlags.enablePartialProgramFetch()) {
+                    // Since cache has partial data we need to reset the map of complete data.
+                    mCompleteInfoChannelIds.clear();
+                }
                 notifyProgramUpdated();
                 if (mFromEmptyCacheTimeEvent != null) {
                     mPerformanceMonitor.stopTimer(
@@ -632,9 +654,70 @@ public class ProgramDataManager implements MemoryManageable {
         }
     }
 
+    private long getFetchDuration() {
+        if (mChannelIdProgramCache.isEmpty()) {
+            return Math.max(1L, mBackendKnobsFlags.programGuideInitialFetchHours());
+        } else {
+            long durationHours;
+            int channelCount = mChannelDataManager.getChannelCount();
+            long knobsMaxHours = mBackendKnobsFlags.programGuideMaxHours();
+            long targetChannelCount = mBackendKnobsFlags.epgTargetChannelCount();
+            if (channelCount <= targetChannelCount) {
+                durationHours = Math.max(48L, knobsMaxHours);
+            } else {
+                // 2 days <= duration <= 14 days (336 hours)
+                durationHours = knobsMaxHours * targetChannelCount / channelCount;
+                if (durationHours < 48L) {
+                    durationHours = 48L;
+                } else if (durationHours > 336L) {
+                    durationHours = 336L;
+                }
+            }
+            return durationHours;
+        }
+    }
+
+    private class SingleChannelPrefetchTask extends AsyncDbTask.AsyncQueryTask<ArrayList<Program>> {
+        long mChannelId;
+
+        public SingleChannelPrefetchTask(long channelId, long startTimeMs, long endTimeMs) {
+            super(
+                    mDbExecutor,
+                    mContext,
+                    TvContract.buildProgramsUriForChannel(channelId, startTimeMs, endTimeMs),
+                    Program.PROJECTION,
+                    null,
+                    null,
+                    SORT_BY_TIME);
+            mChannelId = channelId;
+        }
+
+        @Override
+        protected ArrayList<Program> onQuery(Cursor c) {
+            ArrayList<Program> programMap = new ArrayList<>();
+            while (c.moveToNext()) {
+                Program program = Program.fromCursor(c);
+                programMap.add(program);
+            }
+            return programMap;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Program> programs) {
+            mChannelIdProgramCache.put(mChannelId, programs);
+            notifySingleChannelUpdated(mChannelId);
+        }
+    }
+
     private void notifyProgramUpdated() {
-        for (Listener listener : mListeners) {
-            listener.onProgramUpdated();
+        for (Callback callback : mCallbacks) {
+            callback.onProgramUpdated();
+        }
+    }
+
+    private void notifySingleChannelUpdated(long channelId) {
+        for (Callback callback : mCallbacks) {
+            callback.onSingleChannelUpdated(channelId);
         }
     }
 
@@ -694,6 +777,9 @@ public class ProgramDataManager implements MemoryManageable {
                 for (Long channelId : removedChannelIds) {
                     if (mPrefetchEnabled) {
                         mChannelIdProgramCache.remove(channelId);
+                        if (mBackendKnobsFlags.enablePartialProgramFetch()) {
+                            mCompleteInfoChannelIds.remove(channelId);
+                        }
                     }
                     mChannelIdCurrentProgramMap.remove(channelId);
                     notifyCurrentProgramUpdate(channelId, null);

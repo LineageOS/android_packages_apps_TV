@@ -70,7 +70,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         // Grant permission to already set up packages after the system has finished booting.
         SetupUtils.grantEpgPermissionToSetUpPackages(context);
 
-        if (TvFeatures.UNHIDE.isEnabled(context)) {
+        if (TvFeatures.UNHIDE.isEnabled(context.getApplicationContext())) {
             if (OnboardingUtils.isFirstBoot(context)) {
                 // Enable the application if this is the first "unhide" feature is enabled just in
                 // case when the app has been disabled before.

@@ -136,6 +136,7 @@ import com.android.tv.ui.sidepanel.SettingsFragment;
 import com.android.tv.ui.sidepanel.SideFragment;
 import com.android.tv.ui.sidepanel.parentalcontrols.ParentalControlsFragment;
 import com.android.tv.util.AsyncDbTask;
+import com.android.tv.util.AsyncDbTask.DbExecutor;
 import com.android.tv.util.CaptionSettings;
 import com.android.tv.util.OnboardingUtils;
 import com.android.tv.util.RecurringRunner;
@@ -151,6 +152,7 @@ import com.android.tv.util.images.ImageCache;
 import com.google.common.base.Optional;
 import dagger.android.AndroidInjection;
 import dagger.android.ContributesAndroidInjector;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -260,6 +262,7 @@ public class MainActivity extends Activity
     }
 
     private final MySingletonsImpl mMySingletons = new MySingletonsImpl();
+    @Inject @DbExecutor Executor mDbExecutor;
 
     private AccessibilityManager mAccessibilityManager;
     @Inject ChannelDataManager mChannelDataManager;
@@ -274,6 +277,7 @@ public class MainActivity extends Activity
     private final DurationTimer mTuneDurationTimer = new DurationTimer();
     private DvrManager mDvrManager;
     private ConflictChecker mDvrConflictChecker;
+    private BackendKnobsFlags mBackendKnobs;
     @Inject SetupUtils mSetupUtils;
     @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
@@ -438,12 +442,14 @@ public class MainActivity extends Activity
                 public void onInputAdded(String inputId) {
                     if (mOptionalBuiltInTunerManager.isPresent()
                             && CommonPreferences.shouldShowSetupActivity(MainActivity.this)) {
-                        String tunerInputId =
-                                mOptionalBuiltInTunerManager.get().getEmbeddedTunerInputId();
+                        BuiltInTunerManager builtInTunerManager =
+                                mOptionalBuiltInTunerManager.get();
+                        String tunerInputId = builtInTunerManager.getEmbeddedTunerInputId();
                         if (tunerInputId.equals(inputId)) {
                             Intent intent =
-                                    TvSingletons.getSingletons(MainActivity.this)
-                                            .getTunerSetupIntent(MainActivity.this);
+                                    builtInTunerManager
+                                            .getTunerInputController()
+                                            .createSetupIntent(MainActivity.this);
                             startActivity(intent);
                             CommonPreferences.setShouldShowSetupActivity(MainActivity.this, false);
                             mSetupUtils.markAsKnownInput(tunerInputId);
@@ -490,6 +496,7 @@ public class MainActivity extends Activity
             finishAndRemoveTask();
             return;
         }
+        mBackendKnobs = tvSingletons.getBackendKnobs();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.
@@ -1495,7 +1502,7 @@ public class MainActivity extends Activity
             long channelIdFromIntent = ContentUriUtils.safeParseId(mInitChannelUri);
             if (programUriFromIntent != null && channelIdFromIntent != Channel.INVALID_ID) {
                 new AsyncQueryProgramTask(
-                                TvSingletons.getSingletons(this).getDbExecutor(),
+                                mDbExecutor,
                                 programUriFromIntent,
                                 Program.PROJECTION,
                                 null,
@@ -2817,6 +2824,11 @@ public class MainActivity extends Activity
             Debug.getTimer(Debug.TAG_START_UP_TIMER).log("MainActivity.MyOnTuneListener.onTune");
             mChannel = channel;
             mWasUnderShrunkenTvView = wasUnderShrunkenTvView;
+
+            if (mBackendKnobs.enablePartialProgramFetch()) {
+                // Fetch complete projection of tuned channel.
+                mProgramDataManager.prefetchChannel(channel.getId());
+            }
         }
 
         @Override

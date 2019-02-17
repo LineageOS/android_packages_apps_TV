@@ -49,8 +49,6 @@ public class LocalSearchProvider extends ContentProvider {
     /** The authority for LocalSearchProvider. */
     public static final String AUTHORITY = CommonConstants.BASE_PACKAGE + ".search";
 
-    public static final int PROGRESS_PERCENTAGE_HIDE = -1;
-
     // TODO: Remove this once added to the SearchManager.
     private static final String SUGGEST_COLUMN_PROGRESS_BAR_PERCENTAGE = "progress_bar_percentage";
 

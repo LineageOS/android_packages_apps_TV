@@ -37,7 +37,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.ui.setup.SetupFragment;
-import com.android.tv.tuner.ChannelScanFileParser;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.api.ScanChannel;
 import com.android.tv.tuner.api.Tuner;
@@ -100,7 +99,7 @@ public class ScanFragment extends SetupFragment {
         if (DEBUG) Log.d(TAG, "onCreateView");
         View view = super.onCreateView(inflater, container, savedInstanceState);
         mChannelNumbers = new ArrayList<>();
-        mChannelDataManager = new ChannelDataManager(getActivity());
+        mChannelDataManager = new ChannelDataManager(getActivity().getApplicationContext());
         mChannelDataManager.checkDataVersion(getActivity());
         mAdapter = new ChannelAdapter();
         mProgressBar = (ProgressBar) view.findViewById(R.id.tune_progress);

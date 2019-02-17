@@ -32,6 +32,7 @@ import com.android.tv.dvr.DvrScheduleManager.OnConflictStateChangeListener;
 import com.android.tv.dvr.data.ScheduledRecording;
 import com.android.tv.util.TvInputManagerHelper;
 import com.android.tv.util.Utils;
+import com.android.tv.common.flags.BackendKnobsFlags;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ public class ProgramManager {
     private final ProgramDataManager mProgramDataManager;
     private final DvrDataManager mDvrDataManager; // Only set if DVR is enabled
     private final DvrScheduleManager mDvrScheduleManager;
+    private final BackendKnobsFlags mBackendKnobsFlags;
 
     private long mStartUtcMillis;
     private long mEndUtcMillis;
@@ -114,11 +116,25 @@ public class ProgramManager {
                 }
             };
 
-    private final ProgramDataManager.Listener mProgramDataManagerListener =
-            new ProgramDataManager.Listener() {
+    private final ProgramDataManager.Callback mProgramDataManagerCallback =
+            new ProgramDataManager.Callback() {
                 @Override
                 public void onProgramUpdated() {
                     updateTableEntries(true);
+                }
+
+                @Override
+                public void onSingleChannelUpdated(long channelId) {
+                    boolean parentalControlsEnabled =
+                            mTvInputManagerHelper
+                                    .getParentalControlSettings()
+                                    .isParentalControlsEnabled();
+                    // Inline the updating of the mChannelIdEntriesMap here so we can only call
+                    // getParentalControlSettings once.
+                    List<TableEntry> entries =
+                            createProgramEntries(channelId, parentalControlsEnabled);
+                    mChannelIdEntriesMap.put(channelId, entries);
+                    notifyTableEntriesUpdated();
                 }
             };
 
@@ -199,19 +215,21 @@ public class ProgramManager {
             ChannelDataManager channelDataManager,
             ProgramDataManager programDataManager,
             @Nullable DvrDataManager dvrDataManager,
-            @Nullable DvrScheduleManager dvrScheduleManager) {
+            @Nullable DvrScheduleManager dvrScheduleManager,
+            BackendKnobsFlags backendKnobsFlags) {
         mTvInputManagerHelper = tvInputManagerHelper;
         mChannelDataManager = channelDataManager;
         mProgramDataManager = programDataManager;
         mDvrDataManager = dvrDataManager;
         mDvrScheduleManager = dvrScheduleManager;
+        mBackendKnobsFlags = backendKnobsFlags;
     }
 
     void programGuideVisibilityChanged(boolean visible) {
         mProgramDataManager.setPauseProgramUpdate(visible);
         if (visible) {
             mChannelDataManager.addListener(mChannelDataManagerListener);
-            mProgramDataManager.addListener(mProgramDataManagerListener);
+            mProgramDataManager.addCallback(mProgramDataManagerCallback);
             if (mDvrDataManager != null) {
                 if (!mDvrDataManager.isDvrScheduleLoadFinished()) {
                     mDvrDataManager.addDvrScheduleLoadFinishedListener(mDvrLoadedListener);
@@ -224,7 +242,7 @@ public class ProgramManager {
             }
         } else {
             mChannelDataManager.removeListener(mChannelDataManagerListener);
-            mProgramDataManager.removeListener(mProgramDataManagerListener);
+            mProgramDataManager.removeCallback(mProgramDataManagerCallback);
             if (mDvrDataManager != null) {
                 mDvrDataManager.removeDvrScheduleLoadFinishedListener(mDvrLoadedListener);
                 mDvrDataManager.removeScheduledRecordingListener(mScheduledRecordingListener);
@@ -413,6 +431,9 @@ public class ProgramManager {
      * (e.g., whose channelId is INVALID_ID), when it corresponds to a gap between programs.
      */
     TableEntry getTableEntry(long channelId, int index) {
+        if (mBackendKnobsFlags.enablePartialProgramFetch()) {
+            mProgramDataManager.prefetchChannel(channelId);
+        }
         return mChannelIdEntriesMap.get(channelId).get(index);
     }
 

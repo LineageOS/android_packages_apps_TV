@@ -16,10 +16,12 @@
 
 package com.android.tv.features;
 
-import static com.android.tv.common.feature.EngOnlyFeature.ENG_ONLY_FEATURE;
+import static com.android.tv.common.feature.BuildTypeFeature.ASOP_FEATURE;
+import static com.android.tv.common.feature.BuildTypeFeature.ENG_ONLY_FEATURE;
 import static com.android.tv.common.feature.FeatureUtils.OFF;
 import static com.android.tv.common.feature.FeatureUtils.ON;
 import static com.android.tv.common.feature.FeatureUtils.and;
+import static com.android.tv.common.feature.FeatureUtils.not;
 import static com.android.tv.common.feature.FeatureUtils.or;
 
 import android.content.Context;
@@ -38,7 +40,6 @@ import com.android.tv.common.feature.TestableFeature;
 import com.android.tv.common.flags.has.HasUiFlags;
 import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.util.PermissionUtils;
-
 
 /**
  * List of {@link Feature} for the Live TV App.
@@ -60,6 +61,24 @@ public final class TvFeatures extends CommonFeatures {
      */
     public static final Feature ANALYTICS_V2 = and(ON, ANALYTICS_OPT_IN);
 
+    private static final Feature TV_PROVIDER_ALLOWS_INSERT_TO_PROGRAM_TABLE =
+            or(Sdk.AT_LEAST_O, PartnerFeatures.TVPROVIDER_ALLOWS_SYSTEM_INSERTS_TO_PROGRAM_TABLE);
+
+    /**
+     * Enable cloud EPG for third parties.
+     *
+     * @see <a href="http://go/cloud-epg-3p-proposal">go/cloud-epg-3p-proposal</a>
+     */
+    // TODO verify customization for N
+    public static final TestableFeature CLOUD_EPG_FOR_3RD_PARTY =
+            TestableFeature.createTestableFeature(
+                    and(
+                            not(ASOP_FEATURE),
+                            // TODO(b/66696290): use newer version of robolectric.
+                            or(
+                                    TV_PROVIDER_ALLOWS_INSERT_TO_PROGRAM_TABLE,
+                                    FeatureUtils.ROBOLECTRIC)));
+
     // TODO(b/76149661): Fix EPG search or remove it
     public static final Feature EPG_SEARCH = OFF;
 
@@ -70,7 +89,7 @@ public final class TvFeatures extends CommonFeatures {
                             context -> HasSingletons.get(HasUiFlags.class, context),
                             input -> input.getUiFlags().uhideLauncher()),
                     // If LC app runs as non-system app, we unhide the app.
-                    FeatureUtils.not(PermissionUtils::hasAccessAllEpg));
+                    not(PermissionUtils::hasAccessAllEpg));
 
     public static final Feature PICTURE_IN_PICTURE =
             new Feature() {

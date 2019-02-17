@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.tv.tuner;
+package com.android.tv.tuner.setup;
 
 import android.util.Log;
 import com.android.tv.tuner.api.ScanChannel;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Parses plain text formatted scan files, which contain the list of channels. */
-public class ChannelScanFileParser {
+public final class ChannelScanFileParser {
     private static final String TAG = "ChannelScanFileParser";
 
     /**
@@ -65,4 +65,6 @@ public class ChannelScanFileParser {
         }
         return scanChannelList;
     }
+
+   private ChannelScanFileParser(){}
 }

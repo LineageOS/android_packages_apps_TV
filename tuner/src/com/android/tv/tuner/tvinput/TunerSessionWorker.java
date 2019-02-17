@@ -241,14 +241,16 @@ public class TunerSessionWorker
             ChannelDataManager channelDataManager,
             TunerSession tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
-            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         this(
                 context,
                 channelDataManager,
                 tunerSession,
                 tunerSessionOverlay,
                 null,
-                concurrentDvrPlaybackFlags);
+                concurrentDvrPlaybackFlags,
+                tsDataSourceManagerFactory);
     }
 
     @VisibleForTesting
@@ -258,7 +260,8 @@ public class TunerSessionWorker
             TunerSession tunerSession,
             TunerSessionOverlay tunerSessionOverlay,
             @Nullable Handler handler,
-            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         this.mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         if (DEBUG) Log.d(TAG, "TunerSessionWorker created");
         mContext = context;
@@ -276,7 +279,7 @@ public class TunerSessionWorker
         mChannelDataManager = channelDataManager;
         mChannelDataManager.setListener(this);
         mChannelDataManager.checkDataVersion(mContext);
-        mSourceManager = TsDataSourceManager.createSourceManager(false);
+        mSourceManager = tsDataSourceManagerFactory.create(false);
         mTvInputManager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
         mTvTracks = new ArrayList<>();
         mAudioCapabilitiesReceiver =

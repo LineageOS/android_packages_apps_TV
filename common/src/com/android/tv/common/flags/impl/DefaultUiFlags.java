@@ -29,4 +29,9 @@ public class DefaultUiFlags implements UiFlags {
     public boolean uhideLauncher() {
         return false;
     }
+
+    @Override
+    public boolean useLeanbackPinPicker() {
+        return false;
+    }
 }

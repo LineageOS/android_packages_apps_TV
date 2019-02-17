@@ -201,7 +201,9 @@ class EpgFetchHelper {
             Context context, long channelId, long startTimeMs, long endTimeMs) {
         String[] projection = Program.PROJECTION;
         if (TvProviderUtils.checkSeriesIdColumn(context, Programs.CONTENT_URI)) {
-            projection = TvProviderUtils.addExtraColumnsToProjection(projection);
+            projection =
+                    TvProviderUtils.addExtraColumnsToProjection(
+                            projection, TvProviderUtils.EXTRA_PROGRAM_COLUMN_SERIES_ID);
         }
         try (Cursor c =
                 context.getContentResolver()

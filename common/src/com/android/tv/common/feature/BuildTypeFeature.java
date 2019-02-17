@@ -20,18 +20,23 @@ import android.content.Context;
 import com.android.tv.common.BuildConfig;
 
 /** A feature that is only available on {@link BuildConfig#ENG} builds. */
-public final class EngOnlyFeature implements Feature {
-    public static final Feature ENG_ONLY_FEATURE = new EngOnlyFeature();
+public final class BuildTypeFeature implements Feature {
+    public static final Feature ENG_ONLY_FEATURE = new BuildTypeFeature(BuildConfig.ENG);
+    public static final Feature ASOP_FEATURE = new BuildTypeFeature(BuildConfig.AOSP);
 
-    private EngOnlyFeature() {}
+    private final boolean mIsBuildType;
+
+    private BuildTypeFeature(boolean isBuildType) {
+        mIsBuildType = isBuildType;
+    }
 
     @Override
     public boolean isEnabled(Context context) {
-        return BuildConfig.ENG;
+        return mIsBuildType;
     }
 
     @Override
     public String toString() {
-        return "EngOnlyFeature(" + BuildConfig.ENG + ")";
+        return getClass().getSimpleName() + "(" + mIsBuildType + ")";
     }
 }

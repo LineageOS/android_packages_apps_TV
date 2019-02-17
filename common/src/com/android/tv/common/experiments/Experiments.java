@@ -27,11 +27,6 @@ import com.android.tv.common.BuildConfig;
  * <p>This file is maintained by hand.
  */
 public final class Experiments {
-    public static final ExperimentFlag<Boolean> CLOUD_EPG =
-            ExperimentFlag.createFlag(
-// AOSP_Comment_Out                     LiveChannels::enableCloudEpg,
-                    true);
-
     public static final ExperimentFlag<Boolean> ENABLE_UNRATED_CONTENT_SETTINGS =
             ExperimentFlag.createFlag(
 // AOSP_Comment_Out                     LiveChannels::enableUnratedContentSettings,

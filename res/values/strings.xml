@@ -26,9 +26,6 @@
 
     <string name="option_item_divider_font" translatable="false">@string/condensed_font</string>
 
-    <!-- Name of application [CHAR LIMIT=NONE] -->
-    <string name="app_name" translatable="false">Live TV</string>
-
     <!-- Title of an application permission, listed so the user can choose
         whether they want to allow the application to do this. -->
     <string name="permlab_receiveInputEvent" translatable="false">receive input events from <xliff:g id="app_name">Live TV</xliff:g>  app</string>

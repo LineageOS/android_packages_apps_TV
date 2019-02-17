@@ -22,6 +22,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -36,7 +37,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-import com.android.tv.common.BaseApplication;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.feature.CommonFeatures;
 import com.android.tv.common.ui.setup.SetupActivity;
@@ -44,11 +44,12 @@ import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.AutoCloseableUtils;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.R;
 import com.android.tv.tuner.api.Tuner;
+import com.android.tv.tuner.api.TunerFactory;
 import com.android.tv.tuner.prefs.TunerPreferences;
 import java.util.concurrent.Executor;
+import javax.inject.Inject;
 
 /** The base setup activity class for tuner. */
 public abstract class BaseTunerSetupActivity extends SetupActivity {
@@ -85,6 +86,7 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     protected String mPreviousPostalCode;
     protected boolean mActivityStopped;
     protected boolean mPendingShowInitialFragment;
+    @Inject protected TunerFactory mTunerFactory;
 
     private TunerHalCreator mTunerHalCreator;
 
@@ -93,11 +95,12 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
         if (DEBUG) {
             Log.d(TAG, "onCreate");
         }
+        super.onCreate(savedInstanceState);
         mActivityStopped = false;
         executeGetTunerTypeAndCountAsyncTask();
         mTunerHalCreator =
-                new TunerHalCreator(getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR);
-        super.onCreate(savedInstanceState);
+                new TunerHalCreator(
+                        getApplicationContext(), AsyncTask.THREAD_POOL_EXECUTOR, mTunerFactory);
         try {
             // Updating postal code takes time, therefore we called it here for "warm-up".
             mPreviousPostalCode = PostalCodeUtils.getLastPostalCode(this);
@@ -329,25 +332,28 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     /**
      * A callback to be invoked when the TvInputService is enabled or disabled.
      *
+     * @param tunerSetupIntent
      * @param context a {@link Context} instance
      * @param enabled {@code true} for the {@link TunerTvInputService} to be enabled; otherwise
      *     {@code false}
      */
-    public static void onTvInputEnabled(Context context, boolean enabled, Integer tunerType) {
+    public static void onTvInputEnabled(
+            Context context, boolean enabled, Integer tunerType, Intent tunerSetupIntent) {
         // Send a notification for tuner setup if there's no channels and the tuner TV input
         // setup has been not done.
         boolean channelScanDoneOnPreference = TunerPreferences.isScanDone(context);
         int channelCountOnPreference = TunerPreferences.getScannedChannelCount(context);
         if (enabled && !channelScanDoneOnPreference && channelCountOnPreference == 0) {
             TunerPreferences.setShouldShowSetupActivity(context, true);
-            sendNotification(context, tunerType);
+            sendNotification(context, tunerType, tunerSetupIntent);
         } else {
             TunerPreferences.setShouldShowSetupActivity(context, false);
             cancelNotification(context);
         }
     }
 
-    private static void sendNotification(Context context, Integer tunerType) {
+    private static void sendNotification(
+            Context context, Integer tunerType, Intent tunerSetupIntent) {
         SoftPreconditions.checkState(
                 tunerType != null, TAG, "tunerType is null when send notification");
         if (tunerType == null) {
@@ -370,16 +376,16 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
         }
         String contentText = resources.getString(contentTextId);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            sendNotificationInternal(context, contentTitle, contentText);
+            sendNotificationInternal(context, contentTitle, contentText, tunerSetupIntent);
         } else {
             Bitmap largeIcon =
                     BitmapFactory.decodeResource(resources, R.drawable.recommendation_antenna);
-            sendRecommendationCard(context, contentTitle, contentText, largeIcon);
+            sendRecommendationCard(context, contentTitle, contentText, largeIcon, tunerSetupIntent);
         }
     }
 
     private static void sendNotificationInternal(
-            Context context, String contentTitle, String contentText) {
+            Context context, String contentTitle, String contentText, Intent tunerSetupIntent) {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.createNotificationChannel(
@@ -396,7 +402,8 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
                                 context.getResources()
                                         .getIdentifier(
                                                 TAG_ICON, TAG_DRAWABLE, context.getPackageName()))
-                        .setContentIntent(createPendingIntentForSetupActivity(context))
+                        .setContentIntent(
+                                createPendingIntentForSetupActivity(context, tunerSetupIntent))
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .extend(new Notification.TvExtender())
                         .build();
@@ -406,10 +413,15 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
     /**
      * Sends the recommendation card to start the tuner TV input setup activity.
      *
+     * @param tunerSetupIntent
      * @param context a {@link Context} instance
      */
     private static void sendRecommendationCard(
-            Context context, String contentTitle, String contentText, Bitmap largeIcon) {
+            Context context,
+            String contentTitle,
+            String contentText,
+            Bitmap largeIcon,
+            Intent tunerSetupIntent) {
         // Build and send the notification.
         Notification notification =
                 new NotificationCompat.BigPictureStyle(
@@ -427,7 +439,8 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
                                                                 TAG_DRAWABLE,
                                                                 context.getPackageName()))
                                         .setContentIntent(
-                                                createPendingIntentForSetupActivity(context)))
+                                                createPendingIntentForSetupActivity(
+                                                        context, tunerSetupIntent)))
                         .build();
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -438,13 +451,12 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
      * Returns a {@link PendingIntent} to launch the tuner TV input service.
      *
      * @param context a {@link Context} instance
+     * @param tunerSetupIntent
      */
-    private static PendingIntent createPendingIntentForSetupActivity(Context context) {
+    private static PendingIntent createPendingIntentForSetupActivity(
+            Context context, Intent tunerSetupIntent) {
         return PendingIntent.getActivity(
-                context,
-                0,
-                BaseApplication.getSingletons(context).getTunerSetupIntent(context),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                context, 0, tunerSetupIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /** Creates {@link Tuner} instances in a worker thread * */
@@ -454,14 +466,12 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
         @VisibleForTesting Tuner mTunerHal;
         private TunerHalCreator.GenerateTunerHalTask mGenerateTunerHalTask;
         private final Executor mExecutor;
+        private final TunerFactory mTunerFactory;
 
-        TunerHalCreator(Context context) {
-            this(context, AsyncTask.SERIAL_EXECUTOR);
-        }
-
-        TunerHalCreator(Context context, Executor executor) {
+        TunerHalCreator(Context context, Executor executor, TunerFactory tunerFactory) {
             mContext = context;
             mExecutor = executor;
+            mTunerFactory = tunerFactory;
         }
 
         /**
@@ -507,7 +517,7 @@ public abstract class BaseTunerSetupActivity extends SetupActivity {
 
         @WorkerThread
         protected Tuner createInstance() {
-            return BuiltInTunerHalFactory.INSTANCE.createInstance(mContext);
+            return mTunerFactory.createInstance(mContext);
         }
 
         class GenerateTunerHalTask extends AsyncTask<Void, Void, Tuner> {

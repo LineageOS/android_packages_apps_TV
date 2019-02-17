@@ -15,8 +15,8 @@
  */
 package com.android.tv.common.flags;
 
-/** Flags for tuning non ui behavior */
-public interface BackendKnobsFlags {
+/** Flags for tuner */
+public interface TunerFlags {
 
     /**
      * Whether or not this feature is compiled into this build.
@@ -26,18 +26,6 @@ public interface BackendKnobsFlags {
      */
     boolean compiled();
 
-    /** Enable fetching only part of the program data. */
-    boolean enablePartialProgramFetch();
-
-    /** EPG fetcher interval in hours */
-    long epgFetcherIntervalHour();
-
-    /** Target channel count for EPG. It is used to adjust the EPG length */
-    long epgTargetChannelCount();
-
-    /** How many hours of programs are loaded in the program guide for during the initial fetch */
-    long programGuideInitialFetchHours();
-
-    /** How many hours of programs are loaded in the program guide */
-    long programGuideMaxHours();
+    /** Tune using current recording if available. */
+    boolean tuneUsingRecording();
 }

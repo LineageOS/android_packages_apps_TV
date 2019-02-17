@@ -28,7 +28,6 @@ import android.support.annotation.MainThread;
 import android.util.Log;
 import com.android.tv.common.SoftPreconditions;
 import com.android.tv.common.actions.InputSetupActionUtils;
-import com.android.tv.common.experiments.Experiments;
 import com.android.tv.data.ChannelDataManager;
 import com.android.tv.data.ChannelDataManager.Listener;
 import com.android.tv.data.epg.EpgFetcher;
@@ -70,9 +69,7 @@ public class SetupPassthroughActivity extends Activity {
         mEpgInputWhiteList = new EpgInputWhiteList(tvSingletons.getCloudEpgFlags());
         mActivityAfterCompletion = InputSetupActionUtils.getExtraActivityAfter(intent);
         boolean needToFetchEpg =
-                mTvInputInfo != null
-                        && Utils.isInternalTvInput(this, mTvInputInfo.getId())
-                        && Experiments.CLOUD_EPG.get();
+                mTvInputInfo != null && Utils.isInternalTvInput(this, mTvInputInfo.getId());
         if (needToFetchEpg) {
             // In case when the activity is restored, this flag should be restored as well.
             mEpgFetcherDuringScan = true;

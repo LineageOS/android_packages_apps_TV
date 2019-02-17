@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.tv.tuner.modules;
+package com.android.tv.common.flags.impl;
 
-import com.android.tv.tuner.source.TunerSourceModule;
-import dagger.Module;
+import com.android.tv.common.flags.TunerFlags;
 
-/** Dagger module for TV Tuners. */
-@Module(includes = {TunerSingletonsModule.class, TunerSourceModule.class})
-public class TunerModule {}
+/** Default Flags for Tuner */
+public class DefaultTunerFlags implements TunerFlags {
+
+    @Override
+    public boolean compiled() {
+        return true;
+    }
+
+    @Override
+    public boolean tuneUsingRecording() {
+        return false;
+    }
+}

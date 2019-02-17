@@ -35,7 +35,6 @@ import com.android.tv.common.singletons.HasSingletons;
 import com.android.tv.common.ui.setup.SetupFragment;
 import com.android.tv.common.ui.setup.SetupMultiPaneFragment;
 import com.android.tv.common.util.PostalCodeUtils;
-import com.android.tv.tuner.BuiltInTunerHalFactory;
 import com.android.tv.tuner.sample.network.R;
 import com.android.tv.tuner.setup.BaseTunerSetupActivity;
 import com.android.tv.tuner.setup.ConnectionTypeFragment;
@@ -96,8 +95,7 @@ public class SampleNetworkTunerSetupActivity extends BaseTunerSetupActivity {
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... arg0) {
-                return BuiltInTunerHalFactory.INSTANCE.getTunerTypeAndCount(
-                                SampleNetworkTunerSetupActivity.this)
+                return mTunerFactory.getTunerTypeAndCount(SampleNetworkTunerSetupActivity.this)
                         .first;
             }
 

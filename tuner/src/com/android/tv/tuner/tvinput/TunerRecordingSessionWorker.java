@@ -174,7 +174,8 @@ public class TunerRecordingSessionWorker
             String inputId,
             ChannelDataManager dataManager,
             TunerRecordingSession session,
-            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags) {
+            ConcurrentDvrPlaybackFlags concurrentDvrPlaybackFlags,
+            TsDataSourceManager.Factory tsDataSourceManagerFactory) {
         mConcurrentDvrPlaybackFlags = concurrentDvrPlaybackFlags;
         mRandom.setSeed(System.nanoTime());
         mContext = context;
@@ -185,7 +186,7 @@ public class TunerRecordingSessionWorker
                 BaseApplication.getSingletons(context).getRecordingStorageStatusManager();
         mChannelDataManager = dataManager;
         mChannelDataManager.checkDataVersion(context);
-        mSourceManager = TsDataSourceManager.createSourceManager(true);
+        mSourceManager = tsDataSourceManagerFactory.create(true);
         mCapabilities = new DvbDeviceAccessor(context).getRecordingCapability(inputId);
         mInputId = inputId;
         if (DEBUG) Log.d(TAG, mCapabilities.toString());

@@ -15,11 +15,20 @@
  */
 package com.android.tv.modules;
 
+import android.content.Context;
 import com.android.tv.MainActivity;
 import com.android.tv.TvApplication;
+import com.android.tv.common.concurrent.NamedThreadFactory;
 import com.android.tv.common.dagger.ApplicationModule;
+import com.android.tv.common.dagger.annotations.ApplicationContext;
 import com.android.tv.onboarding.OnboardingActivity;
+import com.android.tv.util.AsyncDbTask;
+import com.android.tv.util.TvInputManagerHelper;
 import dagger.Module;
+import dagger.Provides;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import javax.inject.Singleton;
 
 /** Dagger module for {@link TvApplication}. */
 @Module(
@@ -29,4 +38,21 @@ import dagger.Module;
             MainActivity.Module.class,
             OnboardingActivity.Module.class
         })
-public class TvApplicationModule {}
+public class TvApplicationModule {
+    private static final NamedThreadFactory THREAD_FACTORY = new NamedThreadFactory("tv-app-db");
+
+    @Provides
+    @AsyncDbTask.DbExecutor
+    @Singleton
+    Executor providesDbExecutor() {
+        return Executors.newSingleThreadExecutor(THREAD_FACTORY);
+    }
+
+    @Provides
+    @Singleton
+    TvInputManagerHelper providesTvInputManagerHelper(@ApplicationContext Context context) {
+        TvInputManagerHelper tvInputManagerHelper = new TvInputManagerHelper(context);
+        tvInputManagerHelper.start();
+        return tvInputManagerHelper;
+    }
+}
