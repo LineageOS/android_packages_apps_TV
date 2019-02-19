@@ -29,7 +29,7 @@ import com.android.tv.common.experiments.ExperimentLoader;
 import com.android.tv.common.flags.impl.DefaultBackendKnobsFlags;
 import com.android.tv.common.flags.impl.DefaultCloudEpgFlags;
 import com.android.tv.common.flags.impl.DefaultConcurrentDvrPlaybackFlags;
-import com.android.tv.common.flags.impl.DefaultExoplayer2Flags;
+import com.android.tv.common.flags.impl.DefaultTunerFlags;
 import com.android.tv.common.flags.impl.DefaultUiFlags;
 import com.android.tv.common.recording.RecordingStorageStatusManager;
 import com.android.tv.common.singletons.HasSingletons;
@@ -84,7 +84,7 @@ public class TestSingletonApp extends Application
             new TsDataSourceManager.Factory(() -> new TunerTsStreamerManager(null));
     private final TunerSessionFactoryImpl mTunerSessionFactory =
             new TunerSessionFactoryImpl(
-                    new DefaultExoplayer2Flags(),
+                    new DefaultTunerFlags(),
                     mConcurrentDvrPlaybackFlags,
                     mTsDataSourceManagerFactory);
     private PerformanceMonitor mPerformanceMonitor;
