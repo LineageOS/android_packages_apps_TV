@@ -277,7 +277,7 @@ public class MainActivity extends Activity
     private final DurationTimer mTuneDurationTimer = new DurationTimer();
     private DvrManager mDvrManager;
     private ConflictChecker mDvrConflictChecker;
-    private BackendKnobsFlags mBackendKnobs;
+    @Inject BackendKnobsFlags mBackendKnobs;
     @Inject SetupUtils mSetupUtils;
     @Inject Optional<BuiltInTunerManager> mOptionalBuiltInTunerManager;
 
@@ -496,7 +496,6 @@ public class MainActivity extends Activity
             finishAndRemoveTask();
             return;
         }
-        mBackendKnobs = tvSingletons.getBackendKnobs();
 
         TvSingletons tvApplication = (TvSingletons) getApplication();
         // In API 23, TvContract.isChannelUriForPassthroughInput is hidden.
