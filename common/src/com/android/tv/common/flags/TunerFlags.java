@@ -28,4 +28,7 @@ public interface TunerFlags {
 
     /** Tune using current recording if available. */
     boolean tuneUsingRecording();
+
+    /** Enable using exoplayer V2 */
+    boolean useExoplayerV2();
 }

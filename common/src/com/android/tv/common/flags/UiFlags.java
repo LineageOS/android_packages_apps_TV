@@ -26,6 +26,13 @@ public interface UiFlags {
      */
     boolean compiled();
 
+    /**
+     * Number of days to be shown by Recording History.
+     *
+     * <p>Set to 0 for all recordings.
+     */
+    long maxHistoryDays();
+
     /** Unhide the launcher all the time */
     boolean uhideLauncher();
 

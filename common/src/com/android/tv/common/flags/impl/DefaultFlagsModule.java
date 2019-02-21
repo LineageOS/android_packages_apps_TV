@@ -21,7 +21,6 @@ import dagger.Reusable;
 import com.android.tv.common.flags.BackendKnobsFlags;
 import com.android.tv.common.flags.CloudEpgFlags;
 import com.android.tv.common.flags.ConcurrentDvrPlaybackFlags;
-import com.android.tv.common.flags.Exoplayer2Flags;
 import com.android.tv.common.flags.TunerFlags;
 import com.android.tv.common.flags.UiFlags;
 
@@ -45,12 +44,6 @@ public class DefaultFlagsModule {
     @Reusable
     ConcurrentDvrPlaybackFlags provideConcurrentDvrPlaybackFlags() {
         return new DefaultConcurrentDvrPlaybackFlags();
-    }
-
-    @Provides
-    @Reusable
-    Exoplayer2Flags provideExoplayer2Flags() {
-        return new DefaultExoplayer2Flags();
     }
 
     @Provides
