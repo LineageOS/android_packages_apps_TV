@@ -19,6 +19,7 @@ package com.android.tv.ui.sidepanel;
 import static com.android.tv.Features.TUNER;
 
 import android.app.ApplicationErrorReport;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.media.tv.TvInputInfo;
 import android.view.View;
@@ -44,6 +45,8 @@ import java.util.List;
  */
 public class SettingsFragment extends SideFragment {
     private static final String TRACKER_LABEL = "settings";
+    private static final String FEEDBACK_PACKAGE = "com.google.android.feedback";
+    private static final String FEEDBACK_CLASS = "com.google.android.feedback.FeedbackActivity";
 
     @Override
     protected String getTitle() {
@@ -157,7 +160,8 @@ public class SettingsFragment extends SideFragment {
         items.add(new ActionItem(getString(R.string.settings_send_feedback)) {
             @Override
             protected void onSelected() {
-                Intent intent = new Intent(Intent.ACTION_APP_ERROR);
+                Intent intent = new Intent().setComponent(
+                        new ComponentName(FEEDBACK_PACKAGE, FEEDBACK_CLASS));
                 ApplicationErrorReport report = new ApplicationErrorReport();
                 report.packageName = report.processName = getContext().getPackageName();
                 report.time = System.currentTimeMillis();
