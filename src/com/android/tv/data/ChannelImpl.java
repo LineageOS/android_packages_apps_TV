@@ -681,11 +681,28 @@ public final class ChannelImpl implements Channel {
                     boolean isProtectedActivity = packageName != null
                             && (packageName.equals(CommonConstants.BASE_PACKAGE)
                             || packageName.startsWith(CommonConstants.BASE_PACKAGE + "."));
+
+                    // Prevent creation of App Links to permission protected activities
+                    boolean isPermissionProtected =
+                            activityInfo.exported && (activityInfo.permission != null);
+
                     if (isProtectedActivity) {
-                        Log.w(TAG,"Attempt to add app link to protected activity: "
+                        Log.w(TAG, "Attempt to add app link to protected activity: "
                                 + mAppLinkIntentUri);
                         return;
                     }
+                    if (isPermissionProtected){
+                        Log.w(TAG, "Attempt to add app link to permission protected activity: "
+                                + mAppLinkIntentUri);
+                        return;
+                    }
+                    // Note: Normally, we should consider to restrict ChooserIntent and ACTION_SEND
+                    // Intent as well, but
+                    // 1. ChooserIntent: with Intent.parseUri, an attacker cannot wrap
+                    // Intent.EXTRA_INTENT in the app link
+                    // 2. ACTION_SEND: After test, an attacker cannot use ACTION_SEND to get
+                    // FLAG_GRANT_* here
+
                     mAppLinkIntent = intent;
                     mAppLinkIntent.putExtra(
                             CommonConstants.EXTRA_APP_LINK_CHANNEL_URI, getUri().toString());
