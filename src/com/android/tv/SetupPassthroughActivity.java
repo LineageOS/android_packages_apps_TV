@@ -21,7 +21,6 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.media.tv.TvInputInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -118,17 +117,6 @@ public class SetupPassthroughActivity extends Activity {
             InputSetupActionUtils.removeSetupIntent(extras);
             setupIntent.putExtras(extras);
             try {
-                if (Build.VERSION.SDK_INT >= 34) { // Android 14(U)
-                    String callingPackage = getLaunchedFromPackage();
-                    if (callingPackage == null || !callingPackage.equals(
-                            CommonConstants.BASE_PACKAGE)) {
-                        Log.w(TAG, "Calling package " + callingPackage
-                                + " is not trusted. Not forwarding intent.");
-                        finish();
-                        return;
-                    }
-                }
-
                 ComponentName callingActivity = getCallingActivity();
                 if (callingActivity != null
                         && !callingActivity.getPackageName().equals(CommonConstants.BASE_PACKAGE)) {
